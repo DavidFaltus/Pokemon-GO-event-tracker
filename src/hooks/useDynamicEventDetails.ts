@@ -85,20 +85,10 @@ export function useDynamicEventDetails(eventID: string, link: string, isExpanded
 
       try {
         let htmlText = '';
-        try {
-          const res = await fetch(link);
-          if (res.ok) {
-            htmlText = await res.text();
-          } else {
-            throw new Error("Direct fetch failed");
-          }
-        } catch (directErr) {
-          // Fallback to CORS proxy
-          const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(link)}`;
-          const res = await fetch(proxyUrl);
-          if (!res.ok) throw new Error("CORS proxy request failed");
-          htmlText = await res.text();
-        }
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(link)}`;
+        const res = await fetch(proxyUrl);
+        if (!res.ok) throw new Error("CORS proxy request failed");
+        htmlText = await res.text();
 
         const parser = new DOMParser();
         const doc = parser.parseFromString(htmlText, 'text/html');

@@ -330,7 +330,8 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3500);
 
-        const response = await fetch(link, { 
+        const proxyLink = `https://api.allorigins.win/raw?url=${encodeURIComponent(link)}`;
+        const response = await fetch(proxyLink, { 
           method: 'GET', 
           signal: controller.signal 
         });
