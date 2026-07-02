@@ -1,0 +1,895 @@
+import React, { useState, useEffect } from 'react';
+import { findRaidCounters } from '../data/raidCounters';
+import type { RaidCounters } from '../data/raidCounters';
+import { translations } from '../data/translations';
+import type { Language } from '../data/translations';
+import { getSpecialEventDetails, getPokemonImage } from '../data/specialEvents';
+import { findPokemonMeta } from '../data/pokemonMeta';
+import { useDynamicEventDetails } from '../hooks/useDynamicEventDetails';
+
+export interface EventData {
+  eventID: string;
+  name: string;
+  eventType: string;
+  heading: string;
+  link: string;
+  image: string;
+  start: string;
+  end: string;
+  extraData?: {
+    raidbattles?: {
+      bosses?: { name: string; image: string; canBeShiny: boolean }[];
+      shinies?: { name: string; image: string }[];
+    };
+    spotlight?: {
+      name: string;
+      canBeShiny: boolean;
+      image: string;
+      bonus: string;
+      list?: { name: string; canBeShiny: boolean; image: string }[];
+    };
+    communityday?: {
+      spawns?: { name: string; image: string }[];
+      bonuses?: { text: string; image?: string }[];
+      bonusDisclaimers?: string[];
+      shinies?: { name: string; image: string }[];
+      specialresearch?: {
+        name?: string;
+        step: number;
+        tasks: { text: string; reward?: { text: string; image: string } }[];
+        rewards?: { text: string; image?: string }[];
+      }[];
+    };
+    generic?: {
+      hasSpawns: boolean;
+      hasFieldResearchTasks: boolean;
+    };
+  };
+}
+
+export const TypeBadge: React.FC<{ typeStr: string }> = ({ typeStr }) => {
+  const lower = typeStr.toLowerCase();
+  let typeClass = 'normal';
+  let label = 'Normal';
+
+  if (lower.includes('ghost')) { typeClass = 'ghost'; label = 'Ghost'; }
+  else if (lower.includes('dark')) { typeClass = 'dark'; label = 'Dark'; }
+  else if (lower.includes('bug')) { typeClass = 'bug'; label = 'Bug'; }
+  else if (lower.includes('fire')) { typeClass = 'fire'; label = 'Fire'; }
+  else if (lower.includes('ground')) { typeClass = 'ground'; label = 'Ground'; }
+  else if (lower.includes('dragon')) { typeClass = 'dragon'; label = 'Dragon'; }
+  else if (lower.includes('ice')) { typeClass = 'ice'; label = 'Ice'; }
+  else if (lower.includes('fairy')) { typeClass = 'fairy'; label = 'Fairy'; }
+  else if (lower.includes('fighting')) { typeClass = 'fighting'; label = 'Fighting'; }
+  else if (lower.includes('psychic')) { typeClass = 'psychic'; label = 'Psychic'; }
+  else if (lower.includes('flying') || lower.includes('fly')) { typeClass = 'flying'; label = 'Flying'; }
+  else if (lower.includes('poison')) { typeClass = 'poison'; label = 'Poison'; }
+  else if (lower.includes('steel')) { typeClass = 'steel'; label = 'Steel'; }
+  else if (lower.includes('water')) { typeClass = 'water'; label = 'Water'; }
+  else if (lower.includes('grass')) { typeClass = 'grass'; label = 'Grass'; }
+  else if (lower.includes('rock')) { typeClass = 'rock'; label = 'Rock'; }
+  else if (lower.includes('electric')) { typeClass = 'electric'; label = 'Electric'; }
+  else if (lower.includes('normal')) { typeClass = 'normal'; label = 'Normal'; }
+
+  // Support 2x indicator in label
+  if (lower.includes('2x')) {
+    label += ' (2x)';
+  }
+
+  return (
+    <span className={`type-badge pogo-type-${typeClass}`}>
+      <img
+        src={`https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${typeClass}.svg`}
+        alt={label}
+        className="type-badge-icon"
+      />
+      <span className="type-badge-text">{label}</span>
+    </span>
+  );
+};
+
+interface EventCardProps {
+  event: EventData;
+  lang: Language;
+  timezone?: string;
+}
+
+export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) => {
+  const [timeLeftStr, setTimeLeftStr] = useState<string>('');
+  const [status, setStatus] = useState<'upcoming' | 'active' | 'ended'>('upcoming');
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [officialUrl, setOfficialUrl] = useState<string>('');
+  const [showOfficial, setShowOfficial] = useState<boolean>(false);
+  const [showLeekDuck, setShowLeekDuck] = useState<boolean>(true);
+
+  const t = translations[lang];
+
+  // Load special event guides (manual overlays/fallbacks)
+  const staticDetails = getSpecialEventDetails(event.eventID, event.name);
+  const { details: dynamicDetails, loading: dynamicLoading } = useDynamicEventDetails(event.eventID, event.link, isExpanded && !staticDetails);
+  const specialDetails = staticDetails || dynamicDetails;
+
+  // Spawns checklist tick tracker
+  const [tickedSpawns, setTickedSpawns] = useState<string[]>(() => {
+    const saved = localStorage.getItem(`pogo_spawns_${event.eventID}`);
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const toggleSpawnTicked = (spawnName: string) => {
+    let updated;
+    if (tickedSpawns.includes(spawnName)) {
+      updated = tickedSpawns.filter(name => name !== spawnName);
+    } else {
+      updated = [...tickedSpawns, spawnName];
+    }
+    setTickedSpawns(updated);
+    localStorage.setItem(`pogo_spawns_${event.eventID}`, JSON.stringify(updated));
+  };
+
+
+  // Check raid bosses
+  const bosses = event.extraData?.raidbattles?.bosses || [];
+
+  // Find raid counters
+  const matchedRaidCounters: RaidCounters[] = [];
+  const titleRaidMatch = findRaidCounters(event.name);
+  if (titleRaidMatch) {
+    matchedRaidCounters.push(titleRaidMatch);
+  }
+  bosses.forEach(boss => {
+    const bossRaidMatch = findRaidCounters(boss.name);
+    if (bossRaidMatch && !matchedRaidCounters.some(c => c.bossName === bossRaidMatch.bossName)) {
+      matchedRaidCounters.push(bossRaidMatch);
+    }
+  });
+
+  const getGoogleCalendarUrl = () => {
+    const formatToGoogleCalendarUtc = (dateStr: string): string => {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return '';
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      const year = d.getUTCFullYear();
+      const month = pad(d.getUTCMonth() + 1);
+      const day = pad(d.getUTCDate());
+      const hours = pad(d.getUTCHours());
+      const minutes = pad(d.getUTCMinutes());
+      const seconds = pad(d.getUTCSeconds());
+      return `${year}${month}${day}T${hours}${minutes}${seconds}Z`;
+    };
+
+    const utcStart = formatToGoogleCalendarUtc(event.start);
+    const utcEnd = formatToGoogleCalendarUtc(event.end);
+
+    // Build rich details text for Google Calendar
+    const descriptionParts: string[] = [];
+    
+    // Event Type
+    descriptionParts.push(`${lang === 'cs' ? 'Typ události' : 'Event Type'}: ${getEventTypeLabel(event.eventType)}`);
+    
+    // Raid Bosses
+    if (bosses.length > 0) {
+      const bossNames = bosses.map(b => b.name + (b.canBeShiny ? ' (✨ Shiny)' : '')).join(', ');
+      descriptionParts.push(`${lang === 'cs' ? 'Raid Bossi' : 'Raid Bosses'}: ${bossNames}`);
+    }
+    
+    // Counters Info
+    if (matchedRaidCounters.length > 0) {
+      const counterInfo = matchedRaidCounters.map(c => {
+        return `- ${c.bossName}: Max CP ${c.maxCp} (100% IV), Boosted Max CP ${c.maxBoostedCp} (${c.weatherBoosts.join('/')})`;
+      }).join('\n');
+      descriptionParts.push(`${lang === 'cs' ? 'Přehled Bossů' : 'Boss Overview'}:\n${counterInfo}`);
+    }
+    
+    // Link to details
+    descriptionParts.push(`${lang === 'cs' ? 'Oficiální odkaz' : 'Official Link'}: ${event.link}`);
+    descriptionParts.push(`--- \n${lang === 'cs' ? 'Exportováno z Pokemon GO Event Tracker' : 'Exported from Pokemon GO Event Tracker'}`);
+
+    const details = descriptionParts.join('\n\n');
+    return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.name)}&dates=${utcStart}/${utcEnd}&details=${encodeURIComponent(details)}&sf=true&output=xml`;
+  };
+
+  const getOfficialEventLink = (): string => {
+    const cleanId = event.eventID.toLowerCase();
+    const cleanName = event.name.toLowerCase();
+    const eventType = event.eventType;
+
+    // Exclude types that do not have standalone news posts on the official blog
+    if (
+      eventType === "pokemon-spotlight-hour" ||
+      eventType === "raid-hour" ||
+      eventType === "raid-battles" ||
+      eventType === "go-battle-league" ||
+      eventType === "showcase" ||
+      cleanId.includes("spotlight") ||
+      cleanId.includes("raidhour") ||
+      cleanId.includes("raid-battles")
+    ) {
+      return "";
+    }
+
+    // 1. Exact hardcoded mappings for known events
+    if (cleanId.includes("go-fest-2026") || cleanName.includes("go fest 2026")) {
+      return "https://gofest.pokemongolive.com/";
+    }
+    if (cleanId.includes("road-of-legends-2026") || cleanName.includes("road of legends")) {
+      return "https://pokemongolive.com/post/road-of-legends-2026-global/";
+    }
+    if (cleanId.includes("flying-taxi-taken-over-2026") || cleanName.includes("taken over") || cleanName.includes("taken-over")) {
+      return "https://pokemongolive.com/post/flying-taxi-taken-over-2026/";
+    }
+    if (cleanId.includes("flying-taxi-2026") || cleanId.includes("flying-taxi-squawkabilly-debut") || cleanName.includes("flying taxi")) {
+      return "https://pokemongolive.com/post/flying-taxi-squawkabilly-debut/";
+    }
+    if (cleanId.includes("rocket-takeover-june-2026") || cleanName.includes("shadow landorus") || cleanName.includes("team go rocket takeover")) {
+      return "https://pokemongolive.com/post/flying-taxi-squawkabilly-debut/";
+    }
+    if (cleanId.includes("go-pass-june-2026") || cleanName.includes("go pass")) {
+      return "https://pokemongolive.com/seasons/forever-forward";
+    }
+    if (cleanId.includes("season-23-forever-forward") || cleanName.includes("forever forward")) {
+      return "https://pokemongolive.com/seasons/forever-forward";
+    }
+
+    // 2. Community Days
+    if (eventType === "community-day" || cleanId.includes("community-day") || cleanId.includes("communityday")) {
+      let pokeName = "";
+      if (cleanName.includes("frigibax")) pokeName = "frigibax";
+      else if (cleanName.includes("bagon")) pokeName = "bagon";
+      else if (cleanName.includes("beldum")) pokeName = "beldum";
+      else if (cleanName.includes("goomy")) pokeName = "goomy";
+      else if (cleanName.includes("litten")) pokeName = "litten";
+      else if (cleanName.includes("rowlet")) pokeName = "rowlet";
+      else if (cleanName.includes("popplio")) pokeName = "popplio";
+      else if (cleanName.includes("bellsprout")) pokeName = "bellsprout";
+      else if (cleanName.includes("chansey")) pokeName = "chansey";
+
+      let year = "2026";
+      if (event.start) {
+        const matchYear = event.start.match(/^(\d{4})/);
+        if (matchYear) year = matchYear[1];
+      }
+
+      let month = "june";
+      if (event.start) {
+        const dateObj = new Date(event.start);
+        if (!isNaN(dateObj.getTime())) {
+          const monthsEng = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+          month = monthsEng[dateObj.getMonth()];
+        }
+      }
+
+      if (pokeName) {
+        return `https://pokemongolive.com/post/${pokeName}-community-day-${month}-${year}/`;
+      }
+    }
+
+    // 3. Heuristics fallback for other major/special events (like special Raid Days or Research Days)
+    let slug = cleanName
+      .replace(/[^\w\s-]/g, '')
+      .trim()
+      .replace(/[-\s]+/g, '-');
+    
+    slug = slug
+      .replace(/-june-\d{4}$/, '')
+      .replace(/-july-\d{4}$/, '')
+      .replace(/-august-\d{4}$/, '')
+      .replace(/-september-\d{4}$/, '');
+
+    let year = "2026";
+    if (event.start) {
+      const matchYear = event.start.match(/^(\d{4})/);
+      if (matchYear) year = matchYear[1];
+    }
+
+    return `https://pokemongolive.com/post/${slug}-${year}/`;
+  };
+
+  // Calculate status and countdown
+  useEffect(() => {
+    const updateCountdown = () => {
+      const now = new Date();
+      const startTime = new Date(event.start);
+      const endTime = new Date(event.end);
+
+      if (now < startTime) {
+        setStatus('upcoming');
+        const diffMs = startTime.getTime() - now.getTime();
+        setTimeLeftStr(formatTimeDiff(diffMs, t.status_starts_in));
+      } else if (now >= startTime && now <= endTime) {
+        setStatus('active');
+        const diffMs = endTime.getTime() - now.getTime();
+        setTimeLeftStr(formatTimeDiff(diffMs, t.status_ends_in));
+      } else {
+        setStatus('ended');
+        setTimeLeftStr(t.status_ended_label);
+      }
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, [event, t]);
+
+  // Check the validity of the official URL asynchronously and toggle visibility
+  useEffect(() => {
+    let active = true;
+    
+    const verifyLink = async () => {
+      const link = getOfficialEventLink();
+      const cleanId = event.eventID.toLowerCase();
+      
+      if (!link) {
+        if (active) {
+          setShowOfficial(false);
+          setShowLeekDuck(true);
+        }
+        return;
+      }
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3500);
+
+        const proxyLink = `https://api.allorigins.win/raw?url=${encodeURIComponent(link)}`;
+        const response = await fetch(proxyLink, { 
+          method: 'GET', 
+          signal: controller.signal 
+        });
+        clearTimeout(timeoutId);
+
+        if (response.status >= 200 && response.status < 400) {
+          const text = await response.text();
+          const lowerText = text.toLowerCase();
+          const has404Text = lowerText.includes('404 not found') || 
+                             lowerText.includes('page not found') || 
+                             lowerText.includes("page you're looking for doesn't exist");
+          
+          if (!has404Text) {
+            if (active) {
+              setOfficialUrl(link);
+              setShowOfficial(true);
+              setShowLeekDuck(false); // Hide Leek Duck since official works!
+            }
+            return;
+          }
+        }
+      } catch (err) {
+        // Fallback for CORS block in desktop browser environment
+        const error = err as any;
+        const isCORS = err instanceof TypeError || (error && (error.message === "Failed to fetch" || error.name === "AbortError"));
+        if (isCORS) {
+          const isHardcodedOrCD = 
+            link.includes("gofest.pokemongolive.com") || 
+            link.includes("road-of-legends-2026-global") || 
+            link.includes("flying-taxi-squawkabilly-debut") ||
+            link.includes("flying-taxi-taken-over-2026") ||
+            link.includes("seasons/forever-forward") ||
+            ((event.eventType === "community-day" || cleanId.includes("community-day") || cleanId.includes("communityday")) && link.includes("community-day"));
+
+          if (isHardcodedOrCD) {
+            if (active) {
+              setOfficialUrl(link);
+              setShowOfficial(true);
+              setShowLeekDuck(false);
+            }
+            return;
+          }
+        }
+      }
+
+      // If URL is invalid, 404, or checks failed
+      if (active) {
+        setShowOfficial(false);
+        setShowLeekDuck(true); // Show Leek Duck since official is 404 / failed!
+      }
+    };
+
+    verifyLink();
+
+    return () => {
+      active = false;
+    };
+  }, [event]);
+
+  const formatTimeDiff = (diffMs: number, prefix: string): string => {
+    const diffSecs = Math.floor(diffMs / 1000);
+    const diffMins = Math.floor(diffSecs / 60);
+    const diffHours = Math.floor(diffMins / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffDays > 0) {
+      return `${prefix}${diffDays}d ${diffHours % 24}h`;
+    }
+    if (diffHours > 0) {
+      return `${prefix}${diffHours}h ${diffMins % 60}m`;
+    }
+    return `${prefix}${diffMins}m`;
+  };
+
+  const getEventTypeLabel = (type: string) => {
+    switch (type) {
+      case 'pokemon-spotlight-hour': return 'Spotlight Hour';
+      case 'raid-hour': return 'Raid Hour';
+      case 'community-day': return 'Community Day';
+      case 'raid-battles': return lang === 'cs' ? 'Raid Rotace' : 'Raid Rotation';
+      case 'rocket-takeover': return 'Rocket Takeover';
+      case 'go-battle-league': return 'GO Battle League';
+      case 'max-mondays': return 'Max Mondays';
+      case 'season': return lang === 'cs' ? 'Sezóna' : 'Season';
+      default: return event.heading || 'Event';
+    }
+  };
+
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString(lang === 'cs' ? 'cs-CZ' : 'en-US', {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: timezone || undefined
+    });
+  };
+
+  // Translation helper for Spotlight Hour bonuses
+  const translateSpotlightBonus = (bonus: string): string => {
+    if (lang !== 'cs') return bonus;
+    const lower = bonus.toLowerCase();
+    if (lower.includes('transfer candy')) return '2× Candy za posílání (Transfer)';
+    if (lower.includes('catch candy')) return '2× Candy za chycení';
+    if (lower.includes('evolve xp')) return '2× XP za evoluci';
+    if (lower.includes('catch stardust')) return '2× Stardust za chycení';
+    if (lower.includes('catch xp')) return '2× XP za chycení';
+    return bonus;
+  };
+
+  return (
+    <div className={`event-card status-${status} type-${event.eventType}`}>
+      <div className="card-top" onClick={() => setIsExpanded(!isExpanded)}>
+        <div className="event-img-wrapper">
+          <img 
+            src={event.image || "https://cdn.leekduck.com/assets/img/events/events-default-img.jpg"} 
+            alt={event.name} 
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "https://cdn.leekduck.com/assets/img/events/events-default-img.jpg";
+            }}
+          />
+          <span className={`status-pill ${status}`}>
+            {status === 'active' ? (lang === 'cs' ? '● Probíhá' : '● Active') : status === 'upcoming' ? (lang === 'cs' ? 'Připravuje se' : 'Upcoming') : (lang === 'cs' ? 'Ukončeno' : 'Ended')}
+          </span>
+        </div>
+        
+        <div className="event-details">
+          <span className={`event-type-badge ${event.eventType}`}>
+            {getEventTypeLabel(event.eventType)}
+          </span>
+          <h3 className="event-title">{event.name}</h3>
+          
+          <div className="event-time-info">
+            <span className="time-date">
+              📅 {formatDate(event.start)} – {formatDate(event.end)}
+            </span>
+            <span className="time-countdown">{timeLeftStr}</span>
+          </div>
+        </div>
+
+        <div className="expand-indicator">
+          {isExpanded ? '▲' : '▼'}
+        </div>
+      </div>
+
+      {isExpanded && (
+        <div className="card-expanded-content">
+          <div className="divider"></div>
+          
+          {/* Add to Calendar & Official Link Row */}
+          <div className="expanded-row link-row">
+            {showLeekDuck && (
+              <a href={event.link} target="_blank" rel="noopener noreferrer" className="details-link-btn">
+                {t.details_official_link}
+              </a>
+            )}
+            {showOfficial && (
+              <a 
+                href={officialUrl} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="pogo-official-btn"
+              >
+                {t.details_pokemongo_link}
+              </a>
+            )}
+            <a 
+              href={getGoogleCalendarUrl()} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="google-calendar-btn"
+            >
+              {t.details_add_to_calendar}
+            </a>
+          </div>
+
+          {dynamicLoading && (
+            <div className="dynamic-loading-indicator">
+              <span className="spinner-mini">🔄</span> {lang === 'cs' ? 'Načítám podrobnosti z Leek Duck...' : 'Loading details from Leek Duck...'}
+            </div>
+          )}
+
+          {/* TEMPLATE 1: SPOTLIGHT HOUR TEMPLATE */}
+          {event.eventType === 'pokemon-spotlight-hour' && event.extraData?.spotlight && (
+            <div className="expanded-row spotlight-hour-details-box">
+              <div className="spotlight-content-grid">
+                <div className="spotlight-pokemon-info">
+                  <img 
+                    src={event.extraData.spotlight.image || getPokemonImage(event.extraData.spotlight.name)} 
+                    alt={event.extraData.spotlight.name} 
+                    className="spotlight-pokemon-img"
+                  />
+                  <div className="spotlight-poke-meta">
+                    <strong>{event.extraData.spotlight.name}</strong>
+                    {event.extraData.spotlight.canBeShiny && (
+                      <span className="shiny-indicator-badge">✨ Shiny</span>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="spotlight-bonus-info">
+                  <div className="bonus-pill-large">
+                    <span className="bonus-icon">🍬</span>
+                    <div className="bonus-text-wrapper">
+                      <span className="bonus-label">{lang === 'cs' ? 'Aktivní Bonus:' : 'Active Bonus:'}</span>
+                      <strong className="bonus-val">
+                        {translateSpotlightBonus(event.extraData.spotlight.bonus)}
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Meta recommendations */}
+              {(() => {
+                const meta = findPokemonMeta(event.extraData.spotlight.name);
+                if (!meta) return null;
+                return (
+                  <div className="spotlight-meta-recommendations">
+                    <h5>📊 PvE & PvP Meta Analysis</h5>
+                    <div className="meta-ratings-row">
+                      <div className="rating-badge">PvE: <strong className={`rating-val val-${meta.pveRating}`}>{meta.pveRating}</strong></div>
+                      <div className="rating-badge">PvP: <strong className={`rating-val val-${meta.pvpRating}`}>{meta.pvpRating}</strong></div>
+                    </div>
+                    <p className="meta-rank-desc"><strong>PvE:</strong> {meta.pveRankText}</p>
+                    <p className="meta-rank-desc"><strong>PvP:</strong> {meta.pvpRankText}</p>
+                    <div className="meta-moves">
+                      <strong>{lang === 'cs' ? 'Doporučené útoky:' : 'Best Moves:'}</strong> 
+                      <code>{meta.bestFastMove} + {meta.bestChargedMove}</code>
+                    </div>
+                    <p className="meta-notes-text">💡 <em>{meta.notes}</em></p>
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* TEMPLATE 2: COMMUNITY DAY TEMPLATE */}
+          {event.eventType === 'community-day' && (
+            <div className="expanded-row community-day-details-box">
+              {(() => {
+                const cd = event.extraData?.communityday;
+                const featuredPokemon = cd?.spawns?.[0]?.name || event.name.replace(/community\s*day/gi, "").replace(/classic/gi, "").trim();
+                const meta = findPokemonMeta(featuredPokemon);
+                const dexImage = cd?.spawns?.[0]?.image || getPokemonImage(featuredPokemon);
+                
+                const liveBonuses = cd?.bonuses || [];
+                let specialMove = "";
+                let localBonuses = specialDetails?.bonuses || [];
+                const moveBonus = localBonuses.find(b => b.icon === '⚔️');
+                if (moveBonus) {
+                  specialMove = lang === 'cs' ? moveBonus.text.cs : moveBonus.text.en;
+                }
+
+                return (
+                  <>
+                    {/* Featured Spawns */}
+                    <div className="cd-spawns-section">
+                      <h5>{t.details_spawns}</h5>
+                      <div className="cd-spawns-flex">
+                        <div className="cd-spawn-card">
+                          <img src={dexImage} alt={featuredPokemon} className="cd-spawn-img" />
+                          <span className="cd-spawn-name">{featuredPokemon}</span>
+                          <span className="shiny-badge-mini">✨ Shiny Rate ~1:25</span>
+                        </div>
+                        {cd?.shinies && cd.shinies.length > 0 && (
+                          <div className="cd-shiny-family">
+                            <h6>{lang === 'cs' ? 'Evoluce a Shiny formy:' : 'Shiny Family:'}</h6>
+                            <div className="shiny-family-flex">
+                              {cd.shinies.map(s => (
+                                <div key={s.name} className="shiny-family-item">
+                                  <img src={s.image} alt={s.name} />
+                                  <span>{s.name}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* CD Bonuses */}
+                    <div className="cd-bonuses-section">
+                      <h5>{t.details_bonuses}</h5>
+                      
+                      {specialMove && (
+                        <div className="cd-special-move-box">
+                          <span className="move-icon">⚔️</span>
+                          <div className="move-text">
+                            <strong>{lang === 'cs' ? 'Exkluzivní útok:' : 'Exclusive Move:'}</strong>
+                            <p>{specialMove}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="cd-bonuses-grid">
+                        {liveBonuses.map((b, idx) => (
+                          <div key={idx} className="cd-bonus-item">
+                            {b.image ? <img src={b.image} alt="bonus" className="cd-bonus-icon-img" /> : <span className="cd-bonus-emoji">🎁</span>}
+                            <span>{b.text}</span>
+                          </div>
+                        ))}
+                        {liveBonuses.length === 0 && localBonuses.filter(b => b.icon !== '⚔️').map((b, idx) => (
+                          <div key={idx} className="cd-bonus-item">
+                            <span className="cd-bonus-emoji">{b.icon}</span>
+                            <span>{lang === 'cs' ? b.text.cs : b.text.en}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Special Research Steps */}
+                    {cd?.specialresearch && cd.specialresearch.length > 0 && (
+                      <div className="cd-research-section">
+                        <h5>🏆 {lang === 'cs' ? 'Úkoly speciálního výzkumu:' : 'Special Research:'}</h5>
+                        {cd.specialresearch.map((step, sIdx) => (
+                          <div key={sIdx} className="cd-research-step-box">
+                            <h6>{step.name || `${lang === 'cs' ? 'Krok' : 'Step'} ${step.step}`}</h6>
+                            <ul className="cd-tasks-list">
+                              {step.tasks?.map((task, tIdx) => (
+                                <li key={tIdx} className="cd-task-item-li">
+                                  <span>{task.text}</span>
+                                  {task.reward && (
+                                    <span className="cd-task-reward">
+                                      🎁 {task.reward.text}
+                                    </span>
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Meta Analysis */}
+                    {meta && (
+                      <div className="cd-meta-section">
+                        <h5>📊 PvE & PvP Meta Analysis</h5>
+                        <div className="meta-ratings-row">
+                          <div className="rating-badge">PvE: <strong className={`rating-val val-${meta.pveRating}`}>{meta.pveRating}</strong></div>
+                          <div className="rating-badge">PvP: <strong className={`rating-val val-${meta.pvpRating}`}>{meta.pvpRating}</strong></div>
+                        </div>
+                        <p className="meta-rank-desc"><strong>PvE:</strong> {meta.pveRankText}</p>
+                        <p className="meta-rank-desc"><strong>PvP:</strong> {meta.pvpRankText}</p>
+                        <div className="meta-moves">
+                          <strong>{lang === 'cs' ? 'Doporučené útoky:' : 'Best Moveset:'}</strong> 
+                          <code>{meta.bestFastMove} + {meta.bestChargedMove}</code>
+                        </div>
+                        <p className="meta-notes-text">💡 <em>{meta.notes}</em></p>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* TEMPLATE 3: GENERAL SPECIAL EVENT GUIDE (if loaded locally and not CD/Spotlight) */}
+          {event.eventType !== 'pokemon-spotlight-hour' && event.eventType !== 'community-day' && specialDetails && (
+            <div className="expanded-row special-event-guide-box">
+              <div className="special-guide-header">
+                <h4>{t.details_special_event_title}</h4>
+              </div>
+
+              {/* Debuts */}
+              {specialDetails.debuts && specialDetails.debuts.length > 0 && (
+                <div className="special-subsection debuts">
+                  <h5>{t.details_debuts}</h5>
+                  <div className="debuts-flex">
+                    {specialDetails.debuts.map(d => (
+                      <div key={d.name} className="debut-item">
+                        <img src={d.image} alt={d.name} className="debut-img" />
+                        <div className="debut-info">
+                          <strong className="debut-name">{d.name}</strong>
+                          <p className="debut-desc">{lang === 'cs' ? d.description.cs : d.description.en}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Bonuses */}
+              {specialDetails.bonuses && specialDetails.bonuses.length > 0 && (
+                <div className="special-subsection bonuses">
+                  <h5>{t.details_bonuses}</h5>
+                  <div className="special-bonuses-grid">
+                    {specialDetails.bonuses.map((b, idx) => (
+                      <div key={idx} className="special-bonus-card">
+                        <span className="bonus-emoji">{b.icon}</span>
+                        <span className="bonus-card-text">{lang === 'cs' ? b.text.cs : b.text.en}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Spawns */}
+              {specialDetails.spawns && specialDetails.spawns.length > 0 && (
+                <div className="special-subsection spawns">
+                  <h5>{t.details_spawns}</h5>
+                  <div className="spawns-grid">
+                    {specialDetails.spawns.map(s => {
+                      const isTicked = tickedSpawns.includes(s.name);
+                      return (
+                        <div 
+                          key={s.name} 
+                          className={`spawn-card ${isTicked ? 'ticked' : ''} ${s.isHighPriority ? 'priority' : ''}`}
+                          onClick={() => toggleSpawnTicked(s.name)}
+                        >
+                          <div className="spawn-tick-indicator">
+                            {isTicked ? '✅' : '➕'}
+                          </div>
+                          <img src={s.image} alt={s.name} className="spawn-img" />
+                          <span className="spawn-name">{s.name}</span>
+                          {s.habitat && (
+                            <span className="spawn-habitat">{lang === 'cs' ? s.habitat.cs : s.habitat.en}</span>
+                          )}
+                          <div className="spawn-badges">
+                            {s.isHighPriority && (
+                              <span className="spawn-priority-badge" title={t.details_priority_spawn}>⭐ Meta</span>
+                            )}
+                            {s.isShinyAvailable && (
+                              <span className="spawn-shiny-badge" title={t.details_shiny_short}>✨</span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Eggs */}
+              {specialDetails.eggs && specialDetails.eggs.length > 0 && (
+                <div className="special-subsection eggs">
+                  <h5>{t.details_eggs}</h5>
+                  <div className="eggs-section-container">
+                    {specialDetails.eggs.map(egg => (
+                      <div key={egg.distance} className="egg-pool-row">
+                        <div className="egg-pool-header">
+                          <span className="egg-icon-large">🥚</span>
+                          <h6>{egg.distance} Pool</h6>
+                        </div>
+                        <div className="egg-contents-flex">
+                          {egg.contents.map(p => (
+                            <div key={p.name} className="egg-pokemon-item">
+                              <img src={p.image} alt={p.name} />
+                              <span className="egg-p-name">{p.name}</span>
+                              {p.isShinyAvailable && <span className="shiny-star">✨</span>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Field Research */}
+              {specialDetails.research && specialDetails.research.length > 0 && (
+                <div className="special-subsection research">
+                  <h5>{t.details_research}</h5>
+                  <div className="research-tasks-list">
+                    {specialDetails.research.map((r, idx) => (
+                      <div key={idx} className="research-task-item">
+                        <div className="task-left">
+                          <span className="search-icon">🔍</span>
+                          <span className="task-text">{lang === 'cs' ? r.task.cs : r.task.en}</span>
+                        </div>
+                        <div className="task-right">
+                          <span className="task-reward">🎁 {r.reward}</span>
+                          {r.isShinyAvailable && <span className="shiny-star-research">✨</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TEMPLATE 4: RAID BOSSES & COUNTERS */}
+          {bosses.length > 0 && (
+            <div className="expanded-row raid-bosses-row">
+              <h4>{t.details_raid_bosses}</h4>
+              <div className="bosses-flex">
+                {bosses.map(boss => (
+                  <div key={boss.name} className="boss-item">
+                    <img src={boss.image} alt={boss.name} />
+                    <span className="boss-name">{boss.name}</span>
+                    {boss.canBeShiny && <span className="shiny-indicator">✨ Shiny</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {matchedRaidCounters.length > 0 && (
+            <div className="expanded-row raid-counters-row">
+              <h4>{t.details_recommended_counters}</h4>
+              {matchedRaidCounters.map(counters => (
+                <div key={counters.bossName} className="raid-boss-counters-card">
+                  <div className="counters-boss-header">
+                    <h5>{counters.bossName}</h5>
+                    <div className="weakness-list">
+                      {t.details_weaknesses}: <span className="type-badges-flex">{counters.weaknesses.map(w => <TypeBadge key={w} typeStr={w} />)}</span>
+                    </div>
+                  </div>
+                  <div className="counters-levels-grid">
+                    <div className="counter-level-col mega">
+                      <span className="level-badge mega">{t.details_level_mega}</span>
+                      <ul>
+                        {counters.megaCounters.map(c => <li key={c}>{c}</li>)}
+                      </ul>
+                    </div>
+                    <div className="counter-level-col advanced">
+                      <span className="level-badge advanced">{t.details_level_advanced}</span>
+                      <ul>
+                        {counters.advancedCounters.map(c => <li key={c}>{c}</li>)}
+                      </ul>
+                    </div>
+                    <div className="counter-level-col budget">
+                      <span className="level-badge budget">{t.details_level_budget}</span>
+                      <ul>
+                        {counters.budgetCounters.map(c => <li key={c}>{c}</li>)}
+                      </ul>
+                    </div>
+                  </div>
+                  {/* CP & IV & Weather Boost info */}
+                  <div className="counters-cp-info">
+                    <div className="cp-row">
+                      <span className="cp-header-label">{t.details_standard_cp}</span>
+                      <span className="cp-span">{counters.minCp} – <strong className="hundo-label">{counters.maxCp} CP (100% IV)</strong></span>
+                    </div>
+                    <div className="cp-row">
+                      <span className="cp-header-label">{t.details_weather_cp}</span>
+                      <span className="cp-span">{counters.minBoostedCp} – <strong className="hundo-label-boost">{counters.maxBoostedCp} CP (100% IV)</strong></span>
+                    </div>
+                    <div className="cp-row">
+                      <span className="cp-header-label">{t.details_boost_weather}</span>
+                      <span className="cp-span">{counters.weatherBoosts.join(" / ")}</span>
+                    </div>
+                    <div className="cp-row shiny-info">
+                      <span className="cp-header-label">{t.details_shiny_version}</span>
+                      <span className="cp-span highlight-shiny">{t.details_shiny_available}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+
+        </div>
+      )}
+    </div>
+  );
+};

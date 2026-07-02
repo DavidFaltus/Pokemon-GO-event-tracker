@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zásady ochrany osobních údajů | PokeGO Tracker</title>
+    <style>
+        :root {
+            --bg-color: #121214;
+            --card-bg: #1a1a1e;
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --accent-color: #ff4757;
+            --border-color: #2d2d34;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 28px;
+            margin-top: 0;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: #ffffff;
+            font-size: 20px;
+            margin-top: 30px;
+        }
+
+        p, li {
+            color: var(--text-secondary);
+            font-size: 15px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .highlight {
+            color: var(--text-primary);
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .lang-switch {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .lang-btn:hover, .lang-btn.active {
+            border-color: var(--accent-color);
+            color: var(--text-primary);
+        }
+
+        [lang="en"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="lang-switch">
+        <button class="lang-btn active" onclick="switchLang('cs')">Čeština</button>
+        <button class="lang-btn" onclick="switchLang('en')">English</button>
+    </div>
+
+    <!-- CZECH VERSION -->
+    <div id="lang-cs" lang="cs">
+        <h1>Zásady ochrany osobních údajů</h1>
+        <p>Poslední aktualizace: 20. června 2026</p>
+        
+        <p>Aplikace <span class="highlight">PokeGO Tracker</span> (dále jen „Aplikace“) respektuje soukromí svých uživatelů. Tyto zásady ochrany osobních údajů popisují, jakým způsobem Aplikace nakládá s informacemi a daty.</p>
+
+        <h2>1. Sběr a zpracování osobních údajů</h2>
+        <p>Aplikace <span class="highlight">nesbírá, neukládá ani nesdílí</span> žádné osobní identifikační údaje (jako je jméno, e-mailová adresa, telefonní číslo, IP adresa nebo identifikátory zařízení).</p>
+        <p>Pro používání aplikace není vyžadována žádná registrace ani vytvoření uživatelského účtu.</p>
+
+        <h2>2. Lokální ukládání dat (Local Storage)</h2>
+        <p>Veškerá uživatelská nastavení a data jsou ukládána <span class="highlight">výhradně lokálně</span> ve vašem zařízení (pomocí technologie LocalStorage v prohlížeči nebo v izolovaném úložišti mobilní aplikace). Tato data nikdy neopouštějí vaše zařízení a nejsou odesílána na žádné servery.</p>
+        <p>Ukládají se pouze následující informace:</p>
+        <ul>
+          <li>Preference jazyka (čeština nebo angličtina)</li>
+          <li>Nastavení časového pásma</li>
+          <li>Seznam odškrtnutých (splněných) úkolů u jednotlivých eventů</li>
+          <li>Historie a logy odeslaných upozornění</li>
+          <li>Preference viditelnosti kategorií událostí</li>
+        </ul>
+
+        <h2>3. Přístup k poloze (GPS)</h2>
+        <p>Aplikace nabízí možnost synchronizace času a časového pásma podle vaší polohy. Tento přístup k poloze probíhá <span class="highlight">pouze lokálně v zařízení</span> pro výpočet správného časového posunu událostí. Vaše zeměpisné souřadnice se nikam neposílají, neukládají ani nesdílejí.</p>
+
+        <h2>4. Notifikace</h2>
+        <p>Aplikace odesílá upozornění na začátek událostí lokálně (pomocí Web Notification API nebo Capacitor Local Notifications). K odesílání se nevyužívají žádné externí push servery třetích stran.</p>
+
+        <h2>5. Odkazy na weby třetích stran</h2>
+        <p>Aplikace obsahuje odkazy na externí informační zdroje (např. Leek Duck, Pokémon GO Live). Neneseme odpovědnost za obsah ani zásady ochrany soukromí těchto externích webů. Doporučujeme se seznámit s jejich vlastními zásadami při jejich návštěvě.</p>
+
+        <h2>6. Změny těchto zásad</h2>
+        <p>Tyto zásady ochrany osobních údajů můžeme čas od času aktualizovat. Všechny změny budou zveřejněny na této stránce.</p>
+
+        <h2>7. Kontakt</h2>
+        <p>Máte-li jakékoli dotazy týkající se těchto zásad, můžete nás kontaktovat na e-mailu: <span class="highlight">dawop123@seznam.cz</span>.</p>
+    </div>
+
+    <!-- ENGLISH VERSION -->
+    <div id="lang-en" lang="en">
+        <h1>Privacy Policy</h1>
+        <p>Last updated: June 20, 2026</p>
+        
+        <p>The <span class="highlight">PokeGO Tracker</span> application (hereinafter referred to as the "App") respects the privacy of its users. This Privacy Policy describes how the App handles information and data.</p>
+
+        <h2>1. Collection and Processing of Personal Data</h2>
+        <p>The App <span class="highlight">does not collect, store, or share</span> any personally identifiable information (such as name, email address, phone number, IP address, or device identifiers).</p>
+        <p>No registration or user account creation is required to use the App.</p>
+
+        <h2>2. Local Data Storage (LocalStorage)</h2>
+        <p>All user preferences and data are stored <span class="highlight">exclusively locally</span> on your device (using LocalStorage technology in your browser or isolated storage within the mobile app). This data never leaves your device and is not sent to any servers.</p>
+        <p>Only the following information is stored:</p>
+        <ul>
+          <li>Language preference (Czech or English)</li>
+          <li>Timezone preference</li>
+          <li>List of ticked (completed) tasks for individual events</li>
+          <li>Notification history and logs</li>
+          <li>Event category visibility preferences</li>
+        </ul>
+
+        <h2>3. Location Access (GPS)</h2>
+        <p>The App offers the option to sync time and time zones based on your location. This location access is processed <span class="highlight">only locally on the device</span> to calculate the correct timezone offset for events. Your geographic coordinates are not sent, stored, or shared anywhere.</p>
+
+        <h2>4. Notifications</h2>
+        <p>The App sends event notifications locally (using Web Notification API or Capacitor Local Notifications). No external third-party push servers are used for sending notifications.</p>
+
+        <h2>5. Third-Party Links</h2>
+        <p>The App contains links to external informational sources (e.g., Leek Duck, Pokémon GO Live). We are not responsible for the content or privacy practices of these external websites. We recommend reviewing their respective privacy policies upon visiting.</p>
+
+        <h2>6. Changes to This Policy</h2>
+        <p>We may update this Privacy Policy from time to time. All changes will be posted on this page.</p>
+
+        <h2>7. Contact</h2>
+        <p>If you have any questions regarding this policy, please contact us at: <span class="highlight">dawop123@seznam.cz</span>.</p>
+    </div>
+
+    <div class="footer">
+        &copy; 2026 PokeGO Tracker. Všechna práva vyhrazena / All rights reserved.
+    </div>
+</div>
+
+<script>
+    function switchLang(lang) {
+        const csDiv = document.getElementById('lang-cs');
+        const enDiv = document.getElementById('lang-en');
+        const buttons = document.querySelectorAll('.lang-btn');
+
+        if (lang === 'cs') {
+            csDiv.style.display = 'block';
+            enDiv.style.display = 'none';
+            buttons[0].classList.add('active');
+            buttons[1].classList.remove('active');
+        } else {
+            csDiv.style.display = 'none';
+            enDiv.style.display = 'block';
+            buttons[0].classList.remove('active');
+            buttons[1].classList.add('active');
+        }
+    }
+</script>
+</body>
+</html>
