@@ -189,7 +189,7 @@ const sanitizeEvents = (eventList: EventData[]): EventData[] => {
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('events');
   const [events, setEvents] = useState<EventData[]>(() => sanitizeEvents(MOCK_EVENTS));
-  const [filterType, setFilterType] = useState<string>('other');
+  const [filterType, setFilterType] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'active' | 'upcoming'>('active');
   const [activeTimeSpan, setActiveTimeSpan] = useState<'now' | 'week' | 'month'>('now');
   
@@ -264,6 +264,7 @@ function App() {
   };
 
   useEffect(() => {
+    if (filterType === 'all') return;
     const isCurrentVisible = 
       (filterType === 'community-day' && visibleEvents.communityDays) ||
       (filterType === 'pokemon-spotlight-hour' && visibleEvents.spotlightHours) ||
@@ -490,7 +491,9 @@ function App() {
     }
 
     // Filter by type if set
-    if (filterType === 'other') {
+    if (filterType === 'all') {
+      // Keep all events
+    } else if (filterType === 'other') {
       const specificTypes = ['community-day', 'pokemon-spotlight-hour', 'raid-hour'];
       list = list.filter(e => !specificTypes.includes(e.eventType));
     } else {
@@ -687,6 +690,7 @@ function App() {
                     {/* Event Category Filters */}
                     {viewMode !== 'timeline' && (
                       <div className="filter-pill-container" style={{ marginTop: '12px' }}>
+                        <button className={`filter-pill ${filterType === 'all' ? 'active' : ''}`} onClick={() => setFilterType('all')}>{t.filter_all}</button>
                         {visibleEvents.communityDays && (
                           <button className={`filter-pill ${filterType === 'community-day' ? 'active' : ''}`} onClick={() => setFilterType('community-day')}>{t.filter_cd}</button>
                         )}
