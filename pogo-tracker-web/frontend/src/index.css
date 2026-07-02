@@ -4082,6 +4082,10 @@ body {
   color: #9ca3af; /* gray */
   fill: rgba(156, 163, 175, 0.12);
 }
+.duotone-white {
+  color: var(--text-primary);
+  fill: rgba(255, 255, 255, 0.08);
+}
 
 
 
