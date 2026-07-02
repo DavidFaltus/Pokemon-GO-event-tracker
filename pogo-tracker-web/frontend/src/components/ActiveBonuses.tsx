@@ -2,6 +2,7 @@ import React from 'react';
 import type { EventData } from './EventCard';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
+import { Gift, Zap, Coins, Star, Sparkles, Play } from 'lucide-react';
 
 interface ActiveBonusesProps {
   events: EventData[];
@@ -30,7 +31,9 @@ export const ActiveBonuses: React.FC<ActiveBonusesProps> = ({ events, lang, onCl
     <div className="bonuses-card">
       <div className="bonuses-header">
         <div className="bonuses-header-left">
-          <span className="bonuses-icon">🎁</span>
+          <span className="bonuses-icon" style={{ display: 'inline-flex', color: '#c084fc' }}>
+            <Gift size={20} />
+          </span>
           <h3>{t.bonuses_title}</h3>
         </div>
         <button className="bonuses-close-btn" onClick={onClose} aria-label="Close bonuses">
@@ -41,12 +44,16 @@ export const ActiveBonuses: React.FC<ActiveBonusesProps> = ({ events, lang, onCl
       <div className="bonuses-body">
         {/* Baseline Daily Bonuses */}
         <div className="bonus-group baseline">
-          <div className="bonus-item-row">
-            <span className="bonus-bullet">⚡</span>
+          <div className="bonus-item-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span className="bonus-bullet" style={{ display: 'inline-flex', color: '#fbbf24' }}>
+              <Zap size={14} fill="currentColor" stroke="none" />
+            </span>
             <span className="bonus-text">{t.bonuses_free_pass}</span>
           </div>
-          <div className="bonus-item-row">
-            <span className="bonus-bullet">💰</span>
+          <div className="bonus-item-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span className="bonus-bullet" style={{ display: 'inline-flex', color: '#fbbf24' }}>
+              <Coins size={14} />
+            </span>
             <span className="bonus-text">{t.bonuses_max_coins}</span>
           </div>
         </div>
@@ -58,27 +65,35 @@ export const ActiveBonuses: React.FC<ActiveBonusesProps> = ({ events, lang, onCl
             
             {hasActiveCd && (
               <>
-                <div className="bonus-item-row active-highlight community-day">
-                  <span className="bonus-bullet">🟢</span>
+                <div className="bonus-item-row active-highlight community-day" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span className="bonus-bullet" style={{ display: 'inline-flex', color: '#34d399' }}>
+                    <Play size={14} fill="currentColor" stroke="none" />
+                  </span>
                   <span className="bonus-text">{t.bonuses_cd_special}</span>
                 </div>
-                <div className="bonus-item-row active-highlight community-day">
-                  <span className="bonus-bullet">⭐</span>
+                <div className="bonus-item-row active-highlight community-day" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span className="bonus-bullet" style={{ display: 'inline-flex', color: '#34d399' }}>
+                    <Star size={14} fill="currentColor" stroke="none" />
+                  </span>
                   <span className="bonus-text">{t.bonuses_cd_stardust}</span>
                 </div>
               </>
             )}
 
             {hasActiveRocket && (
-              <div className="bonus-item-row active-highlight rocket">
-                <span className="bonus-bullet">🟣</span>
+              <div className="bonus-item-row active-highlight rocket" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="bonus-bullet" style={{ display: 'inline-flex', color: '#c084fc' }}>
+                  <Zap size={14} fill="currentColor" stroke="none" />
+                </span>
                 <span className="bonus-text">{t.bonuses_rocket_frustration}</span>
               </div>
             )}
 
             {hasActiveSpotlight && (
-              <div className="bonus-item-row active-highlight spotlight">
-                <span className="bonus-bullet">🔵</span>
+              <div className="bonus-item-row active-highlight spotlight" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="bonus-bullet" style={{ display: 'inline-flex', color: '#60a5fa' }}>
+                  <Sparkles size={14} />
+                </span>
                 <span className="bonus-text">{t.bonuses_spotlight_double}</span>
               </div>
             )}

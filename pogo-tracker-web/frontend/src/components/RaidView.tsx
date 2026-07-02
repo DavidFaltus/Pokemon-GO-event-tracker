@@ -4,6 +4,7 @@ import type { Language } from '../data/translations';
 import { TypeBadge } from './EventCard';
 import type { EventData } from './EventCard';
 import { API_BASE_URL } from '../config';
+import { Sparkles } from 'lucide-react';
 
 // Official-like Shadow Pokemon SVG Icon
 const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
@@ -222,7 +223,11 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                       {boss.name}
                     </h3>
                     <div className="boss-sub-attributes">
-                      {boss.canBeShiny && <span className="shiny-star-badge">✨ Shiny</span>}
+                      {boss.canBeShiny && (
+                        <span className="shiny-star-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} /> Shiny
+                        </span>
+                      )}
                       {counters && (
                         <span className="cp-range-short">
                           Max CP: {counters.maxCp}
@@ -284,7 +289,9 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                           </div>
                           <div className="cp-row shiny-info">
                             <span className="cp-header-label">{t.details_shiny_version}</span>
-                            <span className="cp-span highlight-shiny">{t.details_shiny_available}</span>
+                            <span className="cp-span highlight-shiny" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                              <Sparkles size={12} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} /> {t.details_shiny_available}
+                            </span>
                           </div>
                         </div>
                       </div>

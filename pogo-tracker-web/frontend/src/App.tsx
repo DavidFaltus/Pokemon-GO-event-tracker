@@ -11,6 +11,39 @@ import type { Language } from './data/translations';
 import { API_BASE_URL } from './config';
 import { TimelineView } from './components/TimelineView';
 import { AdContainer } from './components/AdContainer';
+import { Calendar, Swords, Shield, Settings, Play, Clock, Wifi, Database } from 'lucide-react';
+
+const PokeballLogo = ({ size = 28 }: { size?: number }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 100 100" 
+    width={size} 
+    height={size}
+    style={{ flexShrink: 0, marginRight: '8px' }}
+  >
+    <defs>
+      <linearGradient id="pokeball-top" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#c084fc" />
+        <stop offset="100%" stopColor="#863bff" />
+      </linearGradient>
+      <linearGradient id="pokeball-bottom" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#1e1b4b" />
+        <stop offset="100%" stopColor="#0f172a" />
+      </linearGradient>
+      <filter id="logo-glow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3" result="blur" />
+        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+      </filter>
+    </defs>
+    <circle cx="50" cy="50" r="46" stroke="#c084fc" strokeWidth="2" strokeOpacity="0.4" fill="none" filter="url(#logo-glow)" />
+    <circle cx="50" cy="50" r="42" fill="url(#pokeball-bottom)" stroke="#1e1b4b" strokeWidth="2.5" />
+    <path d="M 8,50 A 42,42 0 0,1 92,50 Z" fill="url(#pokeball-top)" />
+    <line x1="8" y1="50" x2="92" y2="50" stroke="#090d16" strokeWidth="6" />
+    <circle cx="50" cy="50" r="15" fill="#090d16" />
+    <circle cx="50" cy="50" r="10" fill="#1e1b4b" stroke="#aa3bff" strokeWidth="2" />
+    <circle cx="50" cy="50" r="4" fill="#c084fc" filter="url(#logo-glow)" />
+  </svg>
+);
 
 // Calculate difference between target timezone and browser local timezone
 const getTargetTimezoneOffsetMs = (timeZone: string): number => {
@@ -513,7 +546,7 @@ function App() {
       {/* Desktop Left Sidebar Navigation */}
       <aside className="desktop-sidebar">
         <div className="sidebar-logo">
-          <span className="pokeball-icon">🔴</span>
+          <PokeballLogo size={28} />
           <h1>PokeGO Tracker</h1>
         </div>
         <div className="sidebar-stats">
@@ -529,7 +562,7 @@ function App() {
             className={`sidebar-nav-item ${activeTab === 'events' ? 'active' : ''}`} 
             onClick={() => setActiveTab('events')}
           >
-            <span className="nav-icon">📅</span>
+            <span className="nav-icon"><Calendar size={20} /></span>
             <span className="nav-text">{t.tabs_events}</span>
           </button>
           
@@ -537,7 +570,7 @@ function App() {
             className={`sidebar-nav-item ${activeTab === 'raid' ? 'active' : ''}`} 
             onClick={() => setActiveTab('raid')}
           >
-            <span className="nav-icon">👾</span>
+            <span className="nav-icon"><Swords size={20} /></span>
             <span className="nav-text">{t.tabs_raid}</span>
           </button>
 
@@ -545,7 +578,7 @@ function App() {
             className={`sidebar-nav-item ${activeTab === 'rocket' ? 'active' : ''}`} 
             onClick={() => setActiveTab('rocket')}
           >
-            <span className="nav-icon">🚀</span>
+            <span className="nav-icon"><Shield size={20} /></span>
             <span className="nav-text">{t.tabs_rocket}</span>
           </button>
 
@@ -553,7 +586,7 @@ function App() {
             className={`sidebar-nav-item ${activeTab === 'settings' ? 'active' : ''}`} 
             onClick={() => setActiveTab('settings')}
           >
-            <span className="nav-icon">⚙️</span>
+            <span className="nav-icon"><Settings size={20} /></span>
             <span className="nav-text">{t.tabs_settings}</span>
           </button>
         </nav>
@@ -620,11 +653,12 @@ function App() {
         {/* Mobile Top Header (Hidden on Desktop) */}
         <header className="app-header">
           <div className="header-logo-section">
-            <span className="pokeball-icon">🔴</span>
+            <PokeballLogo size={24} />
             <h1>PokeGO Tracker</h1>
           </div>
           <div className="header-stats">
-            <span className="status-indicator-tag success">
+            <span className={`status-indicator-tag ${apiStatus === 'success' ? 'success' : 'fallback'}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              {apiStatus === 'success' ? <Wifi size={12} strokeWidth={2.5} /> : <Database size={12} strokeWidth={2.5} />}
               {apiStatus === 'success' ? t.header_live : t.header_offline}
             </span>
             <span className="active-badge">
@@ -651,14 +685,18 @@ function App() {
                         <button 
                           className={`status-tab-btn ${statusFilter === 'active' ? 'active' : ''}`}
                           onClick={() => setStatusFilter('active')}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                         >
-                          🟢 {lang === 'cs' ? 'Probíhá' : 'Active'}
+                          <Play size={14} fill="currentColor" stroke="none" />
+                          {lang === 'cs' ? 'Probíhá' : 'Active'}
                         </button>
                         <button 
                           className={`status-tab-btn ${statusFilter === 'upcoming' ? 'active' : ''}`}
                           onClick={() => setStatusFilter('upcoming')}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                         >
-                          📅 {lang === 'cs' ? 'Připravuje se' : 'Upcoming'}
+                          <Clock size={14} />
+                          {lang === 'cs' ? 'Připravuje se' : 'Upcoming'}
                         </button>
                       </div>
                     )}

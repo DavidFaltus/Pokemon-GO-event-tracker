@@ -10,13 +10,13 @@
   "categories": ["games", "utilities"],
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><circle cx=%2296%22 cy=%2296%22 r=%2290%22 fill=%22%23171921%22 stroke=%22%23aa3bff%22 stroke-width=%228%22/><circle cx=%2296%22 cy=%2296%22 r=%2230%22 fill=%22%23ef4444%22/></svg>",
+      "src": "/favicon.svg",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><circle cx=%22256%22 cy=%22256%22 r=%22240%22 fill=%22%23171921%22 stroke=%22%23aa3bff%22 stroke-width=%2216%22/><circle cx=%22256%22 cy=%22256%22 r=%2280%22 fill=%22%23ef4444%22/></svg>",
+      "src": "/favicon.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"

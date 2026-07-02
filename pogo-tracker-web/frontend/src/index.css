@@ -4033,4 +4033,54 @@ body {
   }
 }
 
+/* Styled Duotone Emojis Replacement Icons */
+.duotone-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.duotone-icon svg {
+  stroke-width: 2.25;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+}
+
+/* Icon Color Variants */
+.duotone-purple {
+  color: #c084fc; /* light purple */
+  fill: rgba(192, 132, 252, 0.12);
+}
+.duotone-green {
+  color: #34d399; /* emerald */
+  fill: rgba(52, 211, 153, 0.12);
+}
+.duotone-red {
+  color: #f87171; /* red */
+  fill: rgba(248, 113, 113, 0.12);
+}
+.duotone-yellow {
+  color: #fbbf24; /* amber */
+  fill: rgba(251, 191, 36, 0.12);
+}
+.duotone-blue {
+  color: #60a5fa; /* blue */
+  fill: rgba(96, 165, 250, 0.12);
+}
+.duotone-orange {
+  color: #fb923c; /* orange */
+  fill: rgba(251, 146, 60, 0.12);
+}
+.duotone-pink {
+  color: #f472b6; /* pink */
+  fill: rgba(244, 114, 182, 0.12);
+}
+.duotone-gray {
+  color: #9ca3af; /* gray */
+  fill: rgba(156, 163, 175, 0.12);
+}
+
+
 

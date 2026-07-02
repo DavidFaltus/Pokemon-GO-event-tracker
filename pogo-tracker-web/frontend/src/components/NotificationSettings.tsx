@@ -3,6 +3,7 @@ import { useNotifications } from '../hooks/useNotifications';
 import type { NotificationPreference } from '../hooks/useNotifications';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
+import { MapPin, CheckCircle, AlertTriangle, Bell, SlidersHorizontal, Eye, Scale, Lock } from 'lucide-react';
 
 export interface VisibleEventsPreference {
   communityDays: boolean;
@@ -199,7 +200,10 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
       {/* GPS Timezone Synchronization */}
       <div className="settings-card gps-sync-card">
-        <h3>{t.gps_title}</h3>
+        <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <span className="duotone-icon duotone-blue"><MapPin size={16} /></span>
+          {t.gps_title}
+        </h3>
         <div className="gps-sync-box">
           <div className="timezone-display">
             <span className="tz-label">{t.gps_current_tz}</span>
@@ -215,8 +219,9 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
           </button>
           
           {syncStatus && (
-            <div className={`sync-status-msg ${syncStatus.type}`}>
-              {syncStatus.type === 'success' ? '✅ ' : '❌ '}{syncStatus.text}
+            <div className={`sync-status-msg ${syncStatus.type}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              {syncStatus.type === 'success' ? <CheckCircle size={14} style={{ color: '#34d399' }} /> : <AlertTriangle size={14} style={{ color: '#f87171' }} />}
+              <span>{syncStatus.text}</span>
             </div>
           )}
         </div>
@@ -224,7 +229,10 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
       {/* Native Browser Notification Request */}
       <div className="settings-card permission-card">
-        <h3>🔔 {t.settings_push_title}</h3>
+        <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <span className="duotone-icon duotone-purple"><Bell size={16} /></span>
+          {t.settings_push_title}
+        </h3>
         <div className="permission-status-box">
           <div className="status-indicator">
             {t.settings_status} <span className={`status-badge ${permission}`}>{getStatusLabel(permission)}</span>
@@ -245,7 +253,10 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
       {/* Preferences Toggles */}
       <div className="settings-card preferences-card">
-        <h3>⚙️ {t.settings_filter_title}</h3>
+        <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <span className="duotone-icon duotone-purple"><SlidersHorizontal size={16} /></span>
+          {t.settings_filter_title}
+        </h3>
         <div className="checkbox-list">
           {(Object.keys(preferences) as Array<keyof NotificationPreference>).map(key => (
             <label key={key} className="checkbox-item">
@@ -263,7 +274,10 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
       {/* Event Visibility Toggles */}
       <div className="settings-card preferences-card">
-        <h3>📅 {t.settings_visibility_title}</h3>
+        <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <span className="duotone-icon duotone-blue"><Eye size={16} /></span>
+          {t.settings_visibility_title}
+        </h3>
         <div className="checkbox-list">
           {(Object.keys(visibleEvents) as Array<keyof VisibleEventsPreference>).map(key => (
             <label key={key} className="checkbox-item">
@@ -281,7 +295,10 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
       {/* Legal & Attribution Card */}
       <div className="settings-card legal-card" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <h3>⚖️ {t.legal_disclaimer_title}</h3>
+        <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <span className="duotone-icon duotone-gray"><Scale size={16} /></span>
+          {t.legal_disclaimer_title}
+        </h3>
         <p className="help-text" style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
           {t.legal_disclaimer_text}
         </p>
@@ -300,7 +317,10 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
       {/* Privacy Policy Link Card */}
       <div className="settings-card privacy-card" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <h3>🔒 {lang === 'cs' ? 'Ochrana soukromí' : 'Privacy Policy'}</h3>
+        <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+          <span className="duotone-icon duotone-gray"><Lock size={16} /></span>
+          {lang === 'cs' ? 'Ochrana soukromí' : 'Privacy Policy'}
+        </h3>
         <p className="help-text" style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
           {lang === 'cs' 
             ? 'Naše zásady ochrany osobních údajů v souladu s nařízením GDPR a pravidly Google AdSense.' 

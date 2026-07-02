@@ -6,6 +6,13 @@ import type { Language } from '../data/translations';
 import { getSpecialEventDetails, getPokemonImage } from '../data/specialEvents';
 import { findPokemonMeta } from '../data/pokemonMeta';
 import { useDynamicEventDetails } from '../hooks/useDynamicEventDetails';
+import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Flame, RefreshCw, Plus, Check } from 'lucide-react';
+
+const EggIcon = ({ size = 16 }: { size?: number }) => (
+  <svg viewBox="0 0 100 120" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+    <path d="M50 10 C20 10, 10 60, 10 85 C10 105, 30 115, 50 115 C70 115, 90 105, 90 85 C90 60, 80 10, 50 10 Z" fill="currentColor" stroke="none"/>
+  </svg>
+);
 
 export interface EventData {
   eventID: string;
@@ -467,8 +474,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
           <h3 className="event-title">{event.name}</h3>
           
           <div className="event-time-info">
-            <span className="time-date">
-              📅 {formatDate(event.start)} – {formatDate(event.end)}
+            <span className="time-date" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <Calendar size={12} />
+              {formatDate(event.start)} – {formatDate(event.end)}
             </span>
             <span className="time-countdown">{timeLeftStr}</span>
           </div>
@@ -486,7 +494,8 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
           {/* Add to Calendar & Official Link Row */}
           <div className="expanded-row link-row">
             {showLeekDuck && (
-              <a href={event.link} target="_blank" rel="noopener noreferrer" className="details-link-btn">
+              <a href={event.link} target="_blank" rel="noopener noreferrer" className="details-link-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <ExternalLink size={14} />
                 {t.details_official_link}
               </a>
             )}
@@ -496,7 +505,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="pogo-official-btn"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               >
+                <ExternalLink size={14} />
                 {t.details_pokemongo_link}
               </a>
             )}
@@ -505,14 +516,17 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
               target="_blank" 
               rel="noopener noreferrer" 
               className="google-calendar-btn"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
+              <Calendar size={14} />
               {t.details_add_to_calendar}
             </a>
           </div>
 
           {dynamicLoading && (
-            <div className="dynamic-loading-indicator">
-              <span className="spinner-mini">🔄</span> {lang === 'cs' ? 'Načítám podrobnosti z Leek Duck...' : 'Loading details from Leek Duck...'}
+            <div className="dynamic-loading-indicator" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <RefreshCw size={14} className="animate-spin" />
+              {lang === 'cs' ? 'Načítám podrobnosti z Leek Duck...' : 'Loading details from Leek Duck...'}
             </div>
           )}
 
@@ -696,13 +710,19 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
           {event.eventType !== 'pokemon-spotlight-hour' && event.eventType !== 'community-day' && specialDetails && (
             <div className="expanded-row special-event-guide-box">
               <div className="special-guide-header">
-                <h4>{t.details_special_event_title}</h4>
+                <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <span className="duotone-icon duotone-yellow"><Star size={18} fill="currentColor" /></span>
+                  {t.details_special_event_title}
+                </h4>
               </div>
 
               {/* Debuts */}
               {specialDetails.debuts && specialDetails.debuts.length > 0 && (
                 <div className="special-subsection debuts">
-                  <h5>{t.details_debuts}</h5>
+                  <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <span className="duotone-icon duotone-blue"><Sparkles size={16} /></span>
+                    {t.details_debuts}
+                  </h5>
                   <div className="debuts-flex">
                     {specialDetails.debuts.map(d => (
                       <div key={d.name} className="debut-item">
@@ -720,7 +740,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
               {/* Bonuses */}
               {specialDetails.bonuses && specialDetails.bonuses.length > 0 && (
                 <div className="special-subsection bonuses">
-                  <h5>{t.details_bonuses}</h5>
+                  <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <span className="duotone-icon duotone-purple"><Gift size={16} /></span>
+                    {t.details_bonuses}
+                  </h5>
                   <div className="special-bonuses-grid">
                     {specialDetails.bonuses.map((b, idx) => (
                       <div key={idx} className="special-bonus-card">
@@ -735,7 +758,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
               {/* Spawns */}
               {specialDetails.spawns && specialDetails.spawns.length > 0 && (
                 <div className="special-subsection spawns">
-                  <h5>{t.details_spawns}</h5>
+                  <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <span className="duotone-icon duotone-green"><Leaf size={16} /></span>
+                    {t.details_spawns}
+                  </h5>
                   <div className="spawns-grid">
                     {specialDetails.spawns.map(s => {
                       const isTicked = tickedSpawns.includes(s.name);
@@ -745,20 +771,24 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                           className={`spawn-card ${isTicked ? 'ticked' : ''} ${s.isHighPriority ? 'priority' : ''}`}
                           onClick={() => toggleSpawnTicked(s.name)}
                         >
-                          <div className="spawn-tick-indicator">
-                            {isTicked ? '✅' : '➕'}
+                          <div className="spawn-tick-indicator" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {isTicked ? <Check size={12} strokeWidth={3} /> : <Plus size={12} strokeWidth={3} />}
                           </div>
                           <img src={s.image} alt={s.name} className="spawn-img" />
                           <span className="spawn-name">{s.name}</span>
-                          {s.habitat && (
+                           {s.habitat && (
                             <span className="spawn-habitat">{lang === 'cs' ? s.habitat.cs : s.habitat.en}</span>
                           )}
                           <div className="spawn-badges">
                             {s.isHighPriority && (
-                              <span className="spawn-priority-badge" title={t.details_priority_spawn}>⭐ Meta</span>
+                              <span className="spawn-priority-badge" title={t.details_priority_spawn} style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                <Star size={10} fill="currentColor" stroke="none" /> Meta
+                              </span>
                             )}
                             {s.isShinyAvailable && (
-                              <span className="spawn-shiny-badge" title={t.details_shiny_short}>✨</span>
+                              <span className="spawn-shiny-badge" title={t.details_shiny_short} style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                <Sparkles size={10} fill="currentColor" stroke="none" />
+                              </span>
                             )}
                           </div>
                         </div>
@@ -771,12 +801,15 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
               {/* Eggs */}
               {specialDetails.eggs && specialDetails.eggs.length > 0 && (
                 <div className="special-subsection eggs">
-                  <h5>{t.details_eggs}</h5>
+                  <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <span className="duotone-icon duotone-orange"><EggIcon size={16} /></span>
+                    {t.details_eggs}
+                  </h5>
                   <div className="eggs-section-container">
                     {specialDetails.eggs.map(egg => (
                       <div key={egg.distance} className="egg-pool-row">
-                        <div className="egg-pool-header">
-                          <span className="egg-icon-large">🥚</span>
+                        <div className="egg-pool-header" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                          <span className="egg-icon-large" style={{ display: 'inline-flex', color: '#fb923c' }}><EggIcon size={24} /></span>
                           <h6>{egg.distance} Pool</h6>
                         </div>
                         <div className="egg-contents-flex">
@@ -784,7 +817,11 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                             <div key={p.name} className="egg-pokemon-item">
                               <img src={p.image} alt={p.name} />
                               <span className="egg-p-name">{p.name}</span>
-                              {p.isShinyAvailable && <span className="shiny-star">✨</span>}
+                              {p.isShinyAvailable && (
+                                <span className="shiny-star" style={{ display: 'inline-flex' }}>
+                                  <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} />
+                                </span>
+                              )}
                             </div>
                           ))}
                         </div>
@@ -797,17 +834,27 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
               {/* Field Research */}
               {specialDetails.research && specialDetails.research.length > 0 && (
                 <div className="special-subsection research">
-                  <h5>{t.details_research}</h5>
+                  <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <span className="duotone-icon duotone-blue"><Search size={16} /></span>
+                    {t.details_research}
+                  </h5>
                   <div className="research-tasks-list">
                     {specialDetails.research.map((r, idx) => (
                       <div key={idx} className="research-task-item">
-                        <div className="task-left">
-                          <span className="search-icon">🔍</span>
+                        <div className="task-left" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                          <span className="search-icon" style={{ display: 'inline-flex', color: '#60a5fa' }}><Search size={14} /></span>
                           <span className="task-text">{lang === 'cs' ? r.task.cs : r.task.en}</span>
                         </div>
-                        <div className="task-right">
-                          <span className="task-reward">🎁 {r.reward}</span>
-                          {r.isShinyAvailable && <span className="shiny-star-research">✨</span>}
+                        <div className="task-right" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                          <span className="task-reward" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <Gift size={12} style={{ color: '#c084fc' }} />
+                            {r.reward}
+                          </span>
+                          {r.isShinyAvailable && (
+                            <span className="shiny-star-research" style={{ display: 'inline-flex' }}>
+                              <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} />
+                            </span>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -820,13 +867,20 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
           {/* TEMPLATE 4: RAID BOSSES & COUNTERS */}
           {bosses.length > 0 && (
             <div className="expanded-row raid-bosses-row">
-              <h4>{t.details_raid_bosses}</h4>
+              <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <span className="duotone-icon duotone-red"><Swords size={18} /></span>
+                {t.details_raid_bosses}
+              </h4>
               <div className="bosses-flex">
                 {bosses.map(boss => (
                   <div key={boss.name} className="boss-item">
                     <img src={boss.image} alt={boss.name} />
                     <span className="boss-name">{boss.name}</span>
-                    {boss.canBeShiny && <span className="shiny-indicator">✨ Shiny</span>}
+                    {boss.canBeShiny && (
+                      <span className="shiny-indicator" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} /> Shiny
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -835,7 +889,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
 
           {matchedRaidCounters.length > 0 && (
             <div className="expanded-row raid-counters-row">
-              <h4>{t.details_recommended_counters}</h4>
+              <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <span className="duotone-icon duotone-orange"><Flame size={18} fill="none" /></span>
+                {t.details_recommended_counters}
+              </h4>
               {matchedRaidCounters.map(counters => (
                 <div key={counters.bossName} className="raid-boss-counters-card">
                   <div className="counters-boss-header">
@@ -880,7 +937,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                     </div>
                     <div className="cp-row shiny-info">
                       <span className="cp-header-label">{t.details_shiny_version}</span>
-                      <span className="cp-span highlight-shiny">{t.details_shiny_available}</span>
+                      <span className="cp-span highlight-shiny" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <Sparkles size={12} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} /> {t.details_shiny_available}
+                      </span>
                     </div>
                   </div>
                 </div>

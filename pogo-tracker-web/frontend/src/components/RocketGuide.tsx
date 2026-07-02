@@ -3,6 +3,25 @@ import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
 import { TypeBadge } from './EventCard';
 import { API_BASE_URL } from '../config';
+import { Zap, Users, Crown, Gift, Flame, Swords, Shield, MessageSquare, Gem } from 'lucide-react';
+
+const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+    style={{
+      width: '14px',
+      height: '14px',
+      color: '#c084fc',
+      display: 'inline-block',
+      verticalAlign: 'middle',
+      ...style
+    }}
+  >
+    <path d="M12 2C11.5 3.5 10 5.5 8.5 7C7 8.5 5.5 10.5 5.5 13C5.5 16.5 8.5 19.5 12 19.5C15.5 19.5 18.5 16.5 18.5 13C18.5 10.5 17 8.5 15.5 7C14 5.5 12.5 3.5 12 2ZM12 17C10.5 17 9.5 16 9.5 14.5C9.5 13 11 11.5 12 10C13 11.5 14.5 13 14.5 14.5C14.5 16 13.5 17 12 17Z" />
+  </svg>
+);
 
 interface RocketGuideProps {
   lang: Language;
@@ -117,14 +136,16 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
         <button 
           className={`mode-btn ${mode === 'leaders' ? 'active' : ''}`}
           onClick={() => setMode('leaders')}
+          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          🚀 {t.rocket_tab_leaders}
+          <Zap size={14} style={{ marginRight: '6px' }} /> {t.rocket_tab_leaders}
         </button>
         <button 
           className={`mode-btn ${mode === 'grunts' ? 'active' : ''}`}
           onClick={() => setMode('grunts')}
+          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          👤 {t.rocket_tab_grunts}
+          <Users size={14} style={{ marginRight: '6px' }} /> {t.rocket_tab_grunts}
         </button>
       </div>
 
@@ -133,11 +154,12 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
           {/* Selector Tabs */}
           <div className="rocket-tabs">
             <button
-              className={`rocket-tab-btn giovanni-btn ${selectedLeader === 'Giovanni' ? 'active' : ''}`}
-              onClick={() => setSelectedLeader('Giovanni')}
-            >
-              <span className="emoji">👑</span> Giovanni
-            </button>
+               className={`rocket-tab-btn giovanni-btn ${selectedLeader === 'Giovanni' ? 'active' : ''}`}
+               onClick={() => setSelectedLeader('Giovanni')}
+               style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+             >
+               <span className="emoji" style={{ display: 'inline-flex', color: '#fbbf24' }}><Crown size={14} fill="currentColor" stroke="none" /></span> Giovanni
+             </button>
             {rocketData.leaders.map(leader => (
               <button
                 key={leader.name}
@@ -163,7 +185,10 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
 
             {/* Reward Alert */}
             <div className="rocket-reward-section">
-              <h3>{t.rocket_active_reward}</h3>
+               <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                 <span className="duotone-icon duotone-purple"><Gift size={16} /></span>
+                 {t.rocket_active_reward}
+               </h3>
               <div className="reward-card">
                 <div className="reward-info">
                   <h4>{currentMember.reward.name}</h4>
@@ -174,9 +199,11 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                     <span className={`rating-badge pvp rating-${currentMember.reward.pvpRating.toLowerCase()}`}>
                       PvP: {currentMember.reward.pvpRating}
                     </span>
-                    {currentMember.reward.worthGrinding && (
-                      <span className="grind-badge">{t.rocket_doporuceno}</span>
-                    )}
+                     {currentMember.reward.worthGrinding && (
+                       <span className="grind-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                         <Flame size={12} fill="currentColor" stroke="none" /> {t.rocket_doporuceno}
+                       </span>
+                     )}
                   </div>
                   <p className="reward-reason">{currentMember.reward.reason}</p>
                 </div>
@@ -185,7 +212,10 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
 
             {/* Lineup */}
             <div className="rocket-lineup-section">
-              <h3>{t.rocket_lineup}</h3>
+               <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                 <span className="duotone-icon duotone-red"><Swords size={16} /></span>
+                 {t.rocket_lineup}
+               </h3>
               <div className="lineup-grid">
                 <div className="lineup-column">
                   <span className="slot-title">{t.rocket_slot_1}</span>
@@ -216,14 +246,19 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
 
             {/* Counters Guide */}
             <div className="rocket-counters-section">
-              <h3>{t.rocket_counters}</h3>
+               <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                 <span className="duotone-icon duotone-orange"><Shield size={16} /></span>
+                 {t.rocket_counters}
+               </h3>
               <div className="counters-list">
                 {currentMember.counters.map(counter => (
                   <div key={counter.bossPokemon} className="counter-item">
                     <div className="counter-pokemon-name">{counter.bossPokemon}</div>
                     <div className="counter-details-wrapper">
                       <div className="counter-recs">
-                        <strong>{t.rocket_best_counters}</strong>
+                         <strong style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                           <Shield size={12} style={{ color: '#fb923c' }} /> {t.rocket_best_counters}
+                         </strong>
                         <div className="counter-tags">
                           {counter.bestCounters.map(c => (
                             <span key={c} className="counter-tag">{c}</span>
@@ -252,47 +287,59 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
           <div className="grunts-list">
             {filteredGrunts.map((grunt, idx) => (
               <div key={idx} className="grunt-card">
-                <div className="grunt-card-header">
-                  <div className="phrase-box">
-                    <span className="grunt-label">{t.rocket_grunt_phrase}</span>
-                    <p className="grunt-phrase">"{lang === 'cs' ? grunt.phraseCs : grunt.phraseEn}"</p>
-                  </div>
-                  <TypeBadge typeStr={grunt.type} />
-                </div>
-                
-                <div className="grunt-card-body">
-                  <div className="grunt-info-row">
-                    <span className="info-label">{t.rocket_grunt_difficulty}</span>
-                    <span className={`difficulty-badge ${grunt.difficulty.toLowerCase()}`}>
-                      {getDifficultyLabel(grunt.difficulty)}
-                    </span>
-                  </div>
-
-                  <div className="grunt-info-row">
-                    <span className="info-label">{t.rocket_grunt_worth}</span>
-                    <span className={`worth-badge ${grunt.worthFighting ? 'yes' : 'no'}`}>
-                      {grunt.worthFighting ? t.rocket_yes : t.rocket_no}
-                    </span>
-                  </div>
-
-                  <div className="grunt-reward-row">
-                    <strong>{t.rocket_grunt_reward}</strong>
-                    <div className="shadow-pokemon-tags">
-                      {grunt.shadowPokemon.map(p => (
-                        <span key={p} className="shadow-pokemon-tag">😈 {p}</span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="grunt-counters-row">
-                    <strong>{t.rocket_grunt_counters}</strong>
-                    <div className="grunt-counter-tags">
-                      {grunt.counters.map(c => (
-                        <span key={c} className="grunt-counter-tag">{c}</span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                 <div className="grunt-card-header">
+                   <div className="phrase-box">
+                     <span className="grunt-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                       <MessageSquare size={12} style={{ color: '#a78bfa' }} /> {t.rocket_grunt_phrase}
+                     </span>
+                     <p className="grunt-phrase">"{lang === 'cs' ? grunt.phraseCs : grunt.phraseEn}"</p>
+                   </div>
+                   <TypeBadge typeStr={grunt.type} />
+                 </div>
+                 
+                 <div className="grunt-card-body">
+                   <div className="grunt-info-row">
+                     <span className="info-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                       <Zap size={12} style={{ color: '#fbbf24' }} /> {t.rocket_grunt_difficulty}
+                     </span>
+                     <span className={`difficulty-badge ${grunt.difficulty.toLowerCase()}`}>
+                       {getDifficultyLabel(grunt.difficulty)}
+                     </span>
+                   </div>
+ 
+                   <div className="grunt-info-row">
+                     <span className="info-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                       <Gem size={12} style={{ color: '#60a5fa' }} /> {t.rocket_grunt_worth}
+                     </span>
+                     <span className={`worth-badge ${grunt.worthFighting ? 'yes' : 'no'}`}>
+                       {grunt.worthFighting ? t.rocket_yes : t.rocket_no}
+                     </span>
+                   </div>
+ 
+                   <div className="grunt-reward-row">
+                     <strong style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', marginBottom: '6px' }}>
+                       <Gift size={12} style={{ color: '#c084fc' }} /> {t.rocket_grunt_reward}
+                     </strong>
+                     <div className="shadow-pokemon-tags">
+                       {grunt.shadowPokemon.map(p => (
+                         <span key={p} className="shadow-pokemon-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                           <ShadowIcon style={{ filter: 'none', color: '#c084fc' }} /> {p}
+                         </span>
+                       ))}
+                     </div>
+                   </div>
+ 
+                   <div className="grunt-counters-row">
+                     <strong style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', marginBottom: '6px' }}>
+                       <Shield size={12} style={{ color: '#fb923c' }} /> {t.rocket_grunt_counters}
+                     </strong>
+                     <div className="grunt-counter-tags">
+                       {grunt.counters.map(c => (
+                         <span key={c} className="grunt-counter-tag">{c}</span>
+                       ))}
+                     </div>
+                   </div>
+                 </div>
               </div>
             ))}
           </div>
