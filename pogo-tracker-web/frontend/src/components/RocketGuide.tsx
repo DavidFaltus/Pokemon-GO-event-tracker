@@ -3,7 +3,7 @@ import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
 import { TypeBadge } from './EventCard';
 import { API_BASE_URL } from '../config';
-import { Zap, Users, Crown, Gift, Flame, Swords, Shield, MessageSquare, Gem } from 'lucide-react';
+import { Zap, Users, Gift, Flame, Swords, Shield, MessageSquare, Gem, Moon, Glasses } from 'lucide-react';
 
 const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
   <svg
@@ -22,6 +22,56 @@ const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> 
     <path d="M12 2C11.5 3.5 10 5.5 8.5 7C7 8.5 5.5 10.5 5.5 13C5.5 16.5 8.5 19.5 12 19.5C15.5 19.5 18.5 16.5 18.5 13C18.5 10.5 17 8.5 15.5 7C14 5.5 12.5 3.5 12 2ZM12 17C10.5 17 9.5 16 9.5 14.5C9.5 13 11 11.5 12 10C13 11.5 14.5 13 14.5 14.5C14.5 16 13.5 17 12 17Z" />
   </svg>
 );
+
+const getLeaderIcon = (name: string, size = 16) => {
+  const cleanName = name.toLowerCase();
+  if (cleanName === 'giovanni') {
+    return (
+      <svg 
+        viewBox="0 0 64 64" 
+        width={size} 
+        height={size} 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="4.5" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+        style={{ display: 'inline-block', verticalAlign: 'middle', color: '#c084fc' }}
+      >
+        <path d="M12 56V32c0-6 4-10 10-10h20c6 0 10 4 10 10v24" />
+        <path d="M22 22l10 16 10-16" />
+        <path d="M26 22V14c0-3 2-5 6-5s6 2 6 5v8" />
+        <path d="M32 26v16l-3 4 3 4 3-4-3-4" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (cleanName === 'cliff') {
+    return (
+      <svg 
+        viewBox="0 0 24 24" 
+        width={size} 
+        height={size} 
+        fill="none" 
+        stroke="currentColor" 
+        strokeWidth="2.2" 
+        strokeLinecap="round" 
+        strokeLinejoin="round"
+        style={{ display: 'inline-block', verticalAlign: 'middle', transform: 'scaleX(-1)', color: '#f87171' }}
+      >
+        <path d="M6 20a5 5 0 0 1 5-5h1c2 0 3.5-1.5 3.5-3.5V8" />
+        <path d="M15.5 8c1.2 0 2.2.8 2.2 2v2.5c0 2.5-2 4.5-4.5 4.5H6" />
+        <circle cx="15.5" cy="7.5" r="2" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (cleanName === 'sierra') {
+    return <Moon size={size} fill="currentColor" style={{ display: 'inline-block', verticalAlign: 'middle', color: '#fb923c' }} />;
+  }
+  if (cleanName === 'arlo') {
+    return <Glasses size={size} style={{ display: 'inline-block', verticalAlign: 'middle', color: '#34d399' }} />;
+  }
+  return null;
+};
 
 interface RocketGuideProps {
   lang: Language;
@@ -156,17 +206,18 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
             <button
                className={`rocket-tab-btn giovanni-btn ${selectedLeader === 'Giovanni' ? 'active' : ''}`}
                onClick={() => setSelectedLeader('Giovanni')}
-               style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+               style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
              >
-               <span className="emoji" style={{ display: 'inline-flex', color: '#fbbf24' }}><Crown size={14} fill="currentColor" stroke="none" /></span> Giovanni
+               <span className="emoji" style={{ display: 'inline-flex' }}>{getLeaderIcon('Giovanni', 14)}</span> Giovanni
              </button>
             {rocketData.leaders.map(leader => (
               <button
                 key={leader.name}
                 className={`rocket-tab-btn leader-btn ${selectedLeader === leader.name ? 'active' : ''}`}
                 onClick={() => setSelectedLeader(leader.name)}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               >
-                <span className="emoji">{leader.avatar}</span> {leader.name}
+                <span className="emoji" style={{ display: 'inline-flex' }}>{getLeaderIcon(leader.name, 14)}</span> {leader.name}
               </button>
             ))}
           </div>
@@ -180,7 +231,9 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                 </span>
                 <h2>{currentMember.name}</h2>
               </div>
-              <div className="member-avatar">{currentMember.avatar}</div>
+               <div className="member-avatar" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                 {getLeaderIcon(currentMember.name, 40)}
+               </div>
             </div>
 
             {/* Reward Alert */}
