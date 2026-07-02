@@ -3667,6 +3667,7 @@ body {
   pointer-events: none;
   z-index: 0;
   gap: 4px;
+  padding: 0 6px; /* align with numbers and short events */
 }
 
 .calendar-bg-cell {
@@ -3746,13 +3747,14 @@ body {
   grid-template-columns: repeat(7, 1fr);
   position: relative;
   z-index: 3;
-  gap: 4px 0;
+  gap: 4px;
   margin-bottom: 6px;
+  padding: 0 6px; /* align with numbers and short events */
 }
 
 .calendar-multi-bar {
   border-radius: 6px;
-  margin: 0 3px;
+  margin: 0; /* aligned perfectly with column outlines */
   padding: 4px 8px;
   font-size: 0.72rem;
   font-weight: 800;
