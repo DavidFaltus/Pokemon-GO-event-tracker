@@ -650,23 +650,25 @@ function App() {
                 {activeTab === 'events' && (
                   <div className="tab-content events-tab">
                     {/* Active / Upcoming Status Tabs */}
-                    <div className="status-tabs-container">
-                      <button 
-                        className={`status-tab-btn ${statusFilter === 'active' ? 'active' : ''}`}
-                        onClick={() => setStatusFilter('active')}
-                      >
-                        🟢 {lang === 'cs' ? 'Probíhá' : 'Active'}
-                      </button>
-                      <button 
-                        className={`status-tab-btn ${statusFilter === 'upcoming' ? 'active' : ''}`}
-                        onClick={() => setStatusFilter('upcoming')}
-                      >
-                        📅 {lang === 'cs' ? 'Připravuje se' : 'Upcoming'}
-                      </button>
-                    </div>
+                    {viewMode !== 'timeline' && (
+                      <div className="status-tabs-container">
+                        <button 
+                          className={`status-tab-btn ${statusFilter === 'active' ? 'active' : ''}`}
+                          onClick={() => setStatusFilter('active')}
+                        >
+                          🟢 {lang === 'cs' ? 'Probíhá' : 'Active'}
+                        </button>
+                        <button 
+                          className={`status-tab-btn ${statusFilter === 'upcoming' ? 'active' : ''}`}
+                          onClick={() => setStatusFilter('upcoming')}
+                        >
+                          📅 {lang === 'cs' ? 'Připravuje se' : 'Upcoming'}
+                        </button>
+                      </div>
+                    )}
 
                     {/* Sub-filters for active timespan */}
-                    {statusFilter === 'active' && (
+                    {viewMode !== 'timeline' && statusFilter === 'active' && (
                       <div className="active-timespan-filters">
                         <button 
                           className={`timespan-btn ${activeTimeSpan === 'now' ? 'active' : ''}`}
@@ -690,25 +692,27 @@ function App() {
                     )}
 
                     {/* Event Category Filters */}
-                    <div className="filter-pill-container" style={{ marginTop: '12px' }}>
-                      {visibleEvents.communityDays && (
-                        <button className={`filter-pill ${filterType === 'community-day' ? 'active' : ''}`} onClick={() => setFilterType('community-day')}>{t.filter_cd}</button>
-                      )}
-                      {visibleEvents.spotlightHours && (
-                        <button className={`filter-pill ${filterType === 'pokemon-spotlight-hour' ? 'active' : ''}`} onClick={() => setFilterType('pokemon-spotlight-hour')}>{t.filter_spotlight}</button>
-                      )}
-                      {visibleEvents.raidHours && (
-                        <button className={`filter-pill ${filterType === 'raid-hour' ? 'active' : ''}`} onClick={() => setFilterType('raid-hour')}>{t.filter_raid_hour}</button>
-                      )}
-                      {visibleEvents.majorEvents && (
-                        <button className={`filter-pill ${filterType === 'other' ? 'active' : ''}`} onClick={() => setFilterType('other')}>{t.filter_other}</button>
-                      )}
-                    </div>
+                    {viewMode !== 'timeline' && (
+                      <div className="filter-pill-container" style={{ marginTop: '12px' }}>
+                        {visibleEvents.communityDays && (
+                          <button className={`filter-pill ${filterType === 'community-day' ? 'active' : ''}`} onClick={() => setFilterType('community-day')}>{t.filter_cd}</button>
+                        )}
+                        {visibleEvents.spotlightHours && (
+                          <button className={`filter-pill ${filterType === 'pokemon-spotlight-hour' ? 'active' : ''}`} onClick={() => setFilterType('pokemon-spotlight-hour')}>{t.filter_spotlight}</button>
+                        )}
+                        {visibleEvents.raidHours && (
+                          <button className={`filter-pill ${filterType === 'raid-hour' ? 'active' : ''}`} onClick={() => setFilterType('raid-hour')}>{t.filter_raid_hour}</button>
+                        )}
+                        {visibleEvents.majorEvents && (
+                          <button className={`filter-pill ${filterType === 'other' ? 'active' : ''}`} onClick={() => setFilterType('other')}>{t.filter_other}</button>
+                        )}
+                      </div>
+                    )}
 
                     {/* Event Feed List or Timeline */}
                     {viewMode === 'timeline' ? (
                       <TimelineView 
-                        events={getFilteredEvents()} 
+                        events={getAdjustedEvents().filter(e => isEventVisible(e.eventType))} 
                         lang={lang} 
                         timezone={timezone} 
                       />
