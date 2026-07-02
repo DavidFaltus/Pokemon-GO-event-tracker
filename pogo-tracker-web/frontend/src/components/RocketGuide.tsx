@@ -36,12 +36,12 @@ const getLeaderIcon = (name: string, size = 16) => {
         strokeWidth="4.5" 
         strokeLinecap="round" 
         strokeLinejoin="round"
-        style={{ display: 'inline-block', verticalAlign: 'middle', color: '#c084fc' }}
+        style={{ display: 'inline-block', verticalAlign: 'middle' }}
       >
         <path d="M12 56V32c0-6 4-10 10-10h20c6 0 10 4 10 10v24" />
         <path d="M22 22l10 16 10-16" />
         <path d="M26 22V14c0-3 2-5 6-5s6 2 6 5v8" />
-        <path d="M32 26v16l-3 4 3 4 3-4-3-4" fill="currentColor" />
+        <path d="M32 26v16l-3 4 3 4 3-4-3-4" fill="currentColor" fillOpacity={0.15} />
       </svg>
     );
   }
@@ -56,19 +56,19 @@ const getLeaderIcon = (name: string, size = 16) => {
         strokeWidth="2.2" 
         strokeLinecap="round" 
         strokeLinejoin="round"
-        style={{ display: 'inline-block', verticalAlign: 'middle', transform: 'scaleX(-1)', color: '#f87171' }}
+        style={{ display: 'inline-block', verticalAlign: 'middle', transform: 'scaleX(-1)' }}
       >
         <path d="M6 20a5 5 0 0 1 5-5h1c2 0 3.5-1.5 3.5-3.5V8" />
         <path d="M15.5 8c1.2 0 2.2.8 2.2 2v2.5c0 2.5-2 4.5-4.5 4.5H6" />
-        <circle cx="15.5" cy="7.5" r="2" fill="currentColor" />
+        <circle cx="15.5" cy="7.5" r="2" fill="currentColor" fillOpacity={0.15} />
       </svg>
     );
   }
   if (cleanName === 'sierra') {
-    return <Moon size={size} fill="currentColor" style={{ display: 'inline-block', verticalAlign: 'middle', color: '#fb923c' }} />;
+    return <Moon size={size} fill="currentColor" fillOpacity={0.15} style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
   }
   if (cleanName === 'arlo') {
-    return <Glasses size={size} style={{ display: 'inline-block', verticalAlign: 'middle', color: '#34d399' }} />;
+    return <Glasses size={size} fill="currentColor" fillOpacity={0.15} style={{ display: 'inline-block', verticalAlign: 'middle' }} />;
   }
   return null;
 };
