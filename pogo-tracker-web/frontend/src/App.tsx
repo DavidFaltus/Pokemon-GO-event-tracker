@@ -354,6 +354,60 @@ function App() {
       let cachedEvents: EventData[] = [];
       let isCacheValid = false;
 
+      const detectNewlyAddedEvents = (freshEvents: any[]) => {
+        const seenEventsStr = localStorage.getItem('pogo_tracker_seen_event_ids');
+        let seenEventIds: string[] = [];
+        if (seenEventsStr) {
+          try {
+            seenEventIds = JSON.parse(seenEventsStr);
+          } catch (e) {
+            console.error("Failed to parse seen event IDs", e);
+          }
+        }
+
+        // First time initializing seen list: store all current event IDs to avoid spamming
+        if (seenEventIds.length === 0) {
+          const initialIds = freshEvents.map(e => e.eventID);
+          localStorage.setItem('pogo_tracker_seen_event_ids', JSON.stringify(initialIds));
+          return;
+        }
+
+        const now = new Date();
+        const newEvents = freshEvents.filter(e => {
+          const isNotSeen = !seenEventIds.includes(e.eventID);
+          const isNotExpired = new Date(e.end) >= now;
+          return isNotSeen && isNotExpired;
+        });
+
+        if (newEvents.length > 0) {
+          newEvents.forEach(event => {
+            const title = lang === 'cs'
+              ? `Nový event přidán: ${event.name}`
+              : `New event added: ${event.name}`;
+            
+            const startDateStr = new Date(event.start).toLocaleDateString(lang === 'cs' ? 'cs-CZ' : 'en-US', {
+              day: 'numeric',
+              month: 'long'
+            });
+
+            const bodyText = lang === 'cs'
+              ? `Do kalendáře byl přidán nový event "${event.name}" (začíná ${startDateStr}).`
+              : `A new event "${event.name}" has been added to the calendar (starts on ${startDateStr}).`;
+
+            triggerNotification(
+              title,
+              bodyText,
+              event.eventType || 'major',
+              event.link
+            );
+          });
+        }
+
+        // Always save the full list of fresh IDs to keep seen list fully in sync
+        const updatedIds = freshEvents.map(e => e.eventID);
+        localStorage.setItem('pogo_tracker_seen_event_ids', JSON.stringify(updatedIds));
+      };
+
       // 1. Try to read from localStorage cache
       const cached = localStorage.getItem('pogo_events_cache');
       const cacheTime = localStorage.getItem('pogo_events_cache_time');
@@ -391,6 +445,9 @@ function App() {
           const data = await response.json();
           
           if (Array.isArray(data) && data.length > 0) {
+            // Check for newly added events before updating state and cache
+            detectNewlyAddedEvents(data);
+
             setEvents(sanitizeEvents(data));
             setApiStatus('success');
             localStorage.setItem('pogo_events_cache', JSON.stringify(data));
