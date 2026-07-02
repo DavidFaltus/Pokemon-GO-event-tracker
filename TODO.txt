@@ -1,2 +1,9 @@
-aktualizace Rocket pomocí: https://leekduck.com/rocket-lineups/
-Raid rotace v závislosti na raidu například: https://leekduck.com/raid-bosses/
+1: Odstranit sekci shadow Raidy a rozstřídit shadow raidy podle počtu *, odstranit emoji u shadow raidů a přidat oficální shadow ikonu.
+3: Zvětšit zobrazeni eventů z kalendáře (po rozkliknutí konkrétního)
+4: V timeline zobrazení ponechat pouze kalendář (odstranit sekce active a upcoming včetně časových filtrů)
+5: Přidat sekci All events v obou režimech
+6: Upravit veškeré emoji na stránce na více stylizované, zároveň přidat logo které bude pasovat do vzhledu aplikace
+7: Notifikace na přidání nového eventu
+2: Vylepšit doporučování counterů na základ vnitřní tabulky která se vytvoří na základě momentální mety v backendu. využít jak nejlepší tak i budget variantu
+
+Bonus: Možnost admina ručně upravovat jedntolivé eventy (samostatná aplikace ????)

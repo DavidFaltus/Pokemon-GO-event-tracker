@@ -5,6 +5,26 @@ import { TypeBadge } from './EventCard';
 import type { EventData } from './EventCard';
 import { API_BASE_URL } from '../config';
 
+// Official-like Shadow Pokemon SVG Icon
+const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+    style={{
+      width: '16px',
+      height: '16px',
+      color: '#c084fc', // purple-400
+      filter: 'drop-shadow(0 0 3px rgba(168, 85, 247, 0.75))',
+      display: 'inline-block',
+      verticalAlign: 'middle',
+      ...style
+    }}
+  >
+    <path d="M12 2C11.5 3.5 10 5.5 8.5 7C7 8.5 5.5 10.5 5.5 13C5.5 16.5 8.5 19.5 12 19.5C15.5 19.5 18.5 16.5 18.5 13C18.5 10.5 17 8.5 15.5 7C14 5.5 12.5 3.5 12 2ZM12 17C10.5 17 9.5 16 9.5 14.5C9.5 13 11 11.5 12 10C13 11.5 14.5 13 14.5 14.5C14.5 16 13.5 17 12 17Z" />
+  </svg>
+);
+
 interface RaidViewProps {
   events: EventData[]; // Left for compatibility
   lang: Language;
@@ -33,7 +53,7 @@ interface RaidBoss {
   } | null;
 }
 
-type FilterTier = 'all' | '5' | 'mega' | '3' | '1' | 'shadow';
+type FilterTier = 'all' | '5' | 'mega' | '3' | '1';
 
 export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
   const [activeFilter, setActiveFilter] = useState<FilterTier>('all');
@@ -81,7 +101,9 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
 
   const filteredBosses = bosses.filter(boss => {
     if (activeFilter === 'all') return true;
-    if (activeFilter === 'shadow') return boss.tier.startsWith('shadow');
+    if (activeFilter === '5') return boss.tier === '5' || boss.tier === 'shadow-5';
+    if (activeFilter === '3') return boss.tier === '3' || boss.tier === 'shadow-3';
+    if (activeFilter === '1') return boss.tier === '1' || boss.tier === 'shadow-1';
     return boss.tier === activeFilter;
   });
 
@@ -143,12 +165,6 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
         >
           1★
         </button>
-        <button 
-          className={`filter-pill ${activeFilter === 'shadow' ? 'active' : ''}`} 
-          onClick={() => { setActiveFilter('shadow'); setExpandedBoss(null); }}
-        >
-          Shadow
-        </button>
       </div>
 
       {/* Grid of bosses */}
@@ -173,7 +189,18 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                   onClick={() => toggleExpandBoss(boss.name)}
                 >
                   <div className="boss-img-wrapper">
-                    {boss.tier.startsWith('shadow') && <span className="shadow-aura-effect">😈</span>}
+                    {boss.tier.startsWith('shadow') && (
+                      <ShadowIcon 
+                        className="shadow-aura-effect" 
+                        style={{ 
+                          position: 'absolute', 
+                          top: '-4px', 
+                          right: '-4px',
+                          width: '18px',
+                          height: '18px'
+                        }} 
+                      />
+                    )}
                     <img 
                       src={boss.image} 
                       alt={boss.name} 
@@ -188,7 +215,12 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                     <span className={`boss-tier-badge tier-${boss.tier.startsWith('shadow') ? 'shadow' : boss.tier}`}>
                       {getTierLabel(boss.tier)}
                     </span>
-                    <h3 className="boss-title-name">{boss.name}</h3>
+                    <h3 className="boss-title-name">
+                      {boss.tier.startsWith('shadow') && (
+                        <ShadowIcon style={{ marginRight: '6px', width: '14px', height: '14px', filter: 'none' }} />
+                      )}
+                      {boss.name}
+                    </h3>
                     <div className="boss-sub-attributes">
                       {boss.canBeShiny && <span className="shiny-star-badge">✨ Shiny</span>}
                       {counters && (
