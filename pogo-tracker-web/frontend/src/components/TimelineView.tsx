@@ -225,12 +225,34 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
               
               {/* Background Grid Cells */}
               <div className="calendar-bg-grid">
-                {week.weekDays.map((_, idx) => (
-                  <div key={idx} className="calendar-bg-cell" />
-                ))}
+                {week.weekDays.map((day, idx) => {
+                  const isToday = new Date().toDateString() === day.toDateString();
+                  return (
+                    <div 
+                      key={idx} 
+                      className={`calendar-bg-cell ${isToday ? 'today-bg' : ''}`} 
+                    />
+                  );
+                })}
               </div>
 
-              {/* Multi-day Event Banners Grid Overlay */}
+              {/* 1. Day Numbers Row (at the top of the week) */}
+              <div className="calendar-numbers-row">
+                {week.weekDays.map((day, dIdx) => {
+                  const isCurrentMonth = day.getMonth() === month;
+                  const isToday = new Date().toDateString() === day.toDateString();
+                  return (
+                    <div 
+                      key={dIdx} 
+                      className={`calendar-number-cell ${isCurrentMonth ? '' : 'other-month'} ${isToday ? 'today' : ''}`}
+                    >
+                      <span className="calendar-day-number">{day.getDate()}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* 2. Multi-day Event Banners Grid Overlay */}
               {week.numTracks > 0 && (
                 <div 
                   className="calendar-multi-overlay" 
@@ -271,11 +293,10 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
                 </div>
               )}
 
-              {/* Day cells for listing numbers and short events */}
-              <div className="calendar-days-columns">
+              {/* 3. Short single-day / hourly events (at the bottom) */}
+              <div className="calendar-short-events-row">
                 {week.weekDays.map((day, dIdx) => {
                   const isCurrentMonth = day.getMonth() === month;
-                  const isToday = new Date().toDateString() === day.toDateString();
                   
                   // Filter short single-day events starting on this day
                   const dayEvents = week.singleDayEvents.filter(e => {
@@ -286,14 +307,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
                   return (
                     <div 
                       key={dIdx} 
-                      className={`calendar-day-cell ${isCurrentMonth ? '' : 'other-month'} ${isToday ? 'today' : ''}`}
+                      className={`calendar-short-events-cell ${isCurrentMonth ? '' : 'other-month'}`}
                     >
-                      {/* Day number */}
-                      <div className="calendar-day-number-row">
-                        <span className="calendar-day-number">{day.getDate()}</span>
-                      </div>
-                      
-                      {/* List of short/hourly events */}
                       <div className="calendar-day-events-list" style={{ display: 'flex', flexDirection: 'column', gap: '2px', overflow: 'hidden' }}>
                         {dayEvents.map((e, idx) => {
                           const cleanType = e.eventType.toLowerCase();

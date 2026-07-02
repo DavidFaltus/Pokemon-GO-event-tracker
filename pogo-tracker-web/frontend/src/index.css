@@ -3655,7 +3655,7 @@ body {
   padding-bottom: 0;
 }
 
-/* Background overlay lines */
+/* Background overlay lines and card outlines for days */
 .calendar-bg-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -3670,41 +3670,37 @@ body {
 }
 
 .calendar-bg-cell {
-  border-right: 1px solid rgba(36, 40, 54, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background-color: rgba(23, 25, 33, 0.15);
   height: 100%;
+  transition: all 0.2s ease;
 }
 
-.calendar-bg-cell:last-child {
-  border-right: none;
+.calendar-bg-cell.today-bg {
+  border-color: rgba(170, 59, 255, 0.35);
+  background-color: rgba(170, 59, 255, 0.03);
 }
 
-/* Foreground calendar grid columns */
-.calendar-days-columns {
+/* Day Numbers Row (placed above all events) */
+.calendar-numbers-row {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
   position: relative;
   z-index: 2;
-  gap: 4px;
+  padding: 6px 6px 4px 6px;
 }
 
-.calendar-day-cell {
-  display: flex;
-  flex-direction: column;
-  padding: 4px;
-  min-height: 80px;
-  border-radius: 8px;
-  transition: background 0.15s ease;
-}
-
-.calendar-day-cell.other-month {
-  opacity: 0.25;
-}
-
-.calendar-day-number-row {
+.calendar-number-cell {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  margin-bottom: 6px;
+  padding: 2px 4px;
+}
+
+.calendar-number-cell.other-month {
+  opacity: 0.25;
 }
 
 .calendar-day-number {
@@ -3719,10 +3715,29 @@ body {
   border-radius: 50%;
 }
 
-.calendar-day-cell.today .calendar-day-number {
+.calendar-number-cell.today .calendar-day-number {
   background: var(--accent-gradient);
   color: white;
   box-shadow: 0 3px 10px rgba(170, 59, 255, 0.4);
+}
+
+/* Day cells for listing short single-day/hourly events (at the bottom) */
+.calendar-short-events-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  position: relative;
+  z-index: 2;
+  padding: 2px 6px 8px 6px;
+}
+
+.calendar-short-events-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar-short-events-cell.other-month {
+  opacity: 0.25;
 }
 
 /* Multi-day banner bands */
