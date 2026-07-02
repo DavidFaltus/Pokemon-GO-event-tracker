@@ -3894,7 +3894,7 @@ body {
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 24px;
-  max-width: 520px;
+  max-width: 800px;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
@@ -3909,6 +3909,23 @@ body {
   border: none;
   background: transparent;
   box-shadow: none;
+}
+
+.calendar-modal-content .card-top {
+  padding: 24px 24px 16px 24px;
+}
+
+.calendar-modal-content .card-expanded-content {
+  padding: 0 24px 24px 24px;
+}
+
+/* Make grid sections wider/cleaner inside the modal */
+@media (min-width: 601px) {
+  .calendar-modal-content .cd-bonuses-grid {
+    grid-template-columns: repeat(2, 1fr);
+    display: grid;
+    gap: 12px;
+  }
 }
 
 .calendar-modal-close {
