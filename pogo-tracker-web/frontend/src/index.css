@@ -1,3 +1,13 @@
+html {
+  font-size: 17px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 18px;
+  }
+}
+
 :root {
   /* Color Palette (Deep dark theme with vibrant accents) */
   --bg-dark: #0f1015;
