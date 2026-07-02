@@ -216,7 +216,6 @@ function App() {
   });
 
   const [visibleEvents, setVisibleEvents] = useState<VisibleEventsPreference>(() => {
-    const saved = localStorage.getItem('pogo_tracker_visible_events');
     const defaults = {
       communityDays: true,
       spotlightHours: true,
@@ -230,12 +229,6 @@ function App() {
       maxMondays: true,
       majorEvents: true,
     };
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        return { ...defaults, ...parsed };
-      } catch (e) { /* ignore */ }
-    }
     return defaults;
   });
 

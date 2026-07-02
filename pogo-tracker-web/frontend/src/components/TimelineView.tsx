@@ -88,6 +88,13 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
     
     const calculatedWeeks = [];
 
+    // Helper to calculate difference in calendar days safely (DST-safe)
+    const getDayOffset = (d1: Date, d2: Date) => {
+      const date1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate());
+      const date2 = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate());
+      return Math.round((date1.getTime() - date2.getTime()) / (1000 * 60 * 60 * 24));
+    };
+
     for (let w = 0; w < 6; w++) {
       const weekDays = [];
       for (let d = 0; d < 7; d++) {
@@ -132,8 +139,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
         const eStart = new Date(event.start);
         const eEnd = new Date(event.end);
 
-        const startCol = Math.max(0, Math.floor((eStart.getTime() - weekStart.getTime()) / (1000 * 60 * 60 * 24)));
-        const endCol = Math.min(6, Math.floor((eEnd.getTime() - weekStart.getTime()) / (1000 * 60 * 60 * 24)));
+        const startCol = Math.max(0, getDayOffset(eStart, weekStart));
+        const endCol = Math.min(6, getDayOffset(eEnd, weekStart));
         const span = endCol - startCol + 1;
 
         let trackIdx = 0;

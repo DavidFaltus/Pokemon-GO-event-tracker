@@ -3701,7 +3701,7 @@ body {
 }
 
 .calendar-number-cell.other-month {
-  opacity: 0.25;
+  opacity: 0.55;
 }
 
 .calendar-day-number {
@@ -3738,7 +3738,7 @@ body {
 }
 
 .calendar-short-events-cell.other-month {
-  opacity: 0.25;
+  opacity: 0.85;
 }
 
 /* Multi-day banner bands */
@@ -3812,6 +3812,7 @@ body {
   flex-direction: column;
   gap: 3px;
   overflow: hidden;
+  width: 100%;
 }
 
 .calendar-short-event {
@@ -3827,6 +3828,8 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   border: 1px solid transparent;
+  white-space: nowrap; /* prevent wrapping */
+  min-width: 0; /* allow flex shrinking within grid column */
 }
 
 .calendar-short-event.community-day {
