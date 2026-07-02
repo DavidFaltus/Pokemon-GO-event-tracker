@@ -316,7 +316,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
                       key={dIdx} 
                       className={`calendar-short-events-cell ${isCurrentMonth ? '' : 'other-month'}`}
                     >
-                      <div className="calendar-day-events-list" style={{ display: 'flex', flexDirection: 'column', gap: '2px', overflow: 'hidden' }}>
+                      <div className="calendar-day-events-list" style={{ display: 'flex', flexDirection: 'column', gap: '2px', overflow: 'hidden', width: '100%', minWidth: 0 }}>
                         {dayEvents.map((e, idx) => {
                           const cleanType = e.eventType.toLowerCase();
                           let colorClass = 'other-event';
