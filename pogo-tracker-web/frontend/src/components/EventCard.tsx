@@ -7,6 +7,7 @@ import { getSpecialEventDetails, getPokemonImage } from '../data/specialEvents';
 import { findPokemonMeta } from '../data/pokemonMeta';
 import { useDynamicEventDetails } from '../hooks/useDynamicEventDetails';
 import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Flame, RefreshCw, Plus, Check } from 'lucide-react';
+import { CounterItem, WeatherIcon } from './CounterItem';
 
 const EggIcon = ({ size = 16 }: { size?: number }) => (
   <svg viewBox="0 0 100 120" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
@@ -902,39 +903,53 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                     </div>
                   </div>
                   <div className="counters-levels-grid">
-                    <div className="counter-level-col mega">
-                      <span className="level-badge mega">{t.details_level_mega}</span>
-                      <ul>
-                        {counters.megaCounters.map(c => <li key={c}>{c}</li>)}
-                      </ul>
-                    </div>
-                    <div className="counter-level-col advanced">
-                      <span className="level-badge advanced">{t.details_level_advanced}</span>
-                      <ul>
-                        {counters.advancedCounters.map(c => <li key={c}>{c}</li>)}
-                      </ul>
-                    </div>
-                    <div className="counter-level-col budget">
-                      <span className="level-badge budget">{t.details_level_budget}</span>
-                      <ul>
-                        {counters.budgetCounters.map(c => <li key={c}>{c}</li>)}
-                      </ul>
-                    </div>
+                    {counters.megaCounters.length > 0 && (
+                      <div className="counter-level-col mega">
+                        <span className="level-badge mega">{t.details_level_mega}</span>
+                        <ul>
+                          {counters.megaCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                        </ul>
+                      </div>
+                    )}
+                    {counters.advancedCounters.length > 0 && (
+                      <div className="counter-level-col advanced">
+                        <span className="level-badge advanced">{t.details_level_advanced}</span>
+                        <ul>
+                          {counters.advancedCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                        </ul>
+                      </div>
+                    )}
+                    {counters.budgetCounters.length > 0 && (
+                      <div className="counter-level-col budget">
+                        <span className="level-badge budget">{t.details_level_budget}</span>
+                        <ul>
+                          {counters.budgetCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                   {/* CP & IV & Weather Boost info */}
                   <div className="counters-cp-info">
-                    <div className="cp-row">
-                      <span className="cp-header-label">{t.details_standard_cp}</span>
-                      <span className="cp-span">{counters.minCp} – <strong className="hundo-label">{counters.maxCp} CP (100% IV)</strong></span>
-                    </div>
-                    <div className="cp-row">
-                      <span className="cp-header-label">{t.details_weather_cp}</span>
-                      <span className="cp-span">{counters.minBoostedCp} – <strong className="hundo-label-boost">{counters.maxBoostedCp} CP (100% IV)</strong></span>
-                    </div>
-                    <div className="cp-row">
-                      <span className="cp-header-label">{t.details_boost_weather}</span>
-                      <span className="cp-span">{counters.weatherBoosts.join(" / ")}</span>
-                    </div>
+                    {counters.maxCp > 0 && (
+                      <div className="cp-row">
+                        <span className="cp-header-label">{t.details_standard_cp}</span>
+                        <span className="cp-span">{counters.minCp} – <strong className="hundo-label">{counters.maxCp} CP (100% IV)</strong></span>
+                      </div>
+                    )}
+                    {counters.maxBoostedCp > 0 && (
+                      <div className="cp-row">
+                        <span className="cp-header-label">{t.details_weather_cp}</span>
+                        <span className="cp-span">{counters.minBoostedCp} – <strong className="hundo-label-boost">{counters.maxBoostedCp} CP (100% IV)</strong></span>
+                      </div>
+                    )}
+                    {counters.weatherBoosts.length > 0 && (
+                      <div className="cp-row">
+                        <span className="cp-header-label">{t.details_boost_weather}</span>
+                        <span className="cp-span" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                          {counters.weatherBoosts.map(w => <WeatherIcon key={w} weatherStr={w} />)}
+                        </span>
+                      </div>
+                    )}
                     <div className="cp-row shiny-info">
                       <span className="cp-header-label">{t.details_shiny_version}</span>
                       <span className="cp-span highlight-shiny" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>

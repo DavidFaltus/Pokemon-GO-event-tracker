@@ -220,8 +220,9 @@ export const pokemonMetaDb: Record<string, PokemonMetaInfo> = {
 };
 
 export const raidCountersDb: Record<string, RaidCounters> = {
+  // Necrozma forms
   "necrozma": {
-    bossName: "Necrozma (Základní forma)",
+    bossName: "Necrozma",
     weaknesses: ["Ghost", "Dark", "Bug"],
     megaCounters: ["Mega Gengar", "Mega Tyranitar", "Mega Banette"],
     advancedCounters: ["Hydreigon (Brutal Swing)", "Darkrai (Dark Pulse)", "Giratina Origin (Shadow Ball)", "Gengar (Shadow Ball)"],
@@ -256,11 +257,196 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     maxBoostedCp: 2630,
     weatherBoosts: ["Větrno (Windy)", "Mlha (Fog)"]
   },
+  // Kanto Legendaries
+  "mewtwo": {
+    bossName: "Mewtwo",
+    weaknesses: ["Bug", "Ghost", "Dark"],
+    megaCounters: ["Mega Gengar", "Mega Tyranitar", "Mega Houndoom"],
+    advancedCounters: ["Hydreigon (Brutal Swing)", "Giratina Origin (Shadow Ball)", "Darkrai (Dark Pulse)", "Chandelure (Shadow Ball)"],
+    budgetCounters: ["Tyranitar (Crunch)", "Weavile (Foul Play)", "Gengar (Shadow Ball)", "Houndoom (Foul Play)"],
+    minCp: 2294,
+    maxCp: 2387,
+    minBoostedCp: 2868,
+    maxBoostedCp: 2984,
+    weatherBoosts: ["Větrno (Windy)"]
+  },
+  "articuno": {
+    bossName: "Articuno",
+    weaknesses: ["Rock (2x)", "Fire", "Electric", "Steel"],
+    megaCounters: ["Mega Diancie", "Mega Aerodactyl", "Mega Tyranitar"],
+    advancedCounters: ["Rhyperior (Rock Wrecker)", "Rampardos (Rock Slide)", "Terrakion (Rock Slide)", "Tyrantrum (Meteor Beam)"],
+    budgetCounters: ["Tyranitar (Stone Edge)", "Gigalith (Meteor Beam)", "Aerodactyl (Rock Slide)", "Aggron (Meteor Beam)"],
+    minCp: 1665,
+    maxCp: 1743,
+    minBoostedCp: 2081,
+    maxBoostedCp: 2179,
+    weatherBoosts: ["Sněžení (Snow)", "Větrno (Windy)"]
+  },
+  "zapdos": {
+    bossName: "Zapdos",
+    weaknesses: ["Ice", "Rock"],
+    megaCounters: ["Mega Diancie", "Mega Tyranitar", "Mega Glalie"],
+    advancedCounters: ["Rhyperior (Rock Wrecker)", "Rampardos (Rock Slide)", "Mamoswine (Avalanche)", "Terrakion (Rock Slide)"],
+    budgetCounters: ["Glaceon (Avalanche)", "Tyranitar (Stone Edge)", "Gigalith (Meteor Beam)", "Weavile (Avalanche)"],
+    minCp: 1930,
+    maxCp: 2015,
+    minBoostedCp: 2413,
+    maxBoostedCp: 2519,
+    weatherBoosts: ["Deštivo (Rainy)", "Větrno (Windy)"]
+  },
+  "moltres": {
+    bossName: "Moltres",
+    weaknesses: ["Rock (2x)", "Water", "Electric"],
+    megaCounters: ["Mega Diancie", "Mega Aerodactyl", "Mega Tyranitar"],
+    advancedCounters: ["Rhyperior (Rock Wrecker)", "Rampardos (Rock Slide)", "Terrakion (Rock Slide)", "Tyrantrum (Meteor Beam)"],
+    budgetCounters: ["Tyranitar (Stone Edge)", "Gigalith (Meteor Beam)", "Aerodactyl (Rock Slide)", "Omastar (Rock Slide)"],
+    minCp: 1896,
+    maxCp: 1980,
+    minBoostedCp: 2370,
+    maxBoostedCp: 2475,
+    weatherBoosts: ["Slunečno (Sunny)", "Větrno (Windy)"]
+  },
+  // Johto Legendaries
+  "lugia": {
+    bossName: "Lugia",
+    weaknesses: ["Rock", "Ice", "Ghost", "Electric", "Dark"],
+    megaCounters: ["Mega Tyranitar", "Mega Gengar", "Mega Manectric"],
+    advancedCounters: ["Xurkitree (Discharge)", "Zekrom (Fusion Bolt)", "Hydreigon (Brutal Swing)", "Gholdengo (Shadow Ball)"],
+    budgetCounters: ["Tyranitar (Crunch)", "Electivire (Wild Charge)", "Glaceon (Avalanche)", "Chandelure (Shadow Ball)"],
+    minCp: 2028,
+    maxCp: 2115,
+    minBoostedCp: 2535,
+    maxBoostedCp: 2645,
+    weatherBoosts: ["Větrno (Windy)"]
+  },
+  "ho-oh": {
+    bossName: "Ho-Oh",
+    weaknesses: ["Rock (2x)", "Water", "Electric"],
+    megaCounters: ["Mega Diancie", "Mega Aerodactyl", "Mega Tyranitar"],
+    advancedCounters: ["Rhyperior (Rock Wrecker)", "Rampardos (Rock Slide)", "Terrakion (Rock Slide)", "Tyrantrum (Meteor Beam)"],
+    budgetCounters: ["Tyranitar (Stone Edge)", "Gigalith (Meteor Beam)", "Aerodactyl (Rock Slide)", "Kyogre (Surf)"],
+    minCp: 2130,
+    maxCp: 2207,
+    minBoostedCp: 2663,
+    maxBoostedCp: 2759,
+    weatherBoosts: ["Slunečno (Sunny)", "Větrno (Windy)"]
+  },
+  // Hoenn Weather Trio & Eon Duo
+  "kyogre": {
+    bossName: "Kyogre / Primal Kyogre",
+    weaknesses: ["Grass", "Electric"],
+    megaCounters: ["Mega Sceptile", "Mega Venusaur", "Mega Manectric"],
+    advancedCounters: ["Kartana (Leaf Blade)", "Xurkitree (Discharge)", "Zekrom (Fusion Bolt)", "Zarude (Power Whip)"],
+    budgetCounters: ["Sceptile (Frenzy Plant)", "Venusaur (Frenzy Plant)", "Electivire (Wild Charge)", "Magnezone (Wild Charge)"],
+    minCp: 2260,
+    maxCp: 2351,
+    minBoostedCp: 2825,
+    maxBoostedCp: 2939,
+    weatherBoosts: ["Deštivo (Rainy)"]
+  },
+  "groudon": {
+    bossName: "Groudon / Primal Groudon",
+    weaknesses: ["Water", "Grass", "Ice"],
+    megaCounters: ["Primal Kyogre", "Mega Swampert", "Mega Sceptile"],
+    advancedCounters: ["Kyogre (Origin Pulse)", "Kartana (Leaf Blade)", "Zarude (Power Whip)", "Baxcalibur (Avalanche)"],
+    budgetCounters: ["Swampert (Hydro Cannon)", "Gyarados (Hydro Pump)", "Glaceon (Avalanche)", "Mamoswine (Avalanche)"],
+    minCp: 2260,
+    maxCp: 2351,
+    minBoostedCp: 2825,
+    maxBoostedCp: 2939,
+    weatherBoosts: ["Slunečno (Sunny)"]
+  },
+  "rayquaza": {
+    bossName: "Rayquaza",
+    weaknesses: ["Ice (2x)", "Dragon", "Rock", "Fairy"],
+    megaCounters: ["Mega Glalie", "Mega Gardevoir", "Mega Abomasnow"],
+    advancedCounters: ["Mamoswine (Avalanche)", "Baxcalibur (Avalanche)", "Galarian Darmanitan (Avalanche)", "Kyurem (Glaciate)"],
+    budgetCounters: ["Glaceon (Avalanche)", "Weavile (Avalanche)", "Dragonite (Outrage)", "Sylveon (Dazzling Gleam)"],
+    minCp: 2102,
+    maxCp: 2191,
+    minBoostedCp: 2627,
+    maxBoostedCp: 2739,
+    weatherBoosts: ["Větrno (Windy)"]
+  },
+  "latias": {
+    bossName: "Latias",
+    weaknesses: ["Dragon", "Ice", "Bug", "Ghost", "Dark", "Fairy"],
+    megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Mega Gardevoir", "Mega Tyranitar"],
+    advancedCounters: ["Rayquaza (Outrage)", "Salamence (Outrage)", "Hydreigon (Brutal Swing)", "Dialga (Draco Meteor)"],
+    budgetCounters: ["Dragonite (Outrage)", "Garchomp (Outrage)", "Glaceon (Avalanche)", "Gardevoir (Dazzling Gleam)"],
+    minCp: 1921,
+    maxCp: 2006,
+    minBoostedCp: 2402,
+    maxBoostedCp: 2507,
+    weatherBoosts: ["Větrno (Windy)"]
+  },
+  "latios": {
+    bossName: "Latios",
+    weaknesses: ["Dragon", "Ice", "Bug", "Ghost", "Dark", "Fairy"],
+    megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Mega Gengar", "Mega Tyranitar"],
+    advancedCounters: ["Rayquaza (Outrage)", "Hydreigon (Brutal Swing)", "Giratina Origin (Shadow Ball)", "Salamence (Outrage)"],
+    budgetCounters: ["Dragonite (Outrage)", "Garchomp (Outrage)", "Glaceon (Avalanche)", "Chandelure (Shadow Ball)"],
+    minCp: 2096,
+    maxCp: 2178,
+    minBoostedCp: 2620,
+    maxBoostedCp: 2723,
+    weatherBoosts: ["Větrno (Windy)"]
+  },
+  // Sinnoh Weather/Creation Trio
+  "dialga": {
+    bossName: "Dialga (regular & Shadow)",
+    weaknesses: ["Fighting", "Ground"],
+    megaCounters: ["Mega Lucario", "Mega Blaziken", "Mega Lopunny"],
+    advancedCounters: ["Terrakion (Sacred Sword)", "Lucario (Aura Sphere)", "Conkeldurr (Dynamic Punch)", "Groudon (Precipice Blades)"],
+    budgetCounters: ["Machamp (Dynamic Punch)", "Hariyama (Dynamic Punch)", "Excadrill (Drill Run)", "Breloom (Dynamic Punch)"],
+    minCp: 2045,
+    maxCp: 2307,
+    minBoostedCp: 2682,
+    maxBoostedCp: 2884,
+    weatherBoosts: ["Sněžení (Snow)", "Větrno (Windy)"]
+  },
+  "palkia": {
+    bossName: "Palkia (regular & Origin)",
+    weaknesses: ["Dragon", "Fairy"],
+    megaCounters: ["Mega Rayquaza", "Mega Gardevoir", "Mega Garchomp"],
+    advancedCounters: ["Rayquaza (Outrage)", "Palkia Origin (Spacial Rend)", "Dialga Origin (Roar of Time)", "Haxorus (Breaking Swipe)"],
+    budgetCounters: ["Dragonite (Outrage)", "Gardevoir (Dazzling Gleam)", "Garchomp (Outrage)", "Sylveon (Dazzling Gleam)"],
+    minCp: 2190,
+    maxCp: 2280,
+    minBoostedCp: 2737,
+    maxBoostedCp: 2850,
+    weatherBoosts: ["Větrno (Windy)", "Deštivo (Rainy)"]
+  },
+  "giratina": {
+    bossName: "Giratina (Altered & Origin)",
+    weaknesses: ["Ghost", "Dark", "Dragon", "Ice", "Fairy"],
+    megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Mega Gengar", "Mega Tyranitar"],
+    advancedCounters: ["Hydreigon (Brutal Swing)", "Rayquaza (Outrage)", "Giratina Origin (Shadow Ball)", "Darkrai (Dark Pulse)"],
+    budgetCounters: ["Dragonite (Outrage)", "Garchomp (Outrage)", "Tyranitar (Crunch)", "Chandelure (Shadow Ball)"],
+    minCp: 1848,
+    maxCp: 2105,
+    minBoostedCp: 2310,
+    maxBoostedCp: 2631,
+    weatherBoosts: ["Větrno (Windy)", "Mlha (Fog)"]
+  },
+  // Unova Tao Trio
+  "reshiram": {
+    bossName: "Reshiram",
+    weaknesses: ["Dragon", "Ground", "Rock"],
+    megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Mega Diancie"],
+    advancedCounters: ["Groudon (Precipice Blades)", "Palkia Origin (Spacial Rend)", "Rayquaza (Outrage)", "Rhyperior (Rock Wrecker)"],
+    budgetCounters: ["Dragonite (Outrage)", "Mamoswine (High Horsepower)", "Rampardos (Rock Slide)", "Excadrill (Drill Run)"],
+    minCp: 2217,
+    maxCp: 2307,
+    minBoostedCp: 2771,
+    maxBoostedCp: 2884,
+    weatherBoosts: ["Slunečno (Sunny)", "Větrno (Windy)"]
+  },
   "zekrom": {
     bossName: "Zekrom",
     weaknesses: ["Dragon", "Ground", "Ice", "Fairy"],
-    megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Mega Gardevoir", "Mega Latios"],
-    advancedCounters: ["Rayquaza (Outrage)", "Salamence (Outrage)", "Garchomp (Outrage)", "Haxorus (Breaking Swipe)", "Palkia (Spacial Rend)"],
+    megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Mega Gardevoir"],
+    advancedCounters: ["Rayquaza (Outrage)", "Garchomp (Outrage)", "Groudon (Precipice Blades)", "Palkia Origin (Spacial Rend)"],
     budgetCounters: ["Dragonite (Outrage)", "Mamoswine (Avalanche)", "Gardevoir (Dazzling Gleam)", "Excadrill (Drill Run)"],
     minCp: 2217,
     maxCp: 2307,
@@ -268,6 +454,44 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     maxBoostedCp: 2884,
     weatherBoosts: ["Větrno (Windy)", "Deštivo (Rainy)"]
   },
+  "kyurem": {
+    bossName: "Kyurem",
+    weaknesses: ["Fighting", "Rock", "Steel", "Dragon", "Fairy"],
+    megaCounters: ["Mega Lucario", "Mega Diancie", "Mega Rayquaza"],
+    advancedCounters: ["Terrakion (Sacred Sword)", "Metagross (Meteor Mash)", "Lucario (Aura Sphere)", "Shadow Metagross"],
+    budgetCounters: ["Machamp (Dynamic Punch)", "Conkeldurr (Dynamic Punch)", "Excadrill (Iron Head)", "Rampardos (Rock Slide)"],
+    minCp: 1957,
+    maxCp: 2042,
+    minBoostedCp: 2446,
+    maxBoostedCp: 2553,
+    weatherBoosts: ["Slunečno (Sunny)", "Sněžení (Snow)"]
+  },
+  // Kalos Aura Trio
+  "xerneas": {
+    bossName: "Xerneas",
+    weaknesses: ["Poison", "Steel"],
+    megaCounters: ["Mega Gengar", "Mega Beedrill"],
+    advancedCounters: ["Metagross (Meteor Mash)", "Nihilego (Sludge Bomb)", "Shadow Metagross", "Shadow Excadrill"],
+    budgetCounters: ["Excadrill (Iron Head)", "Gengar (Sludge Bomb)", "Roserade (Sludge Bomb)", "Melmetal (Double Iron Bash)"],
+    minCp: 2073,
+    maxCp: 2160,
+    minBoostedCp: 2591,
+    maxBoostedCp: 2701,
+    weatherBoosts: ["Zataženo (Cloudy)"]
+  },
+  "yveltal": {
+    bossName: "Yveltal",
+    weaknesses: ["Electric", "Ice", "Rock", "Fairy"],
+    megaCounters: ["Mega Diancie", "Mega Manectric", "Mega Gardevoir"],
+    advancedCounters: ["Xurkitree (Discharge)", "Zekrom (Fusion Bolt)", "Rhyperior (Rock Wrecker)", "Mamoswine (Avalanche)"],
+    budgetCounters: ["Electivire (Wild Charge)", "Glaceon (Avalanche)", "Tyranitar (Stone Edge)", "Sylveon (Dazzling Gleam)"],
+    minCp: 2073,
+    maxCp: 2160,
+    minBoostedCp: 2591,
+    maxBoostedCp: 2701,
+    weatherBoosts: ["Větrno (Windy)", "Mlha (Fog)"]
+  },
+  // Ultra Beasts
   "celesteela": {
     bossName: "Celesteela",
     weaknesses: ["Fire", "Electric"],
@@ -291,6 +515,187 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     minBoostedCp: 2512,
     maxBoostedCp: 2626,
     weatherBoosts: ["Slunečno (Sunny)", "Sněžení (Snow)"]
+  },
+  "xurkitree": {
+    bossName: "Xurkitree",
+    weaknesses: ["Ground"],
+    megaCounters: ["Primal Groudon", "Mega Garchomp"],
+    advancedCounters: ["Groudon (Precipice Blades)", "Shadow Mamoswine", "Landorus Therian (Sandsear Storm)", "Garchomp (Earth Power)"],
+    budgetCounters: ["Excadrill (Drill Run)", "Rhyperior (Earthquake)", "Mamoswine (High Horsepower)", "Krookodile (Earthquake)"],
+    minCp: 2163,
+    maxCp: 2249,
+    minBoostedCp: 2704,
+    maxBoostedCp: 2812,
+    weatherBoosts: ["Deštivo (Rainy)"]
+  },
+  "nihilego": {
+    bossName: "Nihilego",
+    weaknesses: ["Ground (2x)", "Water", "Psychic", "Steel"],
+    megaCounters: ["Primal Groudon", "Mega Garchomp", "Mega Alakazam"],
+    advancedCounters: ["Groudon (Precipice Blades)", "Mewtwo (Psystrike)", "Shadow Mamoswine", "Excadrill (Drill Run)"],
+    budgetCounters: ["Rhyperior (Earthquake)", "Mamoswine (High Horsepower)", "Espeon (Psychic)", "Alakazam (Psychic)"],
+    minCp: 2165,
+    maxCp: 2256,
+    minBoostedCp: 2707,
+    maxBoostedCp: 2821,
+    weatherBoosts: ["Zataženo (Cloudy)", "Slunečno (Sunny)"]
+  },
+  "guzzlord": {
+    bossName: "Guzzlord",
+    weaknesses: ["Fairy (2x)", "Fighting", "Bug", "Ice", "Dragon"],
+    megaCounters: ["Mega Gardevoir", "Mega Alakazam"],
+    advancedCounters: ["Gardevoir (Dazzling Gleam)", "Shadow Gardevoir", "Granbull (Play Rough)", "Xerneas (Geomancy)"],
+    budgetCounters: ["Sylveon (Dazzling Gleam)", "Togekiss (Dazzling Gleam)", "Clefable (Dazzling Gleam)", "Primarina (Moonblast)"],
+    minCp: 1565,
+    maxCp: 1650,
+    minBoostedCp: 1956,
+    maxBoostedCp: 2062,
+    weatherBoosts: ["Mlha (Fog)", "Zataženo (Cloudy)"]
+  },
+  // Key Megas / Primals
+  "mega charizard y": {
+    bossName: "Mega Charizard Y",
+    weaknesses: ["Rock (2x)", "Water", "Electric"],
+    megaCounters: ["Mega Diancie", "Mega Aerodactyl", "Mega Tyranitar"],
+    advancedCounters: ["Rhyperior (Rock Wrecker)", "Rampardos (Rock Slide)", "Terrakion (Rock Slide)", "Tyrantrum (Meteor Beam)"],
+    budgetCounters: ["Tyranitar (Stone Edge)", "Gigalith (Meteor Beam)", "Aerodactyl (Rock Slide)", "Kyogre (Surf)"],
+    minCp: 1578,
+    maxCp: 1655,
+    minBoostedCp: 1972,
+    maxBoostedCp: 2069,
+    weatherBoosts: ["Slunečno (Sunny)", "Větrno (Windy)"]
+  },
+  "mega charizard x": {
+    bossName: "Mega Charizard X",
+    weaknesses: ["Dragon", "Ground", "Rock"],
+    megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Mega Diancie"],
+    advancedCounters: ["Rayquaza (Outrage)", "Groudon (Precipice Blades)", "Palkia Origin (Spacial Rend)", "Rhyperior (Rock Wrecker)"],
+    budgetCounters: ["Dragonite (Outrage)", "Garchomp (Outrage)", "Tyranitar (Stone Edge)", "Excadrill (Drill Run)"],
+    minCp: 1578,
+    maxCp: 1655,
+    minBoostedCp: 1972,
+    maxBoostedCp: 2069,
+    weatherBoosts: ["Slunečno (Sunny)", "Větrno (Windy)"]
+  },
+  "mega swampert": {
+    bossName: "Mega Swampert",
+    weaknesses: ["Grass (2x)"],
+    megaCounters: ["Mega Sceptile", "Mega Venusaur"],
+    advancedCounters: ["Kartana (Leaf Blade)", "Zarude (Power Whip)", "Shadow Tangrowth", "Shadow Venusaur"],
+    budgetCounters: ["Sceptile (Frenzy Plant)", "Venusaur (Frenzy Plant)", "Tangrowth (Power Whip)", "Roserade (Grass Knot)"],
+    minCp: 1697,
+    maxCp: 1777,
+    minBoostedCp: 2121,
+    maxBoostedCp: 2221,
+    weatherBoosts: ["Deštivo (Rainy)", "Slunečno (Sunny)"]
+  },
+  "mega sceptile": {
+    bossName: "Mega Sceptile",
+    weaknesses: ["Ice (2x)", "Dragon", "Fairy", "Flying", "Poison", "Bug"],
+    megaCounters: ["Mega Glalie", "Mega Gardevoir", "Mega Rayquaza"],
+    advancedCounters: ["Mamoswine (Avalanche)", "Baxcalibur (Avalanche)", "Rayquaza (Outrage)", "Shadow Mamoswine"],
+    budgetCounters: ["Glaceon (Avalanche)", "Weavile (Avalanche)", "Dragonite (Outrage)", "Sylveon (Dazzling Gleam)"],
+    minCp: 1517,
+    maxCp: 1593,
+    minBoostedCp: 1897,
+    maxBoostedCp: 1992,
+    weatherBoosts: ["Slunečno (Sunny)", "Větrno (Windy)"]
+  },
+  "mega blaziken": {
+    bossName: "Mega Blaziken",
+    weaknesses: ["Flying", "Ground", "Water", "Psychic"],
+    megaCounters: ["Mega Rayquaza", "Primal Kyogre", "Mega Alakazam"],
+    advancedCounters: ["Mewtwo (Psystrike)", "Kyogre (Origin Pulse)", "Groudon (Precipice Blades)", "Rayquaza (Dragon Ascent)"],
+    budgetCounters: ["Swampert (Hydro Cannon)", "Espeon (Psychic)", "Alakazam (Psychic)", "Excadrill (Drill Run)"],
+    minCp: 1548,
+    maxCp: 1625,
+    minBoostedCp: 1935,
+    maxBoostedCp: 2031,
+    weatherBoosts: ["Slunečno (Sunny)", "Zataženo (Cloudy)"]
+  },
+  "mega gardevoir": {
+    bossName: "Mega Gardevoir",
+    weaknesses: ["Poison", "Ghost", "Steel"],
+    megaCounters: ["Mega Gengar", "Mega Banette", "Mega Scizor"],
+    advancedCounters: ["Metagross (Meteor Mash)", "Nihilego (Sludge Bomb)", "Gholdengo (Shadow Ball)", "Shadow Metagross"],
+    budgetCounters: ["Excadrill (Iron Head)", "Chandelure (Shadow Ball)", "Gengar (Shadow Ball)", "Roserade (Sludge Bomb)"],
+    minCp: 1924,
+    maxCp: 2012,
+    minBoostedCp: 2405,
+    maxBoostedCp: 2515,
+    weatherBoosts: ["Zataženo (Cloudy)", "Větrno (Windy)"]
+  },
+  "mega gengar": {
+    bossName: "Mega Gengar",
+    weaknesses: ["Ghost", "Dark", "Ground", "Psychic"],
+    megaCounters: ["Mega Tyranitar", "Primal Groudon", "Mega Alakazam"],
+    advancedCounters: ["Mewtwo (Psystrike)", "Groudon (Precipice Blades)", "Hydreigon (Brutal Swing)", "Shadow Mewtwo"],
+    budgetCounters: ["Tyranitar (Crunch)", "Excadrill (Drill Run)", "Espeon (Psychic)", "Chandelure (Shadow Ball)"],
+    minCp: 1554,
+    maxCp: 1629,
+    minBoostedCp: 1942,
+    maxBoostedCp: 2037,
+    weatherBoosts: ["Mlha (Fog)", "Zataženo (Cloudy)"]
+  },
+  "mega garchomp": {
+    bossName: "Mega Garchomp",
+    weaknesses: ["Ice (2x)", "Dragon", "Fairy"],
+    megaCounters: ["Mega Glalie", "Mega Gardevoir", "Mega Rayquaza"],
+    advancedCounters: ["Mamoswine (Avalanche)", "Baxcalibur (Avalanche)", "Rayquaza (Outrage)", "Kyurem (Glaciate)"],
+    budgetCounters: ["Glaceon (Avalanche)", "Weavile (Avalanche)", "Dragonite (Outrage)", "Sylveon (Dazzling Gleam)"],
+    minCp: 2174,
+    maxCp: 2264,
+    minBoostedCp: 2718,
+    maxBoostedCp: 2830,
+    weatherBoosts: ["Slunečno (Sunny)", "Větrno (Windy)"]
+  },
+  "mega tyranitar": {
+    bossName: "Mega Tyranitar",
+    weaknesses: ["Fighting (2x)", "Water", "Grass", "Ground", "Bug", "Steel", "Fairy"],
+    megaCounters: ["Mega Blaziken", "Mega Lopunny"],
+    advancedCounters: ["Terrakion (Sacred Sword)", "Keldeo (Sacred Sword)", "Lucario (Aura Sphere)", "Conkeldurr (Dynamic Punch)"],
+    budgetCounters: ["Machamp (Dynamic Punch)", "Hariyama (Dynamic Punch)", "Breloom (Dynamic Punch)", "Sirfetch'd (Close Combat)"],
+    minCp: 2114,
+    maxCp: 2199,
+    minBoostedCp: 2643,
+    maxBoostedCp: 2749,
+    weatherBoosts: ["Mlha (Fog)", "Částečně zataženo (Partly Cloudy)"]
+  },
+  "mega lucario": {
+    bossName: "Mega Lucario",
+    weaknesses: ["Fighting", "Ground", "Fire"],
+    megaCounters: ["Mega Blaziken", "Primal Groudon", "Mega Charizard Y"],
+    advancedCounters: ["Terrakion (Sacred Sword)", "Reshiram (Fusion Flare)", "Groudon (Precipice Blades)", "Mewtwo (Psystrike)"],
+    budgetCounters: ["Machamp (Dynamic Punch)", "Excadrill (Drill Run)", "Chandelure (Overheat)", "Flareon (Overheat)"],
+    minCp: 1750,
+    maxCp: 1840,
+    minBoostedCp: 2187,
+    maxBoostedCp: 2300,
+    weatherBoosts: ["Zataženo (Cloudy)", "Sněžení (Snow)"]
+  },
+  "primal kyogre": {
+    bossName: "Primal Kyogre",
+    weaknesses: ["Grass", "Electric"],
+    megaCounters: ["Mega Sceptile", "Mega Venusaur", "Mega Manectric"],
+    advancedCounters: ["Kartana (Leaf Blade)", "Xurkitree (Discharge)", "Zekrom (Fusion Bolt)", "Zarude (Power Whip)"],
+    budgetCounters: ["Sceptile (Frenzy Plant)", "Venusaur (Frenzy Plant)", "Electivire (Wild Charge)", "Magnezone (Wild Charge)"],
+    minCp: 2260,
+    maxCp: 2351,
+    minBoostedCp: 2825,
+    maxBoostedCp: 2939,
+    weatherBoosts: ["Deštivo (Rainy)"]
+  },
+  "primal groudon": {
+    bossName: "Primal Groudon",
+    weaknesses: ["Water (2x)", "Ground"],
+    megaCounters: ["Primal Kyogre", "Mega Swampert", "Mega Blastoise"],
+    advancedCounters: ["Kyogre (Origin Pulse)", "Shadow Swampert", "Shadow Feraligatr", "Shadow Gyarados"],
+    budgetCounters: ["Swampert (Hydro Cannon)", "Gyarados (Hydro Pump)", "Feraligatr (Hydro Cannon)", "Samurott (Hydro Cannon)"],
+    minCp: 2260,
+    maxCp: 2351,
+    minBoostedCp: 2825,
+    maxBoostedCp: 2939,
+    weatherBoosts: ["Slunečno (Sunny)", "Mlha (Fog)"]
   },
   "mega pidgeot": {
     bossName: "Mega Pidgeot",
@@ -340,18 +745,6 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     maxBoostedCp: 2143,
     weatherBoosts: ["Deštivo (Rainy)", "Sněžení (Snow)"]
   },
-  "dialga": {
-    bossName: "Dialga (regular & Shadow)",
-    weaknesses: ["Fighting", "Ground"],
-    megaCounters: ["Mega Lucario", "Mega Blaziken", "Mega Lopunny"],
-    advancedCounters: ["Terrakion (Sacred Sword)", "Lucario (Aura Sphere)", "Conkeldurr (Dynamic Punch)", "Groudon (Precipice Blades)"],
-    budgetCounters: ["Machamp (Dynamic Punch)", "Hariyama (Dynamic Punch)", "Excadrill (Drill Run)", "Breloom (Dynamic Punch)"],
-    minCp: 2045,
-    maxCp: 2307,
-    minBoostedCp: 2682,
-    maxBoostedCp: 2884,
-    weatherBoosts: ["Sněžení (Snow)", "Větrno (Windy)"]
-  },
   "hisuian braviary": {
     bossName: "Hisuian Braviary",
     weaknesses: ["Rock", "Ice", "Ghost", "Electric", "Dark"],
@@ -377,6 +770,192 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     weatherBoosts: ["Větrno (Windy)", "Mlha (Fog)"]
   }
 };
+
+export const typeAttackersDb: Record<string, { mega: string[]; advanced: string[]; budget: string[] }> = {
+  normal: {
+    mega: ["Mega Lopunny"],
+    advanced: ["Regigigas (Giga Impact)", "Ursaluna (High Horsepower)", "Shadow Staraptor"],
+    budget: ["Ursaring (Hyper Beam)", "Staraptor (Fly)", "Snorlax (Body Slam)"]
+  },
+  fire: {
+    mega: ["Mega Blaziken", "Mega Charizard Y", "Mega Houndoom"],
+    advanced: ["Reshiram (Fusion Flare)", "Shadow Chandelure", "Shadow Entei", "Shadow Moltres", "Heatran (Magma Storm)"],
+    budget: ["Chandelure (Overheat)", "Charizard (Blast Burn)", "Flareon (Overheat)", "Darmanitan (Overheat)", "Blaziken (Blast Burn)"]
+  },
+  water: {
+    mega: ["Primal Kyogre", "Mega Swampert", "Mega Blastoise"],
+    advanced: ["Kyogre (Origin Pulse)", "Shadow Swampert", "Shadow Feraligatr", "Shadow Gyarados", "Greninja (Hydro Cannon)"],
+    budget: ["Swampert (Hydro Cannon)", "Gyarados (Hydro Pump)", "Feraligatr (Hydro Cannon)", "Samurott (Hydro Cannon)"]
+  },
+  electric: {
+    mega: ["Mega Manectric", "Mega Ampharos"],
+    advanced: ["Xurkitree (Discharge)", "Zekrom (Fusion Bolt)", "Shadow Raikou", "Shadow Electivire", "Therian Thundurus"],
+    budget: ["Electivire (Wild Charge)", "Magnezone (Wild Charge)", "Jolteon (Discharge)", "Luxray (Wild Charge)"]
+  },
+  grass: {
+    mega: ["Mega Sceptile", "Mega Venusaur"],
+    advanced: ["Kartana (Leaf Blade)", "Shadow Tangrowth", "Shadow Venusaur", "Zarude (Power Whip)", "Shaymin Sky"],
+    budget: ["Sceptile (Frenzy Plant)", "Venusaur (Frenzy Plant)", "Tangrowth (Power Whip)", "Roserade (Grass Knot)"]
+  },
+  ice: {
+    mega: ["Mega Abomasnow", "Mega Glalie"],
+    advanced: ["Shadow Mamoswine", "Baxcalibur (Avalanche)", "Mamoswine (Avalanche)", "Shadow Weavile"],
+    budget: ["Glaceon (Avalanche)", "Weavile (Avalanche)", "Beartic (Ice Punch)", "Aurorus (Weather Ball)"]
+  },
+  fighting: {
+    mega: ["Mega Blaziken", "Mega Lopunny"],
+    advanced: ["Terrakion (Sacred Sword)", "Keldeo (Sacred Sword)", "Lucario (Aura Sphere)", "Shadow Machamp", "Shadow Hariyama"],
+    budget: ["Machamp (Dynamic Punch)", "Hariyama (Dynamic Punch)", "Conkeldurr (Dynamic Punch)", "Sirfetch'd (Close Combat)"]
+  },
+  poison: {
+    mega: ["Mega Beedrill", "Mega Gengar"],
+    advanced: ["Nihilego (Sludge Bomb)", "Shadow Victreebel", "Shadow Skuntank", "Overqwil (Gunk Shot)"],
+    budget: ["Roserade (Sludge Bomb)", "Gengar (Sludge Bomb)", "Victreebel (Sludge Bomb)", "Toxicroak (Sludge Bomb)"]
+  },
+  ground: {
+    mega: ["Primal Groudon", "Mega Garchomp"],
+    advanced: ["Groudon (Precipice Blades)", "Shadow Mamoswine", "Shadow Garchomp", "Landorus Therian (Sandsear Storm)"],
+    budget: ["Excadrill (Drill Run)", "Mamoswine (High Horsepower)", "Rhyperior (Earthquake)", "Krookodile (Earthquake)"]
+  },
+  flying: {
+    mega: ["Mega Rayquaza", "Mega Pidgeot"],
+    advanced: ["Rayquaza (Dragon Ascent)", "Shadow Moltres", "Shadow Staraptor", "Yveltal (Oblivion Wing)"],
+    budget: ["Staraptor (Fly)", "Honchkrow (Sky Attack)", "Unfezant (Sky Attack)", "Togekiss (Air Slash)"]
+  },
+  psychic: {
+    mega: ["Mega Alakazam", "Mega Latios", "Mega Gardevoir"],
+    advanced: ["Mewtwo (Psystrike)", "Shadow Mewtwo", "Shadow Alakazam", "Shadow Metagross"],
+    budget: ["Espeon (Psychic)", "Alakazam (Psychic)", "Gardevoir (Psychic)", "Metagross (Psychic)"]
+  },
+  bug: {
+    mega: ["Mega Pinsir", "Mega Scizor"],
+    advanced: ["Volcarona (Bug Buzz)", "Pheromosa (Bug Buzz)", "Shadow Scizor", "Vikavolt (X-Scissor)"],
+    budget: ["Pinsir (X-Scissor)", "Scizor (X-Scissor)", "Yanmega (Bug Buzz)", "Accelgor (Bug Buzz)"]
+  },
+  rock: {
+    mega: ["Mega Diancie", "Mega Tyranitar", "Mega Aerodactyl"],
+    advanced: ["Shadow Tyranitar", "Shadow Rhyperior", "Rhyperior (Rock Wrecker)", "Terrakion (Rock Slide)", "Rampardos (Rock Slide)"],
+    budget: ["Tyranitar (Stone Edge)", "Gigalith (Meteor Beam)", "Aerodactyl (Rock Slide)", "Archeops (Ancient Power)"]
+  },
+  ghost: {
+    mega: ["Mega Gengar", "Mega Banette"],
+    advanced: ["Giratina Origin (Shadow Ball)", "Shadow Gengar", "Shadow Chandelure", "Gholdengo (Shadow Ball)"],
+    budget: ["Chandelure (Shadow Ball)", "Gengar (Shadow Ball)", "Banette (Shadow Ball)", "Drifblim (Shadow Ball)"]
+  },
+  dragon: {
+    mega: ["Mega Rayquaza", "Mega Garchomp", "Mega Salamence", "Mega Latios"],
+    advanced: ["Rayquaza (Outrage)", "Palkia Origin (Spacial Rend)", "Dialga Origin (Roar of Time)", "Shadow Salamence", "Shadow Garchomp"],
+    budget: ["Dragonite (Outrage)", "Salamence (Outrage)", "Haxorus (Breaking Swipe)", "Garchomp (Outrage)"]
+  },
+  dark: {
+    mega: ["Mega Tyranitar", "Mega Houndoom", "Mega Gyarados"],
+    advanced: ["Tyranitar (Brutal Swing)", "Hydreigon (Brutal Swing)", "Shadow Tyranitar", "Darkrai (Dark Pulse)", "Yveltal (Dark Pulse)"],
+    budget: ["Houndoom (Foul Play)", "Weavile (Foul Play)", "Honchkrow (Dark Pulse)", "Krookodile (Foul Play)"]
+  },
+  steel: {
+    mega: ["Mega Scizor"],
+    advanced: ["Dusk Mane Necrozma (Sunsteel Strike)", "Shadow Metagross", "Metagross (Meteor Mash)", "Shadow Scizor"],
+    budget: ["Excadrill (Iron Head)", "Dialga (Iron Head)", "Melmetal (Double Iron Bash)", "Scizor (Iron Head)"]
+  },
+  fairy: {
+    mega: ["Mega Gardevoir"],
+    advanced: ["Gardevoir (Dazzling Gleam)", "Shadow Gardevoir", "Shadow Granbull", "Xerneas (Geomancy)"],
+    budget: ["Sylveon (Dazzling Gleam)", "Togekiss (Dazzling Gleam)", "Granbull (Play Rough)", "Florges (Moonblast)"]
+  }
+};
+
+const typeChart: Record<string, Record<string, number>> = {
+  normal: { rock: 0.5, ghost: 0, steel: 0.5 },
+  fire: { fire: 0.5, water: 0.5, grass: 2, ice: 2, bug: 2, rock: 0.5, dragon: 0.5, steel: 2 },
+  water: { fire: 2, water: 0.5, grass: 0.5, ground: 2, rock: 2, dragon: 0.5 },
+  electric: { water: 2, electric: 0.5, grass: 0.5, ground: 0, flying: 2, dragon: 0.5 },
+  grass: { fire: 0.5, water: 2, grass: 0.5, poison: 0.5, ground: 2, flying: 0.5, bug: 0.5, rock: 2, dragon: 0.5, steel: 0.5 },
+  ice: { fire: 0.5, water: 0.5, grass: 2, ice: 0.5, ground: 2, flying: 2, dragon: 2, steel: 0.5 },
+  fighting: { normal: 2, ice: 2, poison: 0.5, flying: 0.5, psychic: 0.5, bug: 0.5, rock: 2, ghost: 0, dark: 2, steel: 2, fairy: 0.5 },
+  poison: { grass: 2, poison: 0.5, ground: 0.5, rock: 0.5, ghost: 0.5, steel: 0, fairy: 2 },
+  ground: { fire: 2, electric: 2, grass: 0.5, poison: 2, flying: 0, bug: 0.5, rock: 2, steel: 2 },
+  flying: { electric: 0.5, grass: 2, fighting: 2, bug: 2, rock: 0.5, steel: 0.5 },
+  psychic: { fighting: 2, poison: 2, psychic: 0.5, dark: 0, steel: 0.5 },
+  bug: { fire: 0.5, fighting: 0.5, poison: 0.5, flying: 0.5, ghost: 0.5, steel: 0.5, grass: 2, psychic: 2, dark: 2, fairy: 0.5 },
+  rock: { fire: 2, ice: 2, fighting: 0.5, ground: 0.5, flying: 2, bug: 2, steel: 0.5 },
+  ghost: { normal: 0, psychic: 2, ghost: 2, dark: 0.5 },
+  dragon: { dragon: 2, steel: 0.5, fairy: 0 },
+  dark: { fighting: 0.5, psychic: 2, ghost: 2, dark: 0.5, fairy: 0.5 },
+  steel: { fire: 0.5, water: 0.5, electric: 0.5, ice: 2, rock: 2, steel: 0.5, fairy: 2 },
+  fairy: { fire: 0.5, fighting: 2, poison: 0.5, dragon: 2, dark: 2, steel: 0.5 }
+};
+
+function parseCpString(cpStr?: string): { min: number; max: number } {
+  if (!cpStr) return { min: 0, max: 0 };
+  const parts = cpStr.split(/[–-]/).map(p => parseInt(p.replace(/[^\d]/g, ''), 10));
+  if (parts.length === 2) {
+    return { min: parts[0] || 0, max: parts[1] || 0 };
+  }
+  if (parts.length === 1) {
+    return { min: 0, max: parts[0] || 0 };
+  }
+  return { min: 0, max: 0 };
+}
+
+export function generateDynamicCounters(
+  bossName: string, 
+  bossTypes: string[], 
+  scrapedCpRange?: string, 
+  scrapedBoostedCpRange?: string, 
+  scrapedWeatherBoosts?: string[]
+): RaidCounters {
+  const vulnerabilities: { type: string; multiplier: number }[] = [];
+  const cleanBossTypes = bossTypes.map(t => t.toLowerCase());
+
+  for (const attackingType of Object.keys(typeChart)) {
+    let multiplier = 1.0;
+    for (const defenderType of cleanBossTypes) {
+      const effect = typeChart[attackingType][defenderType];
+      if (effect !== undefined) {
+        multiplier *= effect;
+      }
+    }
+    if (multiplier > 1.0) {
+      vulnerabilities.push({ type: attackingType, multiplier });
+    }
+  }
+
+  vulnerabilities.sort((a, b) => b.multiplier - a.multiplier);
+
+  const weaknesses = vulnerabilities.map(v => {
+    const capType = v.type.charAt(0).toUpperCase() + v.type.slice(1);
+    return v.multiplier > 2.0 ? `${capType} (2x)` : capType;
+  });
+
+  const megaCounters: string[] = [];
+  const advancedCounters: string[] = [];
+  const budgetCounters: string[] = [];
+
+  for (const vuln of vulnerabilities) {
+    const attackers = typeAttackersDb[vuln.type];
+    if (attackers) {
+      attackers.mega.forEach(c => { if (!megaCounters.includes(c)) megaCounters.push(c); });
+      attackers.advanced.forEach(c => { if (!advancedCounters.includes(c)) advancedCounters.push(c); });
+      attackers.budget.forEach(c => { if (!budgetCounters.includes(c)) budgetCounters.push(c); });
+    }
+  }
+
+  const regularCp = parseCpString(scrapedCpRange);
+  const boostedCp = parseCpString(scrapedBoostedCpRange);
+
+  return {
+    bossName,
+    weaknesses,
+    megaCounters: megaCounters.slice(0, 3),
+    advancedCounters: advancedCounters.slice(0, 4),
+    budgetCounters: budgetCounters.slice(0, 4),
+    minCp: regularCp.min,
+    maxCp: regularCp.max,
+    minBoostedCp: boostedCp.min,
+    maxBoostedCp: boostedCp.max,
+    weatherBoosts: scrapedWeatherBoosts || []
+  };
+}
 
 const BOSS_COUNTERS_DB: Record<string, { bestCounters: string[]; details: string }> = {
   "persian": {
@@ -664,7 +1243,13 @@ function isMetaRelevant(pokemonName: string): boolean {
   return (meta.pveRating === 'S' || meta.pveRating === 'A' || meta.pvpRating === 'S' || meta.pvpRating === 'A');
 }
 
-function findRaidCounters(bossName: string): RaidCounters | null {
+function findRaidCounters(
+  bossName: string, 
+  bossTypes?: string[], 
+  scrapedCpRange?: string, 
+  scrapedBoostedCpRange?: string, 
+  scrapedWeatherBoosts?: string[]
+): RaidCounters | null {
   if (!bossName) return null;
   const cleanName = bossName.toLowerCase();
   
@@ -673,6 +1258,17 @@ function findRaidCounters(bossName: string): RaidCounters | null {
       return raidCountersDb[key];
     }
   }
+
+  if (bossTypes && bossTypes.length > 0) {
+    return generateDynamicCounters(
+      bossName, 
+      bossTypes, 
+      scrapedCpRange, 
+      scrapedBoostedCpRange, 
+      scrapedWeatherBoosts
+    );
+  }
+
   return null;
 }
 
@@ -883,7 +1479,7 @@ export async function scrapeRaidBosses(): Promise<ScrapedRaidBoss[]> {
       if (typeText) types.push(typeText);
     });
 
-    const matchedCounters = findRaidCounters(name);
+    const matchedCounters = findRaidCounters(name, types, cpRange, boostedCpRange, weatherBoosts);
 
     bosses.push({
       name,

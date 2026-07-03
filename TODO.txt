@@ -3,8 +3,8 @@
 3: V timeline zobrazení ponechat pouze kalendář (odstranit sekce active a upcoming včetně časových filtrů)
 4: Přidat sekci All v sekci List eventu 
 5: Upravit veškeré emoji na stránce na více stylizované, zároveň přidat logo které bude pasovat do vzhledu aplikace, včetně loga android aplikace
-
 6: Notifikace na přidání nového eventu
-7: Vylepšit doporučování counterů na základ vnitřní tabulky která se vytvoří na základě momentální mety v backendu. využít jak nejlepší tak i budget variantu
 
-Bonus: Možnost admina ručně upravovat jedntolivé eventy (samostatná aplikace ????)
+7: Vylepšit doporučování counterů na základ vnitřní tabulky která se vytvoří na základě momentální mety v backendu. využít jak nejlepší tak i budget variantu - pro každého pokémona vytáhnout aktuální coutnery a udělat z toho tabulku do které se vždy jen nakoukne a vytáhnout se infromace
+
+Bonus: Možnost admina ručně upravovat jedntolivé eventy (samostatná aplikace ????). nejlépe vytvořit funkce které by přímo pracovali s daty na backendu tak abych nemusel zasahovat do frontendu a stačilo pouze měnit data. samozřejmě autentizace a autorizace je vyžadována kvůli bezpečnosti dat.

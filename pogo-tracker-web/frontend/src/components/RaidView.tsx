@@ -5,6 +5,7 @@ import { TypeBadge } from './EventCard';
 import type { EventData } from './EventCard';
 import { API_BASE_URL } from '../config';
 import { Sparkles } from 'lucide-react';
+import { CounterItem, WeatherIcon } from './CounterItem';
 
 // Official-like Shadow Pokemon SVG Icon
 const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
@@ -222,18 +223,51 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                       )}
                       {boss.name}
                     </h3>
-                    <div className="boss-sub-attributes">
-                      {boss.canBeShiny && (
-                        <span className="shiny-star-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                          <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} /> Shiny
+                    {boss.canBeShiny && (
+                      <div style={{ marginTop: '3px' }}>
+                        <span className="shiny-star-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', padding: '1px 5px', fontSize: '0.65rem', borderRadius: '4px', backgroundColor: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24', border: '1px solid rgba(251, 191, 36, 0.2)' }}>
+                          <Sparkles size={8} fill="currentColor" stroke="none" /> Shiny
                         </span>
-                      )}
-                      {counters && (
-                        <span className="cp-range-short">
-                          Max CP: {counters.maxCp}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="boss-right-info" style={{ marginLeft: 'auto', marginRight: '16px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', textAlign: 'right' }}>
+                    {/* CP range */}
+                    {counters && counters.maxCp > 0 ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                          {counters.minCp} – <strong className="hundo-label" style={{ color: 'var(--tier-s)', fontWeight: 700 }}>{counters.maxCp} CP</strong>
                         </span>
-                      )}
-                    </div>
+                        {counters.maxBoostedCp > 0 && (
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                            <span style={{ color: '#60a5fa' }}>⚡</span> {counters.minBoostedCp} – <strong className="hundo-label-boost" style={{ color: '#60a5fa', fontWeight: 600 }}>{counters.maxBoostedCp} CP</strong>
+                          </span>
+                        )}
+                      </div>
+                    ) : boss.cpRange ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                          {boss.cpRange} CP
+                        </span>
+                        {boss.boostedCpRange && (
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                            <span style={{ color: '#60a5fa' }}>⚡</span> {boss.boostedCpRange} CP
+                          </span>
+                        )}
+                      </div>
+                    ) : null}
+
+                    {/* Weather Boosts */}
+                    {counters && counters.weatherBoosts.length > 0 ? (
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        {counters.weatherBoosts.map(w => <WeatherIcon key={w} weatherStr={w} />)}
+                      </div>
+                    ) : (boss.weatherBoosts && boss.weatherBoosts.length > 0) ? (
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        {boss.weatherBoosts.map(w => <WeatherIcon key={w} weatherStr={w} />)}
+                      </div>
+                    ) : null}
                   </div>
 
                   <div className="expand-chevron">
@@ -246,7 +280,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                     <div className="expanded-divider"></div>
                     
                     {counters ? (
-                      <div className="raid-boss-counters-card no-border">
+                      <div className="raid-boss-counters-card no-border" style={{ paddingBottom: 0 }}>
                         <div className="counters-boss-header pad-none">
                           <div className="weakness-list">
                             {t.details_weaknesses}: <span className="type-badges-flex">{counters.weaknesses.map(w => <TypeBadge key={w} typeStr={w} />)}</span>
@@ -254,74 +288,39 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                         </div>
                         
                         <div className="counters-levels-grid">
-                          <div className="counter-level-col mega">
-                            <span className="level-badge mega">{t.details_level_mega}</span>
-                            <ul>
-                              {counters.megaCounters.map(c => <li key={c}>{c}</li>)}
-                            </ul>
-                          </div>
-                          <div className="counter-level-col advanced">
-                            <span className="level-badge advanced">{t.details_level_advanced}</span>
-                            <ul>
-                              {counters.advancedCounters.map(c => <li key={c}>{c}</li>)}
-                            </ul>
-                          </div>
-                          <div className="counter-level-col budget">
-                            <span className="level-badge budget">{t.details_level_budget}</span>
-                            <ul>
-                              {counters.budgetCounters.map(c => <li key={c}>{c}</li>)}
-                            </ul>
-                          </div>
-                        </div>
-
-                        <div className="counters-cp-info pad-none margin-top-sm">
-                          <div className="cp-row">
-                            <span className="cp-header-label">{t.details_standard_cp}</span>
-                            <span className="cp-span">{counters.minCp} – <strong className="hundo-label">{counters.maxCp} CP (100% IV)</strong></span>
-                          </div>
-                          <div className="cp-row">
-                            <span className="cp-header-label">{t.details_weather_cp}</span>
-                            <span className="cp-span">{counters.minBoostedCp} – <strong className="hundo-label-boost">{counters.maxBoostedCp} CP (100% IV)</strong></span>
-                          </div>
-                          <div className="cp-row">
-                            <span className="cp-header-label">{t.details_boost_weather}</span>
-                            <span className="cp-span">{counters.weatherBoosts.join(" / ")}</span>
-                          </div>
-                          <div className="cp-row shiny-info">
-                            <span className="cp-header-label">{t.details_shiny_version}</span>
-                            <span className="cp-span highlight-shiny" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                              <Sparkles size={12} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} /> {t.details_shiny_available}
-                            </span>
-                          </div>
+                          {counters.megaCounters.length > 0 && (
+                            <div className="counter-level-col mega">
+                              <span className="level-badge mega">{t.details_level_mega}</span>
+                              <ul>
+                                {counters.megaCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                              </ul>
+                            </div>
+                          )}
+                          {counters.advancedCounters.length > 0 && (
+                            <div className="counter-level-col advanced">
+                              <span className="level-badge advanced">{t.details_level_advanced}</span>
+                              <ul>
+                                {counters.advancedCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                              </ul>
+                            </div>
+                          )}
+                          {counters.budgetCounters.length > 0 && (
+                            <div className="counter-level-col budget">
+                              <span className="level-badge budget">{t.details_level_budget}</span>
+                              <ul>
+                                {counters.budgetCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                              </ul>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ) : (
                       <div className="no-counters-found">
-                        <p>
+                        <p style={{ margin: 0, padding: '8px 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                           {lang === 'cs' 
                             ? 'Doporučené counters a CP pro tohoto bossa momentálně nejsou k dispozici.' 
                             : 'Recommended counters and CP for this boss are currently unavailable.'}
                         </p>
-                        {boss.cpRange && (
-                          <div className="counters-cp-info pad-none margin-top-sm">
-                            <div className="cp-row">
-                              <span className="cp-header-label">{t.details_standard_cp}</span>
-                              <span className="cp-span">{boss.cpRange} CP</span>
-                            </div>
-                            {boss.boostedCpRange && (
-                              <div className="cp-row">
-                                <span className="cp-header-label">{t.details_weather_cp}</span>
-                                <span className="cp-span">{boss.boostedCpRange} CP</span>
-                              </div>
-                            )}
-                            {boss.weatherBoosts && (
-                              <div className="cp-row">
-                                <span className="cp-header-label">{t.details_boost_weather}</span>
-                                <span className="cp-span">{boss.weatherBoosts.join(" / ")}</span>
-                              </div>
-                            )}
-                          </div>
-                        )}
                       </div>
                     )}
                   </div>
