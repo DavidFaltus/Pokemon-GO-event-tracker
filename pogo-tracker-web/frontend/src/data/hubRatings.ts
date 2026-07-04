@@ -95,6 +95,10 @@ export const LOCAL_HUB_RATING_DB: Record<string, string> = {
   "druddigon": "B",
   "skarmory": "B",
   "hisuian decidueye": "B",
+  "lucario": "S",
+  "snorlax": "A",
+  "gyarados": "A+",
+  "charizard": "A+",
 
   // Base Forms & Intermediates (Should have low ratings themselves so only evolutions trigger)
   "machop": "C",
@@ -126,6 +130,12 @@ export const LOCAL_HUB_RATING_DB: Record<string, string> = {
   "aron": "C",
   "snubbull": "C",
   "alolan vulpix": "C",
+  "vulpix": "C",
+  "rufflet": "C",
+  "scyther": "C",
+  "phanpy": "C",
+  "darumaka": "C",
+  "hitmonchan": "C",
   "tentacool": "C",
   "krabby": "C",
   "dewpider": "C",
@@ -184,6 +194,11 @@ export const EVOLUTION_MAP: Record<string, { evolution: string; rating: string }
   "aron": { evolution: "Aggron", rating: "B" },
   "snubbull": { evolution: "Granbull", rating: "A" },
   "alolan vulpix": { evolution: "Alolan Ninetales", rating: "A" },
+  "vulpix": { evolution: "Ninetales", rating: "B" },
+  "rufflet": { evolution: "Braviary", rating: "B" },
+  "scyther": { evolution: "Scizor", rating: "A" },
+  "phanpy": { evolution: "Donphan", rating: "B" },
+  "darumaka": { evolution: "Darmanitan", rating: "A" },
   "tentacool": { evolution: "Tentacruel", rating: "A" },
   "krabby": { evolution: "Kingler", rating: "A" },
   "dewpider": { evolution: "Araquanid", rating: "A" },
@@ -213,23 +228,33 @@ export const EVOLUTION_MAP: Record<string, { evolution: string; rating: string }
 };
 
 export const getPokemonHubRating = (name: string): string => {
-  const clean = name.toLowerCase()
+  let clean = name.toLowerCase()
     .replace('shadow ', '')
     .replace('apex ', '')
     .replace('mega ', '')
     .replace('primal ', '')
-    .replace(/\s*\(.*?\)\s*/g, '')
     .trim();
-  return LOCAL_HUB_RATING_DB[clean] || '';
+  
+  // Clean up trailing " X" or " Y" for Mega forms (e.g. Charizard Y -> charizard)
+  clean = clean.replace(/\s+[xy]$/i, '');
+  // Clean up any parentheses like "(Altered)" or "(Origin)"
+  clean = clean.replace(/\s*\(.*?\)\s*/g, '');
+  
+  return LOCAL_HUB_RATING_DB[clean.trim()] || '';
 };
 
 export const getEvolutionInfo = (name: string) => {
-  const clean = name.toLowerCase()
+  let clean = name.toLowerCase()
     .replace('shadow ', '')
     .replace('apex ', '')
     .replace('mega ', '')
     .replace('primal ', '')
-    .replace(/\s*\(.*?\)\s*/g, '')
     .trim();
-  return EVOLUTION_MAP[clean] || null;
+  
+  // Clean up trailing " X" or " Y" for Mega forms
+  clean = clean.replace(/\s+[xy]$/i, '');
+  // Clean up any parentheses
+  clean = clean.replace(/\s*\(.*?\)\s*/g, '');
+  
+  return EVOLUTION_MAP[clean.trim()] || null;
 };
