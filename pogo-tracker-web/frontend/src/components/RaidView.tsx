@@ -259,43 +259,42 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                          <ShadowIcon style={{ marginRight: '6px', width: '14px', height: '14px', filter: 'none' }} />
                        )}
                        <span>{boss.name}</span>
+                       {/* PoGO Hub Rating & Evolution Info */}
+                       {(() => {
+                         const rating = getPokemonHubRating(boss.name);
+                         const evoInfo = getEvolutionInfo(boss.name);
+                         const showEvo = evoInfo && ['S', 'A+', 'A'].includes(evoInfo.rating) && boss.name.toLowerCase() !== evoInfo.evolution.toLowerCase();
+                         
+                         if (!rating && !showEvo) return null;
+                         
+                         return (
+                           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                             {rating && (
+                               <HubRatingBadge rating={rating} />
+                             )}
+                             {showEvo && (
+                               <span 
+                                 style={{ 
+                                   fontSize: '0.62rem', 
+                                   color: '#34d399', 
+                                   fontWeight: 600, 
+                                   backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                                   border: '1px solid rgba(16, 185, 129, 0.25)',
+                                   padding: '1px 5px',
+                                   borderRadius: '4px',
+                                   display: 'inline-flex',
+                                   alignItems: 'center',
+                                   gap: '3px'
+                                 }}
+                               >
+                                 <span>➔ {boss.tier.startsWith('shadow') ? 'Shadow' : ''} {evoInfo.evolution}</span>
+                                 <span style={{ fontWeight: 800 }}>({evoInfo.rating})</span>
+                               </span>
+                             )}
+                           </span>
+                         );
+                       })()}
                      </h3>
-
-                     {/* PoGO Hub Rating & Evolution Info */}
-                     {(() => {
-                       const rating = getPokemonHubRating(boss.name);
-                       const evoInfo = getEvolutionInfo(boss.name);
-                       const showEvo = evoInfo && ['S', 'A+', 'A'].includes(evoInfo.rating) && boss.name.toLowerCase() !== evoInfo.evolution.toLowerCase();
-                       
-                       if (!rating && !showEvo) return null;
-                       
-                       return (
-                         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px', marginTop: '4px', marginBottom: '4px' }}>
-                           {rating && (
-                             <HubRatingBadge rating={rating} />
-                           )}
-                           {showEvo && (
-                             <span 
-                               style={{ 
-                                 fontSize: '0.62rem', 
-                                 color: '#34d399', 
-                                 fontWeight: 600, 
-                                 backgroundColor: 'rgba(16, 185, 129, 0.08)',
-                                 border: '1px solid rgba(16, 185, 129, 0.25)',
-                                 padding: '1px 5px',
-                                 borderRadius: '4px',
-                                 display: 'inline-flex',
-                                 alignItems: 'center',
-                                 gap: '3px'
-                               }}
-                             >
-                               <span>➔ {boss.tier.startsWith('shadow') ? 'Shadow' : ''} {evoInfo.evolution}</span>
-                               <span style={{ fontWeight: 800 }}>({evoInfo.rating})</span>
-                             </span>
-                           )}
-                         </div>
-                       );
-                     })()}
 
                      {boss.canBeShiny && (
                        <div style={{ marginTop: '3px' }}>
