@@ -987,6 +987,91 @@ body {
   background-color: rgba(168, 85, 247, 0.05);
 }
 
+/* V2 Slot Items with Pokemon images and types */
+.slot-item-card-v2 {
+  background-color: rgba(6, 7, 9, 0.35);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.slot-item-card-v2:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.slot-item-card-v2.boss {
+  border-color: var(--rocket-purple);
+  background-color: rgba(168, 85, 247, 0.06);
+}
+
+.slot-item-card-v2.boss:hover {
+  background-color: rgba(168, 85, 247, 0.12);
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+.slot-pokemon-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+  image-rendering: auto;
+}
+
+.slot-pokemon-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.slot-pokemon-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slot-type-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.slot-type-badges .type-badge {
+  font-size: 0.55rem;
+  padding: 1px 5px;
+}
+
+.slot-or-separator {
+  display: block;
+  text-align: center;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 1px 0;
+  opacity: 0.6;
+}
+
+/* Hub Rating Badge */
+.hub-rating-badge {
+  white-space: nowrap;
+  transition: transform 0.15s ease;
+}
+
+.hub-rating-badge:hover {
+  transform: scale(1.05);
+}
+
 .counters-list {
   display: flex;
   flex-direction: column;
@@ -1033,6 +1118,70 @@ body {
   border: 1px solid rgba(170, 59, 255, 0.25);
   padding: 2px 6px;
   border-radius: 6px;
+}
+
+.rocket-counter-boss-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.rocket-counter-grid {
+  list-style: none;
+  padding-left: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.rocket-counter-grid li.counter-item-card {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  padding: 8px;
+  border-radius: 8px;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  width: 100%;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.rocket-counter-grid li.counter-item-card:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.rocket-counter-grid li.counter-item-card img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+  transition: transform 0.2s ease;
+}
+
+.rocket-counter-grid li.counter-item-card:hover img {
+  transform: scale(1.1);
+}
+
+.rocket-counter-grid li .type-badge {
+  font-size: 0.6rem;
+  padding: 1px 4px;
+  gap: 2px;
+  border-radius: 3px;
+}
+
+.rocket-counter-grid li .type-badge-icon {
+  width: 8px;
+  height: 8px;
 }
 
 .counter-strategy {

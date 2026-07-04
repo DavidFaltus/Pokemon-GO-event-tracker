@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
 import { TypeBadge } from './EventCard';
+import { CounterItem, getPokemonIconUrl } from './CounterItem';
 import { API_BASE_URL } from '../config';
-import { Zap, Users, Gift, Flame, Swords, Shield, MessageSquare, Gem, Moon, Glasses } from 'lucide-react';
+import { Zap, Users, Gift, Flame, Swords, Shield, MessageSquare, Gem, Moon, Glasses, Trophy } from 'lucide-react';
 
 const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
   <svg
@@ -77,6 +78,12 @@ interface RocketGuideProps {
   lang: Language;
 }
 
+interface LineupPokemon {
+  name: string;
+  types: string[];
+  image: string;
+}
+
 interface RocketMember {
   name: string;
   avatar: string;
@@ -86,17 +93,18 @@ interface RocketMember {
     pvpRating: 'S' | 'A' | 'B' | 'C' | 'None';
     worthGrinding: boolean;
     reason: string;
+    hubRating: string;
   };
   lineup: {
-    slot1: string[];
-    slot2: string[];
-    slot3: string[];
+    slot1: LineupPokemon[];
+    slot2: LineupPokemon[];
+    slot3: LineupPokemon[];
   };
   counters: {
-    bossPokemon: string;
-    bestCounters: string[];
-    details: string;
-  }[];
+    megaCounters: string[];
+    advancedCounters: string[];
+    budgetCounters: string[];
+  };
 }
 
 interface GruntData {
@@ -110,6 +118,218 @@ interface GruntData {
 }
 
 type ModeType = 'leaders' | 'grunts';
+
+const LOCAL_HUB_RATING_DB: Record<string, string> = {
+  // Giovanni / Leaders
+  "reshiram": "S",
+  "axew": "A",
+  "tyrunt": "S",
+  "amaura": "B",
+  "landorus": "A",
+  "machop": "S",
+  "machamp": "S",
+  "bagon": "S",
+  "salamence": "S",
+  "beldum": "S",
+  "metagross": "S",
+
+  // Grunts Slot 1 rewards & common shadows
+  "teddiursa": "C",
+  "ursaring": "C",
+  "hoothoot": "B",
+  "porygon": "C",
+  "litwick": "S",
+  "chandelure": "S",
+  "ponyta": "C",
+  "torchic": "S",
+  "blaziken": "S",
+  "mudkip": "S",
+  "swampert": "S",
+  "tentacool": "A",
+  "krabby": "A",
+  "magikarp": "A+",
+  "gyarados": "A+",
+  "feebas": "B",
+  "voltorb": "C",
+  "shinx": "B",
+  "helioptile": "C",
+  "phantump": "A",
+  "treecko": "A",
+  "tangela": "A",
+  "seel": "S",
+  "delibird": "C",
+  "spheal": "S",
+  "walrein": "S",
+  "timburr": "S",
+  "conkeldurr": "S",
+  "mankey": "S",
+  "annihilape": "S",
+  "oddish": "B",
+  "zubat": "C",
+  "qwilfish": "B",
+  "rhyhorn": "S",
+  "rhyperior": "S",
+  "gligar": "S",
+  "trapinch": "B",
+  "taillow": "C",
+  "rookidee": "B",
+  "swablu": "A",
+  "wobbuffet": "B",
+  "ralts": "S",
+  "gardevoir": "S",
+  "drowzee": "B",
+  "venonat": "C",
+  "weedle": "B",
+  "grubbin": "A",
+  "vikavolt": "A",
+  "onix": "A",
+  "steelix": "A",
+  "kabuto": "C",
+  "cranidos": "S",
+  "rampardos": "S",
+  "duskull": "C",
+  "gastly": "A",
+  "gengar": "A",
+  "yamask": "A",
+  "noibat": "C",
+  "deino": "S",
+  "hydreigon": "S",
+  "dratini": "S",
+  "dragonite": "S",
+  "carvanha": "B",
+  "poochyena": "C",
+  "alolan rattata": "C",
+  "alolan sandshrew": "B",
+  "aron": "C",
+  "snubbull": "A",
+  "alolan vulpix": "A",
+  "bulbasaur": "A+",
+  "charmander": "A+",
+  "squirtle": "B",
+  "snorlax": "A",
+  "lapras": "B",
+  "bellsprout": "B",
+  "victreebel": "B",
+  "gible": "S",
+  "garchomp": "S",
+  "swinub": "S",
+  "mamoswine": "S",
+  "starly": "A",
+  "staraptor": "A",
+  "cacnea": "C",
+  "seedot": "B",
+  "nuzleaf": "B",
+  "totodile": "B",
+  "shellder": "C",
+  "hippopotas": "C",
+  "phanpy": "C",
+  "misdreavus": "C",
+  "mawile": "B",
+  "dewpider": "A",
+"shieldon": "S",
+  "graveler": "B",
+  "galarian weezing": "A"
+};
+
+const EVOLUTION_MAP: Record<string, { evolution: string; rating: string }> = {
+  "machop": { evolution: "Machamp", rating: "S" },
+  "bagon": { evolution: "Salamence", rating: "S" },
+  "beldum": { evolution: "Metagross", rating: "S" },
+  "larvitar": { evolution: "Tyranitar", rating: "A+" },
+  "dratini": { evolution: "Dragonite", rating: "S" },
+  "gible": { evolution: "Garchomp", rating: "S" },
+  "swinub": { evolution: "Mamoswine", rating: "S" },
+  "ralts": { evolution: "Gardevoir", rating: "S" },
+  "gastly": { evolution: "Gengar", rating: "A" },
+  "mudkip": { evolution: "Swampert", rating: "S" },
+  "starly": { evolution: "Staraptor", rating: "A" },
+  "teddiursa": { evolution: "Ursaring", rating: "C" },
+  "bellsprout": { evolution: "Victreebel", rating: "B" },
+  "oddish": { evolution: "Victreebel", rating: "B" },
+  "seedot": { evolution: "Shiftry", rating: "B" },
+  "totodile": { evolution: "Feraligatr", rating: "B" },
+  "litwick": { evolution: "Chandelure", rating: "S" },
+  "torchic": { evolution: "Blaziken", rating: "S" },
+  "timburr": { evolution: "Conkeldurr", rating: "S" },
+  "mankey": { evolution: "Annihilape", rating: "S" },
+  "rhyhorn": { evolution: "Rhyperior", rating: "S" },
+  "cranidos": { evolution: "Rampardos", rating: "S" },
+  "deino": { evolution: "Hydreigon", rating: "S" },
+  "bulbasaur": { evolution: "Venusaur", rating: "A+" },
+  "charmander": { evolution: "Charizard", rating: "A+" },
+  "squirtle": { evolution: "Blastoise", rating: "B" },
+  "aron": { evolution: "Aggron", rating: "C" },
+  "snubbull": { evolution: "Granbull", rating: "A" },
+  "alolan vulpix": { evolution: "Alolan Ninetales", rating: "A" },
+  "tentacool": { evolution: "Tentacruel", rating: "A" },
+  "krabby": { evolution: "Kingler", rating: "A" },
+  "dewpider": { evolution: "Araquanid", rating: "A" },
+  "shieldon": { evolution: "Bastiodon", rating: "S" },
+  "graveler": { evolution: "Golem", rating: "B" },
+  "magikarp": { evolution: "Gyarados", rating: "A+" },
+  "feebas": { evolution: "Milotic", rating: "B" },
+  "shinx": { evolution: "Luxray", rating: "B" },
+  "phantump": { evolution: "Trevenant", rating: "A" },
+  "treecko": { evolution: "Sceptile", rating: "A" },
+  "tangela": { evolution: "Tangrowth", rating: "A" },
+  "seel": { evolution: "Dewgong", rating: "S" },
+  "spheal": { evolution: "Walrein", rating: "S" },
+  "weedle": { evolution: "Beedrill", rating: "B" },
+  "grubbin": { evolution: "Vikavolt", rating: "A" },
+  "onix": { evolution: "Steelix", rating: "A" },
+  "yamask": { evolution: "Cofagrigus", rating: "A" },
+  "alolan sandshrew": { evolution: "Alolan Sandslash", rating: "B" },
+  "swablu": { evolution: "Altaria", rating: "A" },
+  "rookidee": { evolution: "Corviknight", rating: "B" },
+  "axew": { evolution: "Haxorus", rating: "A" },
+  "tyrunt": { evolution: "Tyrantrum", rating: "S" }
+};
+
+const getPokemonHubRating = (name: string): string => {
+  const clean = name.toLowerCase().replace('shadow ', '').replace('apex ', '').trim();
+  return LOCAL_HUB_RATING_DB[clean] || '';
+};
+
+const getEvolutionInfo = (name: string) => {
+  const clean = name.toLowerCase().replace('shadow ', '').replace('apex ', '').trim();
+  return EVOLUTION_MAP[clean] || null;
+};
+
+const HubRatingBadge: React.FC<{ rating: string }> = ({ rating }) => {
+  if (!rating) return null;
+  
+  const getRatingColor = (r: string) => {
+    const rLower = r.toLowerCase();
+    if (rLower === 's') return { bg: '#eab308', color: '#0c0d12' }; // Gold
+    if (rLower.startsWith('a+')) return { bg: '#10b981', color: '#ffffff' }; // Emerald / Bright Green
+    if (rLower.startsWith('a')) return { bg: '#22c55e', color: '#0c0d12' }; // Green
+    if (rLower.startsWith('b')) return { bg: '#3b82f6', color: '#ffffff' }; // Blue
+    return { bg: '#9ca3af', color: '#0c0d12' }; // Gray
+  };
+  
+  const colors = getRatingColor(rating);
+  
+  return (
+    <span 
+      className="hub-rating-badge"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '3px',
+        padding: '2px 6px',
+        fontSize: '0.65rem',
+        fontWeight: 800,
+        borderRadius: '4px',
+        backgroundColor: colors.bg,
+        color: colors.color,
+        boxShadow: '0 1px 2px rgba(0,0,0,0.15)'
+      }}
+    >
+      <Trophy size={10} fill="currentColor" stroke="none" />
+      {rating} Tier
+    </span>
+  );
+};
 
 export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
   const [mode, setMode] = useState<ModeType>('leaders');
@@ -127,7 +347,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${API_BASE_URL}/api/rocket`);
+        const response = await fetch(`${API_BASE_URL}/api/rocket?nocache=true`);
         if (!response.ok) throw new Error('Failed to fetch rocket lineups');
         const data = await response.json();
         setRocketData(data);
@@ -178,6 +398,44 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
     if (diff === 'Medium') return t.rocket_difficulty_medium;
     return t.rocket_difficulty_hard;
   };
+
+  const renderLineupSlot = (pokemon: LineupPokemon[], slotLabel: string) => (
+    <div className="lineup-column">
+      <span className="slot-title">{slotLabel}</span>
+      <div className="slot-items">
+        {pokemon.map((p, i) => (
+          <React.Fragment key={p.name}>
+            {i > 0 && (
+              <span className="slot-or-separator">{t.rocket_or}</span>
+            )}
+            <div className={`slot-item-card-v2 ${slotLabel === t.rocket_slot_3 ? 'boss' : ''}`}>
+              <img 
+                src={p.image} 
+                alt={p.name}
+                className="slot-pokemon-img"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_000.png";
+                }}
+              />
+              <div className="slot-pokemon-info">
+                <span className="slot-pokemon-name">{p.name}</span>
+                {p.types && p.types.length > 0 && (
+                  <div className="slot-type-badges">
+                    {p.types.map(type => (
+                      <TypeBadge key={type} typeStr={type} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  );
+
+  const activeRewardName = currentMember.reward.name;
+  const activeRewardRating = currentMember.reward.hubRating || getPokemonHubRating(activeRewardName);
 
   return (
     <div className="rocket-guide">
@@ -242,16 +500,47 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                  <span className="duotone-icon duotone-purple"><Gift size={16} /></span>
                  {t.rocket_active_reward}
                </h3>
-              <div className="reward-card">
-                <div className="reward-info">
-                  <h4>{currentMember.reward.name}</h4>
+              <div className="reward-card" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div 
+                  className="reward-image-wrapper" 
+                  style={{ 
+                    position: 'relative', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '12px',
+                    width: '74px',
+                    height: '74px',
+                    flexShrink: 0
+                  }}
+                >
+                  <ShadowIcon 
+                    style={{ 
+                      position: 'absolute', 
+                      top: '-4px', 
+                      right: '-4px', 
+                      width: '18px', 
+                      height: '18px', 
+                      filter: 'drop-shadow(0 0 3px rgba(168, 85, 247, 0.75))' 
+                    }} 
+                  />
+                  <img 
+                    src={getPokemonIconUrl(activeRewardName)} 
+                    alt={activeRewardName}
+                    style={{ width: '64px', height: '64px', objectFit: 'contain' }}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_000.png";
+                    }}
+                  />
+                </div>
+                <div className="reward-info" style={{ flex: 1 }}>
+                  <h4>{activeRewardName}</h4>
                   <div className="rating-badges">
-                    <span className={`rating-badge pve rating-${currentMember.reward.pveRating.toLowerCase()}`}>
-                      PvE: {currentMember.reward.pveRating}
-                    </span>
-                    <span className={`rating-badge pvp rating-${currentMember.reward.pvpRating.toLowerCase()}`}>
-                      PvP: {currentMember.reward.pvpRating}
-                    </span>
+                    {activeRewardRating && (
+                      <HubRatingBadge rating={activeRewardRating} />
+                    )}
                      {currentMember.reward.worthGrinding && (
                        <span className="grind-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                          <Flame size={12} fill="currentColor" stroke="none" /> {t.rocket_doporuceno}
@@ -259,69 +548,84 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                      )}
                   </div>
                   <p className="reward-reason">{currentMember.reward.reason}</p>
+                  {(() => {
+                    const evoInfo = getEvolutionInfo(activeRewardName);
+                    if (evoInfo && ['S', 'A+', 'A'].includes(evoInfo.rating) && activeRewardName.toLowerCase() !== evoInfo.evolution.toLowerCase()) {
+                      return (
+                        <div style={{
+                          marginTop: '8px',
+                          padding: '6px 10px',
+                          backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                          border: '1px solid rgba(16, 185, 129, 0.3)',
+                          borderRadius: '8px',
+                          fontSize: '0.75rem',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          color: '#34d399',
+                          fontWeight: 550
+                        }}>
+                          <span style={{ display: 'inline-block' }}>🔥</span>
+                          <span>
+                            {lang === 'cs' 
+                              ? `Evoluuje na špičkového Shadow ${evoInfo.evolution} (${evoInfo.rating} Tier)`
+                              : `Evolves into top-tier Shadow ${evoInfo.evolution} (${evoInfo.rating} Tier)`
+                            }
+                          </span>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })()}
                 </div>
               </div>
             </div>
 
-            {/* Lineup */}
+            {/* Lineup with Pokemon images and types */}
             <div className="rocket-lineup-section">
                <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
                  <span className="duotone-icon duotone-red"><Swords size={16} /></span>
                  {t.rocket_lineup}
                </h3>
               <div className="lineup-grid">
-                <div className="lineup-column">
-                  <span className="slot-title">{t.rocket_slot_1}</span>
-                  <div className="slot-items">
-                    {currentMember.lineup.slot1.map(p => (
-                      <div key={p} className="slot-item-card static">{p}</div>
-                    ))}
-                  </div>
-                </div>
-                <div className="lineup-column">
-                  <span className="slot-title">{t.rocket_slot_2}</span>
-                  <div className="slot-items">
-                    {currentMember.lineup.slot2.map(p => (
-                      <div key={p} className="slot-item-card random">{p}</div>
-                    ))}
-                  </div>
-                </div>
-                <div className="lineup-column">
-                  <span className="slot-title">{t.rocket_slot_3}</span>
-                  <div className="slot-items">
-                    {currentMember.lineup.slot3.map(p => (
-                      <div key={p} className="slot-item-card boss">{p}</div>
-                    ))}
-                  </div>
-                </div>
+                {renderLineupSlot(currentMember.lineup.slot1, t.rocket_slot_1)}
+                {renderLineupSlot(currentMember.lineup.slot2, t.rocket_slot_2)}
+                {renderLineupSlot(currentMember.lineup.slot3, t.rocket_slot_3)}
               </div>
             </div>
 
-            {/* Counters Guide */}
+            {/* Overall Lineup Counters - Primal/Advanced/Budget */}
             <div className="rocket-counters-section">
                <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
                  <span className="duotone-icon duotone-orange"><Shield size={16} /></span>
                  {t.rocket_counters}
                </h3>
-              <div className="counters-list">
-                {currentMember.counters.map(counter => (
-                  <div key={counter.bossPokemon} className="counter-item">
-                    <div className="counter-pokemon-name">{counter.bossPokemon}</div>
-                    <div className="counter-details-wrapper">
-                      <div className="counter-recs">
-                         <strong style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                           <Shield size={12} style={{ color: '#fb923c' }} /> {t.rocket_best_counters}
-                         </strong>
-                        <div className="counter-tags">
-                          {counter.bestCounters.map(c => (
-                            <span key={c} className="counter-tag">{c}</span>
-                          ))}
-                        </div>
-                      </div>
-                      <p className="counter-strategy">{counter.details}</p>
-                    </div>
+              
+              <div className="counters-levels-grid">
+                {currentMember.counters.megaCounters && currentMember.counters.megaCounters.length > 0 && (
+                  <div className="counter-level-col mega">
+                    <span className="level-badge mega">{t.details_level_mega}</span>
+                    <ul>
+                      {currentMember.counters.megaCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                    </ul>
                   </div>
-                ))}
+                )}
+                {currentMember.counters.advancedCounters && currentMember.counters.advancedCounters.length > 0 && (
+                  <div className="counter-level-col advanced">
+                    <span className="level-badge advanced">{t.details_level_advanced}</span>
+                    <ul>
+                      {currentMember.counters.advancedCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                    </ul>
+                  </div>
+                )}
+                {currentMember.counters.budgetCounters && currentMember.counters.budgetCounters.length > 0 && (
+                  <div className="counter-level-col budget">
+                    <span className="level-badge budget">{t.details_level_budget}</span>
+                    <ul>
+                      {currentMember.counters.budgetCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -373,24 +677,63 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                      <strong style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', marginBottom: '6px' }}>
                        <Gift size={12} style={{ color: '#c084fc' }} /> {t.rocket_grunt_reward}
                      </strong>
-                     <div className="shadow-pokemon-tags">
-                       {grunt.shadowPokemon.map(p => (
-                         <span key={p} className="shadow-pokemon-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                           <ShadowIcon style={{ filter: 'none', color: '#c084fc' }} /> {p}
-                         </span>
-                       ))}
-                     </div>
+                     <div className="shadow-pokemon-tags" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                        {grunt.shadowPokemon.map(p => {
+                          const pRating = getPokemonHubRating(p);
+                          const evoInfo = getEvolutionInfo(p);
+                          const isTopEvo = evoInfo && ['S', 'A+', 'A'].includes(evoInfo.rating) && p.toLowerCase() !== evoInfo.evolution.toLowerCase();
+                          return (
+                            <div 
+                              key={p} 
+                              className="shadow-pokemon-tag-v2" 
+                              style={{ 
+                                display: 'inline-flex', 
+                                alignItems: 'center', 
+                                gap: '8px', 
+                                padding: '4px 8px', 
+                                borderRadius: '8px', 
+                                border: isTopEvo ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid var(--border-color)', 
+                                backgroundColor: isTopEvo ? 'rgba(16, 185, 129, 0.05)' : 'rgba(255, 255, 255, 0.02)',
+                                transition: 'all 0.2s ease'
+                              }}
+                            >
+                              <div style={{ position: 'relative', display: 'inline-flex' }}>
+                                <ShadowIcon style={{ position: 'absolute', top: '-2px', right: '-2px', width: '10px', height: '10px', filter: 'none', color: '#c084fc' }} />
+                                <img 
+                                  src={getPokemonIconUrl(p)} 
+                                  alt={p} 
+                                  style={{ width: '28px', height: '28px', objectFit: 'contain' }}
+                                  onError={(e) => {
+                                    (e.target as HTMLImageElement).src = "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_000.png";
+                                  }}
+                                />
+                              </div>
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                                <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{p}</span>
+                                {isTopEvo && (
+                                  <span style={{ fontSize: '0.58rem', color: '#34d399', fontWeight: 600 }}>
+                                    ➔ Shadow {evoInfo.evolution}
+                                  </span>
+                                )}
+                              </div>
+                              {pRating && (
+                                <HubRatingBadge rating={pRating} />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
                    </div>
  
                    <div className="grunt-counters-row">
                      <strong style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', marginBottom: '6px' }}>
                        <Shield size={12} style={{ color: '#fb923c' }} /> {t.rocket_grunt_counters}
                      </strong>
-                     <div className="grunt-counter-tags">
+                     <ul className="rocket-counter-grid">
                        {grunt.counters.map(c => (
-                         <span key={c} className="grunt-counter-tag">{c}</span>
+                         <CounterItem key={c} counterStr={c} />
                        ))}
-                     </div>
+                     </ul>
                    </div>
                  </div>
               </div>

@@ -94,17 +94,18 @@ export interface RocketMember {
     pvpRating: 'S' | 'A' | 'B' | 'C' | 'None';
     worthGrinding: boolean;
     reason: string;
+    hubRating: string;
   };
   lineup: {
-    slot1: string[];
-    slot2: string[];
-    slot3: string[];
+    slot1: { name: string; types: string[]; image: string }[];
+    slot2: { name: string; types: string[]; image: string }[];
+    slot3: { name: string; types: string[]; image: string }[];
   };
   counters: {
-    bossPokemon: string;
-    bestCounters: string[];
-    details: string;
-  }[];
+    megaCounters: string[];
+    advancedCounters: string[];
+    budgetCounters: string[];
+  };
 }
 
 export interface GruntData {

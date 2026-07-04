@@ -121,7 +121,8 @@ app.get('/api/raids', async (req, res) => {
 // Get Rocket Lineups
 app.get('/api/rocket', async (req, res) => {
   const cacheKey = 'rocket_lineups';
-  const cachedData = getFromCache<any>(cacheKey);
+  const forceNoCache = req.query.nocache === 'true';
+  const cachedData = forceNoCache ? null : getFromCache<any>(cacheKey);
 
   if (cachedData) {
     console.log('Serving rocket lineups from cache');

@@ -1056,6 +1056,110 @@ const BOSS_COUNTERS_DB: Record<string, { bestCounters: string[]; details: string
   }
 };
 
+const HUB_RATING_DB: Record<string, string> = {
+  "landorus": "A",
+  "machop": "A+",
+  "machamp": "A+",
+  "bagon": "S",
+  "salamence": "S",
+  "beldum": "S",
+  "metagross": "S",
+  "larvitar": "A+",
+  "tyranitar": "A+",
+  "dratini": "A",
+  "dragonite": "A",
+  "gible": "S",
+  "garchomp": "S",
+  "swinub": "S",
+  "mamoswine": "S",
+  "ralts": "A+",
+  "gardevoir": "A+",
+  "gastly": "A",
+  "gengar": "A",
+  "mudkip": "A",
+  "swampert": "A",
+  "starly": "B",
+  "staraptor": "B",
+  "teddiursa": "C",
+  "ursaring": "C",
+  "bellsprout": "B",
+  "victreebel": "B",
+  "oddish": "C",
+  "cacnea": "C",
+  "seedot": "B",
+  "nuzleaf": "B"
+};
+
+const POKEMON_TYPES_DB: Record<string, string[]> = {
+  "persian": ["Normal"],
+  "rhyperior": ["Ground", "Rock"],
+  "kangaskhan": ["Normal"],
+  "nidoking": ["Poison", "Ground"],
+  "landorus": ["Ground", "Flying"],
+  "machop": ["Fighting"],
+  "gallade": ["Psychic", "Fighting"],
+  "aerodactyl": ["Rock", "Flying"],
+  "kingler": ["Water"],
+  "tyranitar": ["Rock", "Dark"],
+  "cradily": ["Rock", "Grass"],
+  "crobat": ["Poison", "Flying"],
+  "bagon": ["Dragon"],
+  "charizard": ["Fire", "Flying"],
+  "hypno": ["Psychic"],
+  "golurk": ["Ground", "Ghost"],
+  "dragonite": ["Dragon", "Flying"],
+  "scizor": ["Bug", "Steel"],
+  "salamence": ["Dragon", "Flying"],
+  "beldum": ["Steel", "Psychic"],
+  "sableye": ["Dark", "Ghost"],
+  "sharpedo": ["Water", "Dark"],
+  "milotic": ["Water"],
+  "houndoom": ["Dark", "Fire"],
+  "gardevoir": ["Psychic", "Fairy"],
+  "flygon": ["Ground", "Dragon"],
+  "reshiram": ["Dragon", "Fire"],
+  "snorlax": ["Normal"],
+  "steelix": ["Steel", "Ground"],
+  "slowbro": ["Water", "Psychic"],
+  "alakazam": ["Psychic"],
+  "blastoise": ["Water"],
+  "ferrothorn": ["Grass", "Steel"],
+  "camerupt": ["Fire", "Ground"],
+  "tyrunt": ["Rock", "Dragon"],
+  "amaura": ["Rock", "Ice"],
+  "axew": ["Dragon"]
+};
+
+function getPokemonImageUrl(name: string): string {
+  let clean = name.toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '');
+  return `https://img.pokemondb.net/sprites/home/normal/${clean}.png`;
+}
+
+const LEADER_COUNTERS_DB: Record<string, { megaCounters: string[]; advancedCounters: string[]; budgetCounters: string[] }> = {
+  "giovanni": {
+    megaCounters: ["Mega Swampert", "Mega Garchomp", "Primal Kyogre"],
+    advancedCounters: ["Lucario (Counter/Aura Sphere)", "Mamoswine (Powder Snow/Avalanche)", "Kyogre (Waterfall/Surf)", "Terrakion (Double Kick/Sacred Sword)"],
+    budgetCounters: ["Machamp (Counter/Dynamic Punch)", "Glaceon (Frost Breath/Avalanche)", "Hariyama (Counter/Dynamic Punch)", "Swampert (Water Gun/Hydro Cannon)"]
+  },
+  "cliff": {
+    megaCounters: ["Mega Gardevoir", "Mega Alakazam", "Mega Rayquaza"],
+    advancedCounters: ["Mewtwo (Confusion/Psystrike)", "Metagross (Bullet Punch/Meteor Mash)", "Togekiss (Charm/Dazzling Gleam)", "Lucario (Counter/Aura Sphere)"],
+    budgetCounters: ["Machamp (Counter/Dynamic Punch)", "Gardevoir (Charm/Dazzling Gleam)", "Alakazam (Confusion/Psychic)", "Espeon (Confusion/Psychic)"]
+  },
+  "arlo": {
+    megaCounters: ["Mega Gardevoir", "Mega Rayquaza", "Mega Charizard Y"],
+    advancedCounters: ["Mamoswine (Powder Snow/Avalanche)", "Togekiss (Charm/Dazzling Gleam)", "Reshiram (Fire Fang/Overheat)", "Sylveon (Charm/Moonblast)"],
+    budgetCounters: ["Glaceon (Frost Breath/Avalanche)", "Gardevoir (Charm/Dazzling Gleam)", "Charizard (Fire Spin/Blast Burn)", "Clefable (Charm/Moonblast)"]
+  },
+  "sierra": {
+    megaCounters: ["Mega Charizard Y", "Mega Gengar", "Mega Houndoom"],
+    advancedCounters: ["Chandelure (Fire Spin/Shadow Ball)", "Togekiss (Charm/Dazzling Gleam)", "Machamp (Counter/Dynamic Punch)", "Kartana (Razor Leaf/Leaf Blade)"],
+    budgetCounters: ["Charizard (Fire Spin/Blast Burn)", "Gardevoir (Charm/Dazzling Gleam)", "Flareon (Fire Spin/Overheat)", "Granbull (Charm/Play Rough)"]
+  }
+};
+
 const GRUNT_MAP: Record<string, {
   phraseCs: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
@@ -1556,9 +1660,9 @@ export async function scrapeRocketLineups(): Promise<{
     else if (name.includes('Sierra')) avatar = '🧣';
 
     // Parse lineup slots
-    const slot1: string[] = [];
-    const slot2: string[] = [];
-    const slot3: string[] = [];
+    const slot1: { name: string; types: string[]; image: string }[] = [];
+    const slot2: { name: string; types: string[]; image: string }[] = [];
+    const slot3: { name: string; types: string[]; image: string }[] = [];
     let encounterPokemonName = '';
 
     profile.find('.lineup-info .slot').each((_, slotEl) => {
@@ -1571,7 +1675,9 @@ export async function scrapeRocketLineups(): Promise<{
         const pkmn = $(pkmnEl);
         const pkmnName = pkmn.attr('data-pokemon') || '';
         if (pkmnName && pkmnName !== 'Placeholder') {
-          targetSlot.push(pkmnName);
+          const pkmnTypes = POKEMON_TYPES_DB[pkmnName.toLowerCase()] || [];
+          const pkmnImage = getPokemonImageUrl(pkmnName);
+          targetSlot.push({ name: pkmnName, types: pkmnTypes, image: pkmnImage });
           if (isEncounter && !encounterPokemonName) {
             encounterPokemonName = pkmnName;
           }
@@ -1585,7 +1691,7 @@ export async function scrapeRocketLineups(): Promise<{
 
     if (isGiovanni || isLeader) {
       // Reward definition
-      const rewardName = encounterPokemonName || (isGiovanni ? slot3[0] : slot1[0]) || '???';
+      const rewardName = encounterPokemonName || (isGiovanni ? slot3[0]?.name : slot1[0]?.name) || '???';
       const meta = findPokemonMeta(rewardName);
       
       const member: RocketMember = {
@@ -1596,31 +1702,25 @@ export async function scrapeRocketLineups(): Promise<{
           pveRating: meta?.pveRating || 'None',
           pvpRating: meta?.pvpRating || 'None',
           worthGrinding: meta ? (meta.pveRating === 'S' || meta.pveRating === 'A' || meta.pvpRating === 'S' || meta.pvpRating === 'A') : false,
-          reason: meta?.notes || `Shadow ${rewardName} je užitečný pokémon do hry.`
+          reason: meta?.notes || `Shadow ${rewardName} je užitečný pokémon do hry.`,
+          hubRating: HUB_RATING_DB[rewardName.toLowerCase()] || ''
         },
         lineup: { slot1, slot2, slot3 },
-        counters: []
+        counters: {
+          megaCounters: [],
+          advancedCounters: [],
+          budgetCounters: []
+        }
       };
 
-      // Assemble counters for lineup
-      const uniqueLineupPkmn = Array.from(new Set([...slot1, ...slot2, ...slot3]));
-      uniqueLineupPkmn.forEach(pkmnName => {
-        const counterInfo = BOSS_COUNTERS_DB[pkmnName.toLowerCase()];
-        if (counterInfo) {
-          member.counters.push({
-            bossPokemon: pkmnName,
-            bestCounters: counterInfo.bestCounters,
-            details: counterInfo.details
-          });
-        } else {
-          // Default fallback counter if not in DB
-          member.counters.push({
-            bossPokemon: pkmnName,
-            bestCounters: ["Lucario (Counter/Aura Sphere)", "Mamoswine (Powder Snow/Avalanche)", "Kyogre (Waterfall/Surf)"],
-            details: `Proti ${pkmnName} použijte jeho typové slabosti a nejlepší stínové či mega pokémony.`
-          });
-        }
-      });
+      // Get overall lineup counters
+      const leaderKey = (isGiovanni ? 'giovanni' : name).toLowerCase();
+      const leaderCounters = LEADER_COUNTERS_DB[leaderKey];
+      member.counters = leaderCounters || {
+        megaCounters: ["Mega Gardevoir", "Mega Rayquaza", "Mega Swampert"],
+        advancedCounters: ["Lucario (Counter/Aura Sphere)", "Mamoswine (Powder Snow/Avalanche)", "Mewtwo (Confusion/Psystrike)"],
+        budgetCounters: ["Machamp (Counter/Dynamic Punch)", "Gardevoir (Charm/Dazzling Gleam)", "Glaceon (Frost Breath/Avalanche)"]
+      };
 
       if (isGiovanni) {
         giovanni = member;
@@ -1657,7 +1757,7 @@ export async function scrapeRocketLineups(): Promise<{
         type,
         difficulty: mappedGrunt.difficulty,
         worthFighting: mappedGrunt.worthFighting,
-        shadowPokemon: slot1.length ? slot1 : [encounterPokemonName],
+        shadowPokemon: slot1.length ? slot1.map(s => s.name) : [encounterPokemonName],
         counters: mappedGrunt.counters
       });
     }
@@ -1673,17 +1773,19 @@ export async function scrapeRocketLineups(): Promise<{
         pveRating: "A",
         pvpRating: "B",
         worthGrinding: false,
-        reason: "Shadow Landorus (Incarnate Forme) je silný Ground útočník, ale zaostává za Therian formou."
+        reason: "Shadow Landorus (Incarnate Forme) je silný Ground útočník, ale zaostává za Therian formou.",
+        hubRating: "A"
       },
       lineup: {
-        slot1: ["Persian"],
-        slot2: ["Rhyperior", "Kangaskhan", "Nidoking"],
-        slot3: ["Landorus"]
+        slot1: [{ name: "Persian", types: ["Normal"], image: getPokemonImageUrl("Persian") }],
+        slot2: [{ name: "Rhyperior", types: ["Ground", "Rock"], image: getPokemonImageUrl("Rhyperior") }, { name: "Kangaskhan", types: ["Normal"], image: getPokemonImageUrl("Kangaskhan") }, { name: "Nidoking", types: ["Poison", "Ground"], image: getPokemonImageUrl("Nidoking") }],
+        slot3: [{ name: "Landorus", types: ["Ground", "Flying"], image: getPokemonImageUrl("Landorus") }]
       },
-      counters: [
-        { bossPokemon: "Persian", bestCounters: ["Lucario", "Terrakion"], details: "Persian má slabost na bojové útoky." },
-        { bossPokemon: "Shadow Landorus", bestCounters: ["Mamoswine", "Glaceon"], details: "Dvojitá slabost na led." }
-      ]
+      counters: {
+        megaCounters: ["Mega Swampert", "Mega Garchomp", "Primal Kyogre"],
+        advancedCounters: ["Lucario (Counter/Aura Sphere)", "Mamoswine (Powder Snow/Avalanche)"],
+        budgetCounters: ["Machamp (Counter/Dynamic Punch)", "Glaceon (Frost Breath/Avalanche)"]
+      }
     };
   }
 
@@ -1692,9 +1794,9 @@ export async function scrapeRocketLineups(): Promise<{
     leaders: leaders.length ? leaders : [
       {
         name: "Cliff", avatar: "💪",
-        reward: { name: "Shadow Machop", pveRating: "S", pvpRating: "A", worthGrinding: true, reason: "Shadow Machamp je špičkový bojový útočník." },
-        lineup: { slot1: ["Machop"], slot2: ["Aerodactyl", "Gallade"], slot3: ["Tyranitar"] },
-        counters: [{ bossPokemon: "Machop", bestCounters: ["Mewtwo"], details: "Slabost na psychic." }]
+        reward: { name: "Shadow Machop", pveRating: "S", pvpRating: "A", worthGrinding: true, reason: "Shadow Machamp je špičkový bojový útočník.", hubRating: "A+" },
+        lineup: { slot1: [{ name: "Machop", types: ["Fighting"], image: getPokemonImageUrl("Machop") }], slot2: [{ name: "Aerodactyl", types: ["Rock", "Flying"], image: getPokemonImageUrl("Aerodactyl") }, { name: "Gallade", types: ["Psychic", "Fighting"], image: getPokemonImageUrl("Gallade") }], slot3: [{ name: "Tyranitar", types: ["Rock", "Dark"], image: getPokemonImageUrl("Tyranitar") }] },
+        counters: { megaCounters: ["Mega Gardevoir", "Mega Alakazam"], advancedCounters: ["Mewtwo (Confusion/Psystrike)"], budgetCounters: ["Machamp (Counter/Dynamic Punch)"] }
       }
     ],
     grunts: grunts.length ? grunts : [

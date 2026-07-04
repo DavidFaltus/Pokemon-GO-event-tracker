@@ -158,7 +158,12 @@ export const defaultPokemonMoves: Record<string, { fast: { move: string; type: s
   "heatran": { fast: { move: "Fire Spin", type: "fire" }, charged: { move: "Magma Storm", type: "fire" } },
   "diancie": { fast: { move: "Rock Throw", type: "rock" }, charged: { move: "Rock Slide", type: "rock" } },
   "alakazam": { fast: { move: "Confusion", type: "psychic" }, charged: { move: "Psychic", type: "psychic" } },
-  "ampharos": { fast: { move: "Volt Switch", type: "electric" }, charged: { move: "Zap Cannon", type: "electric" } }
+  "ampharos": { fast: { move: "Volt Switch", type: "electric" }, charged: { move: "Zap Cannon", type: "electric" } },
+  "hariyama": { fast: { move: "Counter", type: "fighting" }, charged: { move: "Dynamic Punch", type: "fighting" } },
+  "swampert": { fast: { move: "Water Gun", type: "water" }, charged: { move: "Hydro Cannon", type: "water" } },
+  "espeon": { fast: { move: "Confusion", type: "psychic" }, charged: { move: "Psychic", type: "psychic" } },
+  "machamp": { fast: { move: "Counter", type: "fighting" }, charged: { move: "Dynamic Punch", type: "fighting" } },
+  "glaceon": { fast: { move: "Frost Breath", type: "ice" }, charged: { move: "Avalanche", type: "ice" } }
 };
 
 export function getPokemonIconUrl(name: string): string {
