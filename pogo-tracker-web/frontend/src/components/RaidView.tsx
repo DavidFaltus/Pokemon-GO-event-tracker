@@ -4,8 +4,9 @@ import type { Language } from '../data/translations';
 import { TypeBadge } from './EventCard';
 import type { EventData } from './EventCard';
 import { API_BASE_URL } from '../config';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, Trophy } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
+import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
 
 // Official-like Shadow Pokemon SVG Icon
 const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
@@ -26,6 +27,42 @@ const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> 
     <path d="M12 2C11.5 3.5 10 5.5 8.5 7C7 8.5 5.5 10.5 5.5 13C5.5 16.5 8.5 19.5 12 19.5C15.5 19.5 18.5 16.5 18.5 13C18.5 10.5 17 8.5 15.5 7C14 5.5 12.5 3.5 12 2ZM12 17C10.5 17 9.5 16 9.5 14.5C9.5 13 11 11.5 12 10C13 11.5 14.5 13 14.5 14.5C14.5 16 13.5 17 12 17Z" />
   </svg>
 );
+
+const HubRatingBadge: React.FC<{ rating: string }> = ({ rating }) => {
+  if (!rating) return null;
+  
+  const getRatingColor = (r: string) => {
+    const rLower = r.toLowerCase();
+    if (rLower === 's') return { bg: '#eab308', color: '#0c0d12' }; // Gold
+    if (rLower.startsWith('a+')) return { bg: '#10b981', color: '#ffffff' }; // Emerald / Bright Green
+    if (rLower.startsWith('a')) return { bg: '#22c55e', color: '#0c0d12' }; // Green
+    if (rLower.startsWith('b')) return { bg: '#3b82f6', color: '#ffffff' }; // Blue
+    return { bg: '#9ca3af', color: '#0c0d12' }; // Gray
+  };
+  
+  const colors = getRatingColor(rating);
+  
+  return (
+    <span 
+      className="hub-rating-badge"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '3px',
+        padding: '2px 6px',
+        fontSize: '0.65rem',
+        fontWeight: 800,
+        borderRadius: '4px',
+        backgroundColor: colors.bg,
+        color: colors.color,
+        boxShadow: '0 1px 2px rgba(0,0,0,0.15)'
+      }}
+    >
+      <Trophy size={10} fill="currentColor" stroke="none" />
+      {rating} Tier
+    </span>
+  );
+};
 
 interface RaidViewProps {
   events: EventData[]; // Left for compatibility
@@ -214,23 +251,60 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                   </div>
                   
                   <div className="boss-meta-info">
-                    <span className={`boss-tier-badge tier-${boss.tier.startsWith('shadow') ? 'shadow' : boss.tier}`}>
-                      {getTierLabel(boss.tier)}
-                    </span>
-                    <h3 className="boss-title-name">
-                      {boss.tier.startsWith('shadow') && (
-                        <ShadowIcon style={{ marginRight: '6px', width: '14px', height: '14px', filter: 'none' }} />
-                      )}
-                      {boss.name}
-                    </h3>
-                    {boss.canBeShiny && (
-                      <div style={{ marginTop: '3px' }}>
-                        <span className="shiny-star-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', padding: '1px 5px', fontSize: '0.65rem', borderRadius: '4px', backgroundColor: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24', border: '1px solid rgba(251, 191, 36, 0.2)' }}>
-                          <Sparkles size={8} fill="currentColor" stroke="none" /> Shiny
-                        </span>
-                      </div>
-                    )}
-                  </div>
+                     <span className={`boss-tier-badge tier-${boss.tier.startsWith('shadow') ? 'shadow' : boss.tier}`}>
+                       {getTierLabel(boss.tier)}
+                     </span>
+                     <h3 className="boss-title-name" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                       {boss.tier.startsWith('shadow') && (
+                         <ShadowIcon style={{ marginRight: '6px', width: '14px', height: '14px', filter: 'none' }} />
+                       )}
+                       <span>{boss.name}</span>
+                     </h3>
+
+                     {/* PoGO Hub Rating & Evolution Info */}
+                     {(() => {
+                       const rating = getPokemonHubRating(boss.name);
+                       const evoInfo = getEvolutionInfo(boss.name);
+                       const showEvo = evoInfo && ['S', 'A+', 'A'].includes(evoInfo.rating) && boss.name.toLowerCase() !== evoInfo.evolution.toLowerCase();
+                       
+                       if (!rating && !showEvo) return null;
+                       
+                       return (
+                         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px', marginTop: '4px', marginBottom: '4px' }}>
+                           {rating && (
+                             <HubRatingBadge rating={rating} />
+                           )}
+                           {showEvo && (
+                             <span 
+                               style={{ 
+                                 fontSize: '0.62rem', 
+                                 color: '#34d399', 
+                                 fontWeight: 600, 
+                                 backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                                 border: '1px solid rgba(16, 185, 129, 0.25)',
+                                 padding: '1px 5px',
+                                 borderRadius: '4px',
+                                 display: 'inline-flex',
+                                 alignItems: 'center',
+                                 gap: '3px'
+                               }}
+                             >
+                               <span>➔ {boss.tier.startsWith('shadow') ? 'Shadow' : ''} {evoInfo.evolution}</span>
+                               <span style={{ fontWeight: 800 }}>({evoInfo.rating})</span>
+                             </span>
+                           )}
+                         </div>
+                       );
+                     })()}
+
+                     {boss.canBeShiny && (
+                       <div style={{ marginTop: '3px' }}>
+                         <span className="shiny-star-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', padding: '1px 5px', fontSize: '0.65rem', borderRadius: '4px', backgroundColor: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24', border: '1px solid rgba(251, 191, 36, 0.2)' }}>
+                           <Sparkles size={8} fill="currentColor" stroke="none" /> Shiny
+                         </span>
+                       </div>
+                     )}
+                   </div>
 
                   <div className="boss-right-info" style={{ marginLeft: 'auto', marginRight: '16px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', textAlign: 'right' }}>
                     {/* CP range */}
