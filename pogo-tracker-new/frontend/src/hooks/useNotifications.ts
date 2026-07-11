@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Capacitor } from '@capacitor/core';
-import { LocalNotifications } from '@capacitor/local-notifications';
 
 export interface NotificationPreference {
   all: boolean;
@@ -21,16 +19,6 @@ export interface InAppNotification {
   read: boolean;
   type: string;
 }
-
-// Helper to generate a unique 32-bit positive integer from a string ID
-const getNotificationId = (eventId: string): number => {
-  let hash = 0;
-  for (let i = 0; i < eventId.length; i++) {
-    hash = (hash << 5) - hash + eventId.charCodeAt(i);
-    hash |= 0; // Convert to 32bit integer
-  }
-  return Math.abs(hash) % 2147483647; // Ensure positive 32-bit integer
-};
 
 export function useNotifications() {
   const [permission, setPermission] = useState<NotificationPermission>('default');
@@ -70,14 +58,7 @@ export function useNotifications() {
   // Sync permissions on load
   useEffect(() => {
     const checkNotificationPermission = async () => {
-      if (Capacitor.isNativePlatform()) {
-        try {
-          const status = await LocalNotifications.checkPermissions();
-          setPermission(status.display === 'granted' ? 'granted' : 'default');
-        } catch (e) {
-          console.error("Failed to check Capacitor local notification permissions", e);
-        }
-      } else if (typeof window !== 'undefined' && 'Notification' in window) {
+      if (typeof window !== 'undefined' && 'Notification' in window) {
         setPermission(Notification.permission);
       }
     };
@@ -93,20 +74,8 @@ export function useNotifications() {
   }, [inAppNotifications]);
 
   const requestPermission = async () => {
-    if (Capacitor.isNativePlatform()) {
-      try {
-        const status = await LocalNotifications.requestPermissions();
-        const isGranted = status.display === 'granted';
-        setPermission(isGranted ? 'granted' : 'denied');
-        return isGranted;
-      } catch (e) {
-        console.error("Chyba při žádosti o povolení nativních notifikací", e);
-        return false;
-      }
-    }
-
     if (typeof window === 'undefined' || !('Notification' in window)) {
-      alert('Tento prohlížeč nepodporuje nativní push notifikace.');
+      alert('Tento prohlížeč nepodporuje push notifikace.');
       return false;
     }
     
@@ -147,110 +116,34 @@ export function useNotifications() {
     };
     setInAppNotifications(prev => [newNotif, ...prev].slice(0, 50)); // Keep last 50
 
-    // 2. Trigger native/web notification
+    // 2. Trigger web notification
     if (permission === 'granted') {
-      if (Capacitor.isNativePlatform()) {
-        LocalNotifications.schedule({
-          notifications: [
-            {
-              id: getNotificationId(newNotif.id),
-              title,
-              body,
-              schedule: { at: new Date(Date.now() + 500) }, // Trigger almost immediately (0.5s)
-              extra: eventLink ? { url: eventLink } : null
-            }
-          ]
-        }).catch(err => console.error("Native notification trigger failed", err));
-      } else {
-        try {
-          const options: NotificationOptions = {
-            body,
-            icon: '/favicon.svg',
-            badge: '/favicon.svg',
-            tag: newNotif.id,
-            requireInteraction: false
+      try {
+        const options: NotificationOptions = {
+          body,
+          icon: '/favicon.svg',
+          badge: '/favicon.svg',
+          tag: newNotif.id,
+          requireInteraction: false
+        };
+        const n = new Notification(title, options);
+        if (eventLink) {
+          n.onclick = (e) => {
+            e.preventDefault();
+            window.open(eventLink, '_blank');
           };
-          const n = new Notification(title, options);
-          if (eventLink) {
-            n.onclick = (e) => {
-              e.preventDefault();
-              window.open(eventLink, '_blank');
-            };
-          }
-        } catch (e) {
-          console.error("Nativní webová notifikace selhala", e);
         }
+      } catch (e) {
+        console.error("Webová notifikace selhala", e);
       }
     }
   };
 
-  // Schedule all future events as local notifications on the device
-  const scheduleEventNotifications = async (events: any[], lang: 'cs' | 'en') => {
-    if (!Capacitor.isNativePlatform()) return;
-    if (permission !== 'granted') return;
-
-    try {
-      // 1. Cancel all previously scheduled notifications to start fresh
-      const pending = await LocalNotifications.getPending();
-      if (pending.notifications.length > 0) {
-        await LocalNotifications.cancel({
-          notifications: pending.notifications.map(n => ({ id: n.id }))
-        });
-      }
-
-      // 2. Filter events starting in the future
-      const now = new Date();
-      const upcomingEvents = events.filter(event => {
-        const startTime = new Date(event.start);
-        return startTime > now && shouldNotifyForType(event.eventType);
-      });
-
-      if (upcomingEvents.length === 0) return;
-
-      // 3. Map events to Local Notification schedule format (up to a limit, e.g. 50 upcoming events)
-      const notificationsToSchedule = upcomingEvents.slice(0, 50).map(event => {
-        const startTime = new Date(event.start);
-        const id = getNotificationId(event.eventID);
-
-        let bodyText = lang === 'cs'
-          ? `Event ${event.name} právě začíná! Otevřete aplikaci pro zobrazení meta doporučení.`
-          : `Event ${event.name} is now active! Open the app to check raid counters and details.`;
-
-        // Customize body text
-        if (event.eventType === 'pokemon-spotlight-hour') {
-          bodyText = lang === 'cs'
-            ? `Spotlight Hour pro ${event.name} právě běží! Rychle chytat!`
-            : `Spotlight Hour for ${event.name} is running! Go catch 'em!`;
-        } else if (event.eventType === 'raid-hour') {
-          bodyText = lang === 'cs'
-            ? `Raid Hour právě začíná! Připravte si Remote Passy.`
-            : `Raid Hour has started! Get your Remote Passes ready.`;
-        } else if (event.eventType === 'community-day') {
-          bodyText = lang === 'cs'
-            ? `${event.name} začíná! Získejte speciální evoluční útok!`
-            : `${event.name} is starting! Evolve for the exclusive featured move!`;
-        }
-
-        const title = lang === 'cs' ? `🔔 Pokémon GO: Event začíná!` : `🔔 Pokémon GO: Event active!`;
-
-        return {
-          id,
-          title,
-          body: `${event.name}\n${bodyText}`,
-          schedule: { at: startTime },
-          extra: { eventID: event.eventID, link: event.link }
-        };
-      });
-
-      // 4. Schedule native notifications
-      await LocalNotifications.schedule({
-        notifications: notificationsToSchedule
-      });
-
-      console.log(`Scheduled ${notificationsToSchedule.length} native event notifications.`);
-    } catch (e) {
-      console.error("Failed to schedule local notifications:", e);
-    }
+  // Web scheduling placeholder (not supported standardly in browsers without service workers)
+  const scheduleEventNotifications = async (_events: any[], _lang: 'cs' | 'en') => {
+    // Standard web push notifications are scheduled from the backend.
+    // In frontend-only web app we just log that we would schedule notifications.
+    console.log("Browser notifications are active in real-time.");
   };
 
   const markAllAsRead = () => {

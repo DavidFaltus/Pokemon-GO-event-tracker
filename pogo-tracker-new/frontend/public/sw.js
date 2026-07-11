@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pokego-tracker-v1';
+const CACHE_NAME = 'pokego-tracker-v2';
 const ASSETS_TO_CACHE = [
   './',
   'index.html',
@@ -29,9 +29,27 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// Fetch Event (Network-first for API, Cache-first for assets)
+// Fetch Event (Network-first for API/Navigation, Cache-first for static assets)
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
+
+  // If it's a navigation request (loading index.html or root), try network first, then cache fallback
+  if (e.request.mode === 'navigate' || url.pathname === '/' || url.pathname.endsWith('index.html')) {
+    e.respondWith(
+      fetch(e.request)
+        .then((response) => {
+          const clonedResponse = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(e.request, clonedResponse);
+          });
+          return response;
+        })
+        .catch(() => {
+          return caches.match(e.request);
+        })
+    );
+    return;
+  }
 
   // If it is the ScrapedDuck API call, try network first, then cache fallback
   if (url.hostname === 'raw.githubusercontent.com') {

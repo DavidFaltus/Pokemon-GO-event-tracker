@@ -1,10 +1,8 @@
-1: Odstranit sekci shadow Raidy a rozstřídit shadow raidy podle počtu *, odstranit emoji u shadow raidů a přidat oficální shadow ikonu.
-2: Zvětšit zobrazeni eventů z kalendáře (po rozkliknutí konkrétního)
-3: V timeline zobrazení ponechat pouze kalendář (odstranit sekce active a upcoming včetně časových filtrů)
-4: Přidat sekci All v sekci List eventu 
-5: Upravit veškeré emoji na stránce na více stylizované, zároveň přidat logo které bude pasovat do vzhledu aplikace, včetně loga android aplikace
-6: Notifikace na přidání nového eventu
+[HOTOVO] 0:Přidat sekci Ditto a sekci Eggs kde bude možné najít momentální převlečení které může mít ditto a vajíčka, rozdělená podle km a pokemoni kteří se v nich aktuálně nachází
 
-7: Vylepšit doporučování counterů na základ vnitřní tabulky která se vytvoří na základě momentální mety v backendu. využít jak nejlepší tak i budget variantu - pro každého pokémona vytáhnout aktuální coutnery a udělat z toho tabulku do které se vždy jen nakoukne a vytáhnout se infromace
+[HOTOVO] 1: Udržovat stylování které se přizpůsobuje různým velikostem zařízení (Mobilní telefon, tablet, různě velké monitory)
+[HOTOVO] 2: Každou novou změnu propisovat do Android aplikace 
+[HOTOVO] 5: Přidat sekci Žebříčky (Rankings) s vyhledáváním a PvE hodnocením Pokémonů včetně nejlepších movesetů a základních statistik.
 
-Bonus: Možnost admina ručně upravovat jedntolivé eventy (samostatná aplikace ????). nejlépe vytvořit funkce které by přímo pracovali s daty na backendu tak abych nemusel zasahovat do frontendu a stačilo pouze měnit data. samozřejmě autentizace a autorizace je vyžadována kvůli bezpečnosti dat.
+3: Možnost admina ručně upravovat jedntolivé eventy (samostatná aplikace ????). nejlépe vytvořit funkce které by přímo pracovali s daty na backendu tak abych nemusel zasahovat do frontendu a stačilo pouze měnit data. samozřejmě autentizace a autorizace je vyžadována kvůli bezpečnosti dat.
+4: Vylepšit SEO a vyhledávatelnost, přidat další sledovací prvky na google analytics případně poradit jak to propojit lépe

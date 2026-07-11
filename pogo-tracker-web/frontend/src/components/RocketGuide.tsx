@@ -6,6 +6,7 @@ import { CounterItem, getPokemonIconUrl } from './CounterItem';
 import { API_BASE_URL } from '../config';
 import { Zap, Users, Gift, Flame, Swords, Shield, MessageSquare, Gem, Moon, Glasses, Trophy } from 'lucide-react';
 import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
+import { resolveImage } from '../utils/imageResolver';
 
 const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
   <svg
@@ -97,9 +98,10 @@ interface RocketMember {
     hubRating: string;
   };
   lineup: {
-    slot1: LineupPokemon[];
-    slot2: LineupPokemon[];
-    slot3: LineupPokemon[];
+    // Backend may send string[] OR LineupPokemon[] — we normalise in renderLineupSlot
+    slot1: (string | LineupPokemon)[];
+    slot2: (string | LineupPokemon)[];
+    slot3: (string | LineupPokemon)[];
   };
   counters: {
     megaCounters: string[];
@@ -224,40 +226,50 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
     return t.rocket_difficulty_hard;
   };
 
-  const renderLineupSlot = (pokemon: LineupPokemon[], slotLabel: string) => (
-    <div className="lineup-column">
-      <span className="slot-title">{slotLabel}</span>
-      <div className="slot-items">
-        {pokemon.map((p, i) => (
-          <React.Fragment key={p.name}>
-            {i > 0 && (
-              <span className="slot-or-separator">{t.rocket_or}</span>
-            )}
-            <div className={`slot-item-card-v2 ${slotLabel === t.rocket_slot_3 ? 'boss' : ''}`}>
-              <img 
-                src={p.image} 
-                alt={p.name}
-                className="slot-pokemon-img"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_000.png";
-                }}
-              />
-              <div className="slot-pokemon-info">
-                <span className="slot-pokemon-name">{p.name}</span>
-                {p.types && p.types.length > 0 && (
-                  <div className="slot-type-badges">
-                    {p.types.map(type => (
-                      <TypeBadge key={type} typeStr={type} />
-                    ))}
-                  </div>
-                )}
+  const renderLineupSlot = (pokemon: (string | LineupPokemon)[], slotLabel: string) => {
+    const normalised: LineupPokemon[] = pokemon.map(p =>
+      typeof p === 'string'
+        ? { name: p, types: [], image: '' }
+        : p
+    );
+
+    return (
+      <div className="lineup-column">
+        <span className="slot-title">{slotLabel}</span>
+        <div className="slot-items">
+          {normalised.map((p, i) => (
+            <React.Fragment key={p.name + i}>
+              {i > 0 && (
+                <span className="slot-or-separator">{t.rocket_or}</span>
+              )}
+              <div className={`slot-item-card-v2 ${slotLabel === t.rocket_slot_3 ? 'boss' : ''}`}>
+                <img
+                  src={p.image ? resolveImage(p.image, 'rocket', p.name) : getPokemonIconUrl(p.name)}
+                  alt={p.name}
+                  className="slot-pokemon-img"
+                  onError={(e) => {
+                    const img = e.target as HTMLImageElement;
+                    img.onerror = null;
+                    img.src = getPokemonIconUrl(p.name);
+                  }}
+                />
+                <div className="slot-pokemon-info">
+                  <span className="slot-pokemon-name">{p.name}</span>
+                  {p.types && p.types.length > 0 && (
+                    <div className="slot-type-badges">
+                      {p.types.map(type => (
+                        <TypeBadge key={type} typeStr={type} />
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </React.Fragment>
-        ))}
+            </React.Fragment>
+          ))}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const activeRewardName = currentMember.reward.name;
   const activeRewardRating = currentMember.reward.hubRating || getPokemonHubRating(activeRewardName);
@@ -356,7 +368,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                     alt={activeRewardName}
                     style={{ width: '64px', height: '64px', objectFit: 'contain' }}
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_000.png";
+                      (e.target as HTMLImageElement).src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
                     }}
                   />
                 </div>
@@ -524,14 +536,14 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                             >
                               <div style={{ position: 'relative', display: 'inline-flex' }}>
                                 <ShadowIcon style={{ position: 'absolute', top: '-2px', right: '-2px', width: '10px', height: '10px', filter: 'none', color: '#c084fc' }} />
-                                <img 
-                                  src={getPokemonIconUrl(p)} 
-                                  alt={p} 
-                                  style={{ width: '28px', height: '28px', objectFit: 'contain' }}
-                                  onError={(e) => {
-                                    (e.target as HTMLImageElement).src = "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_000.png";
-                                  }}
-                                />
+                                 <img 
+                                   src={getPokemonIconUrl(p)} 
+                                   alt={p} 
+                                   style={{ width: '28px', height: '28px', objectFit: 'contain' }}
+                                   onError={(e) => {
+                                     (e.target as HTMLImageElement).src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
+                                   }}
+                                 />
                               </div>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
                                 <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{p}</span>

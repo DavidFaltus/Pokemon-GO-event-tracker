@@ -903,7 +903,7 @@ export async function scrapeRaidBosses(): Promise<ScrapedRaidBoss[]> {
     const tierHeader = $(tierEl).find('h2.header').text().trim().toLowerCase();
     let tier: ScrapedRaidBoss['tier'] = '1';
     if (tierHeader.includes('5-star')) tier = '5';
-    else if (tierHeader.includes('mega')) tier = 'mega';
+    else if (tierHeader.includes('mega') || tierHeader.includes('primal')) tier = 'mega';
     else if (tierHeader.includes('3-star')) tier = '3';
     else if (tierHeader.includes('1-star')) tier = '1';
 

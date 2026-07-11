@@ -29,6 +29,7 @@ interface NotificationSettingsProps {
   toggleVisibleEvent: (key: keyof VisibleEventsPreference) => void;
   viewMode: 'list' | 'timeline';
   setViewMode: (mode: 'list' | 'timeline') => void;
+  onOpenAdmin?: () => void;
 }
 
 export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
@@ -41,6 +42,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
   toggleVisibleEvent,
   viewMode,
   setViewMode,
+  onOpenAdmin,
 }) => {
   const [gpsSyncing, setGpsSyncing] = React.useState(false);
   const [syncStatus, setSyncStatus] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -353,6 +355,40 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
           {lang === 'cs' ? 'Zobrazit Zásady ochrany osobních údajů' : 'View Privacy Policy'}
         </a>
       </div>
+
+      {/* Admin Panel Access Card */}
+      {onOpenAdmin && (
+        <div className="settings-card admin-access-card" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+            <span className="duotone-icon duotone-white"><Lock size={16} /></span>
+            {lang === 'cs' ? 'Administrace systému' : 'System Administration'}
+          </h3>
+          <p className="help-text" style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+            {lang === 'cs'
+              ? 'Administrační panel pro správce k ruční úpravě a přidávání herních událostí.'
+              : 'Administration panel for managers to manually edit and add game events.'
+            }
+          </p>
+          <button
+            onClick={onOpenAdmin}
+            className="secondary-btn"
+            style={{ 
+              marginTop: '8px', 
+              display: 'inline-flex', 
+              justifyContent: 'center', 
+              alignItems: 'center', 
+              gap: '8px',
+              cursor: 'pointer',
+              fontSize: '0.8rem',
+              padding: '8px 16px',
+              borderRadius: '8px'
+            }}
+          >
+            <Lock size={14} />
+            {lang === 'cs' ? 'Vstoupit do administrace' : 'Enter Administration'}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

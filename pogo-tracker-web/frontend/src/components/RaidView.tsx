@@ -5,8 +5,9 @@ import { TypeBadge } from './EventCard';
 import type { EventData } from './EventCard';
 import { API_BASE_URL } from '../config';
 import { Sparkles, Trophy } from 'lucide-react';
-import { CounterItem, WeatherIcon } from './CounterItem';
+import { CounterItem, WeatherIcon, getPokemonIconUrl } from './CounterItem';
 import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
+import { resolveImage } from '../utils/imageResolver';
 
 // Official-like Shadow Pokemon SVG Icon
 const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
@@ -241,10 +242,10 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                       />
                     )}
                     <img 
-                      src={boss.image} 
+                      src={resolveImage(boss.image, 'raid', boss.name)} 
                       alt={boss.name} 
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_000.png";
+                        (e.target as HTMLImageElement).src = getPokemonIconUrl(boss.name);
                       }}
                       className="boss-avatar-img"
                     />

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Main page / Events calendar -->
+  <url>
+    <loc>https://pokego-event-tracker-2026.web.app/</loc>
+    <lastmod>2026-07-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="cs" href="https://pokego-event-tracker-2026.web.app/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://pokego-event-tracker-2026.web.app/"/>
+  </url>
+
+  <!-- Ditto disguises section -->
+  <url>
+    <loc>https://pokego-event-tracker-2026.web.app/#ditto</loc>
+    <lastmod>2026-07-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Eggs / Egg hatching section -->
+  <url>
+    <loc>https://pokego-event-tracker-2026.web.app/#eggs</loc>
+    <lastmod>2026-07-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Team GO Rocket / Rakeťáci section -->
+  <url>
+    <loc>https://pokego-event-tracker-2026.web.app/#rockets</loc>
+    <lastmod>2026-07-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- PvE Rankings section -->
+  <url>
+    <loc>https://pokego-event-tracker-2026.web.app/#rankings</loc>
+    <lastmod>2026-07-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://pokego-event-tracker-2026.web.app/privacy-policy.html</loc>
+    <lastmod>2026-07-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+</urlset>

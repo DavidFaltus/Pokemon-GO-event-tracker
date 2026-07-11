@@ -11,39 +11,53 @@ import type { Language } from './data/translations';
 import { API_BASE_URL } from './config';
 import { TimelineView } from './components/TimelineView';
 import { AdContainer } from './components/AdContainer';
-import { Calendar, Swords, Shield, Settings, Play, Clock, Wifi, Database } from 'lucide-react';
+import { DittoEggsView } from './components/DittoEggsView';
+import { PokemonRankingsView } from './components/PokemonRankingsView';
+import { AdminPanelView } from './components/AdminPanelView';
+import { Calendar, Swords, Shield, Settings, Play, Clock, Wifi, Database, Egg, Sparkles, Trophy } from 'lucide-react';
 
-const PokeballLogo = ({ size = 28 }: { size?: number }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    viewBox="0 0 100 100" 
-    width={size} 
-    height={size}
-    style={{ flexShrink: 0, marginRight: '8px' }}
-  >
-    <defs>
-      <linearGradient id="pokeball-top" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#c084fc" />
-        <stop offset="100%" stopColor="#863bff" />
-      </linearGradient>
-      <linearGradient id="pokeball-bottom" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#1e1b4b" />
-        <stop offset="100%" stopColor="#0f172a" />
-      </linearGradient>
-      <filter id="logo-glow" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation="3" result="blur" />
-        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-      </filter>
-    </defs>
-    <circle cx="50" cy="50" r="46" stroke="#c084fc" strokeWidth="2" strokeOpacity="0.4" fill="none" filter="url(#logo-glow)" />
-    <circle cx="50" cy="50" r="42" fill="url(#pokeball-bottom)" stroke="#1e1b4b" strokeWidth="2.5" />
-    <path d="M 8,50 A 42,42 0 0,1 92,50 Z" fill="url(#pokeball-top)" />
-    <line x1="8" y1="50" x2="92" y2="50" stroke="#090d16" strokeWidth="6" />
-    <circle cx="50" cy="50" r="15" fill="#090d16" />
-    <circle cx="50" cy="50" r="10" fill="#1e1b4b" stroke="#aa3bff" strokeWidth="2" />
-    <circle cx="50" cy="50" r="4" fill="#c084fc" filter="url(#logo-glow)" />
-  </svg>
-);
+const PokeballLogo = ({ size = 28 }: { size?: number }) => {
+  const uid = 'pbl';
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 100 100"
+      width={size}
+      height={size}
+      style={{ flexShrink: 0, marginRight: '8px' }}
+      aria-label="PokeGO Tracker logo"
+    >
+      <defs>
+        <linearGradient id={`${uid}-top`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#c084fc" />
+          <stop offset="100%" stopColor="#7e22ce" />
+        </linearGradient>
+        <linearGradient id={`${uid}-bot`} x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#0f172a" />
+          <stop offset="100%" stopColor="#1e1b4b" />
+        </linearGradient>
+        <filter id={`${uid}-glow`} x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="2.5" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+        <clipPath id={`${uid}-clip`}>
+          <circle cx="50" cy="50" r="42" />
+        </clipPath>
+      </defs>
+      <circle cx="50" cy="50" r="46" stroke="#c084fc" strokeWidth="1.5" strokeOpacity="0.45" fill="none" filter={`url(#${uid}-glow)`} />
+      <circle cx="50" cy="50" r="42" fill={`url(#${uid}-bot)`} stroke="#2d1f5e" strokeWidth="1.5" />
+      <g clipPath={`url(#${uid}-clip)`}>
+        <path d="M 8,50 A 42,42 0 0,1 92,50 Z" fill={`url(#${uid}-top)`} />
+      </g>
+      <line x1="8" y1="50" x2="92" y2="50" stroke="#090d16" strokeWidth="5.5" />
+      <circle cx="50" cy="50" r="14" fill="#090d16" />
+      <circle cx="50" cy="50" r="10" fill="#1a0f3a" stroke="#aa3bff" strokeWidth="2" />
+      <circle cx="50" cy="50" r="4.5" fill="#c084fc" filter={`url(#${uid}-glow)`} />
+      <circle cx="50" cy="50" r="3" fill="#f0e6ff" />
+    </svg>
+  );
+};
+
 
 // Calculate difference between target timezone and browser local timezone
 const getTargetTimezoneOffsetMs = (timeZone: string): number => {
@@ -208,7 +222,7 @@ const MOCK_EVENTS: EventData[] = [
   }
 ];
 
-type TabType = 'events' | 'raid' | 'rocket' | 'settings';
+type TabType = 'events' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'settings' | 'admin';
 
 const sanitizeEvents = (eventList: EventData[]): EventData[] => {
   return eventList.filter(e => {
@@ -219,8 +233,24 @@ const sanitizeEvents = (eventList: EventData[]): EventData[] => {
   });
 };
 
+const trackGAEvent = (action: string, category: string, label?: string) => {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', action, {
+      event_category: category,
+      event_label: label
+    });
+  }
+};
+
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('events');
+  const showAds = activeTab !== 'settings' && activeTab !== 'admin';
+
+  // Reactively track tab changes in Google Analytics
+  useEffect(() => {
+    trackGAEvent('switch_tab', 'Navigation', activeTab);
+  }, [activeTab]);
+
   const [events, setEvents] = useState<EventData[]>(() => sanitizeEvents(MOCK_EVENTS));
   const [filterType, setFilterType] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'active' | 'upcoming'>('active');
@@ -268,6 +298,23 @@ function App() {
   useEffect(() => {
     localStorage.setItem('pogo_tracker_visible_events', JSON.stringify(visibleEvents));
   }, [visibleEvents]);
+
+  // Reactively track calendar filters and settings in Google Analytics
+  useEffect(() => {
+    if (activeTab === 'events') {
+      trackGAEvent('change_filter_type', 'Calendar', filterType);
+    }
+  }, [filterType, activeTab]);
+
+  useEffect(() => {
+    if (activeTab === 'events') {
+      trackGAEvent('change_status_filter', 'Calendar', statusFilter);
+    }
+  }, [statusFilter, activeTab]);
+
+  useEffect(() => {
+    trackGAEvent('change_language', 'Settings', lang);
+  }, [lang]);
 
   const toggleVisibleEvent = (key: keyof VisibleEventsPreference) => {
     setVisibleEvents(prev => ({ ...prev, [key]: !prev[key] }));
@@ -640,6 +687,30 @@ function App() {
           </button>
 
           <button 
+            className={`sidebar-nav-item ${activeTab === 'ditto' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('ditto')}
+          >
+            <span className="nav-icon"><Sparkles size={20} /></span>
+            <span className="nav-text">{t.tabs_ditto}</span>
+          </button>
+
+          <button 
+            className={`sidebar-nav-item ${activeTab === 'eggs' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('eggs')}
+          >
+            <span className="nav-icon"><Egg size={20} /></span>
+            <span className="nav-text">{t.tabs_eggs}</span>
+          </button>
+
+          <button 
+            className={`sidebar-nav-item ${activeTab === 'ranking' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('ranking')}
+          >
+            <span className="nav-icon"><Trophy size={20} /></span>
+            <span className="nav-text">{t.tabs_ranking}</span>
+          </button>
+
+          <button 
             className={`sidebar-nav-item ${activeTab === 'settings' ? 'active' : ''}`} 
             onClick={() => setActiveTab('settings')}
           >
@@ -649,9 +720,11 @@ function App() {
         </nav>
         
         {/* Sidebar Native Ad Placeholder */}
-        <div className="sidebar-ad-container">
-          <AdContainer type="inline" slot="9193535711" lang={lang} />
-        </div>
+        {showAds && (
+          <div className="sidebar-ad-container">
+            <AdContainer type="inline" slot="9193535711" lang={lang} />
+          </div>
+        )}
 
         {/* Desktop Sidebar Footer */}
         <div 
@@ -836,6 +909,24 @@ function App() {
                   </div>
                 )}
 
+                {activeTab === 'ditto' && (
+                  <div className="tab-content ditto-tab">
+                    <DittoEggsView lang={lang} mode="ditto" />
+                  </div>
+                )}
+
+                {activeTab === 'eggs' && (
+                  <div className="tab-content eggs-tab">
+                    <DittoEggsView lang={lang} mode="eggs" />
+                  </div>
+                )}
+
+                {activeTab === 'ranking' && (
+                  <div className="tab-content ranking-tab">
+                    <PokemonRankingsView lang={lang} />
+                  </div>
+                )}
+
                 {activeTab === 'settings' && (
                   <div className="tab-content settings-tab">
                     <NotificationSettings 
@@ -848,7 +939,14 @@ function App() {
                       toggleVisibleEvent={toggleVisibleEvent}
                       viewMode={viewMode}
                       setViewMode={setViewMode}
+                      onOpenAdmin={() => setActiveTab('admin')}
                     />
+                  </div>
+                )}
+
+                {activeTab === 'admin' && (
+                  <div className="tab-content admin-tab">
+                    <AdminPanelView lang={lang} onBack={() => setActiveTab('settings')} />
                   </div>
                 )}
               </>
@@ -857,14 +955,18 @@ function App() {
 
           {/* Desktop Right Sidebar (Advertisements & Active Bonuses Widget Removed) */}
           <aside className="desktop-right-sidebar">
-            <div className="sidebar-widget-container">
-              <AdContainer type="sidebar" slot="4561558504" lang={lang} />
-            </div>
+            {showAds && (
+              <>
+                <div className="sidebar-widget-container">
+                  <AdContainer type="sidebar" slot="4561558504" lang={lang} />
+                </div>
 
-            {/* Second Ad (Medium Rectangle) replacing the Active Bonuses Panel */}
-            <div className="sidebar-widget-container">
-              <AdContainer type="rectangle" slot="3032854416" lang={lang} />
-            </div>
+                {/* Second Ad (Medium Rectangle) replacing the Active Bonuses Panel */}
+                <div className="sidebar-widget-container">
+                  <AdContainer type="rectangle" slot="3032854416" lang={lang} />
+                </div>
+              </>
+            )}
           </aside>
         </div>
 
@@ -883,6 +985,21 @@ function App() {
           <button className={`nav-item ${activeTab === 'rocket' ? 'active' : ''}`} onClick={() => setActiveTab('rocket')}>
             <span className="nav-icon">🚀</span>
             <span className="nav-text">{t.tabs_rocket}</span>
+          </button>
+
+          <button className={`nav-item ${activeTab === 'ditto' ? 'active' : ''}`} onClick={() => setActiveTab('ditto')}>
+            <span className="nav-icon">✨</span>
+            <span className="nav-text">{t.tabs_ditto}</span>
+          </button>
+
+          <button className={`nav-item ${activeTab === 'eggs' ? 'active' : ''}`} onClick={() => setActiveTab('eggs')}>
+            <span className="nav-icon">🥚</span>
+            <span className="nav-text">{t.tabs_eggs}</span>
+          </button>
+
+          <button className={`nav-item ${activeTab === 'ranking' ? 'active' : ''}`} onClick={() => setActiveTab('ranking')}>
+            <span className="nav-icon">🏆</span>
+            <span className="nav-text">{t.tabs_ranking}</span>
           </button>
 
           <button className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>

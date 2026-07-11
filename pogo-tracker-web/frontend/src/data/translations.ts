@@ -6,7 +6,31 @@ export const translations = {
     tabs_events: "Události",
     tabs_raid: "Raid",
     tabs_rocket: "Rocket",
+    tabs_ditto: "Ditto",
+    tabs_eggs: "Vejce",
+    tabs_ranking: "Žebříčky",
     tabs_settings: "Nastavení",
+
+    // Ditto & Eggs
+    ditto_disguises_title: "Ditto Převleky",
+    ditto_disguises_desc: "Ditto se maskuje jako tito Pokémoni v divočině. Že se jedná o Ditto, se dozvíte až po chycení! Všechny tyto převleky mohou být shiny (a proměnit se v Shiny Ditto).",
+    eggs_pool_title: "Obsah Vajíček",
+    eggs_pool_desc: "Aktuální seznam Pokémonů, kteří se líhnou z jednotlivých typů vajíček v této sezóně.",
+    rarity_level: "Úroveň vzácnosti",
+    egg_cp_max: "Max CP (100% IV)",
+
+    // Rankings
+    ranking_title: "PvE Žebříčky Pokémonů",
+    ranking_search_placeholder: "Vyhledat Pokémona...",
+    ranking_type_all: "Všechny typy",
+    ranking_attack: "Útok",
+    ranking_defense: "Obrana",
+    ranking_stamina: "Výdrž",
+    ranking_max_cp: "Max CP",
+    ranking_ideal_moveset: "Ideální útoky (PvE)",
+    ranking_no_results: "Žádní Pokémoni nebyli nalezeni.",
+    ranking_score: "Skóre",
+    ranking_show_details: "Zobrazit statistiky a útoky",
 
     // Header
     header_live: "Živá data",
@@ -159,7 +183,31 @@ export const translations = {
     tabs_events: "Events",
     tabs_raid: "Raids",
     tabs_rocket: "Rocket",
+    tabs_ditto: "Ditto",
+    tabs_eggs: "Eggs",
+    tabs_ranking: "Rankings",
     tabs_settings: "Settings",
+
+    // Ditto & Eggs
+    ditto_disguises_title: "Ditto Disguises",
+    ditto_disguises_desc: "Ditto disguises itself as these Pokémon in the wild. You will only find out it is a Ditto after you catch it! All of these disguises can be shiny (and turn into a Shiny Ditto).",
+    eggs_pool_title: "Egg Hatches",
+    eggs_pool_desc: "Current list of Pokémon hatching from each egg distance tier this season.",
+    rarity_level: "Rarity Tier",
+    egg_cp_max: "Max CP (100% IV)",
+
+    // Rankings
+    ranking_title: "PvE Pokémon Rankings",
+    ranking_search_placeholder: "Search Pokémon...",
+    ranking_type_all: "All Types",
+    ranking_attack: "Attack",
+    ranking_defense: "Defense",
+    ranking_stamina: "Stamina",
+    ranking_max_cp: "Max CP",
+    ranking_ideal_moveset: "Ideal Moveset (PvE)",
+    ranking_no_results: "No Pokémon found.",
+    ranking_score: "Score",
+    ranking_show_details: "Show stats and movesets",
 
     // Header
     header_live: "Live Data",

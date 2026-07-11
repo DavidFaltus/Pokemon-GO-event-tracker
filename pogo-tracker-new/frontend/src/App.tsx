@@ -10,6 +10,54 @@ import { translations } from './data/translations';
 import type { Language } from './data/translations';
 import { API_BASE_URL } from './config';
 import { TimelineView } from './components/TimelineView';
+import { AdContainer } from './components/AdContainer';
+import { DittoEggsView } from './components/DittoEggsView';
+import { PokemonRankingsView } from './components/PokemonRankingsView';
+import { AdminPanelView } from './components/AdminPanelView';
+import { Calendar, Swords, Shield, Settings, Play, Clock, Wifi, Database, Egg, Sparkles, Trophy } from 'lucide-react';
+
+const PokeballLogo = ({ size = 28 }: { size?: number }) => {
+  const uid = 'pbl';
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 100 100"
+      width={size}
+      height={size}
+      style={{ flexShrink: 0, marginRight: '8px' }}
+      aria-label="PokeGO Tracker logo"
+    >
+      <defs>
+        <linearGradient id={`${uid}-top`} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#c084fc" />
+          <stop offset="100%" stopColor="#7e22ce" />
+        </linearGradient>
+        <linearGradient id={`${uid}-bot`} x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#0f172a" />
+          <stop offset="100%" stopColor="#1e1b4b" />
+        </linearGradient>
+        <filter id={`${uid}-glow`} x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="2.5" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+        <clipPath id={`${uid}-clip`}>
+          <circle cx="50" cy="50" r="42" />
+        </clipPath>
+      </defs>
+      <circle cx="50" cy="50" r="46" stroke="#c084fc" strokeWidth="1.5" strokeOpacity="0.45" fill="none" filter={`url(#${uid}-glow)`} />
+      <circle cx="50" cy="50" r="42" fill={`url(#${uid}-bot)`} stroke="#2d1f5e" strokeWidth="1.5" />
+      <g clipPath={`url(#${uid}-clip)`}>
+        <path d="M 8,50 A 42,42 0 0,1 92,50 Z" fill={`url(#${uid}-top)`} />
+      </g>
+      <line x1="8" y1="50" x2="92" y2="50" stroke="#090d16" strokeWidth="5.5" />
+      <circle cx="50" cy="50" r="14" fill="#090d16" />
+      <circle cx="50" cy="50" r="10" fill="#1a0f3a" stroke="#aa3bff" strokeWidth="2" />
+      <circle cx="50" cy="50" r="4.5" fill="#c084fc" filter={`url(#${uid}-glow)`} />
+      <circle cx="50" cy="50" r="3" fill="#f0e6ff" />
+    </svg>
+  );
+};
+
 
 // Calculate difference between target timezone and browser local timezone
 const getTargetTimezoneOffsetMs = (timeZone: string): number => {
@@ -174,12 +222,37 @@ const MOCK_EVENTS: EventData[] = [
   }
 ];
 
-type TabType = 'events' | 'raid' | 'rocket' | 'settings';
+type TabType = 'events' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'settings' | 'admin';
+
+const sanitizeEvents = (eventList: EventData[]): EventData[] => {
+  return eventList.filter(e => {
+    const name = (e.name || '').toLowerCase();
+    const id = (e.eventID || '').toLowerCase();
+    return !name.includes('example') && !name.includes('vzor') && !name.includes('test') &&
+           !id.includes('example') && !id.includes('vzor') && !id.includes('test');
+  });
+};
+
+const trackGAEvent = (action: string, category: string, label?: string) => {
+  if (typeof window !== 'undefined' && (window as any).gtag) {
+    (window as any).gtag('event', action, {
+      event_category: category,
+      event_label: label
+    });
+  }
+};
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('events');
-  const [events, setEvents] = useState<EventData[]>(MOCK_EVENTS);
-  const [filterType, setFilterType] = useState<string>('other');
+  const showAds = activeTab !== 'settings' && activeTab !== 'admin';
+
+  // Reactively track tab changes in Google Analytics
+  useEffect(() => {
+    trackGAEvent('switch_tab', 'Navigation', activeTab);
+  }, [activeTab]);
+
+  const [events, setEvents] = useState<EventData[]>(() => sanitizeEvents(MOCK_EVENTS));
+  const [filterType, setFilterType] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'active' | 'upcoming'>('active');
   const [activeTimeSpan, setActiveTimeSpan] = useState<'now' | 'week' | 'month'>('now');
   
@@ -206,7 +279,6 @@ function App() {
   });
 
   const [visibleEvents, setVisibleEvents] = useState<VisibleEventsPreference>(() => {
-    const saved = localStorage.getItem('pogo_tracker_visible_events');
     const defaults = {
       communityDays: true,
       spotlightHours: true,
@@ -220,18 +292,29 @@ function App() {
       maxMondays: true,
       majorEvents: true,
     };
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        return { ...defaults, ...parsed };
-      } catch (e) { /* ignore */ }
-    }
     return defaults;
   });
 
   useEffect(() => {
     localStorage.setItem('pogo_tracker_visible_events', JSON.stringify(visibleEvents));
   }, [visibleEvents]);
+
+  // Reactively track calendar filters and settings in Google Analytics
+  useEffect(() => {
+    if (activeTab === 'events') {
+      trackGAEvent('change_filter_type', 'Calendar', filterType);
+    }
+  }, [filterType, activeTab]);
+
+  useEffect(() => {
+    if (activeTab === 'events') {
+      trackGAEvent('change_status_filter', 'Calendar', statusFilter);
+    }
+  }, [statusFilter, activeTab]);
+
+  useEffect(() => {
+    trackGAEvent('change_language', 'Settings', lang);
+  }, [lang]);
 
   const toggleVisibleEvent = (key: keyof VisibleEventsPreference) => {
     setVisibleEvents(prev => ({ ...prev, [key]: !prev[key] }));
@@ -261,6 +344,7 @@ function App() {
   };
 
   useEffect(() => {
+    if (filterType === 'all') return;
     const isCurrentVisible = 
       (filterType === 'community-day' && visibleEvents.communityDays) ||
       (filterType === 'pokemon-spotlight-hour' && visibleEvents.spotlightHours) ||
@@ -317,6 +401,60 @@ function App() {
       let cachedEvents: EventData[] = [];
       let isCacheValid = false;
 
+      const detectNewlyAddedEvents = (freshEvents: any[]) => {
+        const seenEventsStr = localStorage.getItem('pogo_tracker_seen_event_ids');
+        let seenEventIds: string[] = [];
+        if (seenEventsStr) {
+          try {
+            seenEventIds = JSON.parse(seenEventsStr);
+          } catch (e) {
+            console.error("Failed to parse seen event IDs", e);
+          }
+        }
+
+        // First time initializing seen list: store all current event IDs to avoid spamming
+        if (seenEventIds.length === 0) {
+          const initialIds = freshEvents.map(e => e.eventID);
+          localStorage.setItem('pogo_tracker_seen_event_ids', JSON.stringify(initialIds));
+          return;
+        }
+
+        const now = new Date();
+        const newEvents = freshEvents.filter(e => {
+          const isNotSeen = !seenEventIds.includes(e.eventID);
+          const isNotExpired = new Date(e.end) >= now;
+          return isNotSeen && isNotExpired;
+        });
+
+        if (newEvents.length > 0) {
+          newEvents.forEach(event => {
+            const title = lang === 'cs'
+              ? `Nový event přidán: ${event.name}`
+              : `New event added: ${event.name}`;
+            
+            const startDateStr = new Date(event.start).toLocaleDateString(lang === 'cs' ? 'cs-CZ' : 'en-US', {
+              day: 'numeric',
+              month: 'long'
+            });
+
+            const bodyText = lang === 'cs'
+              ? `Do kalendáře byl přidán nový event "${event.name}" (začíná ${startDateStr}).`
+              : `A new event "${event.name}" has been added to the calendar (starts on ${startDateStr}).`;
+
+            triggerNotification(
+              title,
+              bodyText,
+              event.eventType || 'major',
+              event.link
+            );
+          });
+        }
+
+        // Always save the full list of fresh IDs to keep seen list fully in sync
+        const updatedIds = freshEvents.map(e => e.eventID);
+        localStorage.setItem('pogo_tracker_seen_event_ids', JSON.stringify(updatedIds));
+      };
+
       // 1. Try to read from localStorage cache
       const cached = localStorage.getItem('pogo_events_cache');
       const cacheTime = localStorage.getItem('pogo_events_cache_time');
@@ -325,7 +463,7 @@ function App() {
         try {
           cachedEvents = JSON.parse(cached);
           if (Array.isArray(cachedEvents) && cachedEvents.length > 0) {
-            setEvents(cachedEvents);
+            setEvents(sanitizeEvents(cachedEvents));
             setApiStatus('success');
             setLoading(false); // Render cache immediately
             
@@ -354,12 +492,15 @@ function App() {
           const data = await response.json();
           
           if (Array.isArray(data) && data.length > 0) {
-            setEvents(data);
+            // Check for newly added events before updating state and cache
+            detectNewlyAddedEvents(data);
+
+            setEvents(sanitizeEvents(data));
             setApiStatus('success');
             localStorage.setItem('pogo_events_cache', JSON.stringify(data));
             localStorage.setItem('pogo_events_cache_time', Date.now().toString());
           } else if (cachedEvents.length === 0) {
-            setEvents(MOCK_EVENTS);
+            setEvents(sanitizeEvents(MOCK_EVENTS));
             setApiStatus('fallback');
           }
         } catch (e) {
@@ -368,7 +509,7 @@ function App() {
             // Keep using cached data, but toggle status to fallback (offline)
             setApiStatus('fallback');
           } else {
-            setEvents(MOCK_EVENTS);
+            setEvents(sanitizeEvents(MOCK_EVENTS));
             setApiStatus('fallback');
           }
         } finally {
@@ -487,7 +628,9 @@ function App() {
     }
 
     // Filter by type if set
-    if (filterType === 'other') {
+    if (filterType === 'all') {
+      // Keep all events
+    } else if (filterType === 'other') {
       const specificTypes = ['community-day', 'pokemon-spotlight-hour', 'raid-hour'];
       list = list.filter(e => !specificTypes.includes(e.eventType));
     } else {
@@ -503,166 +646,368 @@ function App() {
   }).length;
 
   return (
-    <div className="app-container">
-      {/* Mobile Top Header */}
-      <header className="app-header">
-        <div className="header-logo-section">
-          <span className="pokeball-icon">🔴</span>
+    <div className="web-app-layout">
+      {/* Desktop Left Sidebar Navigation */}
+      <aside className="desktop-sidebar">
+        <div className="sidebar-logo">
+          <PokeballLogo size={28} />
           <h1>PokeGO Tracker</h1>
         </div>
-        <div className="header-stats">
-          <span className="status-indicator-tag success">
+        <div className="sidebar-stats">
+          <span className={`status-indicator-tag ${apiStatus === 'success' ? 'success' : 'fallback'}`}>
             {apiStatus === 'success' ? t.header_live : t.header_offline}
           </span>
           <span className="active-badge">
             {activeEventsCount} {t.header_active}
           </span>
         </div>
-      </header>
+        <nav className="sidebar-nav">
+          <button 
+            className={`sidebar-nav-item ${activeTab === 'events' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('events')}
+          >
+            <span className="nav-icon"><Calendar size={20} /></span>
+            <span className="nav-text">{t.tabs_events}</span>
+          </button>
+          
+          <button 
+            className={`sidebar-nav-item ${activeTab === 'raid' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('raid')}
+          >
+            <span className="nav-icon"><Swords size={20} /></span>
+            <span className="nav-text">{t.tabs_raid}</span>
+          </button>
 
-      {/* Main Tab Container */}
-      <main className="app-main">
-        {loading ? (
-          <div className="loading-container">
-            <div className="spinner"></div>
-            <p>{t.loading_text}</p>
+          <button 
+            className={`sidebar-nav-item ${activeTab === 'rocket' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('rocket')}
+          >
+            <span className="nav-icon"><Shield size={20} /></span>
+            <span className="nav-text">{t.tabs_rocket}</span>
+          </button>
+
+          <button 
+            className={`sidebar-nav-item ${activeTab === 'ditto' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('ditto')}
+          >
+            <span className="nav-icon"><Sparkles size={20} /></span>
+            <span className="nav-text">{t.tabs_ditto}</span>
+          </button>
+
+          <button 
+            className={`sidebar-nav-item ${activeTab === 'eggs' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('eggs')}
+          >
+            <span className="nav-icon"><Egg size={20} /></span>
+            <span className="nav-text">{t.tabs_eggs}</span>
+          </button>
+
+          <button 
+            className={`sidebar-nav-item ${activeTab === 'ranking' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('ranking')}
+          >
+            <span className="nav-icon"><Trophy size={20} /></span>
+            <span className="nav-text">{t.tabs_ranking}</span>
+          </button>
+
+          <button 
+            className={`sidebar-nav-item ${activeTab === 'settings' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('settings')}
+          >
+            <span className="nav-icon"><Settings size={20} /></span>
+            <span className="nav-text">{t.tabs_settings}</span>
+          </button>
+        </nav>
+        
+        {/* Sidebar Native Ad Placeholder */}
+        {showAds && (
+          <div className="sidebar-ad-container">
+            <AdContainer type="inline" slot="9193535711" lang={lang} />
           </div>
-        ) : (
-          <>
-            {activeTab === 'events' && (
-              <div className="tab-content events-tab">
-                {/* Active / Upcoming Status Tabs */}
-                <div className="status-tabs-container">
-                  <button 
-                    className={`status-tab-btn ${statusFilter === 'active' ? 'active' : ''}`}
-                    onClick={() => setStatusFilter('active')}
-                  >
-                    🟢 {lang === 'cs' ? 'Probíhá' : 'Active'}
-                  </button>
-                  <button 
-                    className={`status-tab-btn ${statusFilter === 'upcoming' ? 'active' : ''}`}
-                    onClick={() => setStatusFilter('upcoming')}
-                  >
-                    📅 {lang === 'cs' ? 'Připravuje se' : 'Upcoming'}
-                  </button>
-                </div>
+        )}
 
-                {/* Sub-filters for active timespan */}
-                {statusFilter === 'active' && (
-                  <div className="active-timespan-filters">
-                    <button 
-                      className={`timespan-btn ${activeTimeSpan === 'now' ? 'active' : ''}`}
-                      onClick={() => setActiveTimeSpan('now')}
-                    >
-                      {t.active_filter_now}
-                    </button>
-                    <button 
-                      className={`timespan-btn ${activeTimeSpan === 'week' ? 'active' : ''}`}
-                      onClick={() => setActiveTimeSpan('week')}
-                    >
-                      {t.active_filter_week}
-                    </button>
-                    <button 
-                      className={`timespan-btn ${activeTimeSpan === 'month' ? 'active' : ''}`}
-                      onClick={() => setActiveTimeSpan('month')}
-                    >
-                      {t.active_filter_month}
-                    </button>
-                  </div>
-                )}
+        {/* Desktop Sidebar Footer */}
+        <div 
+          className="sidebar-footer" 
+          style={{ 
+            marginTop: 'auto', 
+            paddingTop: '16px', 
+            borderTop: '1px solid var(--border-color)', 
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px'
+          }}
+        >
+          <p style={{ fontSize: '10px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.4' }}>
+            {lang === 'cs' 
+              ? 'Tato aplikace je neoficiální fanouškovský projekt. Nemá žádné přidružení ke společnostmi Niantic, Nintendo nebo The Pokémon Company.' 
+              : 'This app is an unofficial fan project and has no affiliation with Niantic, Nintendo, or The Pokémon Company.'
+            }
+          </p>
+          <p style={{ fontSize: '10px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.4' }}>
+            {lang === 'cs' ? 'Data událostí poskytuje ' : 'Event data powered by '}{' '}
+            <a 
+              href="https://leekduck.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              style={{ color: 'var(--accent-color)', fontWeight: 'bold', textDecoration: 'none' }}
+              onMouseOver={(e) => (e.currentTarget.style.textDecoration = 'underline')}
+              onMouseOut={(e) => (e.currentTarget.style.textDecoration = 'none')}
+            >
+              Leek Duck
+            </a>.
+          </p>
+          <a 
+            href="/privacy-policy.html" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ 
+              fontSize: '11px', 
+              color: 'var(--text-muted)', 
+              textDecoration: 'underline',
+              transition: 'color 0.2s',
+              fontWeight: '600',
+              marginTop: '4px'
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.color = 'var(--accent-color)')}
+            onMouseOut={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
+          >
+            {lang === 'cs' ? 'Ochrana soukromí & Právní info' : 'Privacy Policy & Disclaimer'}
+          </a>
+        </div>
+      </aside>
 
-                {/* Event Category Filters */}
-                <div className="filter-pill-container" style={{ marginTop: '12px' }}>
-                  {visibleEvents.communityDays && (
-                    <button className={`filter-pill ${filterType === 'community-day' ? 'active' : ''}`} onClick={() => setFilterType('community-day')}>{t.filter_cd}</button>
-                  )}
-                  {visibleEvents.spotlightHours && (
-                    <button className={`filter-pill ${filterType === 'pokemon-spotlight-hour' ? 'active' : ''}`} onClick={() => setFilterType('pokemon-spotlight-hour')}>{t.filter_spotlight}</button>
-                  )}
-                  {visibleEvents.raidHours && (
-                    <button className={`filter-pill ${filterType === 'raid-hour' ? 'active' : ''}`} onClick={() => setFilterType('raid-hour')}>{t.filter_raid_hour}</button>
-                  )}
-                  {visibleEvents.majorEvents && (
-                    <button className={`filter-pill ${filterType === 'other' ? 'active' : ''}`} onClick={() => setFilterType('other')}>{t.filter_other}</button>
-                  )}
-                </div>
+      {/* Main Container */}
+      <div className="app-container">
+        {/* Mobile Top Header (Hidden on Desktop) */}
+        <header className="app-header">
+          <div className="header-logo-section">
+            <PokeballLogo size={24} />
+            <h1>PokeGO Tracker</h1>
+          </div>
+          <div className="header-stats">
+            <span className={`status-indicator-tag ${apiStatus === 'success' ? 'success' : 'fallback'}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              {apiStatus === 'success' ? <Wifi size={12} strokeWidth={2.5} /> : <Database size={12} strokeWidth={2.5} />}
+              {apiStatus === 'success' ? t.header_live : t.header_offline}
+            </span>
+            <span className="active-badge">
+              {activeEventsCount} {t.header_active}
+            </span>
+          </div>
+        </header>
 
-                {/* Event Feed List or Timeline */}
-                {viewMode === 'timeline' ? (
-                  <TimelineView 
-                    events={getFilteredEvents()} 
-                    lang={lang} 
-                    timezone={timezone} 
-                  />
-                ) : (
-                  <div className="events-feed-list">
-                    {getFilteredEvents().length === 0 ? (
-                      <div className="empty-feed">
-                        <p>{t.details_empty_category}</p>
+        {/* Content Layout Wrapper for splitting Main Content and Ads Sidebar */}
+        <div className="content-layout-wrapper">
+          <main className="app-main">
+            {loading ? (
+              <div className="loading-container">
+                <div className="spinner"></div>
+                <p>{t.loading_text}</p>
+              </div>
+            ) : (
+              <>
+                {activeTab === 'events' && (
+                  <div className="tab-content events-tab">
+                    {/* Active / Upcoming Status Tabs */}
+                    {viewMode !== 'timeline' && (
+                      <div className="status-tabs-container">
+                        <button 
+                          className={`status-tab-btn ${statusFilter === 'active' ? 'active' : ''}`}
+                          onClick={() => setStatusFilter('active')}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                        >
+                          <Play size={14} fill="currentColor" stroke="none" />
+                          {lang === 'cs' ? 'Probíhá' : 'Active'}
+                        </button>
+                        <button 
+                          className={`status-tab-btn ${statusFilter === 'upcoming' ? 'active' : ''}`}
+                          onClick={() => setStatusFilter('upcoming')}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                        >
+                          <Clock size={14} />
+                          {lang === 'cs' ? 'Připravuje se' : 'Upcoming'}
+                        </button>
                       </div>
+                    )}
+
+                    {/* Sub-filters for active timespan */}
+                    {viewMode !== 'timeline' && statusFilter === 'active' && (
+                      <div className="active-timespan-filters">
+                        <button 
+                          className={`timespan-btn ${activeTimeSpan === 'now' ? 'active' : ''}`}
+                          onClick={() => setActiveTimeSpan('now')}
+                        >
+                          {t.active_filter_now}
+                        </button>
+                        <button 
+                          className={`timespan-btn ${activeTimeSpan === 'week' ? 'active' : ''}`}
+                          onClick={() => setActiveTimeSpan('week')}
+                        >
+                          {t.active_filter_week}
+                        </button>
+                        <button 
+                          className={`timespan-btn ${activeTimeSpan === 'month' ? 'active' : ''}`}
+                          onClick={() => setActiveTimeSpan('month')}
+                        >
+                          {t.active_filter_month}
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Event Category Filters */}
+                    {viewMode !== 'timeline' && (
+                      <div className="filter-pill-container" style={{ marginTop: '12px' }}>
+                        <button className={`filter-pill ${filterType === 'all' ? 'active' : ''}`} onClick={() => setFilterType('all')}>{t.filter_all}</button>
+                        {visibleEvents.communityDays && (
+                          <button className={`filter-pill ${filterType === 'community-day' ? 'active' : ''}`} onClick={() => setFilterType('community-day')}>{t.filter_cd}</button>
+                        )}
+                        {visibleEvents.spotlightHours && (
+                          <button className={`filter-pill ${filterType === 'pokemon-spotlight-hour' ? 'active' : ''}`} onClick={() => setFilterType('pokemon-spotlight-hour')}>{t.filter_spotlight}</button>
+                        )}
+                        {visibleEvents.raidHours && (
+                          <button className={`filter-pill ${filterType === 'raid-hour' ? 'active' : ''}`} onClick={() => setFilterType('raid-hour')}>{t.filter_raid_hour}</button>
+                        )}
+                        {visibleEvents.majorEvents && (
+                          <button className={`filter-pill ${filterType === 'other' ? 'active' : ''}`} onClick={() => setFilterType('other')}>{t.filter_other}</button>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Event Feed List or Timeline */}
+                    {viewMode === 'timeline' ? (
+                      <TimelineView 
+                        events={getAdjustedEvents().filter(e => isEventVisible(e.eventType))} 
+                        lang={lang} 
+                        timezone={timezone} 
+                      />
                     ) : (
-                      getFilteredEvents().map(event => (
-                        <EventCard key={event.eventID} event={event} lang={lang} timezone={timezone} />
-                      ))
+                      <div className="events-feed-list">
+                        {getFilteredEvents().length === 0 ? (
+                          <div className="empty-feed">
+                            <p>{t.details_empty_category}</p>
+                          </div>
+                        ) : (
+                          getFilteredEvents().map(event => (
+                            <EventCard key={event.eventID} event={event} lang={lang} timezone={timezone} />
+                          ))
+                        )}
+                      </div>
                     )}
                   </div>
                 )}
-              </div>
+
+                {activeTab === 'raid' && (
+                  <div className="tab-content raid-tab">
+                    <RaidView events={getAdjustedEvents()} lang={lang} />
+                  </div>
+                )}
+
+                {activeTab === 'rocket' && (
+                  <div className="tab-content rocket-tab">
+                    <RocketGuide lang={lang} />
+                  </div>
+                )}
+
+                {activeTab === 'ditto' && (
+                  <div className="tab-content ditto-tab">
+                    <DittoEggsView lang={lang} mode="ditto" />
+                  </div>
+                )}
+
+                {activeTab === 'eggs' && (
+                  <div className="tab-content eggs-tab">
+                    <DittoEggsView lang={lang} mode="eggs" />
+                  </div>
+                )}
+
+                {activeTab === 'ranking' && (
+                  <div className="tab-content ranking-tab">
+                    <PokemonRankingsView lang={lang} />
+                  </div>
+                )}
+
+                {activeTab === 'settings' && (
+                  <div className="tab-content settings-tab">
+                    <NotificationSettings 
+                      notificationsHook={notificationsHook} 
+                      lang={lang} 
+                      setLang={handleSetLang}
+                      timezone={timezone}
+                      setTimezone={setTimezone}
+                      visibleEvents={visibleEvents}
+                      toggleVisibleEvent={toggleVisibleEvent}
+                      viewMode={viewMode}
+                      setViewMode={setViewMode}
+                      onOpenAdmin={() => setActiveTab('admin')}
+                    />
+                  </div>
+                )}
+
+                {activeTab === 'admin' && (
+                  <div className="tab-content admin-tab">
+                    <AdminPanelView lang={lang} onBack={() => setActiveTab('settings')} />
+                  </div>
+                )}
+              </>
             )}
+          </main>
 
-            {activeTab === 'raid' && (
-              <div className="tab-content raid-tab">
-                <RaidView events={getAdjustedEvents()} lang={lang} />
-              </div>
+          {/* Desktop Right Sidebar (Advertisements & Active Bonuses Widget Removed) */}
+          <aside className="desktop-right-sidebar">
+            {showAds && (
+              <>
+                <div className="sidebar-widget-container">
+                  <AdContainer type="sidebar" slot="4561558504" lang={lang} />
+                </div>
+
+                {/* Second Ad (Medium Rectangle) replacing the Active Bonuses Panel */}
+                <div className="sidebar-widget-container">
+                  <AdContainer type="rectangle" slot="3032854416" lang={lang} />
+                </div>
+              </>
             )}
+          </aside>
+        </div>
 
-            {activeTab === 'rocket' && (
-              <div className="tab-content rocket-tab">
-                <RocketGuide lang={lang} />
-              </div>
-            )}
+        {/* Mobile Bottom Navigation Bar (Hidden on Desktop) */}
+        <nav className="bottom-nav">
+          <button className={`nav-item ${activeTab === 'events' ? 'active' : ''}`} onClick={() => setActiveTab('events')}>
+            <span className="nav-icon">📅</span>
+            <span className="nav-text">{t.tabs_events}</span>
+          </button>
+          
+          <button className={`nav-item ${activeTab === 'raid' ? 'active' : ''}`} onClick={() => setActiveTab('raid')}>
+            <span className="nav-icon">👾</span>
+            <span className="nav-text">{t.tabs_raid}</span>
+          </button>
 
-            {activeTab === 'settings' && (
-              <div className="tab-content settings-tab">
-                <NotificationSettings 
-                  notificationsHook={notificationsHook} 
-                  lang={lang} 
-                  setLang={handleSetLang}
-                  timezone={timezone}
-                  setTimezone={setTimezone}
-                  visibleEvents={visibleEvents}
-                  toggleVisibleEvent={toggleVisibleEvent}
-                  viewMode={viewMode}
-                  setViewMode={setViewMode}
-                />
-              </div>
-            )}
-          </>
-        )}
-      </main>
+          <button className={`nav-item ${activeTab === 'rocket' ? 'active' : ''}`} onClick={() => setActiveTab('rocket')}>
+            <span className="nav-icon">🚀</span>
+            <span className="nav-text">{t.tabs_rocket}</span>
+          </button>
 
-      {/* Mobile Bottom Navigation Bar */}
-      <nav className="bottom-nav">
-        <button className={`nav-item ${activeTab === 'events' ? 'active' : ''}`} onClick={() => setActiveTab('events')}>
-          <span className="nav-icon">📅</span>
-          <span className="nav-text">{t.tabs_events}</span>
-        </button>
-        
-        <button className={`nav-item ${activeTab === 'raid' ? 'active' : ''}`} onClick={() => setActiveTab('raid')}>
-          <span className="nav-icon">👾</span>
-          <span className="nav-text">{t.tabs_raid}</span>
-        </button>
+          <button className={`nav-item ${activeTab === 'ditto' ? 'active' : ''}`} onClick={() => setActiveTab('ditto')}>
+            <span className="nav-icon">✨</span>
+            <span className="nav-text">{t.tabs_ditto}</span>
+          </button>
 
-        <button className={`nav-item ${activeTab === 'rocket' ? 'active' : ''}`} onClick={() => setActiveTab('rocket')}>
-          <span className="nav-icon">🚀</span>
-          <span className="nav-text">{t.tabs_rocket}</span>
-        </button>
+          <button className={`nav-item ${activeTab === 'eggs' ? 'active' : ''}`} onClick={() => setActiveTab('eggs')}>
+            <span className="nav-icon">🥚</span>
+            <span className="nav-text">{t.tabs_eggs}</span>
+          </button>
 
-        <button className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>
-          <span className="nav-icon">⚙️</span>
-          <span className="nav-text">{t.tabs_settings}</span>
-        </button>
-      </nav>
+          <button className={`nav-item ${activeTab === 'ranking' ? 'active' : ''}`} onClick={() => setActiveTab('ranking')}>
+            <span className="nav-icon">🏆</span>
+            <span className="nav-text">{t.tabs_ranking}</span>
+          </button>
+
+          <button className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>
+            <span className="nav-icon">⚙️</span>
+            <span className="nav-text">{t.tabs_settings}</span>
+          </button>
+        </nav>
+      </div>
     </div>
   );
 }

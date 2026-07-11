@@ -3,6 +3,7 @@ import { EventCard } from './EventCard';
 import type { EventData } from './EventCard';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
+import { resolveImage } from '../utils/imageResolver';
 
 interface TimelineViewProps {
   events: EventData[];
@@ -10,106 +11,180 @@ interface TimelineViewProps {
   timezone?: string;
 }
 
-export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezone }) => {
-  const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
+// Localized Czech/English month names
+const MONTH_NAMES = {
+  cs: [
+    'Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
+    'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'
+  ],
+  en: [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ]
+};
 
+const WEEKDAY_NAMES = {
+  cs: ['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'],
+  en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+};
+
+export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezone }) => {
+  const [activeModalEvent, setActiveModalEvent] = useState<EventData | null>(null);
+  
   const t = translations[lang];
 
-  // 1. Calculate the start and end of the timeline
-  const { timelineStart, timelineEnd, days } = useMemo(() => {
-    if (events.length === 0) {
-      const now = new Date();
-      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 10);
-      const dayArray: Date[] = [];
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        dayArray.push(new Date(d));
-      }
-      return { timelineStart: start, timelineEnd: end, days: dayArray };
+  // 1. Find the earliest start date among events to focus the calendar on the active month
+  const initialDate = useMemo(() => {
+    if (events.length > 0) {
+      const earliest = new Date(events[0].start);
+      return new Date(earliest.getFullYear(), earliest.getMonth(), 1);
     }
-
-    // Find min start date and max end date
-    let minMs = Infinity;
-    let maxMs = -Infinity;
-
-    events.forEach(e => {
-      const startMs = new Date(e.start).getTime();
-      const endMs = new Date(e.end).getTime();
-      if (startMs < minMs) minMs = startMs;
-      if (endMs > maxMs) maxMs = endMs;
-    });
-
-    const start = new Date(minMs);
-    // Align to start of day
-    start.setHours(0, 0, 0, 0);
-    // Subtract 1 day buffer
-    start.setDate(start.getDate() - 1);
-
-    const end = new Date(maxMs);
-    // Align to end of day
-    end.setHours(23, 59, 59, 999);
-    // Add 1 day buffer
-    end.setDate(end.getDate() + 1);
-
-    // Limit range to maximum 45 days to prevent huge performance penalty
-    const diffDays = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
-    if (diffDays > 45) {
-      end.setTime(start.getTime() + 45 * 24 * 60 * 60 * 1000);
-    }
-
-    const dayArray: Date[] = [];
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      dayArray.push(new Date(d));
-    }
-
-    return { timelineStart: start, timelineEnd: end, days: dayArray };
+    return new Date();
   }, [events]);
 
-  const totalDurationMs = timelineEnd.getTime() - timelineStart.getTime();
+  const [viewDate, setViewDate] = useState<Date>(initialDate);
 
-  // Get day labels
-  const getDayLabel = (date: Date) => {
-    const weekdaysCs = ['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'];
-    const weekdaysEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    const wday = lang === 'cs' ? weekdaysCs[date.getDay()] : weekdaysEn[date.getDay()];
-    return {
-      wday,
-      dateStr: `${date.getDate()}. ${date.getMonth() + 1}.`
-    };
+  const month = viewDate.getMonth();
+  const year = viewDate.getFullYear();
+
+  // Navigation handlers
+  const handlePrevMonth = () => {
+    setViewDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
   };
 
-  const getEventBarStyles = (event: EventData) => {
-    const startMs = new Date(event.start).getTime();
-    const endMs = new Date(event.end).getTime();
-
-    // Calculate left & width percentage
-    const leftPercent = ((startMs - timelineStart.getTime()) / totalDurationMs) * 100;
-    const widthPercent = ((endMs - startMs) / totalDurationMs) * 100;
-
-    // Constrain percentages
-    const left = Math.max(0, Math.min(100, leftPercent));
-    const width = Math.max(0.5, Math.min(100 - left, widthPercent));
-
-    return {
-      left: `${left}%`,
-      width: `${width}%`
-    };
+  const handleNextMonth = () => {
+    setViewDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
   };
 
-  const getEventTypeClass = (type: string) => {
-    switch (type) {
-      case 'community-day': return 'community-day';
-      case 'pokemon-spotlight-hour': return 'spotlight-hour';
-      case 'raid-hour': return 'raid-hour';
-      case 'raid-battles': return 'raid-battles';
-      case 'rocket-takeover': return 'rocket-takeover';
-      default: return 'other-event';
+  // Helper to extract pokemon icon
+  const getEventIcon = (event: EventData): string | null => {
+    if (event.eventType === 'pokemon-spotlight-hour' && event.extraData?.spotlight?.image) {
+      return resolveImage(event.extraData.spotlight.image, event.eventType, event.extraData.spotlight.name);
     }
+    if (event.eventType === 'community-day' && event.extraData?.communityday?.spawns?.[0]?.image) {
+      return resolveImage(event.extraData.communityday.spawns[0].image, event.eventType, event.extraData.communityday.spawns[0].name);
+    }
+    if ((event.eventType === 'raid-hour' || event.eventType === 'raid-battles') && event.extraData?.raidbattles?.bosses?.[0]?.image) {
+      return resolveImage(event.extraData.raidbattles.bosses[0].image, event.eventType, event.extraData.raidbattles.bosses[0].name);
+    }
+    return null;
   };
 
-  const toggleExpandEvent = (eventId: string) => {
-    setExpandedEventId(prev => (prev === eventId ? null : eventId));
+  // Formats time to HH:MM
+  const formatEventTime = (startStr: string) => {
+    const d = new Date(startStr);
+    const hours = d.getHours().toString().padStart(2, '0');
+    const minutes = d.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
   };
+
+  // 2. Build the 6-week (42 days) calendar grid starting on Sunday
+  const weeks = useMemo(() => {
+    const firstDay = new Date(year, month, 1);
+    const startOffset = firstDay.getDay(); // 0 = Sunday, 1 = Monday ...
+    
+    // First Sunday of the grid
+    const gridStart = new Date(year, month, 1 - startOffset);
+    const tempDate = new Date(gridStart);
+    
+    const calculatedWeeks = [];
+
+    // Helper to calculate difference in calendar days safely (DST-safe)
+    const getDayOffset = (d1: Date, d2: Date) => {
+      const date1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate());
+      const date2 = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate());
+      return Math.round((date1.getTime() - date2.getTime()) / (1000 * 60 * 60 * 24));
+    };
+
+    for (let w = 0; w < 6; w++) {
+      const weekDays = [];
+      for (let d = 0; d < 7; d++) {
+        weekDays.push(new Date(tempDate));
+        tempDate.setDate(tempDate.getDate() + 1);
+      }
+
+      const weekStart = weekDays[0];
+      const weekEnd = new Date(weekDays[6]);
+      weekEnd.setHours(23, 59, 59, 999);
+
+      // Find all events overlapping with this week
+      const allWeekEvents = events.filter(e => {
+        const start = new Date(e.start);
+        const end = new Date(e.end);
+        return start <= weekEnd && end >= weekStart;
+      });
+
+      // Split into multi-day and single-day events (multi-day = duration >= 24h)
+      const multiDayEvents = allWeekEvents.filter(e => {
+        const duration = new Date(e.end).getTime() - new Date(e.start).getTime();
+        return duration >= 24 * 60 * 60 * 1000;
+      });
+
+      const singleDayEvents = allWeekEvents.filter(e => {
+        const duration = new Date(e.end).getTime() - new Date(e.start).getTime();
+        return duration < 24 * 60 * 60 * 1000;
+      });
+
+      // Sort multi-day events by start date, then duration (longest first)
+      const sortedMulti = [...multiDayEvents].sort((a, b) => {
+        const startDiff = new Date(a.start).getTime() - new Date(b.start).getTime();
+        if (startDiff !== 0) return startDiff;
+        const durA = new Date(a.end).getTime() - new Date(a.start).getTime();
+        const durB = new Date(b.end).getTime() - new Date(b.start).getTime();
+        return durB - durA;
+      });
+
+      // Assign vertical tracks for multi-day overlapping bars
+      const tracks: (EventData | null)[][] = [];
+      const multiLayout = sortedMulti.map(event => {
+        const eStart = new Date(event.start);
+        const eEnd = new Date(event.end);
+
+        const startCol = Math.max(0, getDayOffset(eStart, weekStart));
+        const endCol = Math.min(6, getDayOffset(eEnd, weekStart));
+        const span = endCol - startCol + 1;
+
+        let trackIdx = 0;
+        while (true) {
+          if (!tracks[trackIdx]) {
+            tracks[trackIdx] = Array(7).fill(null);
+          }
+
+          let isFree = true;
+          for (let c = startCol; c <= endCol; c++) {
+            if (tracks[trackIdx][c] !== null) {
+              isFree = false;
+              break;
+            }
+          }
+
+          if (isFree) {
+            for (let c = startCol; c <= endCol; c++) {
+              tracks[trackIdx][c] = event;
+            }
+            break;
+          }
+          trackIdx++;
+        }
+
+        return {
+          event,
+          startCol,
+          span,
+          trackIdx
+        };
+      });
+
+      calculatedWeeks.push({
+        weekDays,
+        multiLayout,
+        numTracks: tracks.length,
+        singleDayEvents
+      });
+    }
+
+    return calculatedWeeks;
+  }, [year, month, events]);
 
   if (events.length === 0) {
     return (
@@ -119,119 +194,179 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
     );
   }
 
-  const columnWidth = 85; // 85px per column for compact horizontal scroll
-  const timelineContentWidth = days.length * columnWidth;
-
   return (
-    <div className="timeline-view-wrapper">
-      <div className="timeline-container">
+    <div className="calendar-month-wrapper">
+      
+      {/* Calendar Header with Month/Year Navigation */}
+      <div className="calendar-header">
+        <div className="calendar-title-nav">
+          <button className="calendar-nav-btn" onClick={handlePrevMonth} aria-label="Previous Month">‹</button>
+          <h2>{MONTH_NAMES[lang][month]} {year}</h2>
+          <button className="calendar-nav-btn" onClick={handleNextMonth} aria-label="Next Month">›</button>
+        </div>
         
-        {/* Horizontal scrollable area */}
-        <div className="timeline-scroll-area">
+        {/* Simple Legend for Event Categories */}
+        <div className="calendar-legend" style={{ display: 'flex', gap: '12px', fontSize: '0.65rem' }}>
+          <span style={{ color: 'var(--community-green)', fontWeight: 'bold' }}>● CD</span>
+          <span style={{ color: 'var(--spotlight-blue)', fontWeight: 'bold' }}>● Spotlight</span>
+          <span style={{ color: 'var(--raid-orange)', fontWeight: 'bold' }}>● Raids</span>
+          <span style={{ color: 'var(--rocket-purple)', fontWeight: 'bold' }}>● Rocket</span>
+        </div>
+      </div>
+
+      {/* Weekday Labels (Sun-Sat) */}
+      <div className="calendar-grid-header">
+        {WEEKDAY_NAMES[lang].map((wDay, idx) => (
+          <div key={idx} className="calendar-header-day">{wDay}</div>
+        ))}
+      </div>
+
+      {/* Weeks Grid */}
+      <div className="calendar-weeks-container">
+        {weeks.map((week, wIdx) => {
+          // Calculate grid-template-rows size dynamically based on layout tracks
+          const trackHeight = 24;
+          const multiHeight = week.numTracks * (trackHeight + 4);
           
-          {/* Header Row */}
-          <div className="timeline-row header-row" style={{ width: `${timelineContentWidth + 180}px` }}>
-            <div className="timeline-label-col header-label">
-              <span>{lang === 'cs' ? 'Událost' : 'Event'}</span>
-            </div>
-            
-            <div className="timeline-bars-col" style={{ width: `${timelineContentWidth}px` }}>
-              <div className="day-grid-headers">
-                {days.map((day, idx) => {
-                  const label = getDayLabel(day);
+          return (
+            <div key={wIdx} className="calendar-week-row" style={{ minHeight: `${80 + multiHeight}px` }}>
+              
+              {/* Background Grid Cells */}
+              <div className="calendar-bg-grid">
+                {week.weekDays.map((day, idx) => {
                   const isToday = new Date().toDateString() === day.toDateString();
                   return (
                     <div 
                       key={idx} 
-                      className={`day-header-cell ${isToday ? 'today' : ''}`}
-                      style={{ width: `${columnWidth}px` }}
+                      className={`calendar-bg-cell ${isToday ? 'today-bg' : ''}`} 
+                    />
+                  );
+                })}
+              </div>
+
+              {/* 1. Day Numbers Row (at the top of the week) */}
+              <div className="calendar-numbers-row">
+                {week.weekDays.map((day, dIdx) => {
+                  const isCurrentMonth = day.getMonth() === month;
+                  const isToday = new Date().toDateString() === day.toDateString();
+                  return (
+                    <div 
+                      key={dIdx} 
+                      className={`calendar-number-cell ${isCurrentMonth ? '' : 'other-month'} ${isToday ? 'today' : ''}`}
                     >
-                      <span className="wday">{label.wday}</span>
-                      <span className="date-num">{label.dateStr}</span>
+                      <span className="calendar-day-number">{day.getDate()}</span>
                     </div>
                   );
                 })}
               </div>
-            </div>
-          </div>
 
-          {/* Timeline Rows */}
-          <div className="timeline-body">
-            {events.map((event) => {
-              const isExpanded = expandedEventId === event.eventID;
-              const barStyle = getEventBarStyles(event);
-              const typeClass = getEventTypeClass(event.eventType);
+              {/* 2. Multi-day Event Banners Grid Overlay */}
+              {week.numTracks > 0 && (
+                <div 
+                  className="calendar-multi-overlay" 
+                  style={{ 
+                    height: `${multiHeight}px`,
+                    gridTemplateRows: `repeat(${week.numTracks}, ${trackHeight}px)` 
+                  }}
+                >
+                  {week.multiLayout.map(({ event, startCol, span, trackIdx }, eIdx) => {
+                    const cleanType = event.eventType.toLowerCase();
+                    let colorClass = 'other-event';
+                    if (cleanType.includes('community-day')) colorClass = 'community-day';
+                    else if (cleanType.includes('spotlight-hour')) colorClass = 'spotlight-hour';
+                    else if (cleanType.includes('raid-hour')) colorClass = 'raid-hour';
+                    else if (cleanType.includes('raid-battles')) colorClass = 'raid-battles';
+                    else if (cleanType.includes('rocket-takeover')) colorClass = 'rocket-takeover';
 
-              return (
-                <div key={event.eventID} style={{ display: 'flex', flexDirection: 'column' }}>
-                  
-                  {/* Event Row */}
-                  <div 
-                    className={`timeline-row event-row ${isExpanded ? 'expanded' : ''}`}
-                    style={{ width: `${timelineContentWidth + 180}px` }}
-                    onClick={() => toggleExpandEvent(event.eventID)}
-                  >
-                    
-                    {/* Left Sticky Label Column */}
-                    <div className="timeline-label-col">
-                      <div className="timeline-event-info">
-                        <span className="event-name-text" title={event.name}>{event.name}</span>
-                        <span className={`event-type-dot ${event.eventType}`}></span>
+                    return (
+                      <div
+                        key={eIdx}
+                        className={`calendar-multi-bar ${colorClass}`}
+                        style={{
+                          gridColumnStart: startCol + 1,
+                          gridColumnEnd: startCol + 1 + span,
+                          gridRowStart: trackIdx + 1,
+                          gridRowEnd: trackIdx + 2
+                        }}
+                        onClick={() => setActiveModalEvent(event)}
+                        title={`${event.name} (${new Date(event.start).toLocaleString()} - ${new Date(event.end).toLocaleString()})`}
+                      >
+                        {getEventIcon(event) && (
+                          <img src={getEventIcon(event)!} className="short-event-icon" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }} alt="" />
+                        )}
+                        <span className="bar-text">{event.name}</span>
                       </div>
-                    </div>
+                    );
+                  })}
+                </div>
+              )}
 
-                    {/* Right Bars Column */}
-                    <div className="timeline-bars-col" style={{ width: `${timelineContentWidth}px` }}>
-                      {/* Grid background lines */}
-                      <div className="grid-background-lines">
-                        {days.map((day, dIdx) => {
-                          const isToday = new Date().toDateString() === day.toDateString();
+              {/* 3. Short single-day / hourly events (at the bottom) */}
+              <div className="calendar-short-events-row">
+                {week.weekDays.map((day, dIdx) => {
+                  const isCurrentMonth = day.getMonth() === month;
+                  
+                  // Filter short single-day events starting on this day
+                  const dayEvents = week.singleDayEvents.filter(e => {
+                    const sDate = new Date(e.start);
+                    return sDate.toDateString() === day.toDateString();
+                  });
+
+                  return (
+                    <div 
+                      key={dIdx} 
+                      className={`calendar-short-events-cell ${isCurrentMonth ? '' : 'other-month'}`}
+                    >
+                      <div className="calendar-day-events-list" style={{ display: 'flex', flexDirection: 'column', gap: '2px', overflow: 'hidden', width: '100%', minWidth: 0 }}>
+                        {dayEvents.map((e, idx) => {
+                          const cleanType = e.eventType.toLowerCase();
+                          let colorClass = 'other-event';
+                          if (cleanType.includes('community-day')) colorClass = 'community-day';
+                          else if (cleanType.includes('spotlight-hour')) colorClass = 'spotlight-hour';
+                          else if (cleanType.includes('raid-hour')) colorClass = 'raid-hour';
+                          else if (cleanType.includes('raid-battles')) colorClass = 'raid-battles';
+                          else if (cleanType.includes('rocket-takeover')) colorClass = 'rocket-takeover';
+
                           return (
                             <div 
-                              key={dIdx} 
-                              className={`grid-line-cell ${isToday ? 'today' : ''}`}
-                              style={{ width: `${columnWidth}px` }}
-                            ></div>
+                              key={idx} 
+                              className={`calendar-short-event ${colorClass}`}
+                              onClick={() => setActiveModalEvent(e)}
+                              title={`${e.name} (${formatEventTime(e.start)} - ${formatEventTime(e.end)})`}
+                            >
+                              <span className="short-event-dot" />
+                              {getEventIcon(e) && (
+                                <img src={getEventIcon(e)!} className="short-event-icon" alt="" />
+                              )}
+                              <span className="short-event-time">{formatEventTime(e.start)}</span>
+                              <span className="short-event-name">{e.name}</span>
+                            </div>
                           );
                         })}
                       </div>
-
-                      {/* Absolute Duration Bar */}
-                      <div 
-                        className={`timeline-bar ${typeClass}`} 
-                        style={barStyle}
-                        title={`${event.name} (${new Date(event.start).toLocaleString()} - ${new Date(event.end).toLocaleString()})`}
-                      >
-                        <span className="bar-text">{event.name}</span>
-                      </div>
                     </div>
+                  );
+                })}
+              </div>
 
-                  </div>
-
-                  {/* Expanded Event Card Block */}
-                  {isExpanded && (
-                    <div 
-                      className="timeline-expanded-card-wrapper"
-                      style={{ width: `${timelineContentWidth + 180}px` }}
-                    >
-                      <div className="timeline-expanded-card-container">
-                        <EventCard event={event} lang={lang} timezone={timezone} />
-                      </div>
-                    </div>
-                  )}
-
-                </div>
-              );
-            })}
-          </div>
-
-        </div>
-
+            </div>
+          );
+        })}
       </div>
-      
-      {/* Help tooltip below the timeline */}
+
+      {/* Expanded Modal Popup with Event Card Details */}
+      {activeModalEvent && (
+        <div className="calendar-modal-overlay" onClick={() => setActiveModalEvent(null)}>
+          <div className="calendar-modal-content" onClick={e => e.stopPropagation()}>
+            <button className="calendar-modal-close" onClick={() => setActiveModalEvent(null)}>✕</button>
+            <EventCard event={activeModalEvent} lang={lang} timezone={timezone} defaultExpanded={true} />
+          </div>
+        </div>
+      )}
+
+      {/* Tooltip help label */}
       <div className="timeline-tip" style={{ padding: '8px 12px', fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-        💡 {lang === 'cs' ? 'Kliknutím na řádek nebo pruh události zobrazíte kompletní průvodce a bonusy.' : 'Click on any event row or bar to display full guides and bonuses.'}
+        💡 {lang === 'cs' ? 'Kliknutím na pruh nebo krátkou událost v kalendáři otevřete podrobného průvodce, bossy a bonusy.' : 'Click on any calendar banner or short event to view detailed guide, counters, and bonuses.'}
       </div>
     </div>
   );

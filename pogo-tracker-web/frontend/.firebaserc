@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "pokego-event-tracker-2026"
-  }
+  },
+  "targets": {
+    "pokego-event-tracker-2026": {
+      "hosting": {
+        "pokego-event-tracker-2026": [
+          "pokego-event-tracker-2026"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

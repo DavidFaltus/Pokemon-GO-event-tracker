@@ -6,6 +6,15 @@ import type { Language } from '../data/translations';
 import { getSpecialEventDetails, getPokemonImage } from '../data/specialEvents';
 import { findPokemonMeta } from '../data/pokemonMeta';
 import { useDynamicEventDetails } from '../hooks/useDynamicEventDetails';
+import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Flame, RefreshCw, Plus, Check } from 'lucide-react';
+import { CounterItem, WeatherIcon } from './CounterItem';
+import { resolveImage } from '../utils/imageResolver';
+
+const EggIcon = ({ size = 16 }: { size?: number }) => (
+  <svg viewBox="0 0 100 120" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+    <path d="M50 10 C20 10, 10 60, 10 85 C10 105, 30 115, 50 115 C70 115, 90 105, 90 85 C90 60, 80 10, 50 10 Z" fill="currentColor" stroke="none"/>
+  </svg>
+);
 
 export interface EventData {
   eventID: string;
@@ -92,12 +101,13 @@ interface EventCardProps {
   event: EventData;
   lang: Language;
   timezone?: string;
+  defaultExpanded?: boolean;
 }
 
-export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) => {
+export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, defaultExpanded }) => {
   const [timeLeftStr, setTimeLeftStr] = useState<string>('');
   const [status, setStatus] = useState<'upcoming' | 'active' | 'ended'>('upcoming');
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+  const [isExpanded, setIsExpanded] = useState<boolean>(defaultExpanded || false);
   const [officialUrl, setOfficialUrl] = useState<string>('');
   const [showOfficial, setShowOfficial] = useState<boolean>(false);
   const [showLeekDuck, setShowLeekDuck] = useState<boolean>(true);
@@ -448,10 +458,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
       <div className="card-top" onClick={() => setIsExpanded(!isExpanded)}>
         <div className="event-img-wrapper">
           <img 
-            src={event.image || "https://cdn.leekduck.com/assets/img/events/events-default-img.jpg"} 
+            src={resolveImage(event.image, event.eventType)} 
             alt={event.name} 
             onError={(e) => {
-              (e.target as HTMLImageElement).src = "https://cdn.leekduck.com/assets/img/events/events-default-img.jpg";
+              (e.target as HTMLImageElement).src = resolveImage(undefined, event.eventType);
             }}
           />
           <span className={`status-pill ${status}`}>
@@ -466,8 +476,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
           <h3 className="event-title">{event.name}</h3>
           
           <div className="event-time-info">
-            <span className="time-date">
-              📅 {formatDate(event.start)} – {formatDate(event.end)}
+            <span className="time-date" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <Calendar size={12} />
+              {formatDate(event.start)} – {formatDate(event.end)}
             </span>
             <span className="time-countdown">{timeLeftStr}</span>
           </div>
@@ -485,7 +496,8 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
           {/* Add to Calendar & Official Link Row */}
           <div className="expanded-row link-row">
             {showLeekDuck && (
-              <a href={event.link} target="_blank" rel="noopener noreferrer" className="details-link-btn">
+              <a href={event.link} target="_blank" rel="noopener noreferrer" className="details-link-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <ExternalLink size={14} />
                 {t.details_official_link}
               </a>
             )}
@@ -495,7 +507,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="pogo-official-btn"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               >
+                <ExternalLink size={14} />
                 {t.details_pokemongo_link}
               </a>
             )}
@@ -504,14 +518,17 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
               target="_blank" 
               rel="noopener noreferrer" 
               className="google-calendar-btn"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
             >
+              <Calendar size={14} />
               {t.details_add_to_calendar}
             </a>
           </div>
 
           {dynamicLoading && (
-            <div className="dynamic-loading-indicator">
-              <span className="spinner-mini">🔄</span> {lang === 'cs' ? 'Načítám podrobnosti z Leek Duck...' : 'Loading details from Leek Duck...'}
+            <div className="dynamic-loading-indicator" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <RefreshCw size={14} className="animate-spin" />
+              {lang === 'cs' ? 'Načítám podrobnosti z Leek Duck...' : 'Loading details from Leek Duck...'}
             </div>
           )}
 
@@ -521,9 +538,12 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
               <div className="spotlight-content-grid">
                 <div className="spotlight-pokemon-info">
                   <img 
-                    src={event.extraData.spotlight.image || getPokemonImage(event.extraData.spotlight.name)} 
-                    alt={event.extraData.spotlight.name} 
+                    src={resolveImage(event.extraData?.spotlight?.image || getPokemonImage(event.extraData?.spotlight?.name || ''), event.eventType, event.extraData?.spotlight?.name)} 
+                    alt={event.extraData?.spotlight?.name} 
                     className="spotlight-pokemon-img"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, event.extraData?.spotlight?.name);
+                    }}
                   />
                   <div className="spotlight-poke-meta">
                     <strong>{event.extraData.spotlight.name}</strong>
@@ -594,7 +614,14 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
                       <h5>{t.details_spawns}</h5>
                       <div className="cd-spawns-flex">
                         <div className="cd-spawn-card">
-                          <img src={dexImage} alt={featuredPokemon} className="cd-spawn-img" />
+                          <img 
+                            src={resolveImage(dexImage, event.eventType, featuredPokemon)} 
+                            alt={featuredPokemon} 
+                            className="cd-spawn-img" 
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, featuredPokemon);
+                            }}
+                          />
                           <span className="cd-spawn-name">{featuredPokemon}</span>
                           <span className="shiny-badge-mini">✨ Shiny Rate ~1:25</span>
                         </div>
@@ -604,7 +631,13 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
                             <div className="shiny-family-flex">
                               {cd.shinies.map(s => (
                                 <div key={s.name} className="shiny-family-item">
-                                  <img src={s.image} alt={s.name} />
+                                  <img 
+                                    src={resolveImage(s.image, event.eventType, s.name)} 
+                                    alt={s.name} 
+                                    onError={(e) => {
+                                      (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, s.name);
+                                    }}
+                                  />
                                   <span>{s.name}</span>
                                 </div>
                               ))}
@@ -695,17 +728,30 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
           {event.eventType !== 'pokemon-spotlight-hour' && event.eventType !== 'community-day' && specialDetails && (
             <div className="expanded-row special-event-guide-box">
               <div className="special-guide-header">
-                <h4>{t.details_special_event_title}</h4>
+                <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <span className="duotone-icon duotone-yellow"><Star size={18} fill="currentColor" /></span>
+                  {t.details_special_event_title}
+                </h4>
               </div>
 
               {/* Debuts */}
               {specialDetails.debuts && specialDetails.debuts.length > 0 && (
                 <div className="special-subsection debuts">
-                  <h5>{t.details_debuts}</h5>
+                  <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <span className="duotone-icon duotone-blue"><Sparkles size={16} /></span>
+                    {t.details_debuts}
+                  </h5>
                   <div className="debuts-flex">
                     {specialDetails.debuts.map(d => (
                       <div key={d.name} className="debut-item">
-                        <img src={d.image} alt={d.name} className="debut-img" />
+                        <img 
+                          src={resolveImage(d.image, event.eventType, d.name)} 
+                          alt={d.name} 
+                          className="debut-img" 
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, d.name);
+                          }}
+                        />
                         <div className="debut-info">
                           <strong className="debut-name">{d.name}</strong>
                           <p className="debut-desc">{lang === 'cs' ? d.description.cs : d.description.en}</p>
@@ -719,7 +765,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
               {/* Bonuses */}
               {specialDetails.bonuses && specialDetails.bonuses.length > 0 && (
                 <div className="special-subsection bonuses">
-                  <h5>{t.details_bonuses}</h5>
+                  <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <span className="duotone-icon duotone-purple"><Gift size={16} /></span>
+                    {t.details_bonuses}
+                  </h5>
                   <div className="special-bonuses-grid">
                     {specialDetails.bonuses.map((b, idx) => (
                       <div key={idx} className="special-bonus-card">
@@ -734,7 +783,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
               {/* Spawns */}
               {specialDetails.spawns && specialDetails.spawns.length > 0 && (
                 <div className="special-subsection spawns">
-                  <h5>{t.details_spawns}</h5>
+                  <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <span className="duotone-icon duotone-green"><Leaf size={16} /></span>
+                    {t.details_spawns}
+                  </h5>
                   <div className="spawns-grid">
                     {specialDetails.spawns.map(s => {
                       const isTicked = tickedSpawns.includes(s.name);
@@ -744,20 +796,31 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
                           className={`spawn-card ${isTicked ? 'ticked' : ''} ${s.isHighPriority ? 'priority' : ''}`}
                           onClick={() => toggleSpawnTicked(s.name)}
                         >
-                          <div className="spawn-tick-indicator">
-                            {isTicked ? '✅' : '➕'}
+                          <div className="spawn-tick-indicator" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {isTicked ? <Check size={12} strokeWidth={3} /> : <Plus size={12} strokeWidth={3} />}
                           </div>
-                          <img src={s.image} alt={s.name} className="spawn-img" />
+                          <img 
+                            src={resolveImage(s.image, event.eventType, s.name)} 
+                            alt={s.name} 
+                            className="spawn-img" 
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, s.name);
+                            }}
+                          />
                           <span className="spawn-name">{s.name}</span>
-                          {s.habitat && (
+                           {s.habitat && (
                             <span className="spawn-habitat">{lang === 'cs' ? s.habitat.cs : s.habitat.en}</span>
                           )}
                           <div className="spawn-badges">
                             {s.isHighPriority && (
-                              <span className="spawn-priority-badge" title={t.details_priority_spawn}>⭐ Meta</span>
+                              <span className="spawn-priority-badge" title={t.details_priority_spawn} style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                <Star size={10} fill="currentColor" stroke="none" /> Meta
+                              </span>
                             )}
                             {s.isShinyAvailable && (
-                              <span className="spawn-shiny-badge" title={t.details_shiny_short}>✨</span>
+                              <span className="spawn-shiny-badge" title={t.details_shiny_short} style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                <Sparkles size={10} fill="currentColor" stroke="none" />
+                              </span>
                             )}
                           </div>
                         </div>
@@ -770,20 +833,33 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
               {/* Eggs */}
               {specialDetails.eggs && specialDetails.eggs.length > 0 && (
                 <div className="special-subsection eggs">
-                  <h5>{t.details_eggs}</h5>
+                  <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <span className="duotone-icon duotone-orange"><EggIcon size={16} /></span>
+                    {t.details_eggs}
+                  </h5>
                   <div className="eggs-section-container">
                     {specialDetails.eggs.map(egg => (
                       <div key={egg.distance} className="egg-pool-row">
-                        <div className="egg-pool-header">
-                          <span className="egg-icon-large">🥚</span>
+                        <div className="egg-pool-header" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                          <span className="egg-icon-large" style={{ display: 'inline-flex', color: '#fb923c' }}><EggIcon size={24} /></span>
                           <h6>{egg.distance} Pool</h6>
                         </div>
                         <div className="egg-contents-flex">
                           {egg.contents.map(p => (
                             <div key={p.name} className="egg-pokemon-item">
-                              <img src={p.image} alt={p.name} />
+                              <img 
+                                src={resolveImage(p.image, event.eventType, p.name)} 
+                                alt={p.name} 
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, p.name);
+                                }}
+                              />
                               <span className="egg-p-name">{p.name}</span>
-                              {p.isShinyAvailable && <span className="shiny-star">✨</span>}
+                              {p.isShinyAvailable && (
+                                <span className="shiny-star" style={{ display: 'inline-flex' }}>
+                                  <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} />
+                                </span>
+                              )}
                             </div>
                           ))}
                         </div>
@@ -796,17 +872,27 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
               {/* Field Research */}
               {specialDetails.research && specialDetails.research.length > 0 && (
                 <div className="special-subsection research">
-                  <h5>{t.details_research}</h5>
+                  <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <span className="duotone-icon duotone-blue"><Search size={16} /></span>
+                    {t.details_research}
+                  </h5>
                   <div className="research-tasks-list">
                     {specialDetails.research.map((r, idx) => (
                       <div key={idx} className="research-task-item">
-                        <div className="task-left">
-                          <span className="search-icon">🔍</span>
+                        <div className="task-left" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                          <span className="search-icon" style={{ display: 'inline-flex', color: '#60a5fa' }}><Search size={14} /></span>
                           <span className="task-text">{lang === 'cs' ? r.task.cs : r.task.en}</span>
                         </div>
-                        <div className="task-right">
-                          <span className="task-reward">🎁 {r.reward}</span>
-                          {r.isShinyAvailable && <span className="shiny-star-research">✨</span>}
+                        <div className="task-right" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                          <span className="task-reward" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <Gift size={12} style={{ color: '#c084fc' }} />
+                            {r.reward}
+                          </span>
+                          {r.isShinyAvailable && (
+                            <span className="shiny-star-research" style={{ display: 'inline-flex' }}>
+                              <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} />
+                            </span>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -819,13 +905,26 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
           {/* TEMPLATE 4: RAID BOSSES & COUNTERS */}
           {bosses.length > 0 && (
             <div className="expanded-row raid-bosses-row">
-              <h4>{t.details_raid_bosses}</h4>
+              <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <span className="duotone-icon duotone-red"><Swords size={18} /></span>
+                {t.details_raid_bosses}
+              </h4>
               <div className="bosses-flex">
                 {bosses.map(boss => (
                   <div key={boss.name} className="boss-item">
-                    <img src={boss.image} alt={boss.name} />
+                    <img 
+                      src={resolveImage(boss.image, event.eventType, boss.name)} 
+                      alt={boss.name} 
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, boss.name);
+                      }}
+                    />
                     <span className="boss-name">{boss.name}</span>
-                    {boss.canBeShiny && <span className="shiny-indicator">✨ Shiny</span>}
+                    {boss.canBeShiny && (
+                      <span className="shiny-indicator" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} /> Shiny
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -834,7 +933,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
 
           {matchedRaidCounters.length > 0 && (
             <div className="expanded-row raid-counters-row">
-              <h4>{t.details_recommended_counters}</h4>
+              <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <span className="duotone-icon duotone-orange"><Flame size={18} fill="none" /></span>
+                {t.details_recommended_counters}
+              </h4>
               {matchedRaidCounters.map(counters => (
                 <div key={counters.bossName} className="raid-boss-counters-card">
                   <div className="counters-boss-header">
@@ -844,42 +946,58 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone }) =
                     </div>
                   </div>
                   <div className="counters-levels-grid">
-                    <div className="counter-level-col mega">
-                      <span className="level-badge mega">{t.details_level_mega}</span>
-                      <ul>
-                        {counters.megaCounters.map(c => <li key={c}>{c}</li>)}
-                      </ul>
-                    </div>
-                    <div className="counter-level-col advanced">
-                      <span className="level-badge advanced">{t.details_level_advanced}</span>
-                      <ul>
-                        {counters.advancedCounters.map(c => <li key={c}>{c}</li>)}
-                      </ul>
-                    </div>
-                    <div className="counter-level-col budget">
-                      <span className="level-badge budget">{t.details_level_budget}</span>
-                      <ul>
-                        {counters.budgetCounters.map(c => <li key={c}>{c}</li>)}
-                      </ul>
-                    </div>
+                    {counters.megaCounters.length > 0 && (
+                      <div className="counter-level-col mega">
+                        <span className="level-badge mega">{t.details_level_mega}</span>
+                        <ul>
+                          {counters.megaCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                        </ul>
+                      </div>
+                    )}
+                    {counters.advancedCounters.length > 0 && (
+                      <div className="counter-level-col advanced">
+                        <span className="level-badge advanced">{t.details_level_advanced}</span>
+                        <ul>
+                          {counters.advancedCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                        </ul>
+                      </div>
+                    )}
+                    {counters.budgetCounters.length > 0 && (
+                      <div className="counter-level-col budget">
+                        <span className="level-badge budget">{t.details_level_budget}</span>
+                        <ul>
+                          {counters.budgetCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                   {/* CP & IV & Weather Boost info */}
                   <div className="counters-cp-info">
-                    <div className="cp-row">
-                      <span className="cp-header-label">{t.details_standard_cp}</span>
-                      <span className="cp-span">{counters.minCp} – <strong className="hundo-label">{counters.maxCp} CP (100% IV)</strong></span>
-                    </div>
-                    <div className="cp-row">
-                      <span className="cp-header-label">{t.details_weather_cp}</span>
-                      <span className="cp-span">{counters.minBoostedCp} – <strong className="hundo-label-boost">{counters.maxBoostedCp} CP (100% IV)</strong></span>
-                    </div>
-                    <div className="cp-row">
-                      <span className="cp-header-label">{t.details_boost_weather}</span>
-                      <span className="cp-span">{counters.weatherBoosts.join(" / ")}</span>
-                    </div>
+                    {counters.maxCp > 0 && (
+                      <div className="cp-row">
+                        <span className="cp-header-label">{t.details_standard_cp}</span>
+                        <span className="cp-span">{counters.minCp} – <strong className="hundo-label">{counters.maxCp} CP (100% IV)</strong></span>
+                      </div>
+                    )}
+                    {counters.maxBoostedCp > 0 && (
+                      <div className="cp-row">
+                        <span className="cp-header-label">{t.details_weather_cp}</span>
+                        <span className="cp-span">{counters.minBoostedCp} – <strong className="hundo-label-boost">{counters.maxBoostedCp} CP (100% IV)</strong></span>
+                      </div>
+                    )}
+                    {counters.weatherBoosts.length > 0 && (
+                      <div className="cp-row">
+                        <span className="cp-header-label">{t.details_boost_weather}</span>
+                        <span className="cp-span" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                          {counters.weatherBoosts.map(w => <WeatherIcon key={w} weatherStr={w} />)}
+                        </span>
+                      </div>
+                    )}
                     <div className="cp-row shiny-info">
                       <span className="cp-header-label">{t.details_shiny_version}</span>
-                      <span className="cp-span highlight-shiny">{t.details_shiny_available}</span>
+                      <span className="cp-span highlight-shiny" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <Sparkles size={12} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} /> {t.details_shiny_available}
+                      </span>
                     </div>
                   </div>
                 </div>

@@ -8,6 +8,7 @@ import { findPokemonMeta } from '../data/pokemonMeta';
 import { useDynamicEventDetails } from '../hooks/useDynamicEventDetails';
 import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Flame, RefreshCw, Plus, Check } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
+import { resolveImage } from '../utils/imageResolver';
 
 const EggIcon = ({ size = 16 }: { size?: number }) => (
   <svg viewBox="0 0 100 120" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
@@ -457,10 +458,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
       <div className="card-top" onClick={() => setIsExpanded(!isExpanded)}>
         <div className="event-img-wrapper">
           <img 
-            src={event.image || "https://cdn.leekduck.com/assets/img/events/events-default-img.jpg"} 
+            src={resolveImage(event.image, event.eventType)} 
             alt={event.name} 
             onError={(e) => {
-              (e.target as HTMLImageElement).src = "https://cdn.leekduck.com/assets/img/events/events-default-img.jpg";
+              (e.target as HTMLImageElement).src = resolveImage(undefined, event.eventType);
             }}
           />
           <span className={`status-pill ${status}`}>
@@ -537,9 +538,12 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
               <div className="spotlight-content-grid">
                 <div className="spotlight-pokemon-info">
                   <img 
-                    src={event.extraData.spotlight.image || getPokemonImage(event.extraData.spotlight.name)} 
-                    alt={event.extraData.spotlight.name} 
+                    src={resolveImage(event.extraData?.spotlight?.image || getPokemonImage(event.extraData?.spotlight?.name || ''), event.eventType, event.extraData?.spotlight?.name)} 
+                    alt={event.extraData?.spotlight?.name} 
                     className="spotlight-pokemon-img"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, event.extraData?.spotlight?.name);
+                    }}
                   />
                   <div className="spotlight-poke-meta">
                     <strong>{event.extraData.spotlight.name}</strong>
@@ -610,7 +614,14 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                       <h5>{t.details_spawns}</h5>
                       <div className="cd-spawns-flex">
                         <div className="cd-spawn-card">
-                          <img src={dexImage} alt={featuredPokemon} className="cd-spawn-img" />
+                          <img 
+                            src={resolveImage(dexImage, event.eventType, featuredPokemon)} 
+                            alt={featuredPokemon} 
+                            className="cd-spawn-img" 
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, featuredPokemon);
+                            }}
+                          />
                           <span className="cd-spawn-name">{featuredPokemon}</span>
                           <span className="shiny-badge-mini">✨ Shiny Rate ~1:25</span>
                         </div>
@@ -620,7 +631,13 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                             <div className="shiny-family-flex">
                               {cd.shinies.map(s => (
                                 <div key={s.name} className="shiny-family-item">
-                                  <img src={s.image} alt={s.name} />
+                                  <img 
+                                    src={resolveImage(s.image, event.eventType, s.name)} 
+                                    alt={s.name} 
+                                    onError={(e) => {
+                                      (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, s.name);
+                                    }}
+                                  />
                                   <span>{s.name}</span>
                                 </div>
                               ))}
@@ -727,7 +744,14 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                   <div className="debuts-flex">
                     {specialDetails.debuts.map(d => (
                       <div key={d.name} className="debut-item">
-                        <img src={d.image} alt={d.name} className="debut-img" />
+                        <img 
+                          src={resolveImage(d.image, event.eventType, d.name)} 
+                          alt={d.name} 
+                          className="debut-img" 
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, d.name);
+                          }}
+                        />
                         <div className="debut-info">
                           <strong className="debut-name">{d.name}</strong>
                           <p className="debut-desc">{lang === 'cs' ? d.description.cs : d.description.en}</p>
@@ -775,7 +799,14 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                           <div className="spawn-tick-indicator" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                             {isTicked ? <Check size={12} strokeWidth={3} /> : <Plus size={12} strokeWidth={3} />}
                           </div>
-                          <img src={s.image} alt={s.name} className="spawn-img" />
+                          <img 
+                            src={resolveImage(s.image, event.eventType, s.name)} 
+                            alt={s.name} 
+                            className="spawn-img" 
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, s.name);
+                            }}
+                          />
                           <span className="spawn-name">{s.name}</span>
                            {s.habitat && (
                             <span className="spawn-habitat">{lang === 'cs' ? s.habitat.cs : s.habitat.en}</span>
@@ -816,7 +847,13 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                         <div className="egg-contents-flex">
                           {egg.contents.map(p => (
                             <div key={p.name} className="egg-pokemon-item">
-                              <img src={p.image} alt={p.name} />
+                              <img 
+                                src={resolveImage(p.image, event.eventType, p.name)} 
+                                alt={p.name} 
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, p.name);
+                                }}
+                              />
                               <span className="egg-p-name">{p.name}</span>
                               {p.isShinyAvailable && (
                                 <span className="shiny-star" style={{ display: 'inline-flex' }}>
@@ -875,7 +912,13 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
               <div className="bosses-flex">
                 {bosses.map(boss => (
                   <div key={boss.name} className="boss-item">
-                    <img src={boss.image} alt={boss.name} />
+                    <img 
+                      src={resolveImage(boss.image, event.eventType, boss.name)} 
+                      alt={boss.name} 
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, boss.name);
+                      }}
+                    />
                     <span className="boss-name">{boss.name}</span>
                     {boss.canBeShiny && (
                       <span className="shiny-indicator" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>

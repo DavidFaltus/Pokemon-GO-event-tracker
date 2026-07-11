@@ -4,6 +4,66 @@ import type { Language } from '../data/translations';
 import { TypeBadge } from './EventCard';
 import type { EventData } from './EventCard';
 import { API_BASE_URL } from '../config';
+import { Sparkles, Trophy } from 'lucide-react';
+import { CounterItem, WeatherIcon, getPokemonIconUrl } from './CounterItem';
+import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
+import { resolveImage } from '../utils/imageResolver';
+
+// Official-like Shadow Pokemon SVG Icon
+const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+    style={{
+      width: '16px',
+      height: '16px',
+      color: '#c084fc', // purple-400
+      filter: 'drop-shadow(0 0 3px rgba(168, 85, 247, 0.75))',
+      display: 'inline-block',
+      verticalAlign: 'middle',
+      ...style
+    }}
+  >
+    <path d="M12 2C11.5 3.5 10 5.5 8.5 7C7 8.5 5.5 10.5 5.5 13C5.5 16.5 8.5 19.5 12 19.5C15.5 19.5 18.5 16.5 18.5 13C18.5 10.5 17 8.5 15.5 7C14 5.5 12.5 3.5 12 2ZM12 17C10.5 17 9.5 16 9.5 14.5C9.5 13 11 11.5 12 10C13 11.5 14.5 13 14.5 14.5C14.5 16 13.5 17 12 17Z" />
+  </svg>
+);
+
+const HubRatingBadge: React.FC<{ rating: string }> = ({ rating }) => {
+  if (!rating) return null;
+  
+  const getRatingColor = (r: string) => {
+    const rLower = r.toLowerCase();
+    if (rLower === 's') return { bg: '#eab308', color: '#0c0d12' }; // Gold
+    if (rLower.startsWith('a+')) return { bg: '#10b981', color: '#ffffff' }; // Emerald / Bright Green
+    if (rLower.startsWith('a')) return { bg: '#22c55e', color: '#0c0d12' }; // Green
+    if (rLower.startsWith('b')) return { bg: '#3b82f6', color: '#ffffff' }; // Blue
+    return { bg: '#9ca3af', color: '#0c0d12' }; // Gray
+  };
+  
+  const colors = getRatingColor(rating);
+  
+  return (
+    <span 
+      className="hub-rating-badge"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '3px',
+        padding: '2px 6px',
+        fontSize: '0.65rem',
+        fontWeight: 800,
+        borderRadius: '4px',
+        backgroundColor: colors.bg,
+        color: colors.color,
+        boxShadow: '0 1px 2px rgba(0,0,0,0.15)'
+      }}
+    >
+      <Trophy size={10} fill="currentColor" stroke="none" />
+      {rating} Tier
+    </span>
+  );
+};
 
 interface RaidViewProps {
   events: EventData[]; // Left for compatibility
@@ -33,7 +93,7 @@ interface RaidBoss {
   } | null;
 }
 
-type FilterTier = 'all' | '5' | 'mega' | '3' | '1' | 'shadow';
+type FilterTier = 'all' | '5' | 'mega' | '3' | '1';
 
 export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
   const [activeFilter, setActiveFilter] = useState<FilterTier>('all');
@@ -81,7 +141,9 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
 
   const filteredBosses = bosses.filter(boss => {
     if (activeFilter === 'all') return true;
-    if (activeFilter === 'shadow') return boss.tier.startsWith('shadow');
+    if (activeFilter === '5') return boss.tier === '5' || boss.tier === 'shadow-5';
+    if (activeFilter === '3') return boss.tier === '3' || boss.tier === 'shadow-3';
+    if (activeFilter === '1') return boss.tier === '1' || boss.tier === 'shadow-1';
     return boss.tier === activeFilter;
   });
 
@@ -143,12 +205,6 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
         >
           1★
         </button>
-        <button 
-          className={`filter-pill ${activeFilter === 'shadow' ? 'active' : ''}`} 
-          onClick={() => { setActiveFilter('shadow'); setExpandedBoss(null); }}
-        >
-          Shadow
-        </button>
       </div>
 
       {/* Grid of bosses */}
@@ -173,30 +229,119 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                   onClick={() => toggleExpandBoss(boss.name)}
                 >
                   <div className="boss-img-wrapper">
-                    {boss.tier.startsWith('shadow') && <span className="shadow-aura-effect">😈</span>}
+                    {boss.tier.startsWith('shadow') && (
+                      <ShadowIcon 
+                        className="shadow-aura-effect" 
+                        style={{ 
+                          position: 'absolute', 
+                          top: '-4px', 
+                          right: '-4px',
+                          width: '18px',
+                          height: '18px'
+                        }} 
+                      />
+                    )}
                     <img 
-                      src={boss.image} 
+                      src={resolveImage(boss.image, 'raid', boss.name)} 
                       alt={boss.name} 
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_000.png";
+                        (e.target as HTMLImageElement).src = getPokemonIconUrl(boss.name);
                       }}
                       className="boss-avatar-img"
                     />
                   </div>
                   
                   <div className="boss-meta-info">
-                    <span className={`boss-tier-badge tier-${boss.tier.startsWith('shadow') ? 'shadow' : boss.tier}`}>
-                      {getTierLabel(boss.tier)}
-                    </span>
-                    <h3 className="boss-title-name">{boss.name}</h3>
-                    <div className="boss-sub-attributes">
-                      {boss.canBeShiny && <span className="shiny-star-badge">✨ Shiny</span>}
-                      {counters && (
-                        <span className="cp-range-short">
-                          Max CP: {counters.maxCp}
+                     <span className={`boss-tier-badge tier-${boss.tier.startsWith('shadow') ? 'shadow' : boss.tier}`}>
+                       {getTierLabel(boss.tier)}
+                     </span>
+                     <h3 className="boss-title-name" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                       {boss.tier.startsWith('shadow') && (
+                         <ShadowIcon style={{ marginRight: '6px', width: '14px', height: '14px', filter: 'none' }} />
+                       )}
+                       <span>{boss.name}</span>
+                       {/* PoGO Hub Rating & Evolution Info */}
+                       {(() => {
+                         const rating = getPokemonHubRating(boss.name);
+                         const evoInfo = getEvolutionInfo(boss.name);
+                         const showEvo = evoInfo && ['S', 'A+', 'A'].includes(evoInfo.rating) && boss.name.toLowerCase() !== evoInfo.evolution.toLowerCase();
+                         
+                         if (!rating && !showEvo) return null;
+                         
+                         return (
+                           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                             {rating && (
+                               <HubRatingBadge rating={rating} />
+                             )}
+                             {showEvo && (
+                               <span 
+                                 style={{ 
+                                   fontSize: '0.62rem', 
+                                   color: '#34d399', 
+                                   fontWeight: 600, 
+                                   backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                                   border: '1px solid rgba(16, 185, 129, 0.25)',
+                                   padding: '1px 5px',
+                                   borderRadius: '4px',
+                                   display: 'inline-flex',
+                                   alignItems: 'center',
+                                   gap: '3px'
+                                 }}
+                               >
+                                 <span>➔ {boss.tier.startsWith('shadow') ? 'Shadow' : ''} {evoInfo.evolution}</span>
+                                 <span style={{ fontWeight: 800 }}>({evoInfo.rating})</span>
+                               </span>
+                             )}
+                           </span>
+                         );
+                       })()}
+                     </h3>
+
+                     {boss.canBeShiny && (
+                       <div style={{ marginTop: '3px' }}>
+                         <span className="shiny-star-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', padding: '1px 5px', fontSize: '0.65rem', borderRadius: '4px', backgroundColor: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24', border: '1px solid rgba(251, 191, 36, 0.2)' }}>
+                           <Sparkles size={8} fill="currentColor" stroke="none" /> Shiny
+                         </span>
+                       </div>
+                     )}
+                   </div>
+
+                  <div className="boss-right-info" style={{ marginLeft: 'auto', marginRight: '16px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', textAlign: 'right' }}>
+                    {/* CP range */}
+                    {counters && counters.maxCp > 0 ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                          {counters.minCp} – <strong className="hundo-label" style={{ color: 'var(--tier-s)', fontWeight: 700 }}>{counters.maxCp} CP</strong>
                         </span>
-                      )}
-                    </div>
+                        {counters.maxBoostedCp > 0 && (
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                            <span style={{ color: '#60a5fa' }}>⚡</span> {counters.minBoostedCp} – <strong className="hundo-label-boost" style={{ color: '#60a5fa', fontWeight: 600 }}>{counters.maxBoostedCp} CP</strong>
+                          </span>
+                        )}
+                      </div>
+                    ) : boss.cpRange ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                          {boss.cpRange} CP
+                        </span>
+                        {boss.boostedCpRange && (
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                            <span style={{ color: '#60a5fa' }}>⚡</span> {boss.boostedCpRange} CP
+                          </span>
+                        )}
+                      </div>
+                    ) : null}
+
+                    {/* Weather Boosts */}
+                    {counters && counters.weatherBoosts.length > 0 ? (
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        {counters.weatherBoosts.map(w => <WeatherIcon key={w} weatherStr={w} />)}
+                      </div>
+                    ) : (boss.weatherBoosts && boss.weatherBoosts.length > 0) ? (
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        {boss.weatherBoosts.map(w => <WeatherIcon key={w} weatherStr={w} />)}
+                      </div>
+                    ) : null}
                   </div>
 
                   <div className="expand-chevron">
@@ -209,7 +354,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                     <div className="expanded-divider"></div>
                     
                     {counters ? (
-                      <div className="raid-boss-counters-card no-border">
+                      <div className="raid-boss-counters-card no-border" style={{ paddingBottom: 0 }}>
                         <div className="counters-boss-header pad-none">
                           <div className="weakness-list">
                             {t.details_weaknesses}: <span className="type-badges-flex">{counters.weaknesses.map(w => <TypeBadge key={w} typeStr={w} />)}</span>
@@ -217,72 +362,39 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                         </div>
                         
                         <div className="counters-levels-grid">
-                          <div className="counter-level-col mega">
-                            <span className="level-badge mega">{t.details_level_mega}</span>
-                            <ul>
-                              {counters.megaCounters.map(c => <li key={c}>{c}</li>)}
-                            </ul>
-                          </div>
-                          <div className="counter-level-col advanced">
-                            <span className="level-badge advanced">{t.details_level_advanced}</span>
-                            <ul>
-                              {counters.advancedCounters.map(c => <li key={c}>{c}</li>)}
-                            </ul>
-                          </div>
-                          <div className="counter-level-col budget">
-                            <span className="level-badge budget">{t.details_level_budget}</span>
-                            <ul>
-                              {counters.budgetCounters.map(c => <li key={c}>{c}</li>)}
-                            </ul>
-                          </div>
-                        </div>
-
-                        <div className="counters-cp-info pad-none margin-top-sm">
-                          <div className="cp-row">
-                            <span className="cp-header-label">{t.details_standard_cp}</span>
-                            <span className="cp-span">{counters.minCp} – <strong className="hundo-label">{counters.maxCp} CP (100% IV)</strong></span>
-                          </div>
-                          <div className="cp-row">
-                            <span className="cp-header-label">{t.details_weather_cp}</span>
-                            <span className="cp-span">{counters.minBoostedCp} – <strong className="hundo-label-boost">{counters.maxBoostedCp} CP (100% IV)</strong></span>
-                          </div>
-                          <div className="cp-row">
-                            <span className="cp-header-label">{t.details_boost_weather}</span>
-                            <span className="cp-span">{counters.weatherBoosts.join(" / ")}</span>
-                          </div>
-                          <div className="cp-row shiny-info">
-                            <span className="cp-header-label">{t.details_shiny_version}</span>
-                            <span className="cp-span highlight-shiny">{t.details_shiny_available}</span>
-                          </div>
+                          {counters.megaCounters.length > 0 && (
+                            <div className="counter-level-col mega">
+                              <span className="level-badge mega">{t.details_level_mega}</span>
+                              <ul>
+                                {counters.megaCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                              </ul>
+                            </div>
+                          )}
+                          {counters.advancedCounters.length > 0 && (
+                            <div className="counter-level-col advanced">
+                              <span className="level-badge advanced">{t.details_level_advanced}</span>
+                              <ul>
+                                {counters.advancedCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                              </ul>
+                            </div>
+                          )}
+                          {counters.budgetCounters.length > 0 && (
+                            <div className="counter-level-col budget">
+                              <span className="level-badge budget">{t.details_level_budget}</span>
+                              <ul>
+                                {counters.budgetCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                              </ul>
+                            </div>
+                          )}
                         </div>
                       </div>
                     ) : (
                       <div className="no-counters-found">
-                        <p>
+                        <p style={{ margin: 0, padding: '8px 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                           {lang === 'cs' 
                             ? 'Doporučené counters a CP pro tohoto bossa momentálně nejsou k dispozici.' 
                             : 'Recommended counters and CP for this boss are currently unavailable.'}
                         </p>
-                        {boss.cpRange && (
-                          <div className="counters-cp-info pad-none margin-top-sm">
-                            <div className="cp-row">
-                              <span className="cp-header-label">{t.details_standard_cp}</span>
-                              <span className="cp-span">{boss.cpRange} CP</span>
-                            </div>
-                            {boss.boostedCpRange && (
-                              <div className="cp-row">
-                                <span className="cp-header-label">{t.details_weather_cp}</span>
-                                <span className="cp-span">{boss.boostedCpRange} CP</span>
-                              </div>
-                            )}
-                            {boss.weatherBoosts && (
-                              <div className="cp-row">
-                                <span className="cp-header-label">{t.details_boost_weather}</span>
-                                <span className="cp-span">{boss.weatherBoosts.join(" / ")}</span>
-                              </div>
-                            )}
-                          </div>
-                        )}
                       </div>
                     )}
                   </div>

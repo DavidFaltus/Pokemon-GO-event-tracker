@@ -3,6 +3,7 @@ import { EventCard } from './EventCard';
 import type { EventData } from './EventCard';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
+import { resolveImage } from '../utils/imageResolver';
 
 interface TimelineViewProps {
   events: EventData[];
@@ -58,13 +59,13 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
   // Helper to extract pokemon icon
   const getEventIcon = (event: EventData): string | null => {
     if (event.eventType === 'pokemon-spotlight-hour' && event.extraData?.spotlight?.image) {
-      return event.extraData.spotlight.image;
+      return resolveImage(event.extraData.spotlight.image, event.eventType, event.extraData.spotlight.name);
     }
     if (event.eventType === 'community-day' && event.extraData?.communityday?.spawns?.[0]?.image) {
-      return event.extraData.communityday.spawns[0].image;
+      return resolveImage(event.extraData.communityday.spawns[0].image, event.eventType, event.extraData.communityday.spawns[0].name);
     }
     if ((event.eventType === 'raid-hour' || event.eventType === 'raid-battles') && event.extraData?.raidbattles?.bosses?.[0]?.image) {
-      return event.extraData.raidbattles.bosses[0].image;
+      return resolveImage(event.extraData.raidbattles.bosses[0].image, event.eventType, event.extraData.raidbattles.bosses[0].name);
     }
     return null;
   };
