@@ -2,7 +2,7 @@
 
 > Přehledná webová a mobilní aplikace pro sledování aktivních eventů, raidů, hnízdění Pokémonů a dalších herních informací z Pokémon GO v reálném čase.
 
-[![Deploy](https://img.shields.io/badge/Live-pokego--event--tracker--2026.web.app-brightgreen?style=flat-square&logo=firebase)](https://pokego-event-tracker-2026.web.app)
+[![Deploy](https://img.shields.io/badge/Live-pogoevents.app-brightgreen?style=flat-square&logo=firebase)](https://pogoevents.app)
 [![GitHub Actions](https://img.shields.io/github/actions/workflow/status/DavidFaltus/Pokemon-GO-event-tracker/deploy.yml?style=flat-square&label=CI%2FCD)](https://github.com/DavidFaltus/Pokemon-GO-event-tracker/actions)
 ![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue?style=flat-square&logo=typescript)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)
@@ -83,7 +83,7 @@ npm run dev
 
 | Platforma | URL |
 |---|---|
-| Web App | [pokego-event-tracker-2026.web.app](https://pokego-event-tracker-2026.web.app) |
+| Web App | [pogoevents.app](https://pogoevents.app) |
 
 ---
 
