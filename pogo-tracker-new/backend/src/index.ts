@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import fs from 'fs';
+import path from 'path';
 import {
   scrapeEvents,
   scrapeEventDetails,
@@ -16,29 +18,74 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'pogo-admin-2026';
 app.use(cors());
 app.use(express.json());
 
-// Simple In-Memory Cache
+// Hybrid Cache (In-Memory + Persistent Disk Cache)
 interface CacheEntry<T> {
   data: T;
   expiry: number;
 }
 
 const cache = new Map<string, CacheEntry<any>>();
+const CACHE_DIR = path.join(__dirname, '..', '.cache');
 
-function getFromCache<T>(key: string): T | null {
+function getFromCache<T>(key: string, ttlMs: number): T | null {
+  // 1. Check in-memory cache first
   const entry = cache.get(key);
-  if (!entry) return null;
-  if (Date.now() > entry.expiry) {
-    cache.delete(key);
-    return null;
+  if (entry && Date.now() <= entry.expiry) {
+    return entry.data;
   }
-  return entry.data;
+
+  // 2. Check disk cache if in-memory is empty/expired
+  try {
+    const cacheFilePath = path.join(CACHE_DIR, `${key}.json`);
+    if (fs.existsSync(cacheFilePath)) {
+      const stats = fs.statSync(cacheFilePath);
+      const ageMs = Date.now() - stats.mtimeMs;
+      if (ageMs < ttlMs) {
+        const content = fs.readFileSync(cacheFilePath, 'utf-8');
+        const data = JSON.parse(content);
+        // Populate in-memory cache
+        cache.set(key, {
+          data,
+          expiry: stats.mtimeMs + ttlMs
+        });
+        return data;
+      }
+    }
+  } catch (err) {
+    console.error(`Failed to read persistent cache for ${key}:`, err);
+  }
+  return null;
 }
 
 function setToCache<T>(key: string, data: T, ttlMs: number) {
+  // 1. Set in-memory cache
   cache.set(key, {
     data,
     expiry: Date.now() + ttlMs
   });
+
+  // 2. Write to disk cache
+  try {
+    if (!fs.existsSync(CACHE_DIR)) {
+      fs.mkdirSync(CACHE_DIR, { recursive: true });
+    }
+    const cacheFilePath = path.join(CACHE_DIR, `${key}.json`);
+    fs.writeFileSync(cacheFilePath, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (err) {
+    console.error(`Failed to write persistent cache for ${key}:`, err);
+  }
+}
+
+function deleteFromCache(key: string) {
+  cache.delete(key);
+  try {
+    const cacheFilePath = path.join(CACHE_DIR, `${key}.json`);
+    if (fs.existsSync(cacheFilePath)) {
+      fs.unlinkSync(cacheFilePath);
+    }
+  } catch (err) {
+    console.error(`Failed to delete cache file for ${key}:`, err);
+  }
 }
 
 // Authentication Middleware
@@ -68,7 +115,8 @@ app.get('/api/health', (req, res) => {
 // Get Events (Merged Scraped + Custom)
 app.get('/api/events', async (req, res) => {
   const cacheKey = 'events_list';
-  let scrapedData = getFromCache<any[]>(cacheKey);
+  const forceNoCache = req.query.nocache === 'true';
+  let scrapedData = forceNoCache ? null : getFromCache<any[]>(cacheKey, 12 * 60 * 60 * 1000);
 
   if (!scrapedData) {
     try {
@@ -148,7 +196,8 @@ app.get('/api/events/:id/details', async (req, res) => {
   }
 
   const cacheKey = `details_${eventId}`;
-  const cachedData = getFromCache<any>(cacheKey);
+  const forceNoCache = req.query.nocache === 'true';
+  const cachedData = forceNoCache ? null : getFromCache<any>(cacheKey, 24 * 60 * 60 * 1000);
 
   if (cachedData) {
     console.log(`Serving details for ${eventId} from cache`);
@@ -171,7 +220,8 @@ app.get('/api/events/:id/details', async (req, res) => {
 // Get Raid Bosses
 app.get('/api/raids', async (req, res) => {
   const cacheKey = 'raid_bosses';
-  const cachedData = getFromCache<any>(cacheKey);
+  const forceNoCache = req.query.nocache === 'true';
+  const cachedData = forceNoCache ? null : getFromCache<any>(cacheKey, 24 * 60 * 60 * 1000);
 
   if (cachedData) {
     console.log('Serving raid bosses from cache');
@@ -191,7 +241,8 @@ app.get('/api/raids', async (req, res) => {
 // Get Rocket Lineups
 app.get('/api/rocket', async (req, res) => {
   const cacheKey = 'rocket_lineups';
-  const cachedData = getFromCache<any>(cacheKey);
+  const forceNoCache = req.query.nocache === 'true';
+  const cachedData = forceNoCache ? null : getFromCache<any>(cacheKey, 24 * 60 * 60 * 1000);
 
   if (cachedData) {
     console.log('Serving rocket lineups from cache');
@@ -255,8 +306,8 @@ app.post('/api/admin/events', requireAuth, async (req, res) => {
     await saveCustomEvents(events);
     
     // Clear caches
-    cache.delete('events_list');
-    cache.delete(`details_${newEvent.eventID}`);
+    deleteFromCache('events_list');
+    deleteFromCache(`details_${newEvent.eventID}`);
 
     res.json({ success: true, event: newEvent });
   } catch (err: any) {
@@ -297,8 +348,8 @@ app.delete('/api/admin/events/:id', requireAuth, async (req, res) => {
     await saveCustomEvents(events);
     
     // Clear caches
-    cache.delete('events_list');
-    cache.delete(`details_${eventId}`);
+    deleteFromCache('events_list');
+    deleteFromCache(`details_${eventId}`);
 
     res.json({ success: true });
   } catch (err: any) {

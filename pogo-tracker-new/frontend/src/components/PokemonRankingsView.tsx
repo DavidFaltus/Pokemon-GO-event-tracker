@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
 import { pokemonRankings } from '../data/pokemonRankings';
-import { resolveImage } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { TypeBadge } from './EventCard';
 import { Search, Trophy, Sword, ShieldAlert, Heart, Star, ChevronDown, ChevronUp } from 'lucide-react';
 
@@ -230,9 +230,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                     alt={poke.name} 
                     className="ranking-poke-img"
                     onError={(e) => {
-                      const img = e.target as HTMLImageElement;
-                      img.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
-                      img.onerror = null;
+                      handlePokemonImageError(e.target as HTMLImageElement, poke.name);
                     }}
                   />
                 </div>

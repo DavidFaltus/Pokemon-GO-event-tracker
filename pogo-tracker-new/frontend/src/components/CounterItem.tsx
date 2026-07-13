@@ -1,5 +1,6 @@
 import React from 'react';
 import { Sun, CloudRain, CloudSun, Cloud, Wind, Snowflake, CloudFog } from 'lucide-react';
+import { getPokemonIconUrl, getBasePokemonName } from '../utils/imageResolver';
 
 export const moveTypes: Record<string, string> = {
   // Fire
@@ -166,40 +167,6 @@ export const defaultPokemonMoves: Record<string, { fast: { move: string; type: s
   "glaceon": { fast: { move: "Frost Breath", type: "ice" }, charged: { move: "Avalanche", type: "ice" } }
 };
 
-export function getPokemonIconUrl(name: string): string {
-  let clean = name.toLowerCase()
-    .replace('shadow ', '')
-    .replace('apex ', '')
-    .replace(' (origin)', '-origin')
-    .replace(' origin', '-origin')
-    .replace(' (altered)', '-altered')
-    .replace(' altered', '-altered')
-    .replace(' (dusk mane)', '-dusk-mane')
-    .replace(' (dawn wings)', '-dawn-wings')
-    .replace(' (regular)', '')
-    .trim();
-  
-  const isPrimal = clean.includes('primal');
-  if (isPrimal) {
-    clean = clean.replace('primal ', '').replace(' primal', '');
-  }
-
-  if (clean.startsWith('mega ')) {
-    const base = clean.replace('mega ', '');
-    clean = `${base}-mega`;
-  }
-  
-  clean = clean.replace(/\s*\(.*?\)\s*/g, '').trim();
-  clean = clean.replace(/\s+/g, '-');
-  clean = clean.replace(/[^a-z0-9-]/g, '');
-
-  if (isPrimal) {
-    clean = `${clean}-primal`;
-  }
-
-  return `https://img.pokemondb.net/sprites/home/normal/${clean}.png`;
-}
-
 export const WeatherIcon: React.FC<{ weatherStr: string }> = ({ weatherStr }) => {
   const ws = weatherStr.toLowerCase();
   let Icon = Sun;
@@ -328,7 +295,16 @@ export const CounterItem: React.FC<{ counterStr: string }> = ({ counterStr }) =>
       <img 
         src={iconUrl} 
         alt={pokemonName} 
-        onError={() => setHasError(true)}
+        onError={(e) => {
+          const img = e.target as HTMLImageElement;
+          const baseName = getBasePokemonName(pokemonName);
+          if (baseName.toLowerCase() !== pokemonName.toLowerCase() && !img.getAttribute('data-fallback-tried')) {
+            img.setAttribute('data-fallback-tried', 'true');
+            img.src = getPokemonIconUrl(baseName);
+          } else {
+            setHasError(true);
+          }
+        }}
       />
       <div className="counter-pokemon-info">
         <span className="counter-pokemon-name">{pokemonName}</span>

@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
 import { TypeBadge } from './EventCard';
-import { CounterItem, getPokemonIconUrl } from './CounterItem';
+import { CounterItem } from './CounterItem';
 import { API_BASE_URL } from '../config';
 import { Zap, Users, Gift, Flame, Swords, Shield, MessageSquare, Gem, Moon, Glasses, Trophy } from 'lucide-react';
 import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
-import { resolveImage } from '../utils/imageResolver';
+import { resolveImage, getPokemonIconUrl, handlePokemonImageError } from '../utils/imageResolver';
 
 const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
   <svg
@@ -248,9 +248,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                   alt={p.name}
                   className="slot-pokemon-img"
                   onError={(e) => {
-                    const img = e.target as HTMLImageElement;
-                    img.onerror = null;
-                    img.src = getPokemonIconUrl(p.name);
+                    handlePokemonImageError(e.target as HTMLImageElement, p.name);
                   }}
                 />
                 <div className="slot-pokemon-info">
@@ -368,7 +366,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                     alt={activeRewardName}
                     style={{ width: '64px', height: '64px', objectFit: 'contain' }}
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
+                      handlePokemonImageError(e.target as HTMLImageElement, activeRewardName);
                     }}
                   />
                 </div>
@@ -541,7 +539,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                                    alt={p} 
                                    style={{ width: '28px', height: '28px', objectFit: 'contain' }}
                                    onError={(e) => {
-                                     (e.target as HTMLImageElement).src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
+                                     handlePokemonImageError(e.target as HTMLImageElement, p);
                                    }}
                                  />
                               </div>

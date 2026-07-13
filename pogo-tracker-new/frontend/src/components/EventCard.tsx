@@ -8,7 +8,7 @@ import { findPokemonMeta } from '../data/pokemonMeta';
 import { useDynamicEventDetails } from '../hooks/useDynamicEventDetails';
 import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Flame, RefreshCw, Plus, Check } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
-import { resolveImage } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 
 const EggIcon = ({ size = 16 }: { size?: number }) => (
   <svg viewBox="0 0 100 120" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
@@ -542,7 +542,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                     alt={event.extraData?.spotlight?.name} 
                     className="spotlight-pokemon-img"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, event.extraData?.spotlight?.name);
+                      handlePokemonImageError(e.target as HTMLImageElement, event.extraData?.spotlight?.name || '');
                     }}
                   />
                   <div className="spotlight-poke-meta">
@@ -619,7 +619,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                             alt={featuredPokemon} 
                             className="cd-spawn-img" 
                             onError={(e) => {
-                              (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, featuredPokemon);
+                              handlePokemonImageError(e.target as HTMLImageElement, featuredPokemon);
                             }}
                           />
                           <span className="cd-spawn-name">{featuredPokemon}</span>
@@ -635,7 +635,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                                     src={resolveImage(s.image, event.eventType, s.name)} 
                                     alt={s.name} 
                                     onError={(e) => {
-                                      (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, s.name);
+                                      handlePokemonImageError(e.target as HTMLImageElement, s.name);
                                     }}
                                   />
                                   <span>{s.name}</span>
@@ -749,7 +749,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                           alt={d.name} 
                           className="debut-img" 
                           onError={(e) => {
-                            (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, d.name);
+                            handlePokemonImageError(e.target as HTMLImageElement, d.name);
                           }}
                         />
                         <div className="debut-info">
@@ -804,7 +804,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                             alt={s.name} 
                             className="spawn-img" 
                             onError={(e) => {
-                              (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, s.name);
+                              handlePokemonImageError(e.target as HTMLImageElement, s.name);
                             }}
                           />
                           <span className="spawn-name">{s.name}</span>
@@ -851,7 +851,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                                 src={resolveImage(p.image, event.eventType, p.name)} 
                                 alt={p.name} 
                                 onError={(e) => {
-                                  (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, p.name);
+                                  handlePokemonImageError(e.target as HTMLImageElement, p.name);
                                 }}
                               />
                               <span className="egg-p-name">{p.name}</span>
@@ -916,7 +916,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                       src={resolveImage(boss.image, event.eventType, boss.name)} 
                       alt={boss.name} 
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, boss.name);
+                        handlePokemonImageError(e.target as HTMLImageElement, boss.name);
                       }}
                     />
                     <span className="boss-name">{boss.name}</span>

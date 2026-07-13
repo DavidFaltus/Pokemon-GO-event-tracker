@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
 import { dittoDisguises, eggPools } from '../data/dittoEggs';
-import { resolveImage } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { TypeBadge } from './EventCard';
 import { Sparkles } from 'lucide-react';
 
@@ -41,7 +41,7 @@ export const DittoEggsView: React.FC<DittoEggsViewProps> = ({ lang, mode }) => {
                     alt={poke.name} 
                     className="disguise-pokemon-img"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, poke.name);
+                      handlePokemonImageError(e.target as HTMLImageElement, poke.name);
                     }}
                   />
                   {poke.isShiny && (
@@ -105,7 +105,7 @@ export const DittoEggsView: React.FC<DittoEggsViewProps> = ({ lang, mode }) => {
                           alt={pokemon.name} 
                           className="hatch-pokemon-img"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).src = resolveImage(undefined, undefined, pokemon.name);
+                            handlePokemonImageError(e.target as HTMLImageElement, pokemon.name);
                           }}
                         />
                         {pokemon.isShinyAvailable && (
