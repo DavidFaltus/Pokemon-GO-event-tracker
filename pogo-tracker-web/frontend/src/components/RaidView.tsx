@@ -7,7 +7,7 @@ import { API_BASE_URL } from '../config';
 import { Sparkles, Trophy } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
 import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
-import { resolveImage, getPokemonIconUrl, handlePokemonImageError } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 
 // Official-like Shadow Pokemon SVG Icon
 const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
