@@ -3,102 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Zásady ochrany osobních údajů a právní prohlášení pro aplikaci PokeGO Tracker. Zjistěte, jak nakládáme s vašimi daty a jaká jsou autorská práva. / Privacy Policy and Legal Disclaimer for PokeGO Tracker app.">
     <title>Zásady ochrany osobních údajů | PokeGO Tracker</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;850&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --bg-color: #121214;
-            --card-bg: #1a1a1e;
-            --text-primary: #e4e4e7;
+            --bg-color: #0f1015;
+            --card-bg: rgba(26, 27, 35, 0.65);
+            --card-border: rgba(255, 255, 255, 0.07);
+            --text-primary: #f4f4f5;
             --text-secondary: #a1a1aa;
+            --text-muted: #71717a;
             --accent-color: #ff4757;
-            --border-color: #2d2d34;
+            --accent-glow: rgba(255, 71, 87, 0.15);
+            --glow-color: rgba(99, 102, 241, 0.05);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(239, 68, 68, 0.02) 0%, transparent 40%);
             color: var(--text-primary);
             line-height: 1.6;
             margin: 0;
-            padding: 40px 20px;
+            padding: 60px 20px;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
 
         .container {
             max-width: 800px;
             margin: 0 auto;
             background: var(--card-bg);
-            padding: 40px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 48px;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle top glowing line */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+        }
+
+        h1, h2, h3 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.02em;
         }
 
         h1 {
-            color: #ffffff;
-            font-size: 28px;
+            font-size: 32px;
             margin-top: 0;
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 10px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .update-date {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .update-date::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-color);
         }
 
         h2 {
-            color: #ffffff;
             font-size: 20px;
-            margin-top: 30px;
+            margin-top: 36px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 8px;
         }
 
         p, li {
             color: var(--text-secondary);
             font-size: 15px;
+            margin-bottom: 16px;
         }
 
         ul {
             padding-left: 20px;
+            margin-bottom: 24px;
         }
 
         li {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .highlight {
-            color: var(--text-primary);
-            font-weight: bold;
+            color: #ffffff;
+            font-weight: 600;
         }
 
         .footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
             text-align: center;
             font-size: 13px;
-            color: var(--text-secondary);
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
         .lang-switch {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 24px;
         }
 
         .lang-btn {
-            background: transparent;
-            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             color: var(--text-secondary);
-            padding: 5px 10px;
-            border-radius: 4px;
+            padding: 6px 14px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .lang-btn:hover, .lang-btn.active {
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+        }
+
+        .lang-btn.active {
+            background: var(--accent-glow);
             border-color: var(--accent-color);
-            color: var(--text-primary);
+            color: var(--accent-color);
+            box-shadow: 0 0 12px var(--accent-glow);
         }
 
         [lang="en"] {
             display: none;
+        }
+        
+        a {
+            transition: color 0.2s;
+        }
+        
+        a:hover {
+            color: #ff6b81 !important;
+        }
+
+        /* Responsive adaptations */
+        @media (max-width: 600px) {
+            body {
+                padding: 24px 12px;
+            }
+            .container {
+                padding: 24px 16px;
+                border-radius: 12px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            h2 {
+                font-size: 18px;
+                margin-top: 28px;
+            }
+            p, li {
+                font-size: 14px;
+            }
+            .lang-switch {
+                margin-bottom: 16px;
+            }
         }
     </style>
 </head>
@@ -113,7 +220,7 @@
     <!-- CZECH VERSION -->
     <div id="lang-cs" lang="cs">
         <h1>Zásady ochrany osobních údajů</h1>
-        <p>Poslední aktualizace: 20. června 2026</p>
+        <p class="update-date">Poslední aktualizace: 14. července 2026</p>
         
         <p>Aplikace <span class="highlight">PokeGO Tracker</span> (dále jen „Aplikace“) respektuje soukromí svých uživatelů. Tyto zásady ochrany osobních údajů popisují, jakým způsobem Aplikace nakládá s informacemi a daty.</p>
 
@@ -171,7 +278,7 @@
     <!-- ENGLISH VERSION -->
     <div id="lang-en" lang="en">
         <h1>Privacy Policy</h1>
-        <p>Last updated: June 20, 2026</p>
+        <p class="update-date">Last updated: July 14, 2026</p>
         
         <p>The <span class="highlight">PokeGO Tracker</span> application (hereinafter referred to as the "App") respects the privacy of its users. This Privacy Policy describes how the App handles information and data.</p>
 

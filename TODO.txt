@@ -1,8 +1,14 @@
-[HOTOVO] 0:Přidat sekci Ditto a sekci Eggs kde bude možné najít momentální převlečení které může mít ditto a vajíčka, rozdělená podle km a pokemoni kteří se v nich aktuálně nachází
+[x] 0: U stávajícího i nového obsahu brát zřetel na SEO, jednotnost a využitelnost na všech zařízeních jako mobil, tablet a počítač, dej zároveň pozor na aktuálnost Privacy policy a Legal desclaimer
+1: Dodělej japonskou verzi, použij jednoduchou japonštinu tak aby to mohl přečíst i ten kdo neumí vysokoškolskou japonštinu
+2: Odstranit Live data a počet aktivních eventů, přejmenuj i aplikaci na PoGo Events místo PokeGO Tracker vytvoř zároveň i logo které bude obsahovat červeno bílý originální styl
+3: Odstranit v Events sekci Actice časové filtry Right now, This week, This month
+4: Seřadit všechny eventy podle času od toho který je nejblíž po ten nejvzdálenjší
+5: Zobrazovat rozkliknutý Event nebo Raid na celou šířku kontejneru podle toho na kterém zařízení uživatel je
+6: Odstranení notifikací pro webovou verzi jelikož nejsou potřeba
+7: Odděl od sebe kod od stylování CSS
 
-[HOTOVO] 1: Udržovat stylování které se přizpůsobuje různým velikostem zařízení (Mobilní telefon, tablet, různě velké monitory)
-[HOTOVO] 2: Každou novou změnu propisovat do Android aplikace 
-[HOTOVO] 5: Přidat sekci Žebříčky (Rankings) s vyhledáváním a PvE hodnocením Pokémonů včetně nejlepších movesetů a základních statistik.
-
-3: Možnost admina ručně upravovat jedntolivé eventy (samostatná aplikace ????). nejlépe vytvořit funkce které by přímo pracovali s daty na backendu tak abych nemusel zasahovat do frontendu a stačilo pouze měnit data. samozřejmě autentizace a autorizace je vyžadována kvůli bezpečnosti dat.
-4: Vylepšit SEO a vyhledávatelnost, přidat další sledovací prvky na google analytics případně poradit jak to propojit lépe
+Big update: 
+1: Lepší přístup k administrátorovy než přes normální stránku
+2: Countery na jednotlivé pokemony v sekci Ranking včetně optimálních movesetů proti konkrétnímu pokemonovy
+3: ??? Implementace campfire srazů k jednotlivým eventům, seznam všech dostupných srazů v určitém okruhu.
+4: Sběr informací ohledně rankingu z https://www.dialgadex.com případně napodobit totožný výpočet

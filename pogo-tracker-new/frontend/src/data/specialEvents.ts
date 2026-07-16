@@ -3,6 +3,7 @@ import { findPokemonMeta } from './pokemonMeta';
 export interface LocalizedString {
   cs: string;
   en: string;
+  ja?: string;
 }
 
 export interface SpecialEventBonus {
@@ -40,7 +41,7 @@ export interface SpecialEventDetails {
   spawns?: SpecialEventSpawn[];
   eggs?: SpecialEventEgg[];
   research?: SpecialEventResearch[];
-  debuts?: { name: string; image: string; description: LocalizedString }[];
+  debuts?: { name: LocalizedString; image: string; description: LocalizedString }[];
 }
 
 export const SPECIAL_EVENTS_DATABASE: Record<string, SpecialEventDetails> = {
@@ -81,12 +82,12 @@ export const SPECIAL_EVENTS_DATABASE: Record<string, SpecialEventDetails> = {
     ],
     debuts: [
       {
-        name: "Marshadow",
+        name: { cs: "Marshadow", en: "Marshadow" },
         image: "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_802_00.png",
         description: { cs: "Speciální výzkum zpřístupní mýtického Pokémona Marshadow", en: "Special Research unlocks the Mythical Pokémon Marshadow" }
       },
       {
-        name: "Necrozma (Dusk Mane & Dawn Wings)",
+        name: { cs: "Necrozma (Dusk Mane & Dawn Wings)", en: "Necrozma (Dusk Mane & Dawn Wings)" },
         image: "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_800_12.png",
         description: { cs: "Fúzování pomocí Solgaleo/Lunala energie", en: "Fusion using Solar/Lunar energy debuts globally" }
       }
@@ -121,7 +122,7 @@ export const SPECIAL_EVENTS_DATABASE: Record<string, SpecialEventDetails> = {
     ],
     debuts: [
       {
-        name: "Shiny Rookidee",
+        name: { cs: "Shiny Rookidee", en: "Shiny Rookidee" },
         image: "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_821_00.png",
         description: { cs: "Poprvé ve hře lze chytit zářivou (Shiny) verzi Rookidee!", en: "Shiny Rookidee family debuts in Pokémon GO!" }
       }
@@ -142,7 +143,7 @@ export const SPECIAL_EVENTS_DATABASE: Record<string, SpecialEventDetails> = {
     ],
     debuts: [
       {
-        name: "Origin Forme Dialga / Palkia signature moves",
+        name: { cs: "Origin Forme Dialga / Palkia signature moves", en: "Origin Forme Dialga / Palkia signature moves" },
         image: "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_483_11.png",
         description: {
           cs: "Během tohoto eventu můžete použít Elite Charged TM k naučení Roar of Time / Spacial Rend u Origin forem Dialgy a Palkii!",
@@ -170,7 +171,7 @@ export const SPECIAL_EVENTS_DATABASE: Record<string, SpecialEventDetails> = {
     ],
     debuts: [
       {
-        name: "Mega Skarmory",
+        name: { cs: "Mega Skarmory", en: "Mega Skarmory" },
         image: "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_227_00.png",
         description: { cs: "Debut Mega Skarmory v Super Mega Raidech! Chycený Skarmory bude mít odemčený Mega Level 1.", en: "Mega Skarmory debuts in Super Mega Raids! Caught Skarmory will have Mega Level 1 unlocked." }
       }
@@ -189,7 +190,7 @@ export const SPECIAL_EVENTS_DATABASE: Record<string, SpecialEventDetails> = {
     ],
     debuts: [
       {
-        name: "Shadow Reshiram",
+        name: { cs: "Shadow Reshiram", en: "Shadow Reshiram" },
         image: "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_643_00.png",
         description: { cs: "Giovanni přichází s Shadow Reshiram (může být i Shiny)! Porazte ho pomocí Super Rocket Radaru z GO Passu.", en: "Defeat Giovanni using the Super Rocket Radar from the GO Pass to rescue Shadow Reshiram (can be Shiny)!" }
       }
@@ -243,7 +244,7 @@ export function getSpecialEventDetails(eventID: string, eventName: string): Spec
       ],
       debuts: [
         {
-          name: "Mýtický Pokémon / Fúze",
+          name: { cs: "Mýtický Pokémon / Fúze", en: "Mythical Pokémon / Fusion" },
           image: "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_802_00.png",
           description: { cs: "Exkluzivní výzkum a raidové debuty", en: "Exclusive research and raid debuts" }
         }
@@ -268,7 +269,7 @@ export function getSpecialEventDetails(eventID: string, eventName: string): Spec
       ],
       debuts: [
         {
-          name: "Speciální kostýmový Pikachu",
+          name: { cs: "Speciální kostýmový Pikachu", en: "Special costume Pikachu" },
           image: "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_025_00.png",
           description: { cs: "Exkluzivní výroční Pikachu debutuje ve hře", en: "Exclusive anniversary Pikachu makes its debut" }
         }
@@ -348,7 +349,7 @@ export function getSpecialEventDetails(eventID: string, eventName: string): Spec
       ],
       debuts: [
         {
-          name: `Shiny ${featuredPokemon}`,
+          name: { cs: `Shiny ${featuredPokemon}`, en: `Shiny ${featuredPokemon}` },
           image: dexImage,
           description: { 
             cs: `Máte šanci chytit Shiny ${featuredPokemon} se zvýšeným poměrem ~1:25!`, 
@@ -376,7 +377,10 @@ export function getSpecialEventDetails(eventID: string, eventName: string): Spec
     // Add 4-star raids description for the 2nd stage evolution
     const secondStage = meta ? (meta.name === "Frigibax" ? "Arctibax" : meta.name === "Bagon" ? "Shelgon" : meta.name === "Beldum" ? "Metang" : meta.name === "Goomy" ? "Sliggoo" : "druhou fázi") : "druhou fázi";
     details.debuts?.push({
-      name: `Speciální 4-hvězdičkové Raidy (${secondStage})`,
+      name: {
+        cs: `Speciální 4-hvězdičkové Raidy (${secondStage})`,
+        en: `Special 4-Star Raids (${secondStage})`
+      },
       image: getPokemonImage(secondStage),
       description: {
         cs: `Od 17:00 do 22:00 probíhají 4* raidy. Po jejich poražení se v okolí Gymu na 30 minut zvýší výskyt ${featuredPokemon} se stejnou shiny šancí.`,

@@ -269,9 +269,11 @@ function App() {
   const [apiStatus, setApiStatus] = useState<'success' | 'fallback'>('fallback');
   const [lang, setLang] = useState<Language>(() => {
     const saved = localStorage.getItem('pogo_tracker_lang');
-    if (saved === 'en' || saved === 'cs') return saved;
+    if (saved === 'en' || saved === 'cs' || saved === 'ja') return saved;
     const browserLang = navigator.language.substring(0, 2);
-    return browserLang === 'cs' ? 'cs' : 'en';
+    if (browserLang === 'cs') return 'cs';
+    if (browserLang === 'ja') return 'ja';
+    return 'en';
   });
   
   const [timezone, setTimezone] = useState<string>(() => {
@@ -430,15 +432,19 @@ function App() {
           newEvents.forEach(event => {
             const title = lang === 'cs'
               ? `Nový event přidán: ${event.name}`
+              : lang === 'ja'
+              ? `新しいイベントが追加されました: ${event.name}`
               : `New event added: ${event.name}`;
             
-            const startDateStr = new Date(event.start).toLocaleDateString(lang === 'cs' ? 'cs-CZ' : 'en-US', {
-              day: 'numeric',
-              month: 'long'
-            });
+            const startDateStr = new Date(event.start).toLocaleDateString(
+              lang === 'cs' ? 'cs-CZ' : lang === 'ja' ? 'ja-JP' : 'en-US',
+              { day: 'numeric', month: 'long' }
+            );
 
             const bodyText = lang === 'cs'
               ? `Do kalendáře byl přidán nový event "${event.name}" (začíná ${startDateStr}).`
+              : lang === 'ja'
+              ? `カレンダーに新しいイベント「${event.name}」が追加されました（開始日: ${startDateStr}）。`
               : `A new event "${event.name}" has been added to the calendar (starts on ${startDateStr}).`;
 
             triggerNotification(

@@ -1,4 +1,4 @@
-export type Language = 'cs' | 'en';
+export type Language = 'cs' | 'en' | 'ja';
 
 export const translations = {
   cs: {
@@ -354,5 +354,212 @@ export const translations = {
     legal_disclaimer_title: "Legal Disclaimer",
     legal_disclaimer_text: "This application is an unofficial fan-made project and has no affiliation or association with Niantic, Nintendo, Game Freak, Creatures, or The Pokémon Company. All Pokémon content, names, images, and trademarks are property of their respective owners and are used for informational purposes under the Fair Use doctrine.",
     legal_powered_by: "Event data is powered and maintained by the community project"
+  },
+
+  ja: {
+    // Nav
+    tabs_events: "イベント",
+    tabs_raid: "レイド",
+    tabs_rocket: "ロケット団",
+    tabs_ditto: "メタモン",
+    tabs_eggs: "タマゴ",
+    tabs_ranking: "ランキング",
+    tabs_settings: "設定",
+
+    // Ditto & Eggs
+    ditto_disguises_title: "メタモンのへんそう",
+    ditto_disguises_desc: "メタモンは野生でこれらのポケモンに変装しています。捕まえた後にメタモンだとわかります！これらのへんそうはすべてひかるポケモンになる可能性があります（ひかるメタモンになることも！）。",
+    eggs_pool_title: "タマゴのふかそう",
+    eggs_pool_desc: "このシーズンの各タマゴの距離ごとにふかするポケモンの一覧です。",
+    rarity_level: "レアリティ",
+    egg_cp_max: "最大CP（IV 100%）",
+
+    // Rankings
+    ranking_title: "PvEポケモンランキング",
+    ranking_search_placeholder: "ポケモンをさがす...",
+    ranking_type_all: "すべてのタイプ",
+    ranking_attack: "こうげき",
+    ranking_defense: "ぼうぎょ",
+    ranking_stamina: "たいりょく",
+    ranking_max_cp: "最大CP",
+    ranking_ideal_moveset: "おすすめわざ（PvE）",
+    ranking_no_results: "ポケモンが見つかりませんでした。",
+    ranking_score: "スコア",
+    ranking_show_details: "ステータスとわざを表示",
+
+    // Header
+    header_live: "ライブデータ",
+    header_offline: "オフライン",
+    header_active: "アクティブ",
+
+    // Filters
+    filter_all: "すべて",
+    filter_cd: "コミュニティデイ",
+    filter_spotlight: "スポットライトアワー",
+    filter_raid_hour: "レイドアワー",
+    filter_rocket: "ロケット団",
+    filter_gbl: "GOバトルリーグ",
+    filter_max_mondays: "マックスマンデー",
+    filter_other: "その他",
+
+    // Status
+    status_active: "開催中",
+    status_upcoming: "まもなく開始",
+    status_ended: "終了",
+    status_starts_in: "開始まで: ",
+    status_ends_in: "終了まで: ",
+    status_ended_label: "終了",
+
+    // Event Details
+    details_official_link: "Leek Duckで見る",
+    details_raid_bosses: "レイドボス:",
+    details_recommended_counters: "おすすめのカウンター:",
+    details_weaknesses: "弱点",
+    details_level_mega: "メガ＆プライマル",
+    details_level_advanced: "上級者向けカウンター",
+    details_level_budget: "初心者向け",
+    details_standard_cp: "通常CP:",
+    details_weather_cp: "天気ブーストCP:",
+    details_boost_weather: "ブーストする天気:",
+    details_shiny_version: "ひかるすがた:",
+    details_shiny_available: "レイドでひかるポケモンが出る（確率 約1/20）",
+    details_empty_category: "このカテゴリにはイベントがありません。",
+    details_select_day: "カレンダーから日付を選んでイベントを表示してください。",
+    details_no_events_day: "この日のイベントはありません。",
+    details_events_for: "イベント一覧:",
+    details_add_to_calendar: "Googleカレンダーに追加",
+    details_special_event_title: "スペシャルイベントガイド",
+    details_debuts: "初登場＆新情報:",
+    details_bonuses: "イベントボーナス:",
+    details_spawns: "野生ポケモン出現:",
+    details_eggs: "タマゴのふかそう:",
+    details_research: "フィールドリサーチ:",
+    details_custom_notes: "イベントメモ:",
+    details_custom_notes_placeholder: "イベントの計画やレイド時間などをメモしてください...",
+    details_checklist: "プランナー＆タスク:",
+    details_add_task: "追加",
+    details_new_task_placeholder: "例: スペシャルトレード",
+    details_priority_spawn: "優先度",
+    details_shiny_short: "ひかる確率",
+
+    // Rocket Tab
+    rocket_tab_leaders: "リーダー＆ボス",
+    rocket_tab_grunts: "したっぱガイド",
+    rocket_boss_badge: "チームロケット団ボス",
+    rocket_leader_badge: "チームロケット団リーダー",
+    rocket_active_reward: "現在の報酬",
+    rocket_doporuceno: "農場する価値あり",
+    rocket_lineup: "戦闘ラインナップ",
+    rocket_slot_1: "スロット1",
+    rocket_slot_2: "スロット2",
+    rocket_slot_3: "スロット3",
+    rocket_counters: "おすすめチームカウンター",
+    rocket_best_counters: "ベストカウンター:",
+    rocket_hub_rating: "PoGOハブ評価",
+    rocket_lineup_counters: "ラインナップ全体のおすすめチーム",
+    rocket_or: "または",
+    rocket_grunt_phrase: "セリフ:",
+    rocket_grunt_reward: "報酬:",
+    rocket_grunt_counters: "ベストカウンター:",
+    rocket_grunt_difficulty: "難易度:",
+    rocket_grunt_worth: "戦う価値はある？",
+    rocket_yes: "はい、おすすめ！",
+    rocket_no: "いいえ、スルーがよさそう",
+    rocket_difficulty_easy: "かんたん",
+    rocket_difficulty_medium: "ふつう",
+    rocket_difficulty_hard: "むずかしい",
+
+    // Settings Tab
+    settings_title: "アプリ設定",
+    settings_language: "言語設定",
+    settings_push_title: "プッシュ通知",
+    settings_status: "状態:",
+    settings_granted: "許可",
+    settings_denied: "ブロック",
+    settings_default: "未設定",
+    settings_enable_btn: "ブラウザ通知を有効にする",
+    settings_test_btn: "テスト通知を送信",
+    settings_help: "通知を許可すると、アプリがバックグラウンドにいる場合でも新しいイベントが始まると知らせてくれます。",
+    settings_filter_title: "通知のフィルター",
+    settings_visibility_title: "表示するイベントの種類",
+    settings_history_title: "通知の履歴",
+    settings_mark_read: "すべて既読にする",
+    settings_clear: "履歴を消去",
+    settings_empty_history: "通知の記録がまだありません。",
+
+    // Pref labels
+    pref_all: "すべての通知",
+    pref_cd: "コミュニティデイ",
+    pref_spotlight: "スポットライトアワー",
+    pref_raid_hour: "レイドアワー",
+    pref_raid_battles: "レイドバトル",
+    pref_major: "大型イベント",
+    pref_rocket: "ロケット団イベント",
+    pref_gbl: "GOバトルリーグ＆デイ",
+    pref_hatch: "タマゴイベント",
+    pref_research_day: "リサーチデイ",
+    pref_showcase: "ポケストップショーケース",
+    pref_max_mondays: "マックスマンデー",
+    settings_layout_title: "イベント表示方法",
+    settings_layout_list: "リスト表示",
+    settings_layout_timeline: "タイムライン表示",
+    details_pokemongo_link: "公式イベント",
+
+    // Loading
+    loading_text: "ポケモンGOのイベントを読み込み中...",
+
+    // Bonuses
+    bonuses_title: "現在アクティブなボーナス",
+    bonuses_free_pass: "ジムから無料デイリーレイドパス",
+    bonuses_max_coins: "ジムから1日最大50ポケコイン",
+    bonuses_active_now: "アクティブなイベントボーナス:",
+    bonuses_cd_special: "3時間ルアーモジュールとおこうが有効",
+    bonuses_cd_stardust: "トレードほしのすなが半額＆スペシャルトレード追加",
+    bonuses_rocket_frustration: "わざマシンでいかりを解除可能",
+    bonuses_spotlight_double: "捕獲ボーナス2倍",
+    bonuses_show_btn: "アクティブなボーナスを表示",
+    gps_title: "GPS＆タイムゾーン",
+    gps_sync_btn: "GPSで時間を同期",
+    gps_syncing: "位置情報とタイムゾーンを取得中...",
+    gps_success: "同期成功！タイムゾーンが設定されました: ",
+    gps_error: "位置情報の取得に失敗しました。GPS権限を確認してください。",
+    gps_current_tz: "現在のタイムゾーン: ",
+    timeline_toggle_list: "リスト",
+    timeline_toggle_timeline: "タイムライン",
+    active_filter_now: "現在開催中",
+    active_filter_week: "今週",
+    active_filter_month: "今月",
+    legal_disclaimer_title: "法的免責事項",
+    legal_disclaimer_text: "このアプリはファンによる非公式プロジェクトであり、Niantic、Nintendo、Game Freak、Creatures、またはポケモンカンパニーとは一切関係ありません。ポケモンのコンテンツ、名称、画像、商標はそれぞれの所有者の財産であり、フェアユースの原則に基づき情報提供目的で使用されています。",
+    legal_powered_by: "イベントデータは以下のコミュニティプロジェクトが提供しています"
   }
 };
+
+export function getLocalizedString(str: any, lang: Language): string {
+  if (!str) return '';
+  if (typeof str === 'string') return str;
+  if (lang === 'ja') return str.ja || str.en || str.cs || '';
+  if (lang === 'cs') return str.cs || str.en || '';
+  return str.en || str.cs || '';
+}
+
+/**
+ * Three-way inline translation helper.
+ * Usage: t3(lang, 'Czech text', 'English text', 'Japanese text')
+ * If Japanese text is omitted, falls back to English.
+ */
+export function t3(lang: Language, cs: string, en: string, ja?: string): string {
+  if (lang === 'ja') return ja || en;
+  if (lang === 'cs') return cs;
+  return en;
+}
+
+/**
+ * Returns the appropriate locale string for Intl APIs.
+ */
+export function getLocale(lang: Language): string {
+  if (lang === 'ja') return 'ja-JP';
+  if (lang === 'cs') return 'cs-CZ';
+  return 'en-US';
+}
+

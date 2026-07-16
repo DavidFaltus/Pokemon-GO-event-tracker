@@ -158,6 +158,34 @@ const HubRatingBadge: React.FC<{ rating: string }> = ({ rating }) => {
   );
 };
 
+const getGruntPhrase = (grunt: GruntData, lang: Language): string => {
+  if (lang === 'ja') {
+    const jaPhrases: Record<string, string> = {
+      "normal": "ノーマルタイプは よわくないぞ！",
+      "fire": "ポケモンの ほのおのいきは あついぞ！",
+      "water": "このみずは きけんだ！",
+      "grass": "くさタイプと たたかおう！",
+      "electric": "でんきショックに きをつけろ！",
+      "ice": "こおらせて やるぞ！",
+      "fighting": "このからだは かざりじゃないぞ！",
+      "poison": "どくタイプが あいてだ！",
+      "ground": "じめんに たたきつけてやる！",
+      "flying": "ひこうタイプと たたかえ！",
+      "psychic": "エスパーパワーが こわいのか？",
+      "bug": "いけ、むしタイプポケモン！",
+      "rock": "ロックンロール！",
+      "ghost": "ケケケケケッ！",
+      "dragon": "ドラゴンタイプは つよいぞ！",
+      "steel": "はがねのいしには かてないぞ！",
+      "fairy": "かわいいポケモンを みてくれ！",
+      "dark": "ひかりがあれば かげもある。"
+    };
+    const key = grunt.type.toLowerCase();
+    return jaPhrases[key] || grunt.phraseEn;
+  }
+  return lang === 'cs' ? grunt.phraseCs : grunt.phraseEn;
+};
+
 export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
   const [mode, setMode] = useState<ModeType>('leaders');
   const [selectedLeader, setSelectedLeader] = useState<string>('Giovanni');
@@ -213,7 +241,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
   const currentMember = getMember(selectedLeader);
 
   const filteredGrunts = rocketData.grunts.filter(grunt => {
-    const phrase = lang === 'cs' ? grunt.phraseCs : grunt.phraseEn;
+    const phrase = getGruntPhrase(grunt, lang);
     const matchesSearch = 
       phrase.toLowerCase().includes(gruntSearch.toLowerCase()) ||
       grunt.type.toLowerCase().includes(gruntSearch.toLowerCase());
@@ -470,7 +498,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
         <div className="grunts-container">
           <input
             type="text"
-            placeholder={lang === 'cs' ? "Hledat podle fráze nebo typu..." : "Search by phrase or type..."}
+            placeholder={lang === 'ja' ? "セリフやタイプでさがす..." : lang === 'cs' ? "Hledat podle fráze nebo typu..." : "Search by phrase or type..."}
             className="search-input"
             value={gruntSearch}
             onChange={(e) => setGruntSearch(e.target.value)}
@@ -484,7 +512,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                      <span className="grunt-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                        <MessageSquare size={12} style={{ color: '#a78bfa' }} /> {t.rocket_grunt_phrase}
                      </span>
-                     <p className="grunt-phrase">"{lang === 'cs' ? grunt.phraseCs : grunt.phraseEn}"</p>
+                     <p className="grunt-phrase">"{getGruntPhrase(grunt, lang)}"</p>
                    </div>
                    <TypeBadge typeStr={grunt.type} />
                  </div>

@@ -39,5 +39,13 @@ Projekt je rozdělen do dvou hlavních složek frontendu:
 2.  **Webová verze (`pogo-tracker-web`):** Samostatná verze optimalizovaná pro nasazení na webové servery / Firebase Hosting.
 
 ### Pravidla synchronizace změn:
-*   **VŽDY propisujte změny do obou složek:** Jakákoli úprava komponenty, databáze nebo stylu provedená v `pogo-tracker-new/frontend/src/` musí být identicky zanesena také do `pogo-tracker-web/frontend/src/`.
+*   **VŽDY propisujte změny do obou složek:** Jakákoli úprava komponenty, databáze nebo stylu provedená v `pogo-tracker-new/frontend/src/` must be identicky zanesena také do `pogo-tracker-web/frontend/src/`.
 *   **Mobilní kompatibilita:** Při úpravách CSS/JS dbejte na to, aby kód fungoval v mobilním WebView (např. nepoužívejte nestandardní API prohlížeče bez fallbacku, dbejte na hardwarovou akceleraci animací a vyhněte se zbytečným re-renderům).
+
+---
+
+## 5. Důsledná lokalizace obsahu (Localization Policy)
+
+*   **Zákaz tvrdého kódování jednoho jazyka:** Pro veškeré popisné texty v databázích (např. bonusy, debuty, úkoly, popisy) používejte datový typ `LocalizedString` (objekt `{ cs: string, en: string }`). Nikdy nepište natvrdo české řetězce (např. "Speciální kostýmový Pikachu") do polí, která se zobrazují uživatelům v anglické verzi.
+*   **Vykreslování na frontendu:** Při zobrazení lokalizovaných polí na frontendu vždy použijte aktuální jazyk aplikace, např. `{lang === 'cs' ? item.name.cs : item.name.en}`.
+*   **Resolver a fallbacky:** Do resolverů obrázků a chybových handlerů (např. `resolveImage`, `handlePokemonImageError`) předávejte jako název Pokémona vždy anglickou verzi (`item.name.en`), aby se předešlo 404 chybám při načítání obrázků.

@@ -14,6 +14,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ events, lang, timezo
   const [currentDate, setCurrentDate] = useState<Date>(new Date(2026, 5, 17)); // Target June 2026
   const [selectedDayEvents, setSelectedDayEvents] = useState<EventData[]>([]);
   const [selectedDayLabel, setSelectedDayLabel] = useState<string>('');
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -26,7 +27,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ events, lang, timezo
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
-  const monthNames = lang === 'cs' ? monthNamesCs : monthNamesEn;
+  const monthNamesJa = [
+    '1月', '2月', '3月', '4月', '5月', '6月',
+    '7月', '8月', '9月', '10月', '11月', '12月'
+  ];
+  const monthNames = lang === 'ja' ? monthNamesJa : lang === 'cs' ? monthNamesCs : monthNamesEn;
 
   // Get first day of the month and total days
   const firstDayIndex = new Date(year, month, 1).getDay(); // Sunday is 0, Monday is 1...
@@ -41,12 +46,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ events, lang, timezo
     setCurrentDate(new Date(year, month - 1, 1));
     setSelectedDayEvents([]);
     setSelectedDayLabel('');
+    setSelectedDay(null);
   };
 
   const handleNextMonth = () => {
     setCurrentDate(new Date(year, month + 1, 1));
     setSelectedDayEvents([]);
     setSelectedDayLabel('');
+    setSelectedDay(null);
   };
 
   const getEventsForDay = (day: number) => {
@@ -64,10 +71,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ events, lang, timezo
   };
 
   const handleDayClick = (day: number) => {
+    setSelectedDay(day);
     const dayEvents = getEventsForDay(day);
     setSelectedDayEvents(dayEvents);
     setSelectedDayLabel(
-      lang === 'cs' 
+      lang === 'ja'
+        ? `${year}年${monthNames[month]}${day}日`
+        : lang === 'cs' 
         ? `${day}. ${monthNames[month]} ${year}` 
         : `${monthNames[month]} ${day}, ${year}`
     );
@@ -105,7 +115,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ events, lang, timezo
     });
   }
 
-  const weekdays = lang === 'cs' 
+  const weekdays = lang === 'ja'
+    ? ['月', '火', '水', '木', '金', '土', '日']
+    : lang === 'cs' 
     ? ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne']
     : ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 
@@ -128,8 +140,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ events, lang, timezo
         {/* Days */}
         {daysArray.map((cell, idx) => {
           const hasEvents = cell.events.length > 0;
-          const isSelected = selectedDayLabel.includes(`${cell.day}. ${monthNames[month]}`) || 
-                             selectedDayLabel.includes(`${monthNames[month]} ${cell.day}`) && cell.isCurrentMonth;
+          const isSelected = cell.isCurrentMonth && cell.day === selectedDay;
           
           return (
             <div

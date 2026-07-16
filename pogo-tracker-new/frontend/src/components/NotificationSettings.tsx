@@ -172,6 +172,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
           >
             <option value="cs">Čeština (Czech)</option>
             <option value="en">English</option>
+            <option value="ja">日本語 (Japanese)</option>
           </select>
         </div>
       </div>

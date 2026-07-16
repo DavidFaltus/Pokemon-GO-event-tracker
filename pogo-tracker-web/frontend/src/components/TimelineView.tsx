@@ -364,9 +364,8 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
         </div>
       )}
 
-      {/* Tooltip help label */}
       <div className="timeline-tip" style={{ padding: '8px 12px', fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center' }}>
-        💡 {lang === 'cs' ? 'Kliknutím na pruh nebo krátkou událost v kalendáři otevřete podrobného průvodce, bossy a bonusy.' : 'Click on any calendar banner or short event to view detailed guide, counters, and bonuses.'}
+        💡 {lang === 'ja' ? 'カレンダーのバーやイベントをクリックすると、レイド対策やボーナスなどの詳細なガイドが表示されます。' : lang === 'cs' ? 'Kliknutím na pruh nebo krátkou událost v kalendáři otevřete podrobného průvodce, bossy a bonusy.' : 'Click on any calendar banner or short event to view detailed guide, counters, and bonuses.'}
       </div>
     </div>
   );

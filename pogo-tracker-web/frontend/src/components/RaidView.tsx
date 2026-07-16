@@ -117,7 +117,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
         }
       } catch (err) {
         console.error('Failed to load raids from backend:', err);
-        setError(lang === 'cs' ? 'Chyba při načítání raidů z API.' : 'Failed to load raids from API.');
+        setError(lang === 'ja' ? 'APIからレイド情報を読み込めませんでした。' : lang === 'cs' ? 'Chyba při načítání raidů z API.' : 'Failed to load raids from API.');
       } finally {
         setLoading(false);
       }
@@ -158,7 +158,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
   if (loading) {
     return (
       <div className="loading-container" style={{ textAlign: 'center', padding: '40px' }}>
-        <p>{lang === 'cs' ? 'Načítání raidů ze serveru...' : 'Loading raids from server...'}</p>
+        <p>{lang === 'ja' ? 'サーバーからレイド情報を読み込み中...' : lang === 'cs' ? 'Načítání raidů ze serveru...' : 'Loading raids from server...'}</p>
       </div>
     );
   }
@@ -179,7 +179,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
           className={`filter-pill ${activeFilter === 'all' ? 'active' : ''}`} 
           onClick={() => { setActiveFilter('all'); setExpandedBoss(null); }}
         >
-          {lang === 'cs' ? 'Vše' : 'All'}
+          {lang === 'ja' ? 'すべて' : lang === 'cs' ? 'Vše' : 'All'}
         </button>
         <button 
           className={`filter-pill ${activeFilter === '5' ? 'active' : ''}`} 
@@ -211,7 +211,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
       <div className="raid-bosses-grid">
         {filteredBosses.length === 0 ? (
           <div className="no-bosses-found" style={{ gridColumn: '1/-1', textAlign: 'center', padding: '20px' }}>
-            <p>{lang === 'cs' ? 'Žádní aktivní bossové v této kategorii.' : 'No active bosses in this category.'}</p>
+            <p>{lang === 'ja' ? 'このカテゴリのレイドはありません。' : lang === 'cs' ? 'Žádní aktivní bossové v této kategorii.' : 'No active bosses in this category.'}</p>
           </div>
         ) : (
           filteredBosses.map((boss, idx) => {
@@ -391,7 +391,9 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                     ) : (
                       <div className="no-counters-found">
                         <p style={{ margin: 0, padding: '8px 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                          {lang === 'cs' 
+                          {lang === 'ja' 
+                            ? 'このボスの対策ポケモンとCP情報は現在利用できません。' 
+                            : lang === 'cs' 
                             ? 'Doporučené counters a CP pro tohoto bossa momentálně nejsou k dispozici.' 
                             : 'Recommended counters and CP for this boss are currently unavailable.'}
                         </p>

@@ -577,13 +577,13 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                       <div className="rating-badge">PvE: <strong className={`rating-val val-${meta.pveRating}`}>{meta.pveRating}</strong></div>
                       <div className="rating-badge">PvP: <strong className={`rating-val val-${meta.pvpRating}`}>{meta.pvpRating}</strong></div>
                     </div>
-                    <p className="meta-rank-desc"><strong>PvE:</strong> {meta.pveRankText}</p>
-                    <p className="meta-rank-desc"><strong>PvP:</strong> {meta.pvpRankText}</p>
+                    <p className="meta-rank-desc"><strong>PvE:</strong> {lang === 'cs' ? meta.pveRankText.cs : meta.pveRankText.en}</p>
+                    <p className="meta-rank-desc"><strong>PvP:</strong> {lang === 'cs' ? meta.pvpRankText.cs : meta.pvpRankText.en}</p>
                     <div className="meta-moves">
                       <strong>{lang === 'cs' ? 'Doporučené útoky:' : 'Best Moves:'}</strong> 
                       <code>{meta.bestFastMove} + {meta.bestChargedMove}</code>
                     </div>
-                    <p className="meta-notes-text">💡 <em>{meta.notes}</em></p>
+                    <p className="meta-notes-text">💡 <em>{lang === 'cs' ? meta.notes.cs : meta.notes.en}</em></p>
                   </div>
                 );
               })()}
@@ -709,13 +709,13 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                           <div className="rating-badge">PvE: <strong className={`rating-val val-${meta.pveRating}`}>{meta.pveRating}</strong></div>
                           <div className="rating-badge">PvP: <strong className={`rating-val val-${meta.pvpRating}`}>{meta.pvpRating}</strong></div>
                         </div>
-                        <p className="meta-rank-desc"><strong>PvE:</strong> {meta.pveRankText}</p>
-                        <p className="meta-rank-desc"><strong>PvP:</strong> {meta.pvpRankText}</p>
+                        <p className="meta-rank-desc"><strong>PvE:</strong> {lang === 'cs' ? meta.pveRankText.cs : meta.pveRankText.en}</p>
+                        <p className="meta-rank-desc"><strong>PvP:</strong> {lang === 'cs' ? meta.pvpRankText.cs : meta.pvpRankText.en}</p>
                         <div className="meta-moves">
                           <strong>{lang === 'cs' ? 'Doporučené útoky:' : 'Best Moveset:'}</strong> 
                           <code>{meta.bestFastMove} + {meta.bestChargedMove}</code>
                         </div>
-                        <p className="meta-notes-text">💡 <em>{meta.notes}</em></p>
+                        <p className="meta-notes-text">💡 <em>{lang === 'cs' ? meta.notes.cs : meta.notes.en}</em></p>
                       </div>
                     )}
                   </>
@@ -742,22 +742,25 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                     {t.details_debuts}
                   </h5>
                   <div className="debuts-flex">
-                    {specialDetails.debuts.map(d => (
-                      <div key={d.name} className="debut-item">
-                        <img 
-                          src={resolveImage(d.image, event.eventType, d.name)} 
-                          alt={d.name} 
-                          className="debut-img" 
-                          onError={(e) => {
-                            handlePokemonImageError(e.target as HTMLImageElement, d.name);
-                          }}
-                        />
-                        <div className="debut-info">
-                          <strong className="debut-name">{d.name}</strong>
-                          <p className="debut-desc">{lang === 'cs' ? d.description.cs : d.description.en}</p>
+                    {specialDetails.debuts.map((d, index) => {
+                      const nameStr = lang === 'cs' ? d.name.cs : d.name.en;
+                      return (
+                        <div key={index} className="debut-item">
+                          <img 
+                            src={resolveImage(d.image, event.eventType, d.name.en)} 
+                            alt={nameStr} 
+                            className="debut-img" 
+                            onError={(e) => {
+                              handlePokemonImageError(e.target as HTMLImageElement, d.name.en);
+                            }}
+                          />
+                          <div className="debut-info">
+                            <strong className="debut-name">{nameStr}</strong>
+                            <p className="debut-desc">{lang === 'cs' ? d.description.cs : d.description.en}</p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}

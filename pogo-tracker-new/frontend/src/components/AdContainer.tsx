@@ -4,7 +4,7 @@ interface AdContainerProps {
   type: 'banner' | 'sidebar' | 'rectangle' | 'inline';
   slot?: string;
   client?: string;
-  lang?: 'cs' | 'en';
+  lang?: 'cs' | 'en' | 'ja';
 }
 
 export const AdContainer: React.FC<AdContainerProps> = ({ 
@@ -25,6 +25,7 @@ export const AdContainer: React.FC<AdContainerProps> = ({
   }, [slot]);
 
   const isCzech = lang === 'cs';
+  const isJapanese = lang === 'ja';
   
   // Dimensions based on type
   const getAdStyles = () => {
@@ -60,9 +61,19 @@ export const AdContainer: React.FC<AdContainerProps> = ({
   };
 
   const getAdLabel = () => {
-    if (type === 'banner') return isCzech ? 'Reklama (728x90 Leaderboard)' : 'Advertisement (728x90 Leaderboard)';
-    if (type === 'sidebar') return isCzech ? 'Reklama (300x600 Skyscraper)' : 'Advertisement (300x600 Skyscraper)';
-    if (type === 'rectangle') return isCzech ? 'Reklama (300x250 Rectangle)' : 'Advertisement (300x250 Rectangle)';
+    if (type === 'banner') {
+      if (isJapanese) return '広告 (728x90 リーダーボード)';
+      return isCzech ? 'Reklama (728x90 Leaderboard)' : 'Advertisement (728x90 Leaderboard)';
+    }
+    if (type === 'sidebar') {
+      if (isJapanese) return '広告 (300x600 スカイスクレイパー)';
+      return isCzech ? 'Reklama (300x600 Skyscraper)' : 'Advertisement (300x600 Skyscraper)';
+    }
+    if (type === 'rectangle') {
+      if (isJapanese) return '広告 (300x250 レクタングル)';
+      return isCzech ? 'Reklama (300x250 Rectangle)' : 'Advertisement (300x250 Rectangle)';
+    }
+    if (isJapanese) return '広告 (レスポンシブ フィード広告)';
     return isCzech ? 'Reklama (Responzivní Feed ad)' : 'Advertisement (Responsive Feed ad)';
   };
 
@@ -86,7 +97,7 @@ export const AdContainer: React.FC<AdContainerProps> = ({
           textTransform: 'uppercase',
           letterSpacing: '0.05em'
         }}>
-          {isCzech ? 'Sponzorovaný obsah' : 'Sponsored Content'}
+          {isJapanese ? 'スポンサー提供' : isCzech ? 'Sponzorovaný obsah' : 'Sponsored Content'}
         </span>
         <ins 
           className="adsbygoogle"
@@ -147,7 +158,7 @@ export const AdContainer: React.FC<AdContainerProps> = ({
         letterSpacing: '0.05em',
         marginBottom: '12px'
       }}>
-        {isCzech ? 'Reklamní Prostor' : 'Ad Space'}
+        {isJapanese ? '広告枠' : isCzech ? 'Reklamní Prostor' : 'Ad Space'}
       </span>
       
       <p style={{
@@ -165,7 +176,9 @@ export const AdContainer: React.FC<AdContainerProps> = ({
         maxWidth: '240px',
         lineHeight: '1.4'
       }}>
-        {isCzech 
+        {isJapanese 
+          ? 'AdSenseを導入するには、コンポーネントに `slot="YOUR_SLOT_ID"` パラメータを渡し、クライアントIDを更新してください。'
+          : isCzech 
           ? 'Pro nasazení AdSense vložte do komponenty parametr `slot="VASE_SLOT_ID"` a upravte client ID.'
           : 'To use AdSense, pass `slot="YOUR_SLOT_ID"` and update the client ID.'
         }
