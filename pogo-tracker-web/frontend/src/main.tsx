@@ -15,7 +15,19 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
     const base = import.meta.env.BASE_URL;
     const swPath = base.endsWith('/') ? `${base}sw.js` : `${base}/sw.js`;
     navigator.serviceWorker.register(swPath)
-      .then((reg) => console.log('Service Worker registered!', reg.scope))
+      .then((reg) => {
+        console.log('Service Worker registered!', reg.scope);
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'activated') {
+                window.location.reload();
+              }
+            });
+          }
+        });
+      })
       .catch((err) => console.error('Service Worker registration failed:', err));
   });
 }
