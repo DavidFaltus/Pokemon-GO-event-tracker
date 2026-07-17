@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import './TimelineView.css';
 import { EventCard } from './EventCard';
 import type { EventData } from './EventCard';
 import { translations } from '../data/translations';

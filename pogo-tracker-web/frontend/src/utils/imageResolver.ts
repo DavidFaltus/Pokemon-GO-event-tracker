@@ -2,10 +2,25 @@ import { pokemonRankings } from '../data/pokemonRankings';
 
 let basePokemonNamesCache: string[] | null = null;
 
-function getBasePokemonNames(): string[] {
+export function getBasePokemonNames(): string[] {
   if (basePokemonNamesCache) return basePokemonNamesCache;
   
   const namesSet = new Set<string>();
+  
+  // Custom legendaries / popular pokemon names that might be in event titles but not rankings
+  const extraBaseNames = [
+    'Solgaleo', 'Lunala', 'Necrozma', 'Kyurem', 'Zekrom', 'Reshiram', 'Palkia', 'Dialga', 'Giratina',
+    'Raichu', 'Pikachu', 'Eevee', 'Charizard', 'Blastoise', 'Venusaur', 'Mewtwo', 'Mew', 'Celebi',
+    'Jirachi', 'Deoxys', 'Darkrai', 'Arceus', 'Victini', 'Keldeo', 'Meloetta', 'Genesect', 'Xerneas',
+    'Yveltal', 'Zygarde', 'Diancie', 'Hoopa', 'Tapu Koko', 'Tapu Lele', 'Tapu Bulu', 'Tapu Fini',
+    'Cosmog', 'Cosmoem', 'Nihilego', 'Buzzwole', 'Pheromosa', 'Xurkitree', 'Celesteela', 'Kartana', 'Guzzlord',
+    'Poipole', 'Naganadel', 'Stakataka', 'Blacephalon', 'Zeraora', 'Meltan', 'Melmetal', 'Zacian', 'Zamazenta',
+    'Eternatus', 'Zarude', 'Regieleki', 'Regidrago', 'Roaring Moon', 'Iron Valiant', 'Koraidon', 'Miraidon',
+    'Frigibax', 'Arctibax', 'Baxcalibur', 'Gimmighoul', 'Gholdengo', 'Rillaboom', 'Cinderace', 'Inteleon',
+    'Groudon', 'Kyogre', 'Rayquaza'
+  ];
+  extraBaseNames.forEach(n => namesSet.add(n));
+
   for (const p of pokemonRankings) {
     const simplest = p.name.replace(/^Shadow\s+/i, '')
                             .replace(/^Mega\s+/i, '')
@@ -108,14 +123,17 @@ export function getPokedexIdByName(name: string): number | null {
 }
 
 export function getPokemonIconUrl(name: string): string {
+  // Resolve base name first so we don't request "Kyurem Raid Hour" or "Solgaleo Raid Hour"
+  const baseName = getBasePokemonName(name);
+
   // Try to find the Pokedex ID for PokeAPI home sprite first
-  const pokedexId = getPokedexIdByName(name);
+  const pokedexId = getPokedexIdByName(baseName);
   if (pokedexId) {
     return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${pokedexId}.png`;
   }
 
   // Fallback to PokemonDB only if pokedex ID was not found in pokemonRankings
-  let clean = name.toLowerCase()
+  let clean = baseName.toLowerCase()
     .replace('shadow ', '')
     .replace('apex ', '')
     .replace(' (origin)', '-origin')
@@ -229,6 +247,17 @@ export function resolveImage(url: string | undefined, eventType?: string, name?:
   if (url.includes('cdn.leekduck.com/assets/img/events/')) {
     const lowerUrl = url.toLowerCase();
     
+    // Intercept default/placeholder images to use pokemon sprite if name has a known pokemon
+    if (lowerUrl.includes('default') || lowerUrl.includes('raidhour') || lowerUrl.includes('spotlight')) {
+      if (name) {
+        const baseName = getBasePokemonName(name);
+        const knownNames = getBasePokemonNames();
+        if (knownNames.some(kn => name.toLowerCase().includes(kn.toLowerCase()))) {
+          return getPokemonIconUrl(baseName);
+        }
+      }
+    }
+    
     if (lowerUrl.includes('rocket-takeover') || (eventType && eventType.toLowerCase().includes('rocket'))) {
       return 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop'; // Dark purple glowing atmosphere
     }
@@ -258,7 +287,11 @@ export function resolveImage(url: string | undefined, eventType?: string, name?:
 export function getFallbackImage(eventType?: string, name?: string): string {
   if (name) {
     try {
-      return getPokemonIconUrl(name);
+      const baseName = getBasePokemonName(name);
+      const knownNames = getBasePokemonNames();
+      if (knownNames.some(kn => name.toLowerCase().includes(kn.toLowerCase()))) {
+        return getPokemonIconUrl(baseName);
+      }
     } catch (e) {
       console.warn('Failed to resolve fallback icon using getPokemonIconUrl:', e);
     }

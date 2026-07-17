@@ -1,0 +1,155 @@
+/* SECTION 2217-2370 */
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bonuses-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.bonuses-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bonuses-icon {
+  font-size: 1.25rem;
+}
+
+.bonuses-header h3 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #34d399; /* Light green to pop out */
+  margin: 0;
+}
+
+.bonuses-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bonuses-close-btn:hover {
+  color: var(--text-primary);
+}
+
+.show-bonuses-container {
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.show-bonuses-btn {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.show-bonuses-btn:hover {
+  background-color: var(--bg-card-hover);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: var(--text-primary);
+}
+
+.bonuses-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bonus-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bonus-group.baseline {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+  padding-bottom: 10px;
+}
+
+.bonus-item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.bonus-bullet {
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+
+.bonus-text {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+.bonus-subtitle {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.bonus-item-row.active-highlight {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+
+.bonus-item-row.active-highlight.community-day {
+  border-color: rgba(16, 185, 129, 0.25);
+  background-color: rgba(16, 185, 129, 0.03);
+}
+
+.bonus-item-row.active-highlight.rocket {
+  border-color: rgba(168, 85, 247, 0.25);
+  background-color: rgba(168, 85, 247, 0.03);
+}
+
+.bonus-item-row.active-highlight.spotlight {
+  border-color: rgba(59, 130, 246, 0.25);
+  background-color: rgba(59, 130, 246, 0.03);
+}
+
+.bonus-item-row.active-highlight .bonus-text {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* GPS Geolocation Timezone Sync Card */
+.gps-sync-card h3 {
+  color: var(--text-primary);
+}
+
+.gps-sync-box {

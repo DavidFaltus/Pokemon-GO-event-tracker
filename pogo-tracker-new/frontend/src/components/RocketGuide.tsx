@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import './RocketGuide.css';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
 import { TypeBadge } from './EventCard';
 import { CounterItem } from './CounterItem';
+import { getPokemonName } from '../utils/pokemonTranslator';
 import { API_BASE_URL } from '../config';
 import { Zap, Users, Gift, Flame, Swords, Shield, MessageSquare, Gem, Moon, Glasses, Trophy } from 'lucide-react';
 import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
@@ -122,7 +124,7 @@ interface GruntData {
 
 type ModeType = 'leaders' | 'grunts';
 
-const HubRatingBadge: React.FC<{ rating: string }> = ({ rating }) => {
+const HubRatingBadge: React.FC<{ rating: string; lang: Language }> = ({ rating, lang }) => {
   if (!rating) return null;
   
   const getRatingColor = (r: string) => {
@@ -153,7 +155,7 @@ const HubRatingBadge: React.FC<{ rating: string }> = ({ rating }) => {
       }}
     >
       <Trophy size={10} fill="currentColor" stroke="none" />
-      {rating} Tier
+      {lang === 'ja' ? `${rating}ランク` : `${rating} Tier`}
     </span>
   );
 };
@@ -280,11 +282,11 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                   }}
                 />
                 <div className="slot-pokemon-info">
-                  <span className="slot-pokemon-name">{p.name}</span>
+                  <span className="slot-pokemon-name">{getPokemonName(p.name, lang)}</span>
                   {p.types && p.types.length > 0 && (
                     <div className="slot-type-badges">
                       {p.types.map(type => (
-                        <TypeBadge key={type} typeStr={type} />
+                        <TypeBadge key={type} typeStr={type} lang={lang} />
                       ))}
                     </div>
                   )}
@@ -329,8 +331,8 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                onClick={() => setSelectedLeader('Giovanni')}
                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
              >
-               <span className="emoji" style={{ display: 'inline-flex' }}>{getLeaderIcon('Giovanni', 14)}</span> Giovanni
-             </button>
+                <span className="emoji" style={{ display: 'inline-flex' }}>{getLeaderIcon('Giovanni', 14)}</span> {getPokemonName('Giovanni', lang)}
+              </button>
             {rocketData.leaders.map(leader => (
               <button
                 key={leader.name}
@@ -338,7 +340,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                 onClick={() => setSelectedLeader(leader.name)}
                 style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               >
-                <span className="emoji" style={{ display: 'inline-flex' }}>{getLeaderIcon(leader.name, 14)}</span> {leader.name}
+                <span className="emoji" style={{ display: 'inline-flex' }}>{getLeaderIcon(leader.name, 14)}</span> {getPokemonName(leader.name, lang)}
               </button>
             ))}
           </div>
@@ -348,9 +350,9 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
             <div className="rocket-header">
               <div className="rocket-title-group">
                 <span className="rocket-badge">
-                  {currentMember.name === 'Giovanni' ? t.rocket_boss_badge : t.rocket_leader_badge}
+                  {selectedLeader === 'Giovanni' ? t.rocket_boss_badge : t.rocket_leader_badge}
                 </span>
-                <h2>{currentMember.name}</h2>
+                <h2>{getPokemonName(selectedLeader, lang)}</h2>
               </div>
                <div className="member-avatar" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                  {getLeaderIcon(currentMember.name, 40)}
@@ -399,10 +401,10 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                   />
                 </div>
                 <div className="reward-info" style={{ flex: 1 }}>
-                  <h4>{activeRewardName}</h4>
+                  <h4>{getPokemonName(activeRewardName, lang)}</h4>
                   <div className="rating-badges">
                     {activeRewardRating && (
-                      <HubRatingBadge rating={activeRewardRating} />
+                      <HubRatingBadge rating={activeRewardRating} lang={lang} />
                     )}
                      {currentMember.reward.worthGrinding && (
                        <span className="grind-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
@@ -429,12 +431,14 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                           fontWeight: 550
                         }}>
                           <span style={{ display: 'inline-block' }}>🔥</span>
-                          <span>
-                            {lang === 'cs' 
-                              ? `Evoluuje na špičkového Shadow ${evoInfo.evolution} (${evoInfo.rating} Tier)`
-                              : `Evolves into top-tier Shadow ${evoInfo.evolution} (${evoInfo.rating} Tier)`
-                            }
-                          </span>
+                           <span>
+                             {lang === 'cs' 
+                               ? `Evoluuje na špičkového Shadow ${getPokemonName(evoInfo.evolution, lang)} (${evoInfo.rating} Tier)`
+                               : lang === 'ja'
+                               ? `超強力なシャドウ${getPokemonName(evoInfo.evolution, lang)}（${evoInfo.rating}ランク）に進化します`
+                               : `Evolves into top-tier Shadow ${getPokemonName(evoInfo.evolution, lang)} (${evoInfo.rating} Tier)`
+                             }
+                           </span>
                         </div>
                       );
                     }
@@ -514,7 +518,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                      </span>
                      <p className="grunt-phrase">"{getGruntPhrase(grunt, lang)}"</p>
                    </div>
-                   <TypeBadge typeStr={grunt.type} />
+                   <TypeBadge typeStr={grunt.type} lang={lang} />
                  </div>
                  
                  <div className="grunt-card-body">
@@ -572,15 +576,15 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
                                  />
                               </div>
                               <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
-                                <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{p}</span>
+                                <span style={{ fontSize: '0.75rem', fontWeight: 600 }}>{getPokemonName(p, lang)}</span>
                                 {isTopEvo && (
                                   <span style={{ fontSize: '0.58rem', color: '#34d399', fontWeight: 600 }}>
-                                    ➔ Shadow {evoInfo.evolution}
+                                    ➔ {lang === 'ja' ? 'シャドウ' : 'Shadow'} {getPokemonName(evoInfo.evolution, lang)}
                                   </span>
                                 )}
                               </div>
                               {pRating && (
-                                <HubRatingBadge rating={pRating} />
+                                <HubRatingBadge rating={pRating} lang={lang} />
                               )}
                             </div>
                           );

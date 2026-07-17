@@ -1,4 +1,5 @@
 import React from 'react';
+import './ActiveBonuses.css';
 import type { EventData } from './EventCard';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';

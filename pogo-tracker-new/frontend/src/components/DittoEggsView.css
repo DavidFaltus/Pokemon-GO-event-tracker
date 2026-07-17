@@ -1,0 +1,307 @@
+/* SECTION 4376-4682 */
+/* Ditto & Eggs View Styles */
+.ditto-eggs-view-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.sub-tab-bar {
+  display: flex;
+  background-color: rgba(6, 7, 9, 0.4);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  width: fit-content;
+  align-self: center;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.sub-tab-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sub-tab-item:hover {
+  color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.sub-tab-item.active {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.15);
+}
+
+.section-info-card {
+  display: flex;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(139, 92, 246, 0.05));
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.info-card-icon {
+  color: #60a5fa;
+  flex-shrink: 0;
+  display: flex;
+}
+
+.info-card-text {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+/* Ditto Disguises Grid */
+.ditto-disguises-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 14px;
+}
+
+.disguise-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.disguise-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(192, 132, 252, 0.3);
+  box-shadow: 0 6px 16px rgba(192, 132, 252, 0.08);
+}
+
+.disguise-img-container {
+  position: relative;
+  width: 92px;
+  height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.02);
+  border-radius: 50%;
+  margin-bottom: 8px;
+}
+
+.disguise-pokemon-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.shiny-badge-absolute {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: rgba(17, 24, 39, 0.85);
+  border: 1px solid #fbbf24;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.disguise-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.disguise-name {
+  font-weight: 750;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.disguise-types {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Eggs Section styles */
+.egg-tiers-selector {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap; /* Allow buttons to wrap naturally on any screen width */
+  padding: 8px 4px;
+  margin-bottom: 20px;
+}
+
+.egg-tier-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(6, 7, 9, 0.3);
+  border: 2px solid transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex: 1 1 auto; /* Fill available row width dynamically */
+  min-width: 90px; /* Keep buttons legible when scaling down */
+  justify-content: center;
+}
+
+.egg-tier-btn:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+  color: var(--text-primary);
+}
+
+.egg-tier-btn.active {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.egg-tier-label {
+  font-size: 0.85rem;
+}
+
+.egg-pool-details-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.egg-pool-details-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-left: 4px solid var(--border-color);
+  padding-left: 12px;
+}
+
+.egg-pool-details-header h3 {
+  margin: 0 0 2px 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.hatch-count-pill {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  background-color: rgba(255, 255, 255, 0.03);
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.egg-hatches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 14px;
+}
+
+.egg-hatch-card {
+  background-color: rgba(6, 7, 9, 0.25);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.egg-hatch-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+.hatch-img-container {
+  position: relative;
+  width: 92px;
+  height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.01);
+  border-radius: 50%;
+  margin-bottom: 8px;
+}
+
+.hatch-pokemon-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.hatch-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.hatch-name {
+  font-weight: 750;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+}
+
+.hatch-cp {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.hatch-cp strong {
+  color: var(--text-muted);
+}
+
+.hatch-rarity-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.rarity-eggs-flex {
+  display: flex;
+  gap: 2px;
+}

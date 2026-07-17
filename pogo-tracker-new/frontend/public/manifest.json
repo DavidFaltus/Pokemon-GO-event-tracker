@@ -1,6 +1,6 @@
 {
-  "name": "PokeGO Event Tracker & Meta Guide",
-  "short_name": "PokeGO Events",
+  "name": "PoGo Events & Meta Guide",
+  "short_name": "PoGo Events",
   "description": "Kalendář Pokémon GO eventů s notifikacemi a doporučeními pro PvE/PvP mety.",
   "start_url": "/",
   "display": "standalone",

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import type { SpecialEventDetails } from '../data/specialEvents';
 import { API_BASE_URL } from '../config';
 
-export function useDynamicEventDetails(eventID: string, link: string, isExpanded: boolean) {
+export function useDynamicEventDetails(eventID: string, link: string, isExpanded: boolean, name?: string) {
   const [details, setDetails] = useState<SpecialEventDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +28,10 @@ export function useDynamicEventDetails(eventID: string, link: string, isExpanded
       setError(null);
 
       try {
-        const url = `${API_BASE_URL}/api/events/${eventID}/details?link=${encodeURIComponent(link)}`;
+        let url = `${API_BASE_URL}/api/events/${eventID}/details?link=${encodeURIComponent(link)}`;
+        if (name) {
+          url += `&name=${encodeURIComponent(name)}`;
+        }
         const res = await fetch(url);
         if (!res.ok) throw new Error("Backend API request failed");
         
@@ -49,7 +52,7 @@ export function useDynamicEventDetails(eventID: string, link: string, isExpanded
     };
 
     fetchDetails();
-  }, [eventID, link, isExpanded]);
+  }, [eventID, link, isExpanded, name]);
 
   return { details, loading, error };
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './EventCard.css';
 import { findRaidCounters } from '../data/raidCounters';
 import type { RaidCounters } from '../data/raidCounters';
 import { translations } from '../data/translations';
@@ -8,7 +9,8 @@ import { findPokemonMeta } from '../data/pokemonMeta';
 import { useDynamicEventDetails } from '../hooks/useDynamicEventDetails';
 import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Flame, RefreshCw, Plus, Check } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
-import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError, getBasePokemonName, getBasePokemonNames, getPokemonIconUrl } from '../utils/imageResolver';
+import { getPokemonName } from '../utils/pokemonTranslator';
 
 const EggIcon = ({ size = 16 }: { size?: number }) => (
   <svg viewBox="0 0 100 120" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
@@ -56,29 +58,55 @@ export interface EventData {
   };
 }
 
-export const TypeBadge: React.FC<{ typeStr: string }> = ({ typeStr }) => {
+const typeTranslations: Record<string, { cs: string; en: string; ja: string }> = {
+  normal: { cs: "Normální", en: "Normal", ja: "ノーマル" },
+  fire: { cs: "Ohnivý", en: "Fire", ja: "ほのお" },
+  water: { cs: "Vodní", en: "Water", ja: "みず" },
+  grass: { cs: "Travní", en: "Grass", ja: "くさ" },
+  electric: { cs: "Elektrický", en: "Electric", ja: "でんき" },
+  ice: { cs: "Ledový", en: "Ice", ja: "こおり" },
+  fighting: { cs: "Bojový", en: "Fighting", ja: "かくとう" },
+  poison: { cs: "Jedovatý", en: "Poison", ja: "どく" },
+  ground: { cs: "Zemní", en: "Ground", ja: "じめん" },
+  flying: { cs: "Létající", en: "Flying", ja: "ひこう" },
+  psychic: { cs: "Psychický", en: "Psychic", ja: "エスパー" },
+  bug: { cs: "Hmyzí", en: "Bug", ja: "むし" },
+  rock: { cs: "Kamenný", en: "Rock", ja: "いわ" },
+  ghost: { cs: "Duchovní", en: "Ghost", ja: "ゴースト" },
+  dragon: { cs: "Dračí", en: "Dragon", ja: "ドラゴン" },
+  steel: { cs: "Ocelový", en: "Steel", ja: "はがね" },
+  dark: { cs: "Temný", en: "Dark", ja: "あく" },
+  fairy: { cs: "Vílí", en: "Fairy", ja: "フェアリー" }
+};
+
+export const TypeBadge: React.FC<{ typeStr: string; lang?: Language }> = ({ typeStr, lang = 'en' }) => {
   const lower = typeStr.toLowerCase();
   let typeClass = 'normal';
   let label = 'Normal';
 
-  if (lower.includes('ghost')) { typeClass = 'ghost'; label = 'Ghost'; }
-  else if (lower.includes('dark')) { typeClass = 'dark'; label = 'Dark'; }
-  else if (lower.includes('bug')) { typeClass = 'bug'; label = 'Bug'; }
-  else if (lower.includes('fire')) { typeClass = 'fire'; label = 'Fire'; }
-  else if (lower.includes('ground')) { typeClass = 'ground'; label = 'Ground'; }
-  else if (lower.includes('dragon')) { typeClass = 'dragon'; label = 'Dragon'; }
-  else if (lower.includes('ice')) { typeClass = 'ice'; label = 'Ice'; }
-  else if (lower.includes('fairy')) { typeClass = 'fairy'; label = 'Fairy'; }
-  else if (lower.includes('fighting')) { typeClass = 'fighting'; label = 'Fighting'; }
-  else if (lower.includes('psychic')) { typeClass = 'psychic'; label = 'Psychic'; }
-  else if (lower.includes('flying') || lower.includes('fly')) { typeClass = 'flying'; label = 'Flying'; }
-  else if (lower.includes('poison')) { typeClass = 'poison'; label = 'Poison'; }
-  else if (lower.includes('steel')) { typeClass = 'steel'; label = 'Steel'; }
-  else if (lower.includes('water')) { typeClass = 'water'; label = 'Water'; }
-  else if (lower.includes('grass')) { typeClass = 'grass'; label = 'Grass'; }
-  else if (lower.includes('rock')) { typeClass = 'rock'; label = 'Rock'; }
-  else if (lower.includes('electric')) { typeClass = 'electric'; label = 'Electric'; }
-  else if (lower.includes('normal')) { typeClass = 'normal'; label = 'Normal'; }
+  if (lower.includes('ghost')) { typeClass = 'ghost'; }
+  else if (lower.includes('dark')) { typeClass = 'dark'; }
+  else if (lower.includes('bug')) { typeClass = 'bug'; }
+  else if (lower.includes('fire')) { typeClass = 'fire'; }
+  else if (lower.includes('ground')) { typeClass = 'ground'; }
+  else if (lower.includes('dragon')) { typeClass = 'dragon'; }
+  else if (lower.includes('ice')) { typeClass = 'ice'; }
+  else if (lower.includes('fairy')) { typeClass = 'fairy'; }
+  else if (lower.includes('fighting')) { typeClass = 'fighting'; }
+  else if (lower.includes('psychic')) { typeClass = 'psychic'; }
+  else if (lower.includes('flying') || lower.includes('fly')) { typeClass = 'flying'; }
+  else if (lower.includes('poison')) { typeClass = 'poison'; }
+  else if (lower.includes('steel')) { typeClass = 'steel'; }
+  else if (lower.includes('water')) { typeClass = 'water'; }
+  else if (lower.includes('grass')) { typeClass = 'grass'; }
+  else if (lower.includes('rock')) { typeClass = 'rock'; }
+  else if (lower.includes('electric')) { typeClass = 'electric'; }
+  else if (lower.includes('normal')) { typeClass = 'normal'; }
+
+  const trans = typeTranslations[typeClass];
+  if (trans) {
+    label = lang === 'ja' ? trans.ja : (lang === 'cs' ? trans.cs : trans.en);
+  }
 
   // Support 2x indicator in label
   if (lower.includes('2x')) {
@@ -116,7 +144,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
 
   // Load special event guides (manual overlays/fallbacks)
   const staticDetails = getSpecialEventDetails(event.eventID, event.name);
-  const { details: dynamicDetails, loading: dynamicLoading } = useDynamicEventDetails(event.eventID, event.link, isExpanded && !staticDetails);
+  const { details: dynamicDetails, loading: dynamicLoading } = useDynamicEventDetails(event.eventID, event.link, isExpanded && !staticDetails, event.name);
   const specialDetails = staticDetails || dynamicDetails;
 
   // Spawns checklist tick tracker
@@ -322,6 +350,13 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
 
   // Check the validity of the official URL asynchronously and toggle visibility
   useEffect(() => {
+    if (event.link && event.link.includes('pokemongolive.com')) {
+      setOfficialUrl(event.link);
+      setShowOfficial(true);
+      setShowLeekDuck(false);
+      return;
+    }
+
     let active = true;
     
     const verifyLink = async () => {
@@ -454,14 +489,33 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
   };
 
   return (
-    <div className={`event-card status-${status} type-${event.eventType}`}>
+    <div className={`event-card status-${status} type-${event.eventType} ${isExpanded ? 'expanded' : ''}`}>
       <div className="card-top" onClick={() => setIsExpanded(!isExpanded)}>
         <div className="event-img-wrapper">
           <img 
-            src={resolveImage(event.image, event.eventType)} 
+            src={resolveImage(event.image, event.eventType, event.name)} 
             alt={event.name} 
             onError={(e) => {
-              (e.target as HTMLImageElement).src = resolveImage(undefined, event.eventType);
+              const img = e.target as HTMLImageElement;
+              img.onerror = null; // Prevent loop
+              
+              const baseName = getBasePokemonName(event.name);
+              const knownNames = getBasePokemonNames();
+              const hasKnownPokemon = knownNames.some(kn => event.name.toLowerCase().includes(kn.toLowerCase()));
+              
+              if (hasKnownPokemon && baseName) {
+                img.src = getPokemonIconUrl(baseName);
+                img.onerror = () => {
+                  img.onerror = null;
+                  img.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
+                };
+              } else {
+                img.src = resolveImage(undefined, event.eventType);
+                img.onerror = () => {
+                  img.onerror = null;
+                  img.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
+                };
+              }
             }}
           />
           <span className={`status-pill ${status}`}>
@@ -498,10 +552,10 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
             {showLeekDuck && (
               <a href={event.link} target="_blank" rel="noopener noreferrer" className="details-link-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                 <ExternalLink size={14} />
-                {t.details_official_link}
+                {event.link.includes('leekduck.com') ? t.details_official_link : t.details_pokemongo_link}
               </a>
             )}
-            {showOfficial && (
+            {showOfficial && officialUrl !== event.link && (
               <a 
                 href={officialUrl} 
                 target="_blank" 
@@ -633,12 +687,12 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                                 <div key={s.name} className="shiny-family-item">
                                   <img 
                                     src={resolveImage(s.image, event.eventType, s.name)} 
-                                    alt={s.name} 
+                                    alt={getPokemonName(s.name, lang)} 
                                     onError={(e) => {
                                       handlePokemonImageError(e.target as HTMLImageElement, s.name);
                                     }}
                                   />
-                                  <span>{s.name}</span>
+                                  <span>{getPokemonName(s.name, lang)}</span>
                                 </div>
                               ))}
                             </div>
@@ -680,10 +734,24 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                     {/* Special Research Steps */}
                     {cd?.specialresearch && cd.specialresearch.length > 0 && (
                       <div className="cd-research-section">
-                        <h5>🏆 {lang === 'cs' ? 'Úkoly speciálního výzkumu:' : 'Special Research:'}</h5>
-                        {cd.specialresearch.map((step, sIdx) => (
-                          <div key={sIdx} className="cd-research-step-box">
-                            <h6>{step.name || `${lang === 'cs' ? 'Krok' : 'Step'} ${step.step}`}</h6>
+                        <h5>🏆 {lang === 'ja' ? 'スペシャルリサーチ:' : lang === 'cs' ? 'Úkoly speciálního výzkumu:' : 'Special Research:'}</h5>
+                        {cd.specialresearch.map((step, sIdx) => {
+                          const getStepName = (name: string) => {
+                            if (lang === 'ja') {
+                              let jaName = name;
+                              jaName = jaName.replace(/Community Day/gi, 'コミュニティデイ');
+                              const basePoke = getBasePokemonNames().find(p => jaName.toLowerCase().includes(p.toLowerCase()));
+                              if (basePoke) {
+                                jaName = jaName.replace(new RegExp(basePoke, 'gi'), getPokemonName(basePoke, 'ja'));
+                              }
+                              return jaName;
+                            }
+                            return name;
+                          };
+                          const stepLabel = step.name ? getStepName(step.name) : `${lang === 'cs' ? 'Krok' : 'Step'} ${step.step}`;
+                          return (
+                            <div key={sIdx} className="cd-research-step-box">
+                              <h6>{stepLabel}</h6>
                             <ul className="cd-tasks-list">
                               {step.tasks?.map((task, tIdx) => (
                                 <li key={tIdx} className="cd-task-item-li">
@@ -697,14 +765,14 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                               ))}
                             </ul>
                           </div>
-                        ))}
+                        )})}
                       </div>
                     )}
 
                     {/* Meta Analysis */}
                     {meta && (
                       <div className="cd-meta-section">
-                        <h5>📊 PvE & PvP Meta Analysis</h5>
+                        <h5>📊 {lang === 'ja' ? 'メタ分析（対戦＆レイド）' : 'PvE & PvP Meta Analysis'}</h5>
                         <div className="meta-ratings-row">
                           <div className="rating-badge">PvE: <strong className={`rating-val val-${meta.pveRating}`}>{meta.pveRating}</strong></div>
                           <div className="rating-badge">PvP: <strong className={`rating-val val-${meta.pvpRating}`}>{meta.pvpRating}</strong></div>
@@ -743,20 +811,19 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                   </h5>
                   <div className="debuts-flex">
                     {specialDetails.debuts.map((d, index) => {
-                      const nameStr = lang === 'cs' ? d.name.cs : d.name.en;
                       return (
                         <div key={index} className="debut-item">
                           <img 
                             src={resolveImage(d.image, event.eventType, d.name.en)} 
-                            alt={nameStr} 
+                            alt={lang === 'ja' ? (d.name.ja || getPokemonName(d.name.en, 'ja')) : (lang === 'cs' ? d.name.cs : d.name.en)} 
                             className="debut-img" 
                             onError={(e) => {
                               handlePokemonImageError(e.target as HTMLImageElement, d.name.en);
                             }}
                           />
                           <div className="debut-info">
-                            <strong className="debut-name">{nameStr}</strong>
-                            <p className="debut-desc">{lang === 'cs' ? d.description.cs : d.description.en}</p>
+                            <strong className="debut-name">{lang === 'ja' ? (d.name.ja || getPokemonName(d.name.en, 'ja')) : (lang === 'cs' ? d.name.cs : d.name.en)}</strong>
+                            <p className="debut-desc">{lang === 'ja' ? (d.description.ja || d.description.en) : (lang === 'cs' ? d.description.cs : d.description.en)}</p>
                           </div>
                         </div>
                       );
@@ -776,7 +843,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                     {specialDetails.bonuses.map((b, idx) => (
                       <div key={idx} className="special-bonus-card">
                         <span className="bonus-emoji">{b.icon}</span>
-                        <span className="bonus-card-text">{lang === 'cs' ? b.text.cs : b.text.en}</span>
+                        <p className="bonus-text-label">{lang === 'ja' ? (b.text.ja || b.text.en) : (lang === 'cs' ? b.text.cs : b.text.en)}</p>
                       </div>
                     ))}
                   </div>
@@ -804,13 +871,13 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                           </div>
                           <img 
                             src={resolveImage(s.image, event.eventType, s.name)} 
-                            alt={s.name} 
+                            alt={getPokemonName(s.name, lang)} 
                             className="spawn-img" 
                             onError={(e) => {
                               handlePokemonImageError(e.target as HTMLImageElement, s.name);
                             }}
                           />
-                          <span className="spawn-name">{s.name}</span>
+                          <span className="spawn-name">{getPokemonName(s.name, lang)}</span>
                            {s.habitat && (
                             <span className="spawn-habitat">{lang === 'cs' ? s.habitat.cs : s.habitat.en}</span>
                           )}
@@ -845,7 +912,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                       <div key={egg.distance} className="egg-pool-row">
                         <div className="egg-pool-header" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                           <span className="egg-icon-large" style={{ display: 'inline-flex', color: '#fb923c' }}><EggIcon size={24} /></span>
-                          <h6>{egg.distance} Pool</h6>
+                          <h6>{lang === 'ja' ? `${egg.distance} のプール` : `${egg.distance} Pool`}</h6>
                         </div>
                         <div className="egg-contents-flex">
                           {egg.contents.map(p => (
@@ -857,7 +924,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                                   handlePokemonImageError(e.target as HTMLImageElement, p.name);
                                 }}
                               />
-                              <span className="egg-p-name">{p.name}</span>
+                              <span className="egg-p-name">{getPokemonName(p.name, lang)}</span>
                               {p.isShinyAvailable && (
                                 <span className="shiny-star" style={{ display: 'inline-flex' }}>
                                   <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} />
@@ -884,7 +951,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                       <div key={idx} className="research-task-item">
                         <div className="task-left" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                           <span className="search-icon" style={{ display: 'inline-flex', color: '#60a5fa' }}><Search size={14} /></span>
-                          <span className="task-text">{lang === 'cs' ? r.task.cs : r.task.en}</span>
+                          <span className="task-text">{lang === 'ja' ? (r.task.ja || r.task.en) : (lang === 'cs' ? r.task.cs : r.task.en)}</span>
                         </div>
                         <div className="task-right" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                           <span className="task-reward" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
@@ -917,12 +984,12 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                   <div key={boss.name} className="boss-item">
                     <img 
                       src={resolveImage(boss.image, event.eventType, boss.name)} 
-                      alt={boss.name} 
+                      alt={getPokemonName(boss.name, lang)} 
                       onError={(e) => {
                         handlePokemonImageError(e.target as HTMLImageElement, boss.name);
                       }}
                     />
-                    <span className="boss-name">{boss.name}</span>
+                    <span className="boss-name">{getPokemonName(boss.name, lang)}</span>
                     {boss.canBeShiny && (
                       <span className="shiny-indicator" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                         <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} /> Shiny
@@ -943,9 +1010,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
               {matchedRaidCounters.map(counters => (
                 <div key={counters.bossName} className="raid-boss-counters-card">
                   <div className="counters-boss-header">
-                    <h5>{counters.bossName}</h5>
+                    <h5>{getPokemonName(counters.bossName, lang)}</h5>
                     <div className="weakness-list">
-                      {t.details_weaknesses}: <span className="type-badges-flex">{counters.weaknesses.map(w => <TypeBadge key={w} typeStr={w} />)}</span>
+                      {t.details_weaknesses}: <span className="type-badges-flex">{counters.weaknesses.map(w => <TypeBadge key={w} typeStr={w} lang={lang} />)}</span>
                     </div>
                   </div>
                   <div className="counters-levels-grid">
@@ -953,7 +1020,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                       <div className="counter-level-col mega">
                         <span className="level-badge mega">{t.details_level_mega}</span>
                         <ul>
-                          {counters.megaCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                          {counters.megaCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
                         </ul>
                       </div>
                     )}
@@ -961,7 +1028,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                       <div className="counter-level-col advanced">
                         <span className="level-badge advanced">{t.details_level_advanced}</span>
                         <ul>
-                          {counters.advancedCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                          {counters.advancedCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
                         </ul>
                       </div>
                     )}
@@ -969,7 +1036,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                       <div className="counter-level-col budget">
                         <span className="level-badge budget">{t.details_level_budget}</span>
                         <ul>
-                          {counters.budgetCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                          {counters.budgetCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
                         </ul>
                       </div>
                     )}

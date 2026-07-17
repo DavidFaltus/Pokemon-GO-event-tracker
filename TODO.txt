@@ -1,10 +1,11 @@
-[x] 0: U stávajícího i nového obsahu brát zřetel na SEO, jednotnost a využitelnost na všech zařízeních jako mobil, tablet a počítač, dej zároveň pozor na aktuálnost Privacy policy a Legal desclaimer
+0: Ziskávání dat pro eventy z oficiální stránky Nianticu ???? Rozpoznávat nadpisy pomocí tagů (H2,ul,li) a podle toho vytvářet vlastní zjednodušené grafiky
+
 1: Dodělej japonskou verzi, použij jednoduchou japonštinu tak aby to mohl přečíst i ten kdo neumí vysokoškolskou japonštinu
 2: Odstranit Live data a počet aktivních eventů, přejmenuj i aplikaci na PoGo Events místo PokeGO Tracker vytvoř zároveň i logo které bude obsahovat červeno bílý originální styl
 3: Odstranit v Events sekci Actice časové filtry Right now, This week, This month
 4: Seřadit všechny eventy podle času od toho který je nejblíž po ten nejvzdálenjší
 5: Zobrazovat rozkliknutý Event nebo Raid na celou šířku kontejneru podle toho na kterém zařízení uživatel je
-6: Odstranení notifikací pro webovou verzi jelikož nejsou potřeba
+6: Odstranení notifikací pro webovou verzi jelikož nejsou potřeba, přidat notifikace do aplikace na nově přidané eventy(budou se na ně aplikovat stejná nastavení jako teď)
 7: Odděl od sebe kod od stylování CSS
 
 Big update: 

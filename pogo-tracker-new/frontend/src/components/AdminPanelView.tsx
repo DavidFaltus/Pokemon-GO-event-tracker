@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './AdminPanelView.css';
 import type { Language } from '../data/translations';
 import { API_BASE_URL } from '../config';
 import { ArrowLeft, Lock, Plus, Trash2, Save, AlertTriangle, CheckCircle, EyeOff, Search, Edit, Database } from 'lucide-react';

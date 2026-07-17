@@ -16,7 +16,7 @@ import { PokemonRankingsView } from './components/PokemonRankingsView';
 import { AdminPanelView } from './components/AdminPanelView';
 import { Calendar, Swords, Shield, Settings, Play, Clock, Wifi, Database, Egg, Sparkles, Trophy } from 'lucide-react';
 
-const PokeballLogo = ({ size = 28 }: { size?: number }) => {
+const PokeballLogo = ({ size = 24 }: { size?: number }) => {
   const uid = 'pbl';
   return (
     <svg
@@ -25,16 +25,16 @@ const PokeballLogo = ({ size = 28 }: { size?: number }) => {
       width={size}
       height={size}
       style={{ flexShrink: 0, marginRight: '8px' }}
-      aria-label="PokeGO Tracker logo"
+      aria-label="PoGo Events logo"
     >
       <defs>
         <linearGradient id={`${uid}-top`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#c084fc" />
-          <stop offset="100%" stopColor="#7e22ce" />
+          <stop offset="0%" stopColor="#ff5a5a" />
+          <stop offset="100%" stopColor="#c20000" />
         </linearGradient>
         <linearGradient id={`${uid}-bot`} x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#0f172a" />
-          <stop offset="100%" stopColor="#1e1b4b" />
+          <stop offset="0%" stopColor="#f8fafc" />
+          <stop offset="100%" stopColor="#cbd5e1" />
         </linearGradient>
         <filter id={`${uid}-glow`} x="-30%" y="-30%" width="160%" height="160%">
           <feGaussianBlur stdDeviation="2.5" result="blur" />
@@ -44,16 +44,16 @@ const PokeballLogo = ({ size = 28 }: { size?: number }) => {
           <circle cx="50" cy="50" r="42" />
         </clipPath>
       </defs>
-      <circle cx="50" cy="50" r="46" stroke="#c084fc" strokeWidth="1.5" strokeOpacity="0.45" fill="none" filter={`url(#${uid}-glow)`} />
-      <circle cx="50" cy="50" r="42" fill={`url(#${uid}-bot)`} stroke="#2d1f5e" strokeWidth="1.5" />
+      <circle cx="50" cy="50" r="46" stroke="#ff4d4d" strokeWidth="1.5" strokeOpacity="0.45" fill="none" filter={`url(#${uid}-glow)`} />
+      <circle cx="50" cy="50" r="42" fill={`url(#${uid}-bot)`} stroke="#1e293b" strokeWidth="1.5" />
       <g clipPath={`url(#${uid}-clip)`}>
         <path d="M 8,50 A 42,42 0 0,1 92,50 Z" fill={`url(#${uid}-top)`} />
       </g>
-      <line x1="8" y1="50" x2="92" y2="50" stroke="#090d16" strokeWidth="5.5" />
-      <circle cx="50" cy="50" r="14" fill="#090d16" />
-      <circle cx="50" cy="50" r="10" fill="#1a0f3a" stroke="#aa3bff" strokeWidth="2" />
-      <circle cx="50" cy="50" r="4.5" fill="#c084fc" filter={`url(#${uid}-glow)`} />
-      <circle cx="50" cy="50" r="3" fill="#f0e6ff" />
+      <line x1="8" y1="50" x2="92" y2="50" stroke="#1e293b" strokeWidth="5.5" />
+      <circle cx="50" cy="50" r="14" fill="#1e293b" />
+      <circle cx="50" cy="50" r="10" fill="#ffffff" stroke="#ff4d4d" strokeWidth="2" />
+      <circle cx="50" cy="50" r="4.5" fill="#ff4d4d" filter={`url(#${uid}-glow)`} />
+      <circle cx="50" cy="50" r="3" fill="#ffffff" />
     </svg>
   );
 };
@@ -254,7 +254,6 @@ function App() {
   const [events, setEvents] = useState<EventData[]>(() => sanitizeEvents(MOCK_EVENTS));
   const [filterType, setFilterType] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'active' | 'upcoming'>('active');
-  const [activeTimeSpan, setActiveTimeSpan] = useState<'now' | 'week' | 'month'>('now');
   
   const [viewMode, setViewMode] = useState<'list' | 'timeline'>(() => {
     const saved = localStorage.getItem('pogo_tracker_view_mode');
@@ -267,11 +266,19 @@ function App() {
 
   const [loading, setLoading] = useState<boolean>(true);
   const [apiStatus, setApiStatus] = useState<'success' | 'fallback'>('fallback');
+  const [scraperStatus, setScraperStatus] = useState<{
+    lastScrapedAt: string | null;
+    nextScrapeAt: string | null;
+    isRunning: boolean;
+    totalEvents: number;
+  }>({ lastScrapedAt: null, nextScrapeAt: null, isRunning: false, totalEvents: 0 });
   const [lang, setLang] = useState<Language>(() => {
     const saved = localStorage.getItem('pogo_tracker_lang');
-    if (saved === 'en' || saved === 'cs') return saved;
+    if (saved === 'en' || saved === 'cs' || saved === 'ja') return saved;
     const browserLang = navigator.language.substring(0, 2);
-    return browserLang === 'cs' ? 'cs' : 'en';
+    if (browserLang === 'cs') return 'cs';
+    if (browserLang === 'ja') return 'ja';
+    return 'en';
   });
   
   const [timezone, setTimezone] = useState<string>(() => {
@@ -362,6 +369,25 @@ function App() {
   const notificationsHook = useNotifications();
   const { triggerNotification } = notificationsHook;
 
+  // Poll scraper status every 5 minutes to show last update time
+  useEffect(() => {
+    const fetchScraperStatus = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/scraper/status`);
+        if (res.ok) {
+          const data = await res.json();
+          setScraperStatus(data);
+        }
+      } catch {
+        // Silently ignore — backend may be unavailable
+      }
+    };
+
+    fetchScraperStatus(); // Fetch immediately on mount
+    const interval = setInterval(fetchScraperStatus, 5 * 60 * 1000); // Then every 5 minutes
+    return () => clearInterval(interval);
+  }, []);
+
   const t = translations[lang];
 
   const handleSetLang = (newLang: Language) => {
@@ -430,15 +456,19 @@ function App() {
           newEvents.forEach(event => {
             const title = lang === 'cs'
               ? `Nový event přidán: ${event.name}`
+              : lang === 'ja'
+              ? `新しいイベントが追加されました: ${event.name}`
               : `New event added: ${event.name}`;
             
-            const startDateStr = new Date(event.start).toLocaleDateString(lang === 'cs' ? 'cs-CZ' : 'en-US', {
-              day: 'numeric',
-              month: 'long'
-            });
+            const startDateStr = new Date(event.start).toLocaleDateString(
+              lang === 'cs' ? 'cs-CZ' : lang === 'ja' ? 'ja-JP' : 'en-US',
+              { day: 'numeric', month: 'long' }
+            );
 
             const bodyText = lang === 'cs'
               ? `Do kalendáře byl přidán nový event "${event.name}" (začíná ${startDateStr}).`
+              : lang === 'ja'
+              ? `カレンダーに新しいイベント「${event.name}」が追加されました（開始日: ${startDateStr}）。`
               : `A new event "${event.name}" has been added to the calendar (starts on ${startDateStr}).`;
 
             triggerNotification(
@@ -592,39 +622,17 @@ function App() {
   const getFilteredEvents = () => {
     let list = getAdjustedEvents();
     
-    // Sort events by start date descending
-    list.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
-
     // Filter by user visibility settings first
     list = list.filter(e => isEventVisible(e.eventType));
 
-    // Filter by status (active vs upcoming)
+    // Filter and sort by status (active vs upcoming)
     const now = new Date();
     if (statusFilter === 'active') {
-      if (activeTimeSpan === 'now') {
-        list = list.filter(e => now >= new Date(e.start) && now <= new Date(e.end));
-      } else if (activeTimeSpan === 'week') {
-        // Current week Monday 00:00 to Sunday 23:59
-        const startOfWeek = new Date(now);
-        const day = startOfWeek.getDay();
-        const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1);
-        startOfWeek.setDate(diff);
-        startOfWeek.setHours(0, 0, 0, 0);
-
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6);
-        endOfWeek.setHours(23, 59, 59, 999);
-
-        list = list.filter(e => new Date(e.start) <= endOfWeek && new Date(e.end) >= startOfWeek);
-      } else if (activeTimeSpan === 'month') {
-        // Current calendar month
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-
-        list = list.filter(e => new Date(e.start) <= endOfMonth && new Date(e.end) >= startOfMonth);
-      }
+      list = list.filter(e => now >= new Date(e.start) && now <= new Date(e.end));
+      list.sort((a, b) => new Date(a.end).getTime() - new Date(b.end).getTime());
     } else {
       list = list.filter(e => now < new Date(e.start));
+      list.sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
     }
 
     // Filter by type if set
@@ -651,15 +659,45 @@ function App() {
       <aside className="desktop-sidebar">
         <div className="sidebar-logo">
           <PokeballLogo size={28} />
-          <h1>PokeGO Tracker</h1>
+          <h1>PoGo Events</h1>
         </div>
         <div className="sidebar-stats">
-          <span className={`status-indicator-tag ${apiStatus === 'success' ? 'success' : 'fallback'}`}>
-            {apiStatus === 'success' ? t.header_live : t.header_offline}
-          </span>
-          <span className="active-badge">
-            {activeEventsCount} {t.header_active}
-          </span>
+          {/* Scraper status: last update time */}
+          {scraperStatus.lastScrapedAt && (
+            <span
+              title={scraperStatus.isRunning
+                ? (lang === 'cs' ? 'Stahování dat...' : 'Fetching data...')
+                : (lang === 'cs' ? `Příští aktualizace: ${new Date(scraperStatus.nextScrapeAt || '').toLocaleTimeString(lang === 'cs' ? 'cs-CZ' : 'en-US', { hour: '2-digit', minute: '2-digit' })}` : `Next update: ${new Date(scraperStatus.nextScrapeAt || '').toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`)}
+              style={{
+                fontSize: '10px',
+                color: 'var(--text-muted)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                marginTop: '2px'
+              }}
+            >
+              {scraperStatus.isRunning ? (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{
+                    width: '6px', height: '6px', borderRadius: '50%',
+                    background: 'var(--accent-color)',
+                    animation: 'pulse 1.5s ease-in-out infinite'
+                  }} />
+                  {lang === 'cs' ? 'Aktualizuji...' : 'Updating...'}
+                </span>
+              ) : (
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <Clock size={10} />
+                  {lang === 'cs' ? 'Aktualizováno: ' : 'Updated: '}
+                  {new Date(scraperStatus.lastScrapedAt).toLocaleTimeString(
+                    lang === 'cs' ? 'cs-CZ' : 'en-US',
+                    { hour: '2-digit', minute: '2-digit' }
+                  )}
+                </span>
+              )}
+            </span>
+          )}
         </div>
         <nav className="sidebar-nav">
           <button 
@@ -784,16 +822,33 @@ function App() {
         <header className="app-header">
           <div className="header-logo-section">
             <PokeballLogo size={24} />
-            <h1>PokeGO Tracker</h1>
+            <h1>PoGo Events</h1>
           </div>
           <div className="header-stats">
-            <span className={`status-indicator-tag ${apiStatus === 'success' ? 'success' : 'fallback'}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-              {apiStatus === 'success' ? <Wifi size={12} strokeWidth={2.5} /> : <Database size={12} strokeWidth={2.5} />}
-              {apiStatus === 'success' ? t.header_live : t.header_offline}
-            </span>
-            <span className="active-badge">
-              {activeEventsCount} {t.header_active}
-            </span>
+            {/* Scraper status in mobile header */}
+            {scraperStatus.lastScrapedAt && (
+              <span style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                {scraperStatus.isRunning ? (
+                  <>
+                    <span style={{
+                      width: '6px', height: '6px', borderRadius: '50%',
+                      background: 'var(--accent-color)',
+                      animation: 'pulse 1.5s ease-in-out infinite',
+                      flexShrink: 0
+                    }} />
+                    {lang === 'cs' ? 'Aktualizuji...' : 'Updating...'}
+                  </>
+                ) : (
+                  <>
+                    <Clock size={10} />
+                    {new Date(scraperStatus.lastScrapedAt).toLocaleTimeString(
+                      lang === 'cs' ? 'cs-CZ' : 'en-US',
+                      { hour: '2-digit', minute: '2-digit' }
+                    )}
+                  </>
+                )}
+              </span>
+            )}
           </div>
         </header>
 
@@ -827,30 +882,6 @@ function App() {
                         >
                           <Clock size={14} />
                           {lang === 'cs' ? 'Připravuje se' : 'Upcoming'}
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Sub-filters for active timespan */}
-                    {viewMode !== 'timeline' && statusFilter === 'active' && (
-                      <div className="active-timespan-filters">
-                        <button 
-                          className={`timespan-btn ${activeTimeSpan === 'now' ? 'active' : ''}`}
-                          onClick={() => setActiveTimeSpan('now')}
-                        >
-                          {t.active_filter_now}
-                        </button>
-                        <button 
-                          className={`timespan-btn ${activeTimeSpan === 'week' ? 'active' : ''}`}
-                          onClick={() => setActiveTimeSpan('week')}
-                        >
-                          {t.active_filter_week}
-                        </button>
-                        <button 
-                          className={`timespan-btn ${activeTimeSpan === 'month' ? 'active' : ''}`}
-                          onClick={() => setActiveTimeSpan('month')}
-                        >
-                          {t.active_filter_month}
                         </button>
                       </div>
                     )}

@@ -1,9 +1,11 @@
 import React, { useState, useMemo, useCallback } from 'react';
+import './PokemonRankingsView.css';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
 import { pokemonRankings } from '../data/pokemonRankings';
 import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { TypeBadge } from './EventCard';
+import { getPokemonName, getStatusTagName } from '../utils/pokemonTranslator';
 import { Search, Trophy, Sword, ShieldAlert, Heart, Star, ChevronDown, ChevronUp } from 'lucide-react';
 
 function getMoveTypeColor(type: string): string {
@@ -238,7 +240,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                 {/* Info and Type column */}
                 <div className="ranking-poke-main-info">
                   <div className="poke-title-flex" style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-                    <span className="poke-name">{poke.name}</span>
+                    <span className="poke-name">{getPokemonName(poke.name, lang)}</span>
                     <span className="poke-dex-id">#{poke.pokedexId}</span>
                     <div className="collapse-chevron-wrapper" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', opacity: 0.6, color: 'var(--text-muted)' }}>
                       {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
@@ -247,13 +249,13 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                   <div className="poke-badges-flex">
                     <div className="poke-types-row">
                       {poke.types.map(type => (
-                        <TypeBadge key={type} typeStr={type} />
+                        <TypeBadge key={type} typeStr={type} lang={lang} />
                       ))}
                     </div>
                     {/* Special status tags */}
-                    {poke.isShadow && <span className="status-tag shadow-tag">Shadow</span>}
-                    {poke.isMega && <span className="status-tag mega-tag">Mega</span>}
-                    {poke.isPrimal && <span className="status-tag primal-tag">Primal</span>}
+                    {poke.isShadow && <span className="status-tag shadow-tag">{getStatusTagName('Shadow', lang)}</span>}
+                    {poke.isMega && <span className="status-tag mega-tag">{getStatusTagName('Mega', lang)}</span>}
+                    {poke.isPrimal && <span className="status-tag primal-tag">{getStatusTagName('Primal', lang)}</span>}
                   </div>
                 </div>
 

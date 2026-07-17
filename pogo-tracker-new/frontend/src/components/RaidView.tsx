@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import './RaidView.css';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
 import { TypeBadge } from './EventCard';
+import { getPokemonName } from '../utils/pokemonTranslator';
 import type { EventData } from './EventCard';
 import { API_BASE_URL } from '../config';
 import { Sparkles, Trophy } from 'lucide-react';
@@ -29,7 +31,7 @@ const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> 
   </svg>
 );
 
-const HubRatingBadge: React.FC<{ rating: string }> = ({ rating }) => {
+const HubRatingBadge: React.FC<{ rating: string; lang: Language }> = ({ rating, lang }) => {
   if (!rating) return null;
   
   const getRatingColor = (r: string) => {
@@ -60,7 +62,7 @@ const HubRatingBadge: React.FC<{ rating: string }> = ({ rating }) => {
       }}
     >
       <Trophy size={10} fill="currentColor" stroke="none" />
-      {rating} Tier
+      {lang === 'ja' ? `${rating}ランク` : `${rating} Tier`}
     </span>
   );
 };
@@ -243,7 +245,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                     )}
                     <img 
                       src={resolveImage(boss.image, 'raid', boss.name)} 
-                      alt={boss.name} 
+                      alt={getPokemonName(boss.name, lang)} 
                       onError={(e) => {
                         handlePokemonImageError(e.target as HTMLImageElement, boss.name);
                       }}
@@ -259,7 +261,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                        {boss.tier.startsWith('shadow') && (
                          <ShadowIcon style={{ marginRight: '6px', width: '14px', height: '14px', filter: 'none' }} />
                        )}
-                       <span>{boss.name}</span>
+                       <span>{getPokemonName(boss.name, lang)}</span>
                        {/* PoGO Hub Rating & Evolution Info */}
                        {(() => {
                          const rating = getPokemonHubRating(boss.name);
@@ -271,7 +273,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                          return (
                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                              {rating && (
-                               <HubRatingBadge rating={rating} />
+                               <HubRatingBadge rating={rating} lang={lang} />
                              )}
                              {showEvo && (
                                <span 
@@ -288,7 +290,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                                    gap: '3px'
                                  }}
                                >
-                                 <span>➔ {boss.tier.startsWith('shadow') ? 'Shadow' : ''} {evoInfo.evolution}</span>
+                                 <span>➔ {boss.tier.startsWith('shadow') ? (lang === 'ja' ? 'シャドウ' : 'Shadow') : ''} {getPokemonName(evoInfo.evolution, lang)}</span>
                                  <span style={{ fontWeight: 800 }}>({evoInfo.rating})</span>
                                </span>
                              )}
@@ -300,7 +302,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                      {boss.canBeShiny && (
                        <div style={{ marginTop: '3px' }}>
                          <span className="shiny-star-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', padding: '1px 5px', fontSize: '0.65rem', borderRadius: '4px', backgroundColor: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24', border: '1px solid rgba(251, 191, 36, 0.2)' }}>
-                           <Sparkles size={8} fill="currentColor" stroke="none" /> Shiny
+                           <Sparkles size={8} fill="currentColor" stroke="none" /> {lang === 'ja' ? 'ひかる' : 'Shiny'}
                          </span>
                        </div>
                      )}
@@ -357,7 +359,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                       <div className="raid-boss-counters-card no-border" style={{ paddingBottom: 0 }}>
                         <div className="counters-boss-header pad-none">
                           <div className="weakness-list">
-                            {t.details_weaknesses}: <span className="type-badges-flex">{counters.weaknesses.map(w => <TypeBadge key={w} typeStr={w} />)}</span>
+                            {t.details_weaknesses}: <span className="type-badges-flex">{counters.weaknesses.map(w => <TypeBadge key={w} typeStr={w} lang={lang} />)}</span>
                           </div>
                         </div>
                         
@@ -366,7 +368,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                             <div className="counter-level-col mega">
                               <span className="level-badge mega">{t.details_level_mega}</span>
                               <ul>
-                                {counters.megaCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                                {counters.megaCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
                               </ul>
                             </div>
                           )}
@@ -374,7 +376,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                             <div className="counter-level-col advanced">
                               <span className="level-badge advanced">{t.details_level_advanced}</span>
                               <ul>
-                                {counters.advancedCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                                {counters.advancedCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
                               </ul>
                             </div>
                           )}
@@ -382,7 +384,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                             <div className="counter-level-col budget">
                               <span className="level-badge budget">{t.details_level_budget}</span>
                               <ul>
-                                {counters.budgetCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                                {counters.budgetCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
                               </ul>
                             </div>
                           )}

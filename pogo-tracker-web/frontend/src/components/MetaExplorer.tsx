@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './MetaExplorer.css';
 import { pokemonMetaDb } from '../data/pokemonMeta';
 import { translations, getLocalizedString } from '../data/translations';
 import type { Language } from '../data/translations';
@@ -104,6 +105,7 @@ export const MetaExplorer: React.FC<MetaExplorerProps> = ({ lang = 'cs' }) => {
               </div>
 
               <div className="card-body">
+                {/* Movesets */}
                 <div className="moveset-section">
                   <div className="move-item">
                     <span className="move-label">{currentLang === 'ja' ? 'わざ1:' : 'Fast Move:'}</span>
@@ -115,6 +117,7 @@ export const MetaExplorer: React.FC<MetaExplorerProps> = ({ lang = 'cs' }) => {
                   </div>
                 </div>
 
+                {/* Summaries */}
                 <div className="role-summaries">
                   {pokemon.pveRating !== 'None' && (
                     <div className="role-summary">

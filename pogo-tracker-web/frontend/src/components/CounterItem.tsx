@@ -1,6 +1,8 @@
 import React from 'react';
 import { Sun, CloudRain, CloudSun, Cloud, Wind, Snowflake, CloudFog } from 'lucide-react';
 import { getPokemonIconUrl, getBasePokemonName } from '../utils/imageResolver';
+import type { Language } from '../data/translations';
+import { getPokemonName } from '../utils/pokemonTranslator';
 
 export const moveTypes: Record<string, string> = {
   // Fire
@@ -240,7 +242,7 @@ export const MoveTypeIcon: React.FC<{ typeStr: string }> = ({ typeStr }) => {
   );
 };
 
-export const CounterItem: React.FC<{ counterStr: string }> = ({ counterStr }) => {
+export const CounterItem: React.FC<{ counterStr: string; lang?: Language }> = ({ counterStr, lang = 'en' }) => {
   const [hasError, setHasError] = React.useState(false);
 
   if (hasError) return null;
@@ -294,7 +296,7 @@ export const CounterItem: React.FC<{ counterStr: string }> = ({ counterStr }) =>
     <li className="counter-item-card">
       <img 
         src={iconUrl} 
-        alt={pokemonName} 
+        alt={getPokemonName(pokemonName, lang)} 
         onError={(e) => {
           const img = e.target as HTMLImageElement;
           const baseName = getBasePokemonName(pokemonName);
@@ -307,7 +309,7 @@ export const CounterItem: React.FC<{ counterStr: string }> = ({ counterStr }) =>
         }}
       />
       <div className="counter-pokemon-info">
-        <span className="counter-pokemon-name">{pokemonName}</span>
+        <span className="counter-pokemon-name">{getPokemonName(pokemonName, lang)}</span>
         <div className="counter-moves-container">
           {resolvedFast.move && (
             <span className="counter-move-row">

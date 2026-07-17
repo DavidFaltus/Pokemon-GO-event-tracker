@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import './DittoEggsView.css';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
 import { dittoDisguises, eggPools } from '../data/dittoEggs';
 import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { TypeBadge } from './EventCard';
 import { Sparkles } from 'lucide-react';
+import { getPokemonName } from '../utils/pokemonTranslator';
 
 interface DittoEggsViewProps {
   lang: Language;
@@ -38,7 +40,7 @@ export const DittoEggsView: React.FC<DittoEggsViewProps> = ({ lang, mode }) => {
                 <div className="disguise-img-container">
                   <img 
                     src={resolveImage(poke.image, 'ditto', poke.name)} 
-                    alt={poke.name} 
+                    alt={getPokemonName(poke.name, lang)} 
                     className="disguise-pokemon-img"
                     onError={(e) => {
                       handlePokemonImageError(e.target as HTMLImageElement, poke.name);
@@ -51,10 +53,10 @@ export const DittoEggsView: React.FC<DittoEggsViewProps> = ({ lang, mode }) => {
                   )}
                 </div>
                 <div className="disguise-info">
-                  <span className="disguise-name">{poke.name}</span>
+                  <span className="disguise-name">{getPokemonName(poke.name, lang)}</span>
                   <div className="disguise-types">
                     {poke.types.map(type => (
-                      <TypeBadge key={type} typeStr={type} />
+                      <TypeBadge key={type} typeStr={type} lang={lang} />
                     ))}
                   </div>
                 </div>
@@ -92,7 +94,9 @@ export const DittoEggsView: React.FC<DittoEggsViewProps> = ({ lang, mode }) => {
                   <EggIcon size={48} color={currentPool.color} />
                   <div>
                     <h3>{currentPool.distance} {t.eggs_pool_title}</h3>
-                    <span className="hatch-count-pill">{currentPool.contents.length} Pokémon</span>
+                    <span className="hatch-count-pill">
+                      {lang === 'ja' ? `${currentPool.contents.length} 種類のポケモン` : `${currentPool.contents.length} Pokémon`}
+                    </span>
                   </div>
                 </div>
 
@@ -102,7 +106,7 @@ export const DittoEggsView: React.FC<DittoEggsViewProps> = ({ lang, mode }) => {
                       <div className="hatch-img-container">
                         <img 
                           src={resolveImage(pokemon.image, 'egg-hatch', pokemon.name)} 
-                          alt={pokemon.name} 
+                          alt={getPokemonName(pokemon.name, lang)} 
                           className="hatch-pokemon-img"
                           onError={(e) => {
                             handlePokemonImageError(e.target as HTMLImageElement, pokemon.name);
@@ -115,7 +119,7 @@ export const DittoEggsView: React.FC<DittoEggsViewProps> = ({ lang, mode }) => {
                         )}
                       </div>
                       <div className="hatch-info">
-                        <span className="hatch-name">{pokemon.name}</span>
+                        <span className="hatch-name">{getPokemonName(pokemon.name, lang)}</span>
                         {pokemon.cpMax && (
                           <span className="hatch-cp">
                             <strong>CP:</strong> {pokemon.cpMax}

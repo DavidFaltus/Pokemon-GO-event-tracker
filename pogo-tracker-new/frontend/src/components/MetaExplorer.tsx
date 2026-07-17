@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './MetaExplorer.css';
 import { pokemonMetaDb } from '../data/pokemonMeta';
 import { translations, getLocalizedString } from '../data/translations';
 import type { Language } from '../data/translations';

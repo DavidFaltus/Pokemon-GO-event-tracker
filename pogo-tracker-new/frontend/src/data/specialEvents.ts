@@ -37,6 +37,7 @@ export interface SpecialEventResearch {
 
 export interface SpecialEventDetails {
   eventID: string;
+  officialLink?: string;
   bonuses?: SpecialEventBonus[];
   spawns?: SpecialEventSpawn[];
   eggs?: SpecialEventEgg[];

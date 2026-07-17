@@ -1,4 +1,5 @@
 import React from 'react';
+import './NotificationSettings.css';
 import { useNotifications } from '../hooks/useNotifications';
 import type { NotificationPreference } from '../hooks/useNotifications';
 import { translations } from '../data/translations';
@@ -44,6 +45,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
   setViewMode,
   onOpenAdmin,
 }) => {
+  const isNative = typeof window !== 'undefined' && !!(window as any).Capacitor;
   const [gpsSyncing, setGpsSyncing] = React.useState(false);
   const [syncStatus, setSyncStatus] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
@@ -237,49 +239,53 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
       </div>
 
       {/* Native Browser Notification Request */}
-      <div className="settings-card permission-card">
-        <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <span className="duotone-icon duotone-white"><Bell size={16} /></span>
-          {t.settings_push_title}
-        </h3>
-        <div className="permission-status-box">
-          <div className="status-indicator">
-            {t.settings_status} <span className={`status-badge ${permission}`}>{getStatusLabel(permission)}</span>
+      {isNative && (
+        <div className="settings-card permission-card">
+          <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+            <span className="duotone-icon duotone-white"><Bell size={16} /></span>
+            {t.settings_push_title}
+          </h3>
+          <div className="permission-status-box">
+            <div className="status-indicator">
+              {t.settings_status} <span className={`status-badge ${permission}`}>{getStatusLabel(permission)}</span>
+            </div>
+            {!isEnabled && (
+              <button className="primary-btn" onClick={requestPermission}>
+                {t.settings_enable_btn}
+              </button>
+            )}
+            {isEnabled && (
+              <button className="secondary-btn" onClick={testNotification}>
+                {t.settings_test_btn}
+              </button>
+            )}
           </div>
-          {!isEnabled && (
-            <button className="primary-btn" onClick={requestPermission}>
-              {t.settings_enable_btn}
-            </button>
-          )}
-          {isEnabled && (
-            <button className="secondary-btn" onClick={testNotification}>
-              {t.settings_test_btn}
-            </button>
-          )}
+          <p className="help-text">{t.settings_help}</p>
         </div>
-        <p className="help-text">{t.settings_help}</p>
-      </div>
+      )}
 
       {/* Preferences Toggles */}
-      <div className="settings-card preferences-card">
-        <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <span className="duotone-icon duotone-white"><SlidersHorizontal size={16} /></span>
-          {t.settings_filter_title}
-        </h3>
-        <div className="checkbox-list">
-          {(Object.keys(preferences) as Array<keyof NotificationPreference>).map(key => (
-            <label key={key} className="checkbox-item">
-              <input
-                type="checkbox"
-                checked={preferences[key]}
-                onChange={() => togglePreference(key)}
-              />
-              <span className="checkbox-custom"></span>
-              <span className="checkbox-label">{getPrefLabel(key)}</span>
-            </label>
-          ))}
+      {isNative && (
+        <div className="settings-card preferences-card">
+          <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+            <span className="duotone-icon duotone-white"><SlidersHorizontal size={16} /></span>
+            {t.settings_filter_title}
+          </h3>
+          <div className="checkbox-list">
+            {(Object.keys(preferences) as Array<keyof NotificationPreference>).map(key => (
+              <label key={key} className="checkbox-item">
+                <input
+                  type="checkbox"
+                  checked={preferences[key]}
+                  onChange={() => togglePreference(key)}
+                />
+                <span className="checkbox-custom"></span>
+                <span className="checkbox-label">{getPrefLabel(key)}</span>
+              </label>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Event Visibility Toggles */}
       <div className="settings-card preferences-card">

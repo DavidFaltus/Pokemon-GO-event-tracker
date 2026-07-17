@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Scraper Cache
+.cache/
+.cache
+events_list.json
+raid_bosses.json

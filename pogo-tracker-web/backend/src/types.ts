@@ -20,6 +20,7 @@ export interface EventData {
 
 export interface SpecialEventDetails {
   eventID: string;
+  officialLink?: string;
   bonuses?: {
     text: {
       cs: string;

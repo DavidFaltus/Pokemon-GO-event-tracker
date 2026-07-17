@@ -1,5 +1,6 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import puppeteer, { Browser } from 'puppeteer';
 import { EventData, SpecialEventDetails, ScrapedRaidBoss, RocketMember, GruntData, RaidCounters } from './types';
 
 // ==========================================
@@ -1386,7 +1387,7 @@ export async function scrapeEvents(): Promise<EventData[]> {
   return response.data;
 }
 
-export async function scrapeEventDetails(eventID: string, link: string): Promise<SpecialEventDetails | null> {
+async function scrapeLeekDuckEventDetails(eventID: string, link: string): Promise<SpecialEventDetails | null> {
   const response = await axios.get(link, {
     headers: {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
@@ -1541,6 +1542,421 @@ export async function scrapeEventDetails(eventID: string, link: string): Promise
     };
   }
   return null;
+}
+
+// ==========================================
+// 3a. Niantic Official Scraper (Puppeteer)
+// ==========================================
+
+let sharedBrowser: Browser | null = null;
+
+async function getBrowser(): Promise<Browser> {
+  if (sharedBrowser && sharedBrowser.connected) {
+    return sharedBrowser;
+  }
+  sharedBrowser = await puppeteer.launch({
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--no-first-run',
+      '--no-zygote',
+    ]
+  });
+  return sharedBrowser;
+}
+
+function bonusTextToIcon(text: string): string {
+  const t = text.toLowerCase();
+  if (t.includes('candy') || t.includes('bonbón')) return '🍬';
+  if (t.includes('stardust') || t.includes('hvězdný prach')) return '✨';
+  if (t.includes('hatch') || t.includes('egg') || t.includes('líhnutí') || t.includes('vejce')) return '🥚';
+  if (t.includes('xp') || t.includes('experience') || t.includes('zkušenosti')) return '⚡';
+  if (t.includes('raid pass') || t.includes('raid') || t.includes('pass')) return '🎟️';
+  if (t.includes('rocket') || t.includes('balloon') || t.includes('balón')) return '🎈';
+  if (t.includes('trade') || t.includes('tradovat')) return '🤝';
+  if (t.includes('tm') || t.includes('charged tm') || t.includes('fast tm')) return '🟣';
+  if (t.includes('incense') || t.includes('lure') || t.includes('modul')) return '🌸';
+  if (t.includes('snapshot') || t.includes('photo')) return '📸';
+  if (t.includes('shiny') || t.includes('leskl')) return '⭐';
+  return '🎁';
+}
+
+export async function scrapeNianticEventDetails(urlOrID: string): Promise<SpecialEventDetails | null> {
+  const nianticUrl = urlOrID.startsWith('http') ? urlOrID : `https://pokemongolive.com/en/news/${urlOrID}`;
+  const eventID = nianticUrl.split('/').pop() || '';
+  
+  // Skip generic event IDs to avoid unnecessary 404s on pokemongolive.com
+  const genericPatterns = [
+    'raidhour',
+    'spotlighthour',
+    'pokemonspotlighthour',
+    'gbl-',
+    'rocket-takeover',
+    'max-monday',
+    'max-mondays',
+    'weekly-'
+  ];
+  if (genericPatterns.some(pattern => eventID.toLowerCase().includes(pattern))) {
+    console.log(`[Niantic] Skipping generic event ID ${eventID} (no official article expected)`);
+    return null;
+  }
+
+  console.log(`[Niantic] Scraping: ${nianticUrl}`);
+
+  try {
+    const browser = await getBrowser();
+    const page = await browser.newPage();
+
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+      const type = req.resourceType();
+      if (['image', 'font', 'media'].includes(type)) {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });
+
+    await page.setUserAgent(
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    );
+
+    const response = await page.goto(nianticUrl, {
+      waitUntil: 'networkidle2',
+      timeout: 20000
+    });
+
+    if (!response || response.status() === 404) {
+      console.log(`[Niantic] 404 for ${nianticUrl}`);
+      await page.close();
+      return null;
+    }
+
+    try {
+      await page.waitForSelector('article, main h2, main h3, main ul li', { timeout: 8000 });
+    } catch {
+      console.log(`[Niantic] Timeout waiting for content on ${nianticUrl}`);
+      await page.close();
+      return null;
+    }
+
+    const extracted = await page.evaluate(() => {
+      const bonuses: { text: string; icon: string }[] = [];
+      const spawns: { name: string; isShinyAvailable: boolean }[] = [];
+      const eggs: { distance: string; contents: { name: string }[] }[] = [];
+      const debuts: { name: string; description: string }[] = [];
+      const research: { task: string; reward: string }[] = [];
+
+      const contentRoot = document.querySelector('article') || document.querySelector('main') || document.body;
+      const headings = contentRoot.querySelectorAll('h2, h3');
+
+      headings.forEach((heading) => {
+        const title = heading.textContent?.toLowerCase().trim() || '';
+
+        const siblingLists: Element[] = [];
+        const siblingTexts: string[] = [];
+        let next = heading.nextElementSibling;
+        while (next && !['H2', 'H3', 'H4'].includes(next.tagName)) {
+          if (next.tagName === 'UL' || next.tagName === 'OL') {
+            siblingLists.push(next);
+          } else if (next.tagName === 'P') {
+            const t = next.textContent?.trim();
+            if (t) siblingTexts.push(t);
+          }
+          next = next.nextElementSibling;
+        }
+
+        if (siblingLists.length === 0) return;
+
+        const allItems = siblingLists.flatMap(ul =>
+          Array.from(ul.querySelectorAll('li')).map(li => li.textContent?.trim() || '')
+        ).filter(t => t.length > 0);
+
+        if (title.includes('bonus') || title.includes('feature') || title.includes('event detail') || title.includes('what')) {
+          allItems.forEach(item => { bonuses.push({ text: item, icon: '' }); });
+          return;
+        }
+
+        if (title.includes('wild') || title.includes('spawn') || title.includes('encounter') || title.includes('appearing') || title.includes('in the wild')) {
+          allItems.forEach(item => {
+            const isShiny = item.includes('✦') || item.includes('⭐') || item.toLowerCase().includes('shiny');
+            const cleanName = item.replace(/[✦⭐★\*]/g, '').trim().split('–')[0].split('-')[0].trim();
+            if (cleanName) spawns.push({ name: cleanName, isShinyAvailable: isShiny });
+          });
+          return;
+        }
+
+        if (title.includes('egg') || title.includes('hatch') || title.includes('km')) {
+          const distMatch = title.match(/(\d+)\s*km/i);
+          const distance = distMatch ? distMatch[0] : '7km';
+          const contents = allItems.map(item => ({
+            name: item.replace(/[✦⭐★\*]/g, '').trim().split('–')[0].split('-')[0].trim()
+          })).filter(c => c.name.length > 0);
+          if (contents.length > 0) eggs.push({ distance, contents });
+          return;
+        }
+
+        if (title.includes('debut') || title.includes('first time') || title.includes('new to') || title.includes('shiny debut') || title.includes('new shiny') || title.includes('save shadow') || title.includes('featured')) {
+          const desc = siblingTexts.join(' ');
+          allItems.forEach(item => {
+            const cleanName = item.replace(/[✦⭐★\*]/g, '').trim().split('–')[0].trim();
+            if (cleanName) debuts.push({ name: cleanName, description: desc });
+          });
+          return;
+        }
+
+        if (title.includes('research') || title.includes('field') || title.includes('task')) {
+          allItems.forEach(item => {
+            const parts = item.split(/-|:|–/);
+            const task = parts[0]?.trim() || item;
+            const reward = parts.slice(1).join(' ').trim() || '';
+            if (task) research.push({ task, reward });
+          });
+          return;
+        }
+      });
+
+      return { bonuses, spawns, eggs, debuts, research };
+    });
+
+    await page.close();
+
+    if (!extracted) return null;
+
+    const processedBonuses = extracted.bonuses
+      .filter(b => b.text.length > 0)
+      .map(b => ({
+        text: { cs: translateTextToCs(b.text), en: b.text },
+        icon: bonusTextToIcon(b.text)
+      }));
+
+    const spawns = extracted.spawns
+      .filter(s => s.name.length > 1)
+      .map(s => ({
+        name: s.name,
+        image: '',
+        isShinyAvailable: s.isShinyAvailable,
+        isHighPriority: isMetaRelevant(s.name)
+      }));
+
+    const eggs = extracted.eggs.map(e => ({
+      distance: e.distance,
+      contents: e.contents.map(c => ({ name: c.name, image: '', isShinyAvailable: false }))
+    }));
+
+    const debuts = extracted.debuts.map(d => ({
+      name: d.name,
+      image: '',
+      description: {
+        cs: translateTextToCs(d.description || `${d.name} debutuje v Pokémon GO!`),
+        en: d.description || `${d.name} debuts in Pokémon GO!`
+      }
+    }));
+
+    const research = extracted.research.map(r => ({
+      task: { cs: translateTextToCs(r.task), en: r.task },
+      reward: r.reward,
+      image: '',
+      isShinyAvailable: false
+    }));
+
+    const hasData = processedBonuses.length > 0 || spawns.length > 0 || eggs.length > 0 || debuts.length > 0 || research.length > 0;
+    if (!hasData) {
+      console.log(`[Niantic] No structured data found for ${eventID}`);
+      return null;
+    }
+
+    console.log(`[Niantic] ✅ ${eventID}: bonuses=${processedBonuses.length}, spawns=${spawns.length}, eggs=${eggs.length}, debuts=${debuts.length}, research=${research.length}`);
+
+    return {
+      eventID,
+      bonuses: processedBonuses.length > 0 ? processedBonuses : undefined,
+      debuts: debuts.length > 0 ? debuts : undefined,
+      spawns: spawns.length > 0 ? spawns : undefined,
+      eggs: eggs.length > 0 ? eggs : undefined,
+      research: research.length > 0 ? research : undefined,
+    };
+
+  } catch (err: any) {
+    console.error(`[Niantic] Error scraping ${eventID}:`, err.message);
+    return null;
+  }
+}
+
+// ==========================================
+// 3c. News Listing Crawler & Matchers
+// ==========================================
+
+export interface NianticArticle {
+  href: string;
+  title: string;
+}
+
+let newsListingCache: NianticArticle[] | null = null;
+let newsListingFetchedAt = 0;
+
+export async function scrapeNianticNewsListing(): Promise<NianticArticle[]> {
+  console.log('[Niantic] Fetching news listing from https://pokemongolive.com/en/news/...');
+  try {
+    const browser = await getBrowser();
+    const page = await browser.newPage();
+
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+      const type = req.resourceType();
+      if (['image', 'font', 'media'].includes(type)) {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });
+
+    await page.setUserAgent(
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    );
+
+    await page.goto('https://pokemongolive.com/en/news/', {
+      waitUntil: 'networkidle2',
+      timeout: 25000
+    });
+
+    try {
+      await page.waitForSelector('main a, article, .news-list, [class*="newsCard"]', { timeout: 8000 });
+    } catch {
+      // ignore
+    }
+
+    const articles = await page.evaluate(() => {
+      const links = Array.from(document.querySelectorAll('a'));
+      return links
+        .map(a => {
+          const href = a.getAttribute('href') || '';
+          const text = a.textContent?.trim() || '';
+          return { href, title: text };
+        })
+        .filter(item => item.href.includes('/post/') || item.href.includes('/news/'))
+        .map(item => {
+          const titleClean = item.title.replace(/^[A-Za-z]{3}\s+\d{1,2},\s+\d{4}/, '').trim();
+          return {
+            href: item.href.startsWith('http') ? item.href : `https://pokemongolive.com${item.href}`,
+            title: titleClean
+          };
+        })
+        .filter(item => item.title.length > 5);
+    });
+
+    await page.close();
+    console.log(`[Niantic] Successfully indexed ${articles.length} news articles from listing page`);
+    return articles;
+  } catch (err: any) {
+    console.error('[Niantic] Failed to parse news listing:', err.message);
+    return [];
+  }
+}
+
+export async function getNianticNewsListing(): Promise<NianticArticle[]> {
+  const now = Date.now();
+  if (newsListingCache && (now - newsListingFetchedAt < 15 * 60 * 1000)) {
+    return newsListingCache;
+  }
+  newsListingCache = await scrapeNianticNewsListing();
+  newsListingFetchedAt = now;
+  return newsListingCache;
+}
+
+export function matchEventToArticle(eventName: string, articleTitle: string): boolean {
+  const cleanEvent = eventName.toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\b(event|edition|battles|in-game|global|makeup|special|celebration|day|version|part)\b/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const cleanArticle = articleTitle.toLowerCase()
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (cleanArticle.includes(cleanEvent) || cleanEvent.includes(cleanArticle)) {
+    return true;
+  }
+
+  const eventWords = cleanEvent.split(' ').filter(w => w.length > 3);
+  if (eventWords.length > 0) {
+    const matchingWords = eventWords.filter(word => cleanArticle.includes(word));
+    if (matchingWords.length >= Math.min(eventWords.length, 2)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export function matchSlugToTitle(slug: string, articleTitle: string, articleUrl: string): boolean {
+  const cleanSlug = slug.toLowerCase().replace(/-\d{4}$/, '');
+  const cleanUrl = articleUrl.toLowerCase();
+  
+  if (cleanUrl.endsWith(`/${cleanSlug}`) || cleanUrl.endsWith(`/${cleanSlug.replace(/-/g, '')}`)) {
+    return true;
+  }
+
+  const slugWords = cleanSlug.split('-').filter(w => w.length > 3 && !['event', 'edition', 'battles', 'june', 'july', 'august', '2026'].includes(w));
+  const cleanTitle = articleTitle.toLowerCase();
+  
+  if (slugWords.length === 0) return false;
+  const matches = slugWords.filter(w => cleanTitle.includes(w));
+  return matches.length >= Math.min(slugWords.length, 2);
+}
+
+// ==========================================
+// 3d. Orchestrator: Niantic → Leek Duck Fallback
+// ==========================================
+
+export async function scrapeEventDetails(eventID: string, link: string, name?: string): Promise<SpecialEventDetails | null> {
+  try {
+    const articles = await getNianticNewsListing();
+    let matchedArticle: NianticArticle | undefined;
+
+    if (name) {
+      matchedArticle = articles.find(art => matchEventToArticle(name, art.title));
+    }
+
+    if (!matchedArticle) {
+      matchedArticle = articles.find(art => matchSlugToTitle(eventID, art.title, art.href));
+    }
+
+    if (matchedArticle) {
+      console.log(`[scrapeEventDetails] Found official Niantic article for ${eventID}: ${matchedArticle.href}`);
+      const nianticResult = await scrapeNianticEventDetails(matchedArticle.href);
+      if (nianticResult) {
+        nianticResult.officialLink = matchedArticle.href;
+        console.log(`[scrapeEventDetails] ✅ Using Niantic data for ${eventID}`);
+        return nianticResult;
+      }
+      console.log(`[scrapeEventDetails] Niantic scrape returned no data for ${eventID}, falling back to Leek Duck`);
+    } else {
+      console.log(`[scrapeEventDetails] No matching official Niantic article for ${eventID}`);
+    }
+  } catch (err: any) {
+    console.warn(`[scrapeEventDetails] Niantic lookup error for ${eventID}: ${err.message} — falling back to Leek Duck`);
+  }
+
+  if (!link) {
+    console.warn(`[scrapeEventDetails] No fallback link for ${eventID}`);
+    return null;
+  }
+  try {
+    const leekResult = await scrapeLeekDuckEventDetails(eventID, link);
+    if (leekResult) {
+      console.log(`[scrapeEventDetails] 🦆 Using Leek Duck fallback data for ${eventID}`);
+    }
+    return leekResult;
+  } catch (err: any) {
+    console.error(`[scrapeEventDetails] Leek Duck fallback also failed for ${eventID}: ${err.message}`);
+    return null;
+  }
 }
 
 export async function scrapeRaidBosses(): Promise<ScrapedRaidBoss[]> {

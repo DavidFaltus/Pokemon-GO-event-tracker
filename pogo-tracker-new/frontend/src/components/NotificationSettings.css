@@ -1,0 +1,339 @@
+/* SECTION 1450-1690 */
+
+@media (min-width: 600px) {
+  .notification-settings-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+    align-items: start;
+  }
+}
+
+.settings-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.settings-card h3 {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 6px;
+}
+
+.permission-status-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.status-indicator {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-badge {
+  font-weight: 800;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.status-badge.granted { background-color: rgba(16, 185, 129, 0.15); color: #34d399; }
+.status-badge.default { background-color: rgba(249, 115, 22, 0.15); color: #f97316; }
+.status-badge.denied { background-color: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+.primary-btn {
+  background: var(--accent-gradient);
+  border: none;
+  color: white;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.secondary-btn {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.help-text {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.checkbox-item input {
+  display: none;
+}
+
+.checkbox-custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  position: relative;
+  transition: all 0.2s;
+  background-color: var(--bg-dark);
+}
+
+.checkbox-item input:checked + .checkbox-custom {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+.checkbox-item input:checked + .checkbox-custom::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -52%);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 900;
+}
+
+.checkbox-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.history-header h3 {
+  border: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.history-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.text-btn {
+  background: none;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.text-btn:hover {
+  text-decoration: underline;
+}
+
+.text-btn.danger {
+  color: #ef4444;
+}
+
+.empty-history {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 0;
+  gap: 8px;
+  color: var(--text-muted);
+}
+
+.bell-icon {
+  font-size: 1.75rem;
+}
+
+.empty-history p {
+  font-size: 0.75rem;
+  font-weight: 550;
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.notif-item {
+  background-color: rgba(6, 7, 9, 0.25);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.notif-item.unread {
+  border-left: 3px solid var(--accent-color);
+}
+
+.notif-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.notif-type-tag {
+  font-size: 0.55rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: var(--accent-color);
+}
+
+.notif-time {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+}
+
+.notif-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.notif-body {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+/* Raid Counters by Level */
+.raid-counters-row {
+  margin-top: 16px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+}
+
+/* SECTION 1973-1997 */
+.language-select {
+  width: 100%;
+  background-color: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  padding: 10px 12px;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: border-color 0.2s;
+}
+
+.language-select:focus {
+  border-color: var(--accent-color);
+}
+
+/* Link Row and Google Calendar Button */
+.link-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+
+/* SECTION 2371-2438 */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.timezone-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(6, 7, 9, 0.25);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.8rem;
+}
+
+.tz-label {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.tz-code {
+  color: #34d399; /* Green accent */
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.gps-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); /* Blue themed for GPS sync */
+  font-weight: 700;
+}
+
+.gps-btn:hover {
+  background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+}
+
+.gps-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sync-status-msg {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 8px;
+  line-height: 1.4;
+}
+
+.sync-status-msg.success {
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #34d399;
+}
+
+.sync-status-msg.error {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #f87171;
+}
+
+/* Special Event Guide & Interactive Spawns Tracker */
+.special-event-guide-box {
+  background: rgba(17, 18, 23, 0.4);
+  border: 1px solid rgba(170, 59, 255, 0.2);
+  border-radius: 12px;
+  padding: 14px;

@@ -20,6 +20,9 @@ export interface InAppNotification {
   type: string;
 }
 
+const isNative = typeof window !== 'undefined' && !!(window as any).Capacitor;
+const CAPACITOR_NOTIF_PKG = '@capacitor/local-notifications';
+
 export function useNotifications() {
   const [permission, setPermission] = useState<NotificationPermission>('default');
   
@@ -58,11 +61,37 @@ export function useNotifications() {
   // Sync permissions on load
   useEffect(() => {
     const checkNotificationPermission = async () => {
-      if (typeof window !== 'undefined' && 'Notification' in window) {
-        setPermission(Notification.permission);
+      if (isNative) {
+        try {
+          // @ts-ignore
+          const { LocalNotifications } = await import(/* @vite-ignore */ CAPACITOR_NOTIF_PKG);
+          const perm = await LocalNotifications.checkPermissions();
+          const mapped = perm.display === 'granted' ? 'granted' : perm.display === 'denied' ? 'denied' : 'default';
+          setPermission(mapped);
+        } catch (e) {
+          console.error("Capacitor checkPermissions failed:", e);
+        }
+      } else {
+        // Web version: disabled
+        setPermission('default');
       }
     };
     checkNotificationPermission();
+  }, []);
+
+  // Listen for native notification actions (clicks)
+  useEffect(() => {
+    if (isNative) {
+      // @ts-ignore
+      import(/* @vite-ignore */ CAPACITOR_NOTIF_PKG).then(({ LocalNotifications }) => {
+        LocalNotifications.addListener('localNotificationActionPerformed', (action: any) => {
+          const eventLink = action.notification.extra?.eventLink;
+          if (eventLink) {
+            window.open(eventLink, '_blank');
+          }
+        });
+      }).catch(e => console.error("Failed to register notification action listener:", e));
+    }
   }, []);
 
   useEffect(() => {
@@ -74,15 +103,17 @@ export function useNotifications() {
   }, [inAppNotifications]);
 
   const requestPermission = async () => {
-    if (typeof window === 'undefined' || !('Notification' in window)) {
-      alert('Tento prohlížeč nepodporuje push notifikace.');
-      return false;
+    if (!isNative) {
+      return false; // Web version: no notifications
     }
     
     try {
-      const resp = await Notification.requestPermission();
-      setPermission(resp);
-      return resp === 'granted';
+      // @ts-ignore
+      const { LocalNotifications } = await import(/* @vite-ignore */ CAPACITOR_NOTIF_PKG);
+      const resp = await LocalNotifications.requestPermissions();
+      const mapped = resp.display === 'granted' ? 'granted' : resp.display === 'denied' ? 'denied' : 'default';
+      setPermission(mapped);
+      return resp.display === 'granted';
     } catch (e) {
       console.error("Chyba při žádosti o povolení notifikací", e);
       return false;
@@ -102,7 +133,7 @@ export function useNotifications() {
     return true;
   };
 
-  const triggerNotification = (title: string, body: string, type: string, eventLink?: string) => {
+  const triggerNotification = async (title: string, body: string, type: string, eventLink?: string) => {
     if (!shouldNotifyForType(type)) return;
 
     // 1. Add to In-App Notification Center
@@ -116,34 +147,31 @@ export function useNotifications() {
     };
     setInAppNotifications(prev => [newNotif, ...prev].slice(0, 50)); // Keep last 50
 
-    // 2. Trigger web notification
-    if (permission === 'granted') {
+    // 2. Trigger native notification
+    if (isNative && permission === 'granted') {
       try {
-        const options: NotificationOptions = {
-          body,
-          icon: '/favicon.svg',
-          badge: '/favicon.svg',
-          tag: newNotif.id,
-          requireInteraction: false
-        };
-        const n = new Notification(title, options);
-        if (eventLink) {
-          n.onclick = (e) => {
-            e.preventDefault();
-            window.open(eventLink, '_blank');
-          };
-        }
+        // @ts-ignore
+        const { LocalNotifications } = await import(/* @vite-ignore */ CAPACITOR_NOTIF_PKG);
+        await LocalNotifications.schedule({
+          notifications: [
+            {
+              title,
+              body,
+              id: Math.floor(Math.random() * 1000000),
+              schedule: { at: new Date(Date.now() + 500) },
+              extra: { eventLink }
+            }
+          ]
+        });
       } catch (e) {
-        console.error("Webová notifikace selhala", e);
+        console.error("Local notification failed", e);
       }
     }
   };
 
-  // Web scheduling placeholder (not supported standardly in browsers without service workers)
   const scheduleEventNotifications = async (_events: any[], _lang: 'cs' | 'en') => {
-    // Standard web push notifications are scheduled from the backend.
-    // In frontend-only web app we just log that we would schedule notifications.
-    console.log("Browser notifications are active in real-time.");
+    // Real-time notification checks are run client-side on event list changes.
+    console.log("Real-time notifications check run on client.");
   };
 
   const markAllAsRead = () => {
