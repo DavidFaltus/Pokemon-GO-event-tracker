@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import type { Language } from '../data/translations';
 
 export interface NotificationPreference {
   all: boolean;
@@ -169,7 +170,7 @@ export function useNotifications() {
     }
   };
 
-  const scheduleEventNotifications = async (_events: any[], _lang: 'cs' | 'en') => {
+  const scheduleEventNotifications = async (_events: any[], _lang: Language) => {
     // Real-time notification checks are run client-side on event list changes.
     console.log("Real-time notifications check run on client.");
   };

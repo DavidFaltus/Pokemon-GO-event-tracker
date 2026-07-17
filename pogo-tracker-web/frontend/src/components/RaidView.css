@@ -1,4 +1,10 @@
-/* SECTION 660-837 */
+/* SECTION 654-837 */
+
+/* Raid View Styling */
+.raid-view-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .raid-bosses-grid {
@@ -177,8 +183,7 @@
   flex-direction: column;
   gap: 12px;
 }
-
-/* SECTION 1691-1915 */
+/* SECTION 1691-1916 */
 
 .raid-boss-counters-card {
   background-color: rgba(6, 7, 9, 0.3);
@@ -404,3 +409,4 @@
   flex-wrap: wrap;
   gap: 4px;
   vertical-align: middle;
+}

@@ -1,4 +1,11 @@
-/* SECTION 3371-3815 */
+/* SECTION 3364-3839 */
+
+/* Timeline View */
+.timeline-view-wrapper {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  overflow: hidden;
   margin-top: 12px;
   display: flex;
   flex-direction: column;
@@ -444,3 +451,27 @@
     border-radius: 16px;
     padding: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+
+  .bonuses-card.inline-bonuses .bonuses-close-btn {
+    display: none; /* Hide close button on sidebar */
+  }
+
+  .bonus-item-row {
+    line-height: 1.4;
+  }
+
+  /* Adjust Event Cards container layout on desktop */
+  .events-feed-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+    align-items: start;
+    padding-bottom: 40px;
+  }
+
+  /* Make event cards stretch nicely */
+  .event-card {
+    margin-bottom: 0 !important;
+  }
+}

@@ -1,4 +1,11 @@
-/* SECTION 2217-2370 */
+/* SECTION 2210-2374 */
+
+/* Active In-Game Bonuses Tracker card */
+.bonuses-card {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(6, 7, 9, 0) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 16px;
+  padding: 16px;
   margin-bottom: 16px;
   display: flex;
   flex-direction: column;
@@ -153,3 +160,7 @@
 }
 
 .gps-sync-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

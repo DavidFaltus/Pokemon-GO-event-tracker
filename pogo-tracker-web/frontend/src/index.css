@@ -1,5 +1,3 @@
-/* Global base styles, theme variables, reset and main layouts */
-
 /* GLOBAL SECTION 1-348 */
 html {
   font-size: 17px;
@@ -349,8 +347,8 @@ body {
 }
 
 
+/* GLOBAL SECTION 1124-1252 */
 
-/* GLOBAL SECTION 1125-1252 */
 .hub-rating-badge:hover {
   transform: scale(1.05);
 }
@@ -479,8 +477,14 @@ body {
   flex-direction: column;
   gap: 12px;
 }
+/* GLOBAL SECTION 1909-1972 */
 
-/* GLOBAL SECTION 1916-1972 */
+/* Pokémon GO Type Badges */
+.type-badges-flex {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  vertical-align: middle;
 }
 
 .type-badge {
@@ -538,8 +542,14 @@ body {
   margin-top: 8px;
 }
 
+/* GLOBAL SECTION 2728-2931 */
 
-/* GLOBAL SECTION 2735-2926 */
+/* Custom Notes & Planner */
+.custom-event-planner-box {
+  background: rgba(6, 7, 9, 0.15);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 14px;
   margin-top: 12px;
 }
 
@@ -732,8 +742,12 @@ body {
   border: 1px solid rgba(255, 215, 0, 0.25);
   padding: 14px;
   border-radius: 12px;
-
-/* GLOBAL SECTION 3301-3307 */
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+/* GLOBAL SECTION 3301-3319 */
 
 /* Pokemon GO Official Event Link Button */
 .pogo-official-btn {
@@ -741,8 +755,26 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+/* GLOBAL SECTION 3329-3375 */
 
-/* GLOBAL SECTION 3336-3370 */
+/* Active timespan filters */
+.active-timespan-filters {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px 0 16px 0;
   padding: 0 4px;
 }
 
@@ -778,3 +810,8 @@ body {
   border: 1px solid var(--border-color);
   border-radius: 16px;
   overflow: hidden;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}

@@ -12,8 +12,8 @@ interface TimelineViewProps {
   timezone?: string;
 }
 
-// Localized Czech/English month names
-const MONTH_NAMES = {
+// Localized Czech/English/Japanese month names
+const MONTH_NAMES: { [key in Language]: string[] } = {
   cs: [
     'Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen',
     'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'
@@ -21,12 +21,17 @@ const MONTH_NAMES = {
   en: [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
+  ],
+  ja: [
+    '1月', '2月', '3月', '4月', '5月', '6月',
+    '7月', '8月', '9月', '10月', '11月', '12月'
   ]
 };
 
-const WEEKDAY_NAMES = {
+const WEEKDAY_NAMES: { [key in Language]: string[] } = {
   cs: ['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'],
-  en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  ja: ['日', '月', '火', '水', '木', '金', '土']
 };
 
 export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezone }) => {

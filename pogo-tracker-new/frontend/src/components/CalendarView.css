@@ -1,28 +1,4 @@
-/* SECTION 3816-4375 */
-  }
-
-  .bonuses-card.inline-bonuses .bonuses-close-btn {
-    display: none; /* Hide close button on sidebar */
-  }
-
-  .bonus-item-row {
-    line-height: 1.4;
-  }
-
-  /* Adjust Event Cards container layout on desktop */
-  .events-feed-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 20px;
-    align-items: start;
-    padding-bottom: 40px;
-  }
-
-  /* Make event cards stretch nicely */
-  .event-card {
-    margin-bottom: 0 !important;
-  }
-}
+/* SECTION 3840-4375 */
 
 /* ==========================================
    MONTHLY CALENDAR GRID & POPUP MODAL
@@ -558,3 +534,4 @@
   color: var(--text-primary);
   fill: rgba(255, 255, 255, 0.08);
 }
+

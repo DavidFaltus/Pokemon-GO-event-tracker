@@ -1,4 +1,12 @@
-/* SECTION 5295-5874 */
+/* SECTION 5287-5874 */
+
+/* Admin Panel Styles */
+.admin-login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+  padding: 20px;
 }
 
 .admin-login-card {
@@ -573,3 +581,9 @@
     flex-direction: column-reverse;
   }
 }
+
+
+
+
+
+

@@ -286,8 +286,14 @@
   transition: transform 0.15s ease;
 }
 
+/* SECTION 2025-2221 */
 
-/* SECTION 2032-2216 */
+/* Rocket Tab Mode Switcher and Grunts Guide Styling */
+.mode-switcher {
+  display: flex;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
   padding: 4px;
   gap: 4px;
 }
@@ -473,3 +479,8 @@
   border: 1px solid rgba(16, 185, 129, 0.25);
   border-radius: 16px;
   padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

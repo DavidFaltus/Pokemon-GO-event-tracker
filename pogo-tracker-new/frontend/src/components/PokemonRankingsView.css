@@ -1,4 +1,5 @@
-/* SECTION 4683-5294 */
+/* SECTION 4682-5295 */
+
 /* Pokemon Rankings View Styles */
 .pokemon-rankings-container {
   display: flex;
@@ -611,3 +612,4 @@ subtle-glow {
   align-items: center;
   min-height: 70vh;
   padding: 20px;
+}

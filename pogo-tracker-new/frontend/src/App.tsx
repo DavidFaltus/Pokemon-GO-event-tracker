@@ -14,7 +14,7 @@ import { AdContainer } from './components/AdContainer';
 import { DittoEggsView } from './components/DittoEggsView';
 import { PokemonRankingsView } from './components/PokemonRankingsView';
 import { AdminPanelView } from './components/AdminPanelView';
-import { Calendar, Swords, Shield, Settings, Play, Clock, Wifi, Database, Egg, Sparkles, Trophy } from 'lucide-react';
+import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy } from 'lucide-react';
 
 const PokeballLogo = ({ size = 24 }: { size?: number }) => {
   const uid = 'pbl';
@@ -265,7 +265,7 @@ function App() {
   }, [viewMode]);
 
   const [loading, setLoading] = useState<boolean>(true);
-  const [apiStatus, setApiStatus] = useState<'success' | 'fallback'>('fallback');
+  const [_apiStatus, setApiStatus] = useState<'success' | 'fallback'>('fallback');
   const [scraperStatus, setScraperStatus] = useState<{
     lastScrapedAt: string | null;
     nextScrapeAt: string | null;
@@ -647,11 +647,6 @@ function App() {
 
     return list;
   };
-
-  const activeEventsCount = getAdjustedEvents().filter(e => {
-    const now = new Date();
-    return now >= new Date(e.start) && now <= new Date(e.end) && isEventVisible(e.eventType);
-  }).length;
 
   return (
     <div className="web-app-layout">

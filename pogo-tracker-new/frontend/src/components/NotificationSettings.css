@@ -240,8 +240,8 @@
   border-top: 1px solid var(--border-color);
   padding-top: 12px;
 }
+/* SECTION 1972-1998 */
 
-/* SECTION 1973-1997 */
 .language-select {
   width: 100%;
   background-color: var(--bg-dark);
@@ -267,8 +267,10 @@
   flex-direction: column;
   gap: 8px;
   margin-top: 12px;
+}
+/* SECTION 2369-2440 */
 
-/* SECTION 2371-2438 */
+.gps-sync-box {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -337,3 +339,5 @@
   border: 1px solid rgba(170, 59, 255, 0.2);
   border-radius: 12px;
   padding: 14px;
+  margin-top: 12px;
+}
