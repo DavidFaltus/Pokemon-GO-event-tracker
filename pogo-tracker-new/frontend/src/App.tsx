@@ -288,7 +288,12 @@ const detectUserLanguage = (): Language => {
 };
 
 function App() {
-  const [activeTab, setActiveTab] = useState<TabType>('events');
+  const [activeTab, setActiveTab] = useState<TabType>(() => {
+    // Detect /admin URL path on initial load
+    const pathname = window.location.pathname.toLowerCase();
+    if (pathname === '/admin' || pathname.startsWith('/admin/')) return 'admin';
+    return 'events';
+  });
   const showAds = activeTab !== 'settings' && activeTab !== 'admin';
 
   // Reactively track tab changes in Google Analytics
@@ -342,26 +347,66 @@ function App() {
                         window.location.protocol === 'file:';
     if (isCapacitor) return;
 
+    // Don't modify URL when on /admin route
+    const currentPath = window.location.pathname.toLowerCase();
+    if (currentPath === '/admin' || currentPath.startsWith('/admin/')) return;
+
     const expectedPath = getPathForLang(lang);
     if (window.location.pathname !== expectedPath) {
       window.history.replaceState(null, '', expectedPath + window.location.search + window.location.hash);
     }
   }, [lang]);
 
+  // Keep /admin URL in sync when user opens admin tab directly
+  useEffect(() => {
+    const isCapacitor = !!(window as any).Capacitor || 
+                        window.location.protocol === 'capacitor:' || 
+                        window.location.protocol === 'file:';
+    if (isCapacitor) return;
+
+    if (activeTab === 'admin') {
+      if (!window.location.pathname.toLowerCase().startsWith('/admin')) {
+        window.history.pushState(null, '', '/admin' + window.location.search);
+      }
+    } else {
+      const currentPath = window.location.pathname.toLowerCase();
+      if (currentPath === '/admin' || currentPath.startsWith('/admin/')) {
+        window.history.pushState(null, '', getPathForLang(lang) + window.location.search);
+      }
+    }
+  }, [activeTab, lang]);
+
   // Naslouchání na tlačítka zpět/vpřed v prohlížeči (popstate)
   useEffect(() => {
     const handlePopState = () => {
+      const pathname = window.location.pathname.toLowerCase();
+      if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+        setActiveTab('admin');
+        return;
+      }
       const urlLang = getLangFromPath(window.location.pathname);
       if (urlLang && urlLang !== lang) {
         setLang(urlLang);
         localStorage.setItem('pogo_tracker_lang', urlLang);
       }
+      // Navigate back to events if leaving admin
+      setActiveTab(prev => prev === 'admin' ? 'events' : prev);
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, [lang]);
   
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('pogo_tracker_theme');
+    return (saved === 'light' || saved === 'dark') ? saved : 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('pogo_tracker_theme', theme);
+  }, [theme]);
+
   const [timezone, setTimezone] = useState<string>(() => {
     return localStorage.getItem('pogo_tracker_timezone') || Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Prague';
   });
@@ -448,7 +493,7 @@ function App() {
   }, [visibleEvents, filterType]);
   
   const notificationsHook = useNotifications();
-  const { triggerNotification } = notificationsHook;
+  const { triggerNotification, notifyNewEvents } = notificationsHook;
 
   // Poll scraper status every 5 minutes to show last update time
   useEffect(() => {
@@ -529,7 +574,7 @@ function App() {
           }
         }
 
-        // First time initializing seen list: store all current event IDs to avoid spamming
+        // First launch: store all current IDs as seen to avoid spamming
         if (seenEventIds.length === 0) {
           const initialIds = freshEvents.map(e => e.eventID);
           localStorage.setItem('pogo_tracker_seen_event_ids', JSON.stringify(initialIds));
@@ -543,35 +588,12 @@ function App() {
           return isNotSeen && isNotExpired;
         });
 
+        // Fire batched notification via the hook (handles native + in-app)
         if (newEvents.length > 0) {
-          newEvents.forEach(event => {
-            const title = lang === 'cs'
-              ? `Nový event přidán: ${event.name}`
-              : lang === 'ja'
-              ? `新しいイベントが追加されました: ${event.name}`
-              : `New event added: ${event.name}`;
-            
-            const startDateStr = new Date(event.start).toLocaleDateString(
-              lang === 'cs' ? 'cs-CZ' : lang === 'ja' ? 'ja-JP' : 'en-US',
-              { day: 'numeric', month: 'long' }
-            );
-
-            const bodyText = lang === 'cs'
-              ? `Do kalendáře byl přidán nový event "${event.name}" (začíná ${startDateStr}).`
-              : lang === 'ja'
-              ? `カレンダーに新しいイベント「${event.name}」が追加されました（開始日: ${startDateStr}）。`
-              : `A new event "${event.name}" has been added to the calendar (starts on ${startDateStr}).`;
-
-            triggerNotification(
-              title,
-              bodyText,
-              event.eventType || 'major',
-              event.link
-            );
-          });
+          notifyNewEvents(newEvents, lang);
         }
 
-        // Always save the full list of fresh IDs to keep seen list fully in sync
+        // Update seen list to full fresh list
         const updatedIds = freshEvents.map(e => e.eventID);
         localStorage.setItem('pogo_tracker_seen_event_ids', JSON.stringify(updatedIds));
       };
@@ -1058,14 +1080,15 @@ function App() {
                       toggleVisibleEvent={toggleVisibleEvent}
                       viewMode={viewMode}
                       setViewMode={setViewMode}
-                      onOpenAdmin={() => setActiveTab('admin')}
+                      theme={theme}
+                      setTheme={setTheme}
                     />
                   </div>
                 )}
 
                 {activeTab === 'admin' && (
                   <div className="tab-content admin-tab">
-                    <AdminPanelView lang={lang} onBack={() => setActiveTab('settings')} />
+                    <AdminPanelView lang={lang} onBack={() => setActiveTab('events')} />
                   </div>
                 )}
               </>

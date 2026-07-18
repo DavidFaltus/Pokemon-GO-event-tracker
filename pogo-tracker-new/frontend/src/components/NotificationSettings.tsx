@@ -4,7 +4,7 @@ import { useNotifications } from '../hooks/useNotifications';
 import type { NotificationPreference } from '../hooks/useNotifications';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
-import { MapPin, CheckCircle, AlertTriangle, Bell, SlidersHorizontal, Eye, Scale, Lock, Globe, LayoutGrid } from 'lucide-react';
+import { MapPin, CheckCircle, AlertTriangle, Bell, SlidersHorizontal, Eye, Scale, Lock, Globe, LayoutGrid, Sun, Moon } from 'lucide-react';
 
 export interface VisibleEventsPreference {
   communityDays: boolean;
@@ -30,7 +30,8 @@ interface NotificationSettingsProps {
   toggleVisibleEvent: (key: keyof VisibleEventsPreference) => void;
   viewMode: 'list' | 'timeline';
   setViewMode: (mode: 'list' | 'timeline') => void;
-  onOpenAdmin?: () => void;
+  theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
 }
 
 export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
@@ -43,7 +44,8 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
   toggleVisibleEvent,
   viewMode,
   setViewMode,
-  onOpenAdmin,
+  theme,
+  setTheme,
 }) => {
   const isNative = typeof window !== 'undefined' && !!(window as any).Capacitor;
   const [gpsSyncing, setGpsSyncing] = React.useState(false);
@@ -135,6 +137,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
       case 'rocketTakeovers': return t.pref_rocket;
       case 'goBattleLeague': return t.pref_gbl;
       case 'maxMondays': return t.pref_max_mondays;
+      case 'newEvents': return (t as any).pref_new_events || 'New events';
     }
   };
 
@@ -162,247 +165,284 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
   return (
     <div className="notification-settings-panel">
-      {/* Language Picker */}
-      <div className="settings-card language-picker-card">
-        <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <span className="duotone-icon duotone-white"><Globe size={16} /></span>
-          {t.settings_language}
-        </h3>
-        <div className="language-selector-wrapper">
-          <select 
-            value={lang} 
-            onChange={(e) => setLang(e.target.value as Language)}
-            className="language-select"
-          >
-            <option value="cs">Čeština (Czech)</option>
-            <option value="en">English</option>
-            <option value="ja">日本語 (Japanese)</option>
-            <option value="ru">Русский (Russian)</option>
-          </select>
-        </div>
+      {/* Settings Header */}
+      <div className="settings-header">
+        <h2>
+          {lang === 'cs' ? 'Nastavení' : lang === 'ru' ? 'Настройки' : lang === 'ja' ? '設定' : 'Settings'}
+        </h2>
+        <p className="settings-subtitle">
+          {lang === 'cs'
+            ? 'Správa jazyka, rozvržení kalendáře, časových pásem a předvoleb notifikací.'
+            : lang === 'ru'
+            ? 'Управление языком, макетом календаря, часовыми поясами и настройками уведомлений.'
+            : lang === 'ja'
+            ? '言語、カレンダーレイアウト、タイムゾーン、および通知設定の管理。'
+            : 'Manage language, calendar layout, timezones, and notification preferences.'}
+        </p>
       </div>
 
-      {/* Event Layout Selector */}
-      <div className="settings-card layout-picker-card">
-        <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <span className="duotone-icon duotone-white"><LayoutGrid size={16} /></span>
-          {t.settings_layout_title}
-        </h3>
-        <div className="checkbox-list">
-          <label className="checkbox-item">
-            <input
-              type="radio"
-              name="layoutView"
-              checked={viewMode === 'list'}
-              onChange={() => setViewMode('list')}
-            />
-            <span className="checkbox-custom" style={{ borderRadius: '50%' }}></span>
-            <span className="checkbox-label">{t.settings_layout_list}</span>
-          </label>
-          <label className="checkbox-item">
-            <input
-              type="radio"
-              name="layoutView"
-              checked={viewMode === 'timeline'}
-              onChange={() => setViewMode('timeline')}
-            />
-            <span className="checkbox-custom" style={{ borderRadius: '50%' }}></span>
-            <span className="checkbox-label">{t.settings_layout_timeline}</span>
-          </label>
-        </div>
-      </div>
-
-      {/* GPS Timezone Synchronization */}
-      <div className="settings-card gps-sync-card">
-        <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <span className="duotone-icon duotone-white"><MapPin size={16} /></span>
-          {t.gps_title}
-        </h3>
-        <div className="gps-sync-box">
-          <div className="timezone-display">
-            <span className="tz-label">{t.gps_current_tz}</span>
-            <code className="tz-code">{timezone}</code>
+      <div className="settings-grid">
+        {/* Column 1: General Settings */}
+        <div className="settings-column">
+          <div className="settings-group-title">
+            {lang === 'cs' ? 'Obecné' : lang === 'ru' ? 'Общие' : lang === 'ja' ? '一般' : 'General'}
           </div>
-          
-          <button 
-            className="primary-btn gps-btn" 
-            onClick={syncTimezoneWithGps}
-            disabled={gpsSyncing}
-          >
-            {gpsSyncing ? t.gps_syncing : t.gps_sync_btn}
-          </button>
-          
-          {syncStatus && (
-            <div className={`sync-status-msg ${syncStatus.type}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              {syncStatus.type === 'success' ? <CheckCircle size={14} style={{ color: '#34d399' }} /> : <AlertTriangle size={14} style={{ color: '#f87171' }} />}
-              <span>{syncStatus.text}</span>
+
+          {/* Language Picker */}
+          <div className="settings-card language-picker-card">
+            <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+              <span className="duotone-icon duotone-white"><Globe size={16} /></span>
+              {t.settings_language}
+            </h3>
+            <div className="language-selector-wrapper">
+              <select 
+                value={lang} 
+                onChange={(e) => setLang(e.target.value as Language)}
+                className="language-select"
+              >
+                <option value="cs">Čeština (Czech)</option>
+                <option value="en">English</option>
+                <option value="ja">日本語 (Japanese)</option>
+                <option value="ru">Русский (Russian)</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Theme Selector */}
+          <div className="settings-card theme-picker-card">
+            <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+              <span className="duotone-icon duotone-white">
+                {theme === 'light' ? <Sun size={16} /> : <Moon size={16} />}
+              </span>
+              {(t as any).settings_theme_title || 'Theme Mode'}
+            </h3>
+            <div className="checkbox-list">
+              <label className="checkbox-item">
+                <input
+                  type="radio"
+                  name="themeMode"
+                  checked={theme === 'light'}
+                  onChange={() => setTheme('light')}
+                />
+                <span className="checkbox-custom" style={{ borderRadius: '50%' }}></span>
+                <span className="checkbox-label">{(t as any).settings_theme_light || 'Light'}</span>
+              </label>
+              <label className="checkbox-item">
+                <input
+                  type="radio"
+                  name="themeMode"
+                  checked={theme === 'dark'}
+                  onChange={() => setTheme('dark')}
+                />
+                <span className="checkbox-custom" style={{ borderRadius: '50%' }}></span>
+                <span className="checkbox-label">{(t as any).settings_theme_dark || 'Dark'}</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Event Layout Selector */}
+          <div className="settings-card layout-picker-card">
+            <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+              <span className="duotone-icon duotone-white"><LayoutGrid size={16} /></span>
+              {t.settings_layout_title}
+            </h3>
+            <div className="checkbox-list">
+              <label className="checkbox-item">
+                <input
+                  type="radio"
+                  name="layoutView"
+                  checked={viewMode === 'list'}
+                  onChange={() => setViewMode('list')}
+                />
+                <span className="checkbox-custom" style={{ borderRadius: '50%' }}></span>
+                <span className="checkbox-label">{t.settings_layout_list}</span>
+              </label>
+              <label className="checkbox-item">
+                <input
+                  type="radio"
+                  name="layoutView"
+                  checked={viewMode === 'timeline'}
+                  onChange={() => setViewMode('timeline')}
+                />
+                <span className="checkbox-custom" style={{ borderRadius: '50%' }}></span>
+                <span className="checkbox-label">{t.settings_layout_timeline}</span>
+              </label>
+            </div>
+          </div>
+
+          {/* GPS Timezone Synchronization */}
+          <div className="settings-card gps-sync-card">
+            <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+              <span className="duotone-icon duotone-white"><MapPin size={16} /></span>
+              {t.gps_title}
+            </h3>
+            <div className="gps-sync-box">
+              <div className="timezone-display">
+                <span className="tz-label">{t.gps_current_tz}</span>
+                <code className="tz-code">{timezone}</code>
+              </div>
+              
+              <button 
+                className="primary-btn gps-btn" 
+                onClick={syncTimezoneWithGps}
+                disabled={gpsSyncing}
+              >
+                {gpsSyncing ? t.gps_syncing : t.gps_sync_btn}
+              </button>
+              
+              {syncStatus && (
+                <div className={`sync-status-msg ${syncStatus.type}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  {syncStatus.type === 'success' ? <CheckCircle size={14} style={{ color: '#34d399' }} /> : <AlertTriangle size={14} style={{ color: '#f87171' }} />}
+                  <span>{syncStatus.text}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Column 2: Notifications */}
+        <div className="settings-column">
+          <div className="settings-group-title">
+            {lang === 'cs' ? 'Notifikace' : lang === 'ru' ? 'Уведомления' : lang === 'ja' ? '通知' : 'Notifications'}
+          </div>
+
+          {/* Native Browser Notification Request */}
+          {isNative && (
+            <div className="settings-card permission-card">
+              <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <span className="duotone-icon duotone-white"><Bell size={16} /></span>
+                {t.settings_push_title}
+              </h3>
+              <div className="permission-status-box">
+                <div className="status-indicator">
+                  {t.settings_status} <span className={`status-badge ${permission}`}>{getStatusLabel(permission)}</span>
+                </div>
+                {!isEnabled && (
+                  <button className="primary-btn" onClick={requestPermission}>
+                    {t.settings_enable_btn}
+                  </button>
+                )}
+                {isEnabled && (
+                  <button className="secondary-btn" onClick={testNotification}>
+                    {t.settings_test_btn}
+                  </button>
+                )}
+              </div>
+              <p className="help-text">{t.settings_help}</p>
             </div>
           )}
-        </div>
-      </div>
 
-      {/* Native Browser Notification Request */}
-      {isNative && (
-        <div className="settings-card permission-card">
-          <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
-            <span className="duotone-icon duotone-white"><Bell size={16} /></span>
-            {t.settings_push_title}
-          </h3>
-          <div className="permission-status-box">
-            <div className="status-indicator">
-              {t.settings_status} <span className={`status-badge ${permission}`}>{getStatusLabel(permission)}</span>
+          {/* Preferences Toggles */}
+          {isNative && (
+            <div className="settings-card preferences-card">
+              <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <span className="duotone-icon duotone-white"><SlidersHorizontal size={16} /></span>
+                {t.settings_filter_title}
+              </h3>
+              <div className="checkbox-list">
+                {(Object.keys(preferences) as Array<keyof NotificationPreference>).map(key => (
+                  <label key={key} className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={preferences[key]}
+                      onChange={() => togglePreference(key)}
+                    />
+                    <span className="checkbox-custom"></span>
+                    <span className="checkbox-label">{getPrefLabel(key)}</span>
+                  </label>
+                ))}
+              </div>
             </div>
-            {!isEnabled && (
-              <button className="primary-btn" onClick={requestPermission}>
-                {t.settings_enable_btn}
-              </button>
-            )}
-            {isEnabled && (
-              <button className="secondary-btn" onClick={testNotification}>
-                {t.settings_test_btn}
-              </button>
-            )}
-          </div>
-          <p className="help-text">{t.settings_help}</p>
-        </div>
-      )}
+          )}
 
-      {/* Preferences Toggles */}
-      {isNative && (
-        <div className="settings-card preferences-card">
-          <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
-            <span className="duotone-icon duotone-white"><SlidersHorizontal size={16} /></span>
-            {t.settings_filter_title}
-          </h3>
-          <div className="checkbox-list">
-            {(Object.keys(preferences) as Array<keyof NotificationPreference>).map(key => (
-              <label key={key} className="checkbox-item">
-                <input
-                  type="checkbox"
-                  checked={preferences[key]}
-                  onChange={() => togglePreference(key)}
-                />
-                <span className="checkbox-custom"></span>
-                <span className="checkbox-label">{getPrefLabel(key)}</span>
-              </label>
-            ))}
+          {/* Event Visibility Toggles */}
+          <div className="settings-card preferences-card">
+            <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+              <span className="duotone-icon duotone-white"><Eye size={16} /></span>
+              {t.settings_visibility_title}
+            </h3>
+            <div className="checkbox-list">
+              {(Object.keys(visibleEvents) as Array<keyof VisibleEventsPreference>).map(key => (
+                <label key={key} className="checkbox-item">
+                  <input
+                    type="checkbox"
+                    checked={visibleEvents[key]}
+                    onChange={() => toggleVisibleEvent(key)}
+                  />
+                  <span className="checkbox-custom"></span>
+                  <span className="checkbox-label">{getVisibleEventLabel(key)}</span>
+                </label>
+              ))}
+            </div>
           </div>
         </div>
-      )}
 
-      {/* Event Visibility Toggles */}
-      <div className="settings-card preferences-card">
-        <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <span className="duotone-icon duotone-white"><Eye size={16} /></span>
-          {t.settings_visibility_title}
-        </h3>
-        <div className="checkbox-list">
-          {(Object.keys(visibleEvents) as Array<keyof VisibleEventsPreference>).map(key => (
-            <label key={key} className="checkbox-item">
-              <input
-                type="checkbox"
-                checked={visibleEvents[key]}
-                onChange={() => toggleVisibleEvent(key)}
-              />
-              <span className="checkbox-custom"></span>
-              <span className="checkbox-label">{getVisibleEventLabel(key)}</span>
-            </label>
-          ))}
+        {/* Row 3: Legal & Attribution (span columns) */}
+        <div className="settings-column full-width-column">
+          <div className="settings-group-title">
+            {lang === 'cs' ? 'Právní informace' : lang === 'ru' ? 'Правовая информация' : lang === 'ja' ? '法的情報' : 'Legal & Privacy'}
+          </div>
+
+          <div className="legal-row">
+            {/* Legal & Attribution Card */}
+            <div className="settings-card legal-card" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <span className="duotone-icon duotone-white"><Scale size={16} /></span>
+                {t.legal_disclaimer_title}
+              </h3>
+              <p className="help-text" style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+                {t.legal_disclaimer_text}
+              </p>
+              <p className="help-text" style={{ margin: '8px 0 0 0', fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
+                {t.legal_powered_by}{' '}
+                <a 
+                  href="https://leekduck.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ color: 'var(--accent-color)', fontWeight: 'bold', textDecoration: 'none' }}
+                >
+                  Leek Duck
+                </a>.
+              </p>
+            </div>
+
+            {/* Privacy Policy Link Card */}
+            <div className="settings-card privacy-card" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <span className="duotone-icon duotone-white"><Lock size={16} /></span>
+                {lang === 'cs' ? 'Ochrana soukromí' : lang === 'ru' ? 'Политика конфиденциальности' : 'Privacy Policy'}
+              </h3>
+              <p className="help-text" style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                {lang === 'cs' 
+                  ? 'Naše zásady ochrany osobních údajů v souladu s nařízením GDPR a pravidly Google AdSense.' 
+                  : lang === 'ru'
+                    ? 'Наша политика конфиденциальности соответствует требованиям GDPR и правилам Google AdSense.'
+                    : 'Our privacy policy complies with GDPR regulations and Google AdSense guidelines.'
+                }
+              </p>
+              <a 
+                href="/privacy-policy.html" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="secondary-btn"
+                style={{ 
+                  display: 'inline-flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center',
+                  textDecoration: 'none', 
+                  marginTop: 'auto',
+                  textAlign: 'center',
+                  fontSize: '0.8rem',
+                  padding: '8px 16px',
+                  borderRadius: '8px'
+                }}
+              >
+                {lang === 'cs' ? 'Zobrazit Zásady ochrany osobních údajů' : lang === 'ru' ? 'Просмотреть политику конфиденциальности' : 'View Privacy Policy'}
+              </a>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* Legal & Attribution Card */}
-      <div className="settings-card legal-card" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <span className="duotone-icon duotone-white"><Scale size={16} /></span>
-          {t.legal_disclaimer_title}
-        </h3>
-        <p className="help-text" style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-          {t.legal_disclaimer_text}
-        </p>
-        <p className="help-text" style={{ margin: '8px 0 0 0', fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-          {t.legal_powered_by}{' '}
-          <a 
-            href="https://leekduck.com" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            style={{ color: 'var(--accent-color)', fontWeight: 'bold', textDecoration: 'none' }}
-          >
-            Leek Duck
-          </a>.
-        </p>
-      </div>
-
-      {/* Privacy Policy Link Card */}
-      <div className="settings-card privacy-card" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
-          <span className="duotone-icon duotone-white"><Lock size={16} /></span>
-          {lang === 'cs' ? 'Ochrana soukromí' : lang === 'ru' ? 'Политика конфиденциальности' : 'Privacy Policy'}
-        </h3>
-        <p className="help-text" style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-          {lang === 'cs' 
-            ? 'Naše zásady ochrany osobních údajů v souladu s nařízením GDPR a pravidly Google AdSense.' 
-            : lang === 'ru'
-              ? 'Наша политика конфиденциальности соответствует требованиям GDPR и правилам Google AdSense.'
-              : 'Our privacy policy complies with GDPR regulations and Google AdSense guidelines.'
-          }
-        </p>
-        <a 
-          href="/privacy-policy.html" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="secondary-btn"
-          style={{ 
-            display: 'inline-flex', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            textDecoration: 'none', 
-            marginTop: '8px',
-            textAlign: 'center',
-            fontSize: '0.8rem',
-            padding: '8px 16px',
-            borderRadius: '8px'
-          }}
-        >
-          {lang === 'cs' ? 'Zobrazit Zásady ochrany osobních údajů' : lang === 'ru' ? 'Просмотреть политику конфиденциальности' : 'View Privacy Policy'}
-        </a>
-      </div>
-
-      {/* Admin Panel Access Card */}
-      {onOpenAdmin && (
-        <div className="settings-card admin-access-card" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
-            <span className="duotone-icon duotone-white"><Lock size={16} /></span>
-            {lang === 'cs' ? 'Administrace systému' : lang === 'ru' ? 'Системное администрирование' : 'System Administration'}
-          </h3>
-          <p className="help-text" style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            {lang === 'cs'
-              ? 'Administrační panel pro správce k ruční úpravě a přidávání herních událostí.'
-              : lang === 'ru'
-                ? 'Панель администрирования для управляющих, позволяющая вручную редактировать и добавлять игровые события.'
-                : 'Administration panel for managers to manually edit and add game events.'
-            }
-          </p>
-          <button
-            onClick={onOpenAdmin}
-            className="secondary-btn"
-            style={{ 
-              marginTop: '8px', 
-              display: 'inline-flex', 
-              justifyContent: 'center', 
-              alignItems: 'center', 
-              gap: '8px',
-              cursor: 'pointer',
-              fontSize: '0.8rem',
-              padding: '8px 16px',
-              borderRadius: '8px'
-            }}
-          >
-            <Lock size={14} />
-            {lang === 'cs' ? 'Vstoupit do administrace' : lang === 'ru' ? 'Войти в администрацию' : 'Enter Administration'}
-          </button>
-        </div>
-      )}
     </div>
   );
 };

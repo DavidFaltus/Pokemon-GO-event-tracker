@@ -1,6 +1,9 @@
 /* GLOBAL SECTION 1-348 */
 html {
   font-size: 17px;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 @media (min-width: 768px) {
@@ -10,14 +13,16 @@ html {
 }
 
 :root {
-  /* Color Palette (Deep dark theme with vibrant accents) */
-  --bg-dark: #0f1015;
-  --bg-card: #171921;
-  --bg-card-hover: #1e212b;
-  --border-color: #242836;
-  --text-primary: #f3f4f6;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
+  /* Color Palette (Light Theme by Default) */
+  --bg-dark: #f3f4f6;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f9fafb;
+  --border-color: #e5e7eb;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --bg-body: #e5e7eb;
+  --bg-nav: rgba(255, 255, 255, 0.85);
 
   /* Accent Colors */
   --accent-color: #aa3bff;
@@ -31,16 +36,29 @@ html {
   --max-magenta: #db2777;
 
   /* Tier List Colors */
-  --tier-s: #facc15; /* Gold */
-  --tier-a: #c084fc; /* Purple */
-  --tier-b: #60a5fa; /* Blue */
-  --tier-c: #4ade80; /* Green */
-  --tier-none: #9ca3af; /* Gray */
+  --tier-s: #facc15;
+  --tier-a: #c084fc;
+  --tier-b: #60a5fa;
+  --tier-c: #4ade80;
+  --tier-none: #9ca3af;
 
   /* Spacing & Layout */
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
   --font-sans: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Dark Theme Overrides */
+[data-theme="dark"] {
+  --bg-dark: #0f1015;
+  --bg-card: #171921;
+  --bg-card-hover: #1e212b;
+  --border-color: #242836;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --bg-body: #060709;
+  --bg-nav: rgba(23, 25, 33, 0.85);
 }
 
 * {
@@ -51,11 +69,13 @@ html {
 }
 
 body {
-  background-color: #060709;
+  background-color: var(--bg-body);
   font-family: var(--font-sans);
   color: var(--text-primary);
   line-height: 1.5;
   overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
 }
 
 /* Centered Mobile Layout for Desktop, Fullscreen on Mobile */
@@ -66,7 +86,10 @@ body {
   min-height: 100vh;
   padding: 0;
   border: none;
-  background-color: #060709;
+  background-color: var(--bg-body);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .app-container {
@@ -97,7 +120,7 @@ body {
 
 /* Header */
 .app-header {
-  background-color: rgba(23, 25, 33, 0.85);
+  background-color: var(--bg-nav);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   padding: calc(16px + var(--safe-top, 0px)) 20px 16px 20px;
@@ -187,12 +210,14 @@ body {
 
 /* Bottom Navigation Bar */
 .bottom-nav {
-  position: absolute;
+  position: fixed;
   bottom: 0;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 100%;
+  max-width: inherit;
   height: calc(64px + var(--safe-bottom));
-  background-color: rgba(23, 25, 33, 0.9);
+  background-color: var(--bg-nav);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-top: 1px solid var(--border-color);
@@ -840,8 +865,5 @@ body {
   color: var(--text-primary);
   margin-bottom: 10px;
   padding: 0 4px;
-  background: linear-gradient(135deg, var(--text-primary) 30%, var(--text-secondary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   letter-spacing: -0.02em;
 }

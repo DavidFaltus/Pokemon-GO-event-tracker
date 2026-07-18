@@ -33,9 +33,7 @@
 .calendar-title-nav h2 {
   font-size: 1.35rem;
   font-weight: 850;
-  background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--text-primary);
 }
 
 .calendar-nav-btn {

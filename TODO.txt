@@ -1,9 +1,5 @@
-0: Přidání ruštiny jako dalšího jazyku
-1: [x] nastavení nativního jazyka podle lokace uživatele Japonsko, Češká republika(Slovensko taky) a zbytek světa je Angličtina. případně upravit url /us,/jp,/cs a tak dále
-2: [x] Přidání krátkých popisných textů ke každé sekci k zlepšení SEO
-
 Big update: 
-1: Lepší přístup k administrátorovy než přes normální stránku, více možností přidávání a modifikací eventů včetně ikon pro pokemony 
+1: Lepší přístup k administrátorovy než přes normální stránku (pomocí /admin), více možností přidávání a modifikací eventů včetně ikon pro pokemony, nejlépe i textové soubory s kompletním scrapem.
 2: Countery na jednotlivé pokemony v sekci Ranking včetně optimálních movesetů proti konkrétnímu pokemonovy
 3: ??? Implementace campfire srazů k jednotlivým eventům, seznam všech dostupných srazů v určitém okruhu.
 4: Sběr informací ohledně rankingu z https://www.dialgadex.com případně napodobit totožný výpočet

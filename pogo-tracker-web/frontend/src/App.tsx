@@ -288,7 +288,12 @@ const detectUserLanguage = (): Language => {
 };
 
 function App() {
-  const [activeTab, setActiveTab] = useState<TabType>('events');
+  const [activeTab, setActiveTab] = useState<TabType>(() => {
+    // Detect /admin URL path on initial load
+    const pathname = window.location.pathname.toLowerCase();
+    if (pathname === '/admin' || pathname.startsWith('/admin/')) return 'admin';
+    return 'events';
+  });
   const showAds = activeTab !== 'settings' && activeTab !== 'admin';
 
   // Reactively track tab changes in Google Analytics
@@ -342,26 +347,66 @@ function App() {
                         window.location.protocol === 'file:';
     if (isCapacitor) return;
 
+    // Don't modify URL when on /admin route
+    const currentPath = window.location.pathname.toLowerCase();
+    if (currentPath === '/admin' || currentPath.startsWith('/admin/')) return;
+
     const expectedPath = getPathForLang(lang);
     if (window.location.pathname !== expectedPath) {
       window.history.replaceState(null, '', expectedPath + window.location.search + window.location.hash);
     }
   }, [lang]);
 
+  // Keep /admin URL in sync when user opens admin tab directly
+  useEffect(() => {
+    const isCapacitor = !!(window as any).Capacitor || 
+                        window.location.protocol === 'capacitor:' || 
+                        window.location.protocol === 'file:';
+    if (isCapacitor) return;
+
+    if (activeTab === 'admin') {
+      if (!window.location.pathname.toLowerCase().startsWith('/admin')) {
+        window.history.pushState(null, '', '/admin' + window.location.search);
+      }
+    } else {
+      const currentPath = window.location.pathname.toLowerCase();
+      if (currentPath === '/admin' || currentPath.startsWith('/admin/')) {
+        window.history.pushState(null, '', getPathForLang(lang) + window.location.search);
+      }
+    }
+  }, [activeTab, lang]);
+
   // Naslouchání na tlačítka zpět/vpřed v prohlížeči (popstate)
   useEffect(() => {
     const handlePopState = () => {
+      const pathname = window.location.pathname.toLowerCase();
+      if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+        setActiveTab('admin');
+        return;
+      }
       const urlLang = getLangFromPath(window.location.pathname);
       if (urlLang && urlLang !== lang) {
         setLang(urlLang);
         localStorage.setItem('pogo_tracker_lang', urlLang);
       }
+      // Navigate back to events if leaving admin
+      setActiveTab(prev => prev === 'admin' ? 'events' : prev);
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, [lang]);
   
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('pogo_tracker_theme');
+    return (saved === 'light' || saved === 'dark') ? saved : 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('pogo_tracker_theme', theme);
+  }, [theme]);
+
   const [timezone, setTimezone] = useState<string>(() => {
     return localStorage.getItem('pogo_tracker_timezone') || Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Prague';
   });
@@ -448,7 +493,7 @@ function App() {
   }, [visibleEvents, filterType]);
   
   const notificationsHook = useNotifications();
-  const { triggerNotification } = notificationsHook;
+  const { triggerNotification, notifyNewEvents } = notificationsHook;
 
   // Poll scraper status every 5 minutes to show last update time
   useEffect(() => {
@@ -529,7 +574,7 @@ function App() {
           }
         }
 
-        // First time initializing seen list: store all current event IDs to avoid spamming
+        // First launch: store all current IDs as seen to avoid spamming
         if (seenEventIds.length === 0) {
           const initialIds = freshEvents.map(e => e.eventID);
           localStorage.setItem('pogo_tracker_seen_event_ids', JSON.stringify(initialIds));
@@ -543,39 +588,12 @@ function App() {
           return isNotSeen && isNotExpired;
         });
 
+        // Fire batched notification via the hook (handles native + in-app)
         if (newEvents.length > 0) {
-          newEvents.forEach(event => {
-            const title = lang === 'cs'
-              ? `Nový event přidán: ${event.name}`
-              : lang === 'ja'
-              ? `新しいイベントが追加されました: ${event.name}`
-              : lang === 'ru'
-              ? `Добавлено новое событие: ${event.name}`
-              : `New event added: ${event.name}`;
-            
-            const startDateStr = new Date(event.start).toLocaleDateString(
-              lang === 'cs' ? 'cs-CZ' : lang === 'ja' ? 'ja-JP' : lang === 'ru' ? 'ru-RU' : 'en-US',
-              { day: 'numeric', month: 'long' }
-            );
-
-            const bodyText = lang === 'cs'
-              ? `Do kalendáře byl přidán nový event "${event.name}" (začíná ${startDateStr}).`
-              : lang === 'ja'
-              ? `カレンダーに新しいイベント「${event.name}」が追加されました（開始日: ${startDateStr}）。`
-              : lang === 'ru'
-              ? `В календарь добавлено новое событие «${event.name}» (начало ${startDateStr}).`
-              : `A new event "${event.name}" has been added to the calendar (starts on ${startDateStr}).`;
-
-            triggerNotification(
-              title,
-              bodyText,
-              event.eventType || 'major',
-              event.link
-            );
-          });
+          notifyNewEvents(newEvents, lang);
         }
 
-        // Always save the full list of fresh IDs to keep seen list fully in sync
+        // Update seen list to full fresh list
         const updatedIds = freshEvents.map(e => e.eventID);
         localStorage.setItem('pogo_tracker_seen_event_ids', JSON.stringify(updatedIds));
       };
@@ -670,33 +688,25 @@ function App() {
           if (timeSinceStartMs < oneDayMs) {
             let bodyText = lang === 'cs'
               ? `Event ${event.name} právě probíhá! Otevřete aplikaci pro zobrazení meta doporučení.`
-              : lang === 'ru'
-              ? `Событие ${event.name} уже активно! Откройте приложение для просмотра деталей.`
               : `Event ${event.name} is now active! Open the app to check raid counters and details.`;
             
             // Customize body based on event type
             if (event.eventType === 'pokemon-spotlight-hour') {
               bodyText = lang === 'cs'
                 ? `Spotlight Hour pro ${event.name} právě běží! Rychle chytat!`
-                : lang === 'ru'
-                ? `Spotlight Hour для ${event.name} идёт! Ловите скорее!`
                 : `Spotlight Hour for ${event.name} is running! Go catch 'em!`;
             } else if (event.eventType === 'raid-hour') {
               bodyText = lang === 'cs'
                 ? `Raid Hour právě začíná! Připravte si Remote Passy.`
-                : lang === 'ru'
-                ? `Raid Hour начался! Приготовьте Remote Pass.`
                 : `Raid Hour has started! Get your Remote Passes ready.`;
             } else if (event.eventType === 'community-day') {
               bodyText = lang === 'cs'
                 ? `${event.name} začíná! Získejte speciální evoluční útok!`
-                : lang === 'ru'
-                ? `${event.name} начинается! Эволюция открывает особый приём!`
                 : `${event.name} is starting! Evolve to get the special move!`;
             }
 
             triggerNotification(
-              lang === 'cs' ? `🔴 Začal event: ${event.name}` : lang === 'ru' ? `🔴 Активное событие: ${event.name}` : `🔴 Active Event: ${event.name}`,
+              lang === 'cs' ? `🔴 Začal event: ${event.name}` : `🔴 Active Event: ${event.name}`,
               bodyText,
               event.eventType,
               event.link
@@ -764,8 +774,8 @@ function App() {
           {scraperStatus.lastScrapedAt && (
             <span
               title={scraperStatus.isRunning
-                ? (lang === 'cs' ? 'Stahování dat...' : lang === 'ru' ? 'Загрузка данных...' : 'Fetching data...')
-                : (lang === 'cs' ? `Příští aktualizace: ${new Date(scraperStatus.nextScrapeAt || '').toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' })}` : lang === 'ru' ? `Следующее обновление: ${new Date(scraperStatus.nextScrapeAt || '').toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}` : `Next update: ${new Date(scraperStatus.nextScrapeAt || '').toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`)}
+                ? (lang === 'cs' ? 'Stahování dat...' : 'Fetching data...')
+                : (lang === 'cs' ? `Příští aktualizace: ${new Date(scraperStatus.nextScrapeAt || '').toLocaleTimeString(lang === 'cs' ? 'cs-CZ' : 'en-US', { hour: '2-digit', minute: '2-digit' })}` : `Next update: ${new Date(scraperStatus.nextScrapeAt || '').toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`)}
               style={{
                 fontSize: '10px',
                 color: 'var(--text-muted)',
@@ -782,14 +792,14 @@ function App() {
                     background: 'var(--accent-color)',
                     animation: 'pulse 1.5s ease-in-out infinite'
                   }} />
-                  {lang === 'cs' ? 'Aktualizuji...' : lang === 'ru' ? 'Обновляю...' : 'Updating...'}
+                  {lang === 'cs' ? 'Aktualizuji...' : 'Updating...'}
                 </span>
               ) : (
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                   <Clock size={10} />
-                  {lang === 'cs' ? 'Aktualizováno: ' : lang === 'ru' ? 'Обновлено: ' : 'Updated: '}
+                  {lang === 'cs' ? 'Aktualizováno: ' : 'Updated: '}
                   {new Date(scraperStatus.lastScrapedAt).toLocaleTimeString(
-                    lang === 'cs' ? 'cs-CZ' : lang === 'ru' ? 'ru-RU' : 'en-US',
+                    lang === 'cs' ? 'cs-CZ' : 'en-US',
                     { hour: '2-digit', minute: '2-digit' }
                   )}
                 </span>
@@ -878,13 +888,11 @@ function App() {
           <p style={{ fontSize: '10px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.4' }}>
             {lang === 'cs' 
               ? 'Tato aplikace je neoficiální fanouškovský projekt. Nemá žádné přidružení ke společnostmi Niantic, Nintendo nebo The Pokémon Company.' 
-              : lang === 'ru'
-              ? 'Это приложение является неофициальным фанатским проектом и не связано с Niantic, Nintendo или The Pokémon Company.'
               : 'This app is an unofficial fan project and has no affiliation with Niantic, Nintendo, or The Pokémon Company.'
             }
           </p>
           <p style={{ fontSize: '10px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.4' }}>
-            {lang === 'cs' ? 'Data událostí poskytuje ' : lang === 'ru' ? 'Данные о событиях от ' : 'Event data powered by '}{' '}
+            {lang === 'cs' ? 'Data událostí poskytuje ' : 'Event data powered by '}{' '}
             <a 
               href="https://leekduck.com" 
               target="_blank" 
@@ -911,7 +919,7 @@ function App() {
             onMouseOver={(e) => (e.currentTarget.style.color = 'var(--accent-color)')}
             onMouseOut={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
           >
-            {lang === 'cs' ? 'Ochrana soukromí & Právní info' : lang === 'ru' ? 'Конфиденциальность и правовая информация' : 'Privacy Policy & Disclaimer'}
+            {lang === 'cs' ? 'Ochrana soukromí & Právní info' : 'Privacy Policy & Disclaimer'}
           </a>
         </div>
       </aside>
@@ -936,13 +944,13 @@ function App() {
                       animation: 'pulse 1.5s ease-in-out infinite',
                       flexShrink: 0
                     }} />
-                    {lang === 'cs' ? 'Aktualizuji...' : lang === 'ru' ? 'Обновляю...' : 'Updating...'}
+                    {lang === 'cs' ? 'Aktualizuji...' : 'Updating...'}
                   </>
                 ) : (
                   <>
                     <Clock size={10} />
                     {new Date(scraperStatus.lastScrapedAt).toLocaleTimeString(
-                      lang === 'cs' ? 'cs-CZ' : lang === 'ru' ? 'ru-RU' : 'en-US',
+                      lang === 'cs' ? 'cs-CZ' : 'en-US',
                       { hour: '2-digit', minute: '2-digit' }
                     )}
                   </>
@@ -975,7 +983,7 @@ function App() {
                           style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                         >
                           <Play size={14} fill="currentColor" stroke="none" />
-                          {lang === 'cs' ? 'Probíhá' : lang === 'ru' ? 'Активные' : 'Active'}
+                          {lang === 'cs' ? 'Probíhá' : 'Active'}
                         </button>
                         <button 
                           className={`status-tab-btn ${statusFilter === 'upcoming' ? 'active' : ''}`}
@@ -983,7 +991,7 @@ function App() {
                           style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                         >
                           <Clock size={14} />
-                          {lang === 'cs' ? 'Připravuje se' : lang === 'ru' ? 'Скоро' : 'Upcoming'}
+                          {lang === 'cs' ? 'Připravuje se' : 'Upcoming'}
                         </button>
                       </div>
                     )}
@@ -1072,14 +1080,15 @@ function App() {
                       toggleVisibleEvent={toggleVisibleEvent}
                       viewMode={viewMode}
                       setViewMode={setViewMode}
-                      onOpenAdmin={() => setActiveTab('admin')}
+                      theme={theme}
+                      setTheme={setTheme}
                     />
                   </div>
                 )}
 
                 {activeTab === 'admin' && (
                   <div className="tab-content admin-tab">
-                    <AdminPanelView lang={lang} onBack={() => setActiveTab('settings')} />
+                    <AdminPanelView lang={lang} onBack={() => setActiveTab('events')} />
                   </div>
                 )}
               </>

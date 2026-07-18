@@ -397,6 +397,108 @@ app.get('/api/rocket', async (req, res) => {
 // Admin Panel Endpoints
 // ==========================================
 
+// Cache Stats (admin only)
+app.get('/api/admin/cache-stats', requireAuth, (req, res) => {
+  try {
+    const meta = loadScraperMeta();
+    const cacheFiles: string[] = [];
+    let totalSizeBytes = 0;
+    
+    if (fs.existsSync(CACHE_DIR)) {
+      const files = fs.readdirSync(CACHE_DIR);
+      files.forEach(f => {
+        const fp = path.join(CACHE_DIR, f);
+        const stat = fs.statSync(fp);
+        cacheFiles.push(f);
+        totalSizeBytes += stat.size;
+      });
+    }
+
+    res.json({
+      scraperMeta: meta,
+      isScraperRunning: scraperRunning,
+      cacheFileCount: cacheFiles.length,
+      cacheSizeKB: Math.round(totalSizeBytes / 1024),
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Clear cache for a specific event (admin only)
+app.delete('/api/admin/cache/:id', requireAuth, (req, res) => {
+  const eventId = req.params.id;
+  try {
+    deleteFromCache(`details_${eventId}`);
+    res.json({ success: true, message: `Cache cleared for ${eventId}` });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Bulk import scraped data from uploaded JSON (admin only)
+app.post('/api/admin/import', requireAuth, async (req, res) => {
+  const { events: importedEvents, mode } = req.body;
+  // mode: 'merge' (default) | 'replace'
+
+  if (!Array.isArray(importedEvents) || importedEvents.length === 0) {
+    return res.status(400).json({ error: 'No events provided in import payload' });
+  }
+
+  try {
+    const existingCustom = await loadCustomEvents();
+    const existingMap = new Map<string, any>(existingCustom.map(e => [e.eventID, e]));
+
+    let addedCount = 0;
+    let updatedCount = 0;
+    let skippedCount = 0;
+
+    for (const ev of importedEvents) {
+      if (!ev.eventID || !ev.name) {
+        skippedCount++;
+        continue;
+      }
+
+      const existing = existingMap.get(ev.eventID);
+      if (existing) {
+        // Merge: update only if mode is replace or event is custom
+        if (mode === 'replace' || existing.isCustom) {
+          existingMap.set(ev.eventID, { ...existing, ...ev });
+          updatedCount++;
+        } else {
+          skippedCount++;
+        }
+      } else {
+        existingMap.set(ev.eventID, {
+          ...ev,
+          isCustom: true,
+          isDeleted: false,
+        });
+        addedCount++;
+      }
+
+      // Also store detail cache if extraData present
+      if (ev.extraData) {
+        setToCache(`details_${ev.eventID}`, ev.extraData, 12 * 60 * 60 * 1000);
+      }
+    }
+
+    const mergedList = Array.from(existingMap.values());
+    await saveCustomEvents(mergedList);
+    deleteFromCache('events_list');
+
+    res.json({
+      success: true,
+      added: addedCount,
+      updated: updatedCount,
+      skipped: skippedCount,
+      total: mergedList.length,
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Login
 app.post('/api/admin/login', (req, res) => {
   const { password } = req.body;

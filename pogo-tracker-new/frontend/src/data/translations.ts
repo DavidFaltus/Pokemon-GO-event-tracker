@@ -149,9 +149,13 @@ export const translations = {
     pref_research_day: "Research Days",
     pref_showcase: "PokéStop Showcases",
     pref_max_mondays: "Max Mondays",
+    pref_new_events: "Nové události (při přidání do kalendáře)",
     settings_layout_title: "Zobrazení událostí",
     settings_layout_list: "Zobrazit jako seznam",
     settings_layout_timeline: "Zobrazit jako časovou osu",
+    settings_theme_title: "Režim vzhledu",
+    settings_theme_light: "Světlý (Bílý) – Nativní",
+    settings_theme_dark: "Tmavý (Původní)",
     details_pokemongo_link: "Oficiální event",
 
     // Loading
@@ -330,9 +334,13 @@ export const translations = {
     pref_research_day: "Research Days & Task Events",
     pref_showcase: "PokéStop Showcases",
     pref_max_mondays: "Max Mondays",
+    pref_new_events: "New events (when added to calendar)",
     settings_layout_title: "Event Layout View",
     settings_layout_list: "Show as List",
     settings_layout_timeline: "Show as Timeline",
+    settings_theme_title: "Theme Mode",
+    settings_theme_light: "Light (White) – Default",
+    settings_theme_dark: "Dark (Original)",
     details_pokemongo_link: "Official event",
 
     // Loading
@@ -512,9 +520,13 @@ export const translations = {
     pref_research_day: "リサーチデイ",
     pref_showcase: "ポケストップショーケース",
     pref_max_mondays: "マックスマンデー",
+    pref_new_events: "新規イベントの追加",
     settings_layout_title: "イベント表示方法",
     settings_layout_list: "リスト表示",
     settings_layout_timeline: "タイムライン表示",
+    settings_theme_title: "テーマモード",
+    settings_theme_light: "ライト（ホワイト）– デフォルト",
+    settings_theme_dark: "ダーク（オリジナル）",
     details_pokemongo_link: "公式イベント",
 
     // Loading
@@ -694,9 +706,13 @@ export const translations = {
     pref_research_day: "Дни исследований и задания",
     pref_showcase: "Витрины PokéStop",
     pref_max_mondays: "Max Mondays",
+    pref_new_events: "Новые события (при добавлении в календарь)",
     settings_layout_title: "Вид событий",
     settings_layout_list: "Показать списком",
     settings_layout_timeline: "Показать временной шкалой",
+    settings_theme_title: "Режим оформления",
+    settings_theme_light: "Светлый (Белый) – По умолчанию",
+    settings_theme_dark: "Темный (Оригинальный)",
     details_pokemongo_link: "Официальное событие",
 
     // Loading
