@@ -34,12 +34,13 @@ Aplikace musí bezchybně fungovat a skvěle vypadat na třech hlavních typech 
 
 ## 4. Vývoj webové a mobilní (Android/Capacitor) verze
 
-Projekt je rozdělen do dvou hlavních složek frontendu:
-1.  **Nový vývoj / Android aplikace (`pogo-tracker-new`):** Tato složka obsahuje integraci s frameworkem **Capacitor** pro sestavení nativní Android aplikace.
-2.  **Webová verze (`pogo-tracker-web`):** Samostatná verze optimalizovaná pro nasazení na webové servery / Firebase Hosting.
+Projekt je sloučen do jediné frontendové složky (`frontend`) spravující jak webovou verzi, tak mobilní aplikaci pro Android:
+1.  **Frontend (`frontend`):** Obsahuje sdílený React/Vite kód a konfiguraci Capacitor. Všechny změny se dělají pouze zde a okamžitě se projevují na obou platformách.
+2.  **Backend (`backend`):** Obsahuje API a scraper pro Cloud Run.
 
-### Pravidla synchronizace změn:
-*   **VŽDY propisujte změny do obou složek:** Jakákoli úprava komponenty, databáze nebo stylu provedená v `pogo-tracker-new/frontend/src/` must be identicky zanesena také do `pogo-tracker-web/frontend/src/`.
+### Způsob sestavení a nasazení:
+*   **Webová verze:** Build provádějte pomocí `npm run build` (který vytvoří kopii `dist/index.html` jako `dist/app.html` a zamezí přímému statickému načtení bota na Firebase CDN). Nasazení se provádí pomocí `firebase deploy`.
+*   **Mobilní aplikace (Android):** Synchronizaci s nativním projektem provádějte pomocí `npm run android:sync`. Následně sestavte aplikaci v Android Studiu ze složky `frontend/android/`.
 *   **Mobilní kompatibilita:** Při úpravách CSS/JS dbejte na to, aby kód fungoval v mobilním WebView (např. nepoužívejte nestandardní API prohlížeče bez fallbacku, dbejte na hardwarovou akceleraci animací a vyhněte se zbytečným re-renderům).
 
 ---
