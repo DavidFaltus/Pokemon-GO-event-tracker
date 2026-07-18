@@ -221,8 +221,9 @@ export const pokemonMetaDb: Record<string, PokemonMetaInfo> = {
 };
 
 export const raidCountersDb: Record<string, RaidCounters> = {
+  // Necrozma forms
   "necrozma": {
-    bossName: "Necrozma (Základní forma)",
+    bossName: "Necrozma",
     weaknesses: ["Ghost", "Dark", "Bug"],
     megaCounters: ["Mega Gengar", "Mega Tyranitar", "Mega Banette"],
     advancedCounters: ["Hydreigon (Brutal Swing)", "Darkrai (Dark Pulse)", "Giratina Origin (Shadow Ball)", "Gengar (Shadow Ball)"],
@@ -257,11 +258,196 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     maxBoostedCp: 2630,
     weatherBoosts: ["Větrno (Windy)", "Mlha (Fog)"]
   },
+  // Kanto Legendaries
+  "mewtwo": {
+    bossName: "Mewtwo",
+    weaknesses: ["Bug", "Ghost", "Dark"],
+    megaCounters: ["Mega Gengar", "Mega Tyranitar", "Mega Houndoom"],
+    advancedCounters: ["Hydreigon (Brutal Swing)", "Giratina Origin (Shadow Ball)", "Darkrai (Dark Pulse)", "Chandelure (Shadow Ball)"],
+    budgetCounters: ["Tyranitar (Crunch)", "Weavile (Foul Play)", "Gengar (Shadow Ball)", "Houndoom (Foul Play)"],
+    minCp: 2294,
+    maxCp: 2387,
+    minBoostedCp: 2868,
+    maxBoostedCp: 2984,
+    weatherBoosts: ["Větrno (Windy)"]
+  },
+  "articuno": {
+    bossName: "Articuno",
+    weaknesses: ["Rock (2x)", "Fire", "Electric", "Steel"],
+    megaCounters: ["Mega Diancie", "Mega Aerodactyl", "Mega Tyranitar"],
+    advancedCounters: ["Rhyperior (Rock Wrecker)", "Rampardos (Rock Slide)", "Terrakion (Rock Slide)", "Tyrantrum (Meteor Beam)"],
+    budgetCounters: ["Tyranitar (Stone Edge)", "Gigalith (Meteor Beam)", "Aerodactyl (Rock Slide)", "Aggron (Meteor Beam)"],
+    minCp: 1665,
+    maxCp: 1743,
+    minBoostedCp: 2081,
+    maxBoostedCp: 2179,
+    weatherBoosts: ["Sněžení (Snow)", "Větrno (Windy)"]
+  },
+  "zapdos": {
+    bossName: "Zapdos",
+    weaknesses: ["Ice", "Rock"],
+    megaCounters: ["Mega Diancie", "Mega Tyranitar", "Mega Glalie"],
+    advancedCounters: ["Rhyperior (Rock Wrecker)", "Rampardos (Rock Slide)", "Mamoswine (Avalanche)", "Terrakion (Rock Slide)"],
+    budgetCounters: ["Glaceon (Avalanche)", "Tyranitar (Stone Edge)", "Gigalith (Meteor Beam)", "Weavile (Avalanche)"],
+    minCp: 1930,
+    maxCp: 2015,
+    minBoostedCp: 2413,
+    maxBoostedCp: 2519,
+    weatherBoosts: ["Deštivo (Rainy)", "Větrno (Windy)"]
+  },
+  "moltres": {
+    bossName: "Moltres",
+    weaknesses: ["Rock (2x)", "Water", "Electric"],
+    megaCounters: ["Mega Diancie", "Mega Aerodactyl", "Mega Tyranitar"],
+    advancedCounters: ["Rhyperior (Rock Wrecker)", "Rampardos (Rock Slide)", "Terrakion (Rock Slide)", "Tyrantrum (Meteor Beam)"],
+    budgetCounters: ["Tyranitar (Stone Edge)", "Gigalith (Meteor Beam)", "Aerodactyl (Rock Slide)", "Omastar (Rock Slide)"],
+    minCp: 1896,
+    maxCp: 1980,
+    minBoostedCp: 2370,
+    maxBoostedCp: 2475,
+    weatherBoosts: ["Slunečno (Sunny)", "Větrno (Windy)"]
+  },
+  // Johto Legendaries
+  "lugia": {
+    bossName: "Lugia",
+    weaknesses: ["Rock", "Ice", "Ghost", "Electric", "Dark"],
+    megaCounters: ["Mega Tyranitar", "Mega Gengar", "Mega Manectric"],
+    advancedCounters: ["Xurkitree (Discharge)", "Zekrom (Fusion Bolt)", "Hydreigon (Brutal Swing)", "Gholdengo (Shadow Ball)"],
+    budgetCounters: ["Tyranitar (Crunch)", "Electivire (Wild Charge)", "Glaceon (Avalanche)", "Chandelure (Shadow Ball)"],
+    minCp: 2028,
+    maxCp: 2115,
+    minBoostedCp: 2535,
+    maxBoostedCp: 2645,
+    weatherBoosts: ["Větrno (Windy)"]
+  },
+  "ho-oh": {
+    bossName: "Ho-Oh",
+    weaknesses: ["Rock (2x)", "Water", "Electric"],
+    megaCounters: ["Mega Diancie", "Mega Aerodactyl", "Mega Tyranitar"],
+    advancedCounters: ["Rhyperior (Rock Wrecker)", "Rampardos (Rock Slide)", "Terrakion (Rock Slide)", "Tyrantrum (Meteor Beam)"],
+    budgetCounters: ["Tyranitar (Stone Edge)", "Gigalith (Meteor Beam)", "Aerodactyl (Rock Slide)", "Kyogre (Surf)"],
+    minCp: 2130,
+    maxCp: 2207,
+    minBoostedCp: 2663,
+    maxBoostedCp: 2759,
+    weatherBoosts: ["Slunečno (Sunny)", "Větrno (Windy)"]
+  },
+  // Hoenn Weather Trio & Eon Duo
+  "kyogre": {
+    bossName: "Kyogre / Primal Kyogre",
+    weaknesses: ["Grass", "Electric"],
+    megaCounters: ["Mega Sceptile", "Mega Venusaur", "Mega Manectric"],
+    advancedCounters: ["Kartana (Leaf Blade)", "Xurkitree (Discharge)", "Zekrom (Fusion Bolt)", "Zarude (Power Whip)"],
+    budgetCounters: ["Sceptile (Frenzy Plant)", "Venusaur (Frenzy Plant)", "Electivire (Wild Charge)", "Magnezone (Wild Charge)"],
+    minCp: 2260,
+    maxCp: 2351,
+    minBoostedCp: 2825,
+    maxBoostedCp: 2939,
+    weatherBoosts: ["Deštivo (Rainy)"]
+  },
+  "groudon": {
+    bossName: "Groudon / Primal Groudon",
+    weaknesses: ["Water", "Grass", "Ice"],
+    megaCounters: ["Primal Kyogre", "Mega Swampert", "Mega Sceptile"],
+    advancedCounters: ["Kyogre (Origin Pulse)", "Kartana (Leaf Blade)", "Zarude (Power Whip)", "Baxcalibur (Avalanche)"],
+    budgetCounters: ["Swampert (Hydro Cannon)", "Gyarados (Hydro Pump)", "Glaceon (Avalanche)", "Mamoswine (Avalanche)"],
+    minCp: 2260,
+    maxCp: 2351,
+    minBoostedCp: 2825,
+    maxBoostedCp: 2939,
+    weatherBoosts: ["Slunečno (Sunny)"]
+  },
+  "rayquaza": {
+    bossName: "Rayquaza",
+    weaknesses: ["Ice (2x)", "Dragon", "Rock", "Fairy"],
+    megaCounters: ["Mega Glalie", "Mega Gardevoir", "Mega Abomasnow"],
+    advancedCounters: ["Mamoswine (Avalanche)", "Baxcalibur (Avalanche)", "Galarian Darmanitan (Avalanche)", "Kyurem (Glaciate)"],
+    budgetCounters: ["Glaceon (Avalanche)", "Weavile (Avalanche)", "Dragonite (Outrage)", "Sylveon (Dazzling Gleam)"],
+    minCp: 2102,
+    maxCp: 2191,
+    minBoostedCp: 2627,
+    maxBoostedCp: 2739,
+    weatherBoosts: ["Větrno (Windy)"]
+  },
+  "latias": {
+    bossName: "Latias",
+    weaknesses: ["Dragon", "Ice", "Bug", "Ghost", "Dark", "Fairy"],
+    megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Mega Gardevoir", "Mega Tyranitar"],
+    advancedCounters: ["Rayquaza (Outrage)", "Salamence (Outrage)", "Hydreigon (Brutal Swing)", "Dialga (Draco Meteor)"],
+    budgetCounters: ["Dragonite (Outrage)", "Garchomp (Outrage)", "Glaceon (Avalanche)", "Gardevoir (Dazzling Gleam)"],
+    minCp: 1921,
+    maxCp: 2006,
+    minBoostedCp: 2402,
+    maxBoostedCp: 2507,
+    weatherBoosts: ["Větrno (Windy)"]
+  },
+  "latios": {
+    bossName: "Latios",
+    weaknesses: ["Dragon", "Ice", "Bug", "Ghost", "Dark", "Fairy"],
+    megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Mega Gengar", "Mega Tyranitar"],
+    advancedCounters: ["Rayquaza (Outrage)", "Hydreigon (Brutal Swing)", "Giratina Origin (Shadow Ball)", "Salamence (Outrage)"],
+    budgetCounters: ["Dragonite (Outrage)", "Garchomp (Outrage)", "Glaceon (Avalanche)", "Chandelure (Shadow Ball)"],
+    minCp: 2096,
+    maxCp: 2178,
+    minBoostedCp: 2620,
+    maxBoostedCp: 2723,
+    weatherBoosts: ["Větrno (Windy)"]
+  },
+  // Sinnoh Weather/Creation Trio
+  "dialga": {
+    bossName: "Dialga (regular & Shadow)",
+    weaknesses: ["Fighting", "Ground"],
+    megaCounters: ["Mega Lucario", "Mega Blaziken", "Mega Lopunny"],
+    advancedCounters: ["Terrakion (Sacred Sword)", "Lucario (Aura Sphere)", "Conkeldurr (Dynamic Punch)", "Groudon (Precipice Blades)"],
+    budgetCounters: ["Machamp (Dynamic Punch)", "Hariyama (Dynamic Punch)", "Excadrill (Drill Run)", "Breloom (Dynamic Punch)"],
+    minCp: 2045,
+    maxCp: 2307,
+    minBoostedCp: 2682,
+    maxBoostedCp: 2884,
+    weatherBoosts: ["Sněžení (Snow)", "Větrno (Windy)"]
+  },
+  "palkia": {
+    bossName: "Palkia (regular & Origin)",
+    weaknesses: ["Dragon", "Fairy"],
+    megaCounters: ["Mega Rayquaza", "Mega Gardevoir", "Mega Garchomp"],
+    advancedCounters: ["Rayquaza (Outrage)", "Palkia Origin (Spacial Rend)", "Dialga Origin (Roar of Time)", "Haxorus (Breaking Swipe)"],
+    budgetCounters: ["Dragonite (Outrage)", "Gardevoir (Dazzling Gleam)", "Garchomp (Outrage)", "Sylveon (Dazzling Gleam)"],
+    minCp: 2190,
+    maxCp: 2280,
+    minBoostedCp: 2737,
+    maxBoostedCp: 2850,
+    weatherBoosts: ["Větrno (Windy)", "Deštivo (Rainy)"]
+  },
+  "giratina": {
+    bossName: "Giratina (Altered & Origin)",
+    weaknesses: ["Ghost", "Dark", "Dragon", "Ice", "Fairy"],
+    megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Mega Gengar", "Mega Tyranitar"],
+    advancedCounters: ["Hydreigon (Brutal Swing)", "Rayquaza (Outrage)", "Giratina Origin (Shadow Ball)", "Darkrai (Dark Pulse)"],
+    budgetCounters: ["Dragonite (Outrage)", "Garchomp (Outrage)", "Tyranitar (Crunch)", "Chandelure (Shadow Ball)"],
+    minCp: 1848,
+    maxCp: 2105,
+    minBoostedCp: 2310,
+    maxBoostedCp: 2631,
+    weatherBoosts: ["Větrno (Windy)", "Mlha (Fog)"]
+  },
+  // Unova Tao Trio
+  "reshiram": {
+    bossName: "Reshiram",
+    weaknesses: ["Dragon", "Ground", "Rock"],
+    megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Mega Diancie"],
+    advancedCounters: ["Groudon (Precipice Blades)", "Palkia Origin (Spacial Rend)", "Rayquaza (Outrage)", "Rhyperior (Rock Wrecker)"],
+    budgetCounters: ["Dragonite (Outrage)", "Mamoswine (High Horsepower)", "Rampardos (Rock Slide)", "Excadrill (Drill Run)"],
+    minCp: 2217,
+    maxCp: 2307,
+    minBoostedCp: 2771,
+    maxBoostedCp: 2884,
+    weatherBoosts: ["Slunečno (Sunny)", "Větrno (Windy)"]
+  },
   "zekrom": {
     bossName: "Zekrom",
     weaknesses: ["Dragon", "Ground", "Ice", "Fairy"],
-    megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Mega Gardevoir", "Mega Latios"],
-    advancedCounters: ["Rayquaza (Outrage)", "Salamence (Outrage)", "Garchomp (Outrage)", "Haxorus (Breaking Swipe)", "Palkia (Spacial Rend)"],
+    megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Mega Gardevoir"],
+    advancedCounters: ["Rayquaza (Outrage)", "Garchomp (Outrage)", "Groudon (Precipice Blades)", "Palkia Origin (Spacial Rend)"],
     budgetCounters: ["Dragonite (Outrage)", "Mamoswine (Avalanche)", "Gardevoir (Dazzling Gleam)", "Excadrill (Drill Run)"],
     minCp: 2217,
     maxCp: 2307,
@@ -269,6 +455,44 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     maxBoostedCp: 2884,
     weatherBoosts: ["Větrno (Windy)", "Deštivo (Rainy)"]
   },
+  "kyurem": {
+    bossName: "Kyurem",
+    weaknesses: ["Fighting", "Rock", "Steel", "Dragon", "Fairy"],
+    megaCounters: ["Mega Lucario", "Mega Diancie", "Mega Rayquaza"],
+    advancedCounters: ["Terrakion (Sacred Sword)", "Metagross (Meteor Mash)", "Lucario (Aura Sphere)", "Shadow Metagross"],
+    budgetCounters: ["Machamp (Dynamic Punch)", "Conkeldurr (Dynamic Punch)", "Excadrill (Iron Head)", "Rampardos (Rock Slide)"],
+    minCp: 1957,
+    maxCp: 2042,
+    minBoostedCp: 2446,
+    maxBoostedCp: 2553,
+    weatherBoosts: ["Slunečno (Sunny)", "Sněžení (Snow)"]
+  },
+  // Kalos Aura Trio
+  "xerneas": {
+    bossName: "Xerneas",
+    weaknesses: ["Poison", "Steel"],
+    megaCounters: ["Mega Gengar", "Mega Beedrill"],
+    advancedCounters: ["Metagross (Meteor Mash)", "Nihilego (Sludge Bomb)", "Shadow Metagross", "Shadow Excadrill"],
+    budgetCounters: ["Excadrill (Iron Head)", "Gengar (Sludge Bomb)", "Roserade (Sludge Bomb)", "Melmetal (Double Iron Bash)"],
+    minCp: 2073,
+    maxCp: 2160,
+    minBoostedCp: 2591,
+    maxBoostedCp: 2701,
+    weatherBoosts: ["Zataženo (Cloudy)"]
+  },
+  "yveltal": {
+    bossName: "Yveltal",
+    weaknesses: ["Electric", "Ice", "Rock", "Fairy"],
+    megaCounters: ["Mega Diancie", "Mega Manectric", "Mega Gardevoir"],
+    advancedCounters: ["Xurkitree (Discharge)", "Zekrom (Fusion Bolt)", "Rhyperior (Rock Wrecker)", "Mamoswine (Avalanche)"],
+    budgetCounters: ["Electivire (Wild Charge)", "Glaceon (Avalanche)", "Tyranitar (Stone Edge)", "Sylveon (Dazzling Gleam)"],
+    minCp: 2073,
+    maxCp: 2160,
+    minBoostedCp: 2591,
+    maxBoostedCp: 2701,
+    weatherBoosts: ["Větrno (Windy)", "Mlha (Fog)"]
+  },
+  // Ultra Beasts
   "celesteela": {
     bossName: "Celesteela",
     weaknesses: ["Fire", "Electric"],
@@ -292,6 +516,187 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     minBoostedCp: 2512,
     maxBoostedCp: 2626,
     weatherBoosts: ["Slunečno (Sunny)", "Sněžení (Snow)"]
+  },
+  "xurkitree": {
+    bossName: "Xurkitree",
+    weaknesses: ["Ground"],
+    megaCounters: ["Primal Groudon", "Mega Garchomp"],
+    advancedCounters: ["Groudon (Precipice Blades)", "Shadow Mamoswine", "Landorus Therian (Sandsear Storm)", "Garchomp (Earth Power)"],
+    budgetCounters: ["Excadrill (Drill Run)", "Rhyperior (Earthquake)", "Mamoswine (High Horsepower)", "Krookodile (Earthquake)"],
+    minCp: 2163,
+    maxCp: 2249,
+    minBoostedCp: 2704,
+    maxBoostedCp: 2812,
+    weatherBoosts: ["Deštivo (Rainy)"]
+  },
+  "nihilego": {
+    bossName: "Nihilego",
+    weaknesses: ["Ground (2x)", "Water", "Psychic", "Steel"],
+    megaCounters: ["Primal Groudon", "Mega Garchomp", "Mega Alakazam"],
+    advancedCounters: ["Groudon (Precipice Blades)", "Mewtwo (Psystrike)", "Shadow Mamoswine", "Excadrill (Drill Run)"],
+    budgetCounters: ["Rhyperior (Earthquake)", "Mamoswine (High Horsepower)", "Espeon (Psychic)", "Alakazam (Psychic)"],
+    minCp: 2165,
+    maxCp: 2256,
+    minBoostedCp: 2707,
+    maxBoostedCp: 2821,
+    weatherBoosts: ["Zataženo (Cloudy)", "Slunečno (Sunny)"]
+  },
+  "guzzlord": {
+    bossName: "Guzzlord",
+    weaknesses: ["Fairy (2x)", "Fighting", "Bug", "Ice", "Dragon"],
+    megaCounters: ["Mega Gardevoir", "Mega Alakazam"],
+    advancedCounters: ["Gardevoir (Dazzling Gleam)", "Shadow Gardevoir", "Granbull (Play Rough)", "Xerneas (Geomancy)"],
+    budgetCounters: ["Sylveon (Dazzling Gleam)", "Togekiss (Dazzling Gleam)", "Clefable (Dazzling Gleam)", "Primarina (Moonblast)"],
+    minCp: 1565,
+    maxCp: 1650,
+    minBoostedCp: 1956,
+    maxBoostedCp: 2062,
+    weatherBoosts: ["Mlha (Fog)", "Zataženo (Cloudy)"]
+  },
+  // Key Megas / Primals
+  "mega charizard y": {
+    bossName: "Mega Charizard Y",
+    weaknesses: ["Rock (2x)", "Water", "Electric"],
+    megaCounters: ["Mega Diancie", "Mega Aerodactyl", "Mega Tyranitar"],
+    advancedCounters: ["Rhyperior (Rock Wrecker)", "Rampardos (Rock Slide)", "Terrakion (Rock Slide)", "Tyrantrum (Meteor Beam)"],
+    budgetCounters: ["Tyranitar (Stone Edge)", "Gigalith (Meteor Beam)", "Aerodactyl (Rock Slide)", "Kyogre (Surf)"],
+    minCp: 1578,
+    maxCp: 1655,
+    minBoostedCp: 1972,
+    maxBoostedCp: 2069,
+    weatherBoosts: ["Slunečno (Sunny)", "Větrno (Windy)"]
+  },
+  "mega charizard x": {
+    bossName: "Mega Charizard X",
+    weaknesses: ["Dragon", "Ground", "Rock"],
+    megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Mega Diancie"],
+    advancedCounters: ["Rayquaza (Outrage)", "Groudon (Precipice Blades)", "Palkia Origin (Spacial Rend)", "Rhyperior (Rock Wrecker)"],
+    budgetCounters: ["Dragonite (Outrage)", "Garchomp (Outrage)", "Tyranitar (Stone Edge)", "Excadrill (Drill Run)"],
+    minCp: 1578,
+    maxCp: 1655,
+    minBoostedCp: 1972,
+    maxBoostedCp: 2069,
+    weatherBoosts: ["Slunečno (Sunny)", "Větrno (Windy)"]
+  },
+  "mega swampert": {
+    bossName: "Mega Swampert",
+    weaknesses: ["Grass (2x)"],
+    megaCounters: ["Mega Sceptile", "Mega Venusaur"],
+    advancedCounters: ["Kartana (Leaf Blade)", "Zarude (Power Whip)", "Shadow Tangrowth", "Shadow Venusaur"],
+    budgetCounters: ["Sceptile (Frenzy Plant)", "Venusaur (Frenzy Plant)", "Tangrowth (Power Whip)", "Roserade (Grass Knot)"],
+    minCp: 1697,
+    maxCp: 1777,
+    minBoostedCp: 2121,
+    maxBoostedCp: 2221,
+    weatherBoosts: ["Deštivo (Rainy)", "Slunečno (Sunny)"]
+  },
+  "mega sceptile": {
+    bossName: "Mega Sceptile",
+    weaknesses: ["Ice (2x)", "Dragon", "Fairy", "Flying", "Poison", "Bug"],
+    megaCounters: ["Mega Glalie", "Mega Gardevoir", "Mega Rayquaza"],
+    advancedCounters: ["Mamoswine (Avalanche)", "Baxcalibur (Avalanche)", "Rayquaza (Outrage)", "Shadow Mamoswine"],
+    budgetCounters: ["Glaceon (Avalanche)", "Weavile (Avalanche)", "Dragonite (Outrage)", "Sylveon (Dazzling Gleam)"],
+    minCp: 1517,
+    maxCp: 1593,
+    minBoostedCp: 1897,
+    maxBoostedCp: 1992,
+    weatherBoosts: ["Slunečno (Sunny)", "Větrno (Windy)"]
+  },
+  "mega blaziken": {
+    bossName: "Mega Blaziken",
+    weaknesses: ["Flying", "Ground", "Water", "Psychic"],
+    megaCounters: ["Mega Rayquaza", "Primal Kyogre", "Mega Alakazam"],
+    advancedCounters: ["Mewtwo (Psystrike)", "Kyogre (Origin Pulse)", "Groudon (Precipice Blades)", "Rayquaza (Dragon Ascent)"],
+    budgetCounters: ["Swampert (Hydro Cannon)", "Espeon (Psychic)", "Alakazam (Psychic)", "Excadrill (Drill Run)"],
+    minCp: 1548,
+    maxCp: 1625,
+    minBoostedCp: 1935,
+    maxBoostedCp: 2031,
+    weatherBoosts: ["Slunečno (Sunny)", "Zataženo (Cloudy)"]
+  },
+  "mega gardevoir": {
+    bossName: "Mega Gardevoir",
+    weaknesses: ["Poison", "Ghost", "Steel"],
+    megaCounters: ["Mega Gengar", "Mega Banette", "Mega Scizor"],
+    advancedCounters: ["Metagross (Meteor Mash)", "Nihilego (Sludge Bomb)", "Gholdengo (Shadow Ball)", "Shadow Metagross"],
+    budgetCounters: ["Excadrill (Iron Head)", "Chandelure (Shadow Ball)", "Gengar (Shadow Ball)", "Roserade (Sludge Bomb)"],
+    minCp: 1924,
+    maxCp: 2012,
+    minBoostedCp: 2405,
+    maxBoostedCp: 2515,
+    weatherBoosts: ["Zataženo (Cloudy)", "Větrno (Windy)"]
+  },
+  "mega gengar": {
+    bossName: "Mega Gengar",
+    weaknesses: ["Ghost", "Dark", "Ground", "Psychic"],
+    megaCounters: ["Mega Tyranitar", "Primal Groudon", "Mega Alakazam"],
+    advancedCounters: ["Mewtwo (Psystrike)", "Groudon (Precipice Blades)", "Hydreigon (Brutal Swing)", "Shadow Mewtwo"],
+    budgetCounters: ["Tyranitar (Crunch)", "Excadrill (Drill Run)", "Espeon (Psychic)", "Chandelure (Shadow Ball)"],
+    minCp: 1554,
+    maxCp: 1629,
+    minBoostedCp: 1942,
+    maxBoostedCp: 2037,
+    weatherBoosts: ["Mlha (Fog)", "Zataženo (Cloudy)"]
+  },
+  "mega garchomp": {
+    bossName: "Mega Garchomp",
+    weaknesses: ["Ice (2x)", "Dragon", "Fairy"],
+    megaCounters: ["Mega Glalie", "Mega Gardevoir", "Mega Rayquaza"],
+    advancedCounters: ["Mamoswine (Avalanche)", "Baxcalibur (Avalanche)", "Rayquaza (Outrage)", "Kyurem (Glaciate)"],
+    budgetCounters: ["Glaceon (Avalanche)", "Weavile (Avalanche)", "Dragonite (Outrage)", "Sylveon (Dazzling Gleam)"],
+    minCp: 2174,
+    maxCp: 2264,
+    minBoostedCp: 2718,
+    maxBoostedCp: 2830,
+    weatherBoosts: ["Slunečno (Sunny)", "Větrno (Windy)"]
+  },
+  "mega tyranitar": {
+    bossName: "Mega Tyranitar",
+    weaknesses: ["Fighting (2x)", "Water", "Grass", "Ground", "Bug", "Steel", "Fairy"],
+    megaCounters: ["Mega Blaziken", "Mega Lopunny"],
+    advancedCounters: ["Terrakion (Sacred Sword)", "Keldeo (Sacred Sword)", "Lucario (Aura Sphere)", "Conkeldurr (Dynamic Punch)"],
+    budgetCounters: ["Machamp (Dynamic Punch)", "Hariyama (Dynamic Punch)", "Breloom (Dynamic Punch)", "Sirfetch'd (Close Combat)"],
+    minCp: 2114,
+    maxCp: 2199,
+    minBoostedCp: 2643,
+    maxBoostedCp: 2749,
+    weatherBoosts: ["Mlha (Fog)", "Částečně zataženo (Partly Cloudy)"]
+  },
+  "mega lucario": {
+    bossName: "Mega Lucario",
+    weaknesses: ["Fighting", "Ground", "Fire"],
+    megaCounters: ["Mega Blaziken", "Primal Groudon", "Mega Charizard Y"],
+    advancedCounters: ["Terrakion (Sacred Sword)", "Reshiram (Fusion Flare)", "Groudon (Precipice Blades)", "Mewtwo (Psystrike)"],
+    budgetCounters: ["Machamp (Dynamic Punch)", "Excadrill (Drill Run)", "Chandelure (Overheat)", "Flareon (Overheat)"],
+    minCp: 1750,
+    maxCp: 1840,
+    minBoostedCp: 2187,
+    maxBoostedCp: 2300,
+    weatherBoosts: ["Zataženo (Cloudy)", "Sněžení (Snow)"]
+  },
+  "primal kyogre": {
+    bossName: "Primal Kyogre",
+    weaknesses: ["Grass", "Electric"],
+    megaCounters: ["Mega Sceptile", "Mega Venusaur", "Mega Manectric"],
+    advancedCounters: ["Kartana (Leaf Blade)", "Xurkitree (Discharge)", "Zekrom (Fusion Bolt)", "Zarude (Power Whip)"],
+    budgetCounters: ["Sceptile (Frenzy Plant)", "Venusaur (Frenzy Plant)", "Electivire (Wild Charge)", "Magnezone (Wild Charge)"],
+    minCp: 2260,
+    maxCp: 2351,
+    minBoostedCp: 2825,
+    maxBoostedCp: 2939,
+    weatherBoosts: ["Deštivo (Rainy)"]
+  },
+  "primal groudon": {
+    bossName: "Primal Groudon",
+    weaknesses: ["Water (2x)", "Ground"],
+    megaCounters: ["Primal Kyogre", "Mega Swampert", "Mega Blastoise"],
+    advancedCounters: ["Kyogre (Origin Pulse)", "Shadow Swampert", "Shadow Feraligatr", "Shadow Gyarados"],
+    budgetCounters: ["Swampert (Hydro Cannon)", "Gyarados (Hydro Pump)", "Feraligatr (Hydro Cannon)", "Samurott (Hydro Cannon)"],
+    minCp: 2260,
+    maxCp: 2351,
+    minBoostedCp: 2825,
+    maxBoostedCp: 2939,
+    weatherBoosts: ["Slunečno (Sunny)", "Mlha (Fog)"]
   },
   "mega pidgeot": {
     bossName: "Mega Pidgeot",
@@ -341,18 +746,6 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     maxBoostedCp: 2143,
     weatherBoosts: ["Deštivo (Rainy)", "Sněžení (Snow)"]
   },
-  "dialga": {
-    bossName: "Dialga (regular & Shadow)",
-    weaknesses: ["Fighting", "Ground"],
-    megaCounters: ["Mega Lucario", "Mega Blaziken", "Mega Lopunny"],
-    advancedCounters: ["Terrakion (Sacred Sword)", "Lucario (Aura Sphere)", "Conkeldurr (Dynamic Punch)", "Groudon (Precipice Blades)"],
-    budgetCounters: ["Machamp (Dynamic Punch)", "Hariyama (Dynamic Punch)", "Excadrill (Drill Run)", "Breloom (Dynamic Punch)"],
-    minCp: 2045,
-    maxCp: 2307,
-    minBoostedCp: 2682,
-    maxBoostedCp: 2884,
-    weatherBoosts: ["Sněžení (Snow)", "Větrno (Windy)"]
-  },
   "hisuian braviary": {
     bossName: "Hisuian Braviary",
     weaknesses: ["Rock", "Ice", "Ghost", "Electric", "Dark"],
@@ -378,6 +771,192 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     weatherBoosts: ["Větrno (Windy)", "Mlha (Fog)"]
   }
 };
+
+export const typeAttackersDb: Record<string, { mega: string[]; advanced: string[]; budget: string[] }> = {
+  normal: {
+    mega: ["Mega Lopunny"],
+    advanced: ["Regigigas (Giga Impact)", "Ursaluna (High Horsepower)", "Shadow Staraptor"],
+    budget: ["Ursaring (Hyper Beam)", "Staraptor (Fly)", "Snorlax (Body Slam)"]
+  },
+  fire: {
+    mega: ["Mega Blaziken", "Mega Charizard Y", "Mega Houndoom"],
+    advanced: ["Reshiram (Fusion Flare)", "Shadow Chandelure", "Shadow Entei", "Shadow Moltres", "Heatran (Magma Storm)"],
+    budget: ["Chandelure (Overheat)", "Charizard (Blast Burn)", "Flareon (Overheat)", "Darmanitan (Overheat)", "Blaziken (Blast Burn)"]
+  },
+  water: {
+    mega: ["Primal Kyogre", "Mega Swampert", "Mega Blastoise"],
+    advanced: ["Kyogre (Origin Pulse)", "Shadow Swampert", "Shadow Feraligatr", "Shadow Gyarados", "Greninja (Hydro Cannon)"],
+    budget: ["Swampert (Hydro Cannon)", "Gyarados (Hydro Pump)", "Feraligatr (Hydro Cannon)", "Samurott (Hydro Cannon)"]
+  },
+  electric: {
+    mega: ["Mega Manectric", "Mega Ampharos"],
+    advanced: ["Xurkitree (Discharge)", "Zekrom (Fusion Bolt)", "Shadow Raikou", "Shadow Electivire", "Therian Thundurus"],
+    budget: ["Electivire (Wild Charge)", "Magnezone (Wild Charge)", "Jolteon (Discharge)", "Luxray (Wild Charge)"]
+  },
+  grass: {
+    mega: ["Mega Sceptile", "Mega Venusaur"],
+    advanced: ["Kartana (Leaf Blade)", "Shadow Tangrowth", "Shadow Venusaur", "Zarude (Power Whip)", "Shaymin Sky"],
+    budget: ["Sceptile (Frenzy Plant)", "Venusaur (Frenzy Plant)", "Tangrowth (Power Whip)", "Roserade (Grass Knot)"]
+  },
+  ice: {
+    mega: ["Mega Abomasnow", "Mega Glalie"],
+    advanced: ["Shadow Mamoswine", "Baxcalibur (Avalanche)", "Mamoswine (Avalanche)", "Shadow Weavile"],
+    budget: ["Glaceon (Avalanche)", "Weavile (Avalanche)", "Beartic (Ice Punch)", "Aurorus (Weather Ball)"]
+  },
+  fighting: {
+    mega: ["Mega Blaziken", "Mega Lopunny"],
+    advanced: ["Terrakion (Sacred Sword)", "Keldeo (Sacred Sword)", "Lucario (Aura Sphere)", "Shadow Machamp", "Shadow Hariyama"],
+    budget: ["Machamp (Dynamic Punch)", "Hariyama (Dynamic Punch)", "Conkeldurr (Dynamic Punch)", "Sirfetch'd (Close Combat)"]
+  },
+  poison: {
+    mega: ["Mega Beedrill", "Mega Gengar"],
+    advanced: ["Nihilego (Sludge Bomb)", "Shadow Victreebel", "Shadow Skuntank", "Overqwil (Gunk Shot)"],
+    budget: ["Roserade (Sludge Bomb)", "Gengar (Sludge Bomb)", "Victreebel (Sludge Bomb)", "Toxicroak (Sludge Bomb)"]
+  },
+  ground: {
+    mega: ["Primal Groudon", "Mega Garchomp"],
+    advanced: ["Groudon (Precipice Blades)", "Shadow Mamoswine", "Shadow Garchomp", "Landorus Therian (Sandsear Storm)"],
+    budget: ["Excadrill (Drill Run)", "Mamoswine (High Horsepower)", "Rhyperior (Earthquake)", "Krookodile (Earthquake)"]
+  },
+  flying: {
+    mega: ["Mega Rayquaza", "Mega Pidgeot"],
+    advanced: ["Rayquaza (Dragon Ascent)", "Shadow Moltres", "Shadow Staraptor", "Yveltal (Oblivion Wing)"],
+    budget: ["Staraptor (Fly)", "Honchkrow (Sky Attack)", "Unfezant (Sky Attack)", "Togekiss (Air Slash)"]
+  },
+  psychic: {
+    mega: ["Mega Alakazam", "Mega Latios", "Mega Gardevoir"],
+    advanced: ["Mewtwo (Psystrike)", "Shadow Mewtwo", "Shadow Alakazam", "Shadow Metagross"],
+    budget: ["Espeon (Psychic)", "Alakazam (Psychic)", "Gardevoir (Psychic)", "Metagross (Psychic)"]
+  },
+  bug: {
+    mega: ["Mega Pinsir", "Mega Scizor"],
+    advanced: ["Volcarona (Bug Buzz)", "Pheromosa (Bug Buzz)", "Shadow Scizor", "Vikavolt (X-Scissor)"],
+    budget: ["Pinsir (X-Scissor)", "Scizor (X-Scissor)", "Yanmega (Bug Buzz)", "Accelgor (Bug Buzz)"]
+  },
+  rock: {
+    mega: ["Mega Diancie", "Mega Tyranitar", "Mega Aerodactyl"],
+    advanced: ["Shadow Tyranitar", "Shadow Rhyperior", "Rhyperior (Rock Wrecker)", "Terrakion (Rock Slide)", "Rampardos (Rock Slide)"],
+    budget: ["Tyranitar (Stone Edge)", "Gigalith (Meteor Beam)", "Aerodactyl (Rock Slide)", "Archeops (Ancient Power)"]
+  },
+  ghost: {
+    mega: ["Mega Gengar", "Mega Banette"],
+    advanced: ["Giratina Origin (Shadow Ball)", "Shadow Gengar", "Shadow Chandelure", "Gholdengo (Shadow Ball)"],
+    budget: ["Chandelure (Shadow Ball)", "Gengar (Shadow Ball)", "Banette (Shadow Ball)", "Drifblim (Shadow Ball)"]
+  },
+  dragon: {
+    mega: ["Mega Rayquaza", "Mega Garchomp", "Mega Salamence", "Mega Latios"],
+    advanced: ["Rayquaza (Outrage)", "Palkia Origin (Spacial Rend)", "Dialga Origin (Roar of Time)", "Shadow Salamence", "Shadow Garchomp"],
+    budget: ["Dragonite (Outrage)", "Salamence (Outrage)", "Haxorus (Breaking Swipe)", "Garchomp (Outrage)"]
+  },
+  dark: {
+    mega: ["Mega Tyranitar", "Mega Houndoom", "Mega Gyarados"],
+    advanced: ["Tyranitar (Brutal Swing)", "Hydreigon (Brutal Swing)", "Shadow Tyranitar", "Darkrai (Dark Pulse)", "Yveltal (Dark Pulse)"],
+    budget: ["Houndoom (Foul Play)", "Weavile (Foul Play)", "Honchkrow (Dark Pulse)", "Krookodile (Foul Play)"]
+  },
+  steel: {
+    mega: ["Mega Scizor"],
+    advanced: ["Dusk Mane Necrozma (Sunsteel Strike)", "Shadow Metagross", "Metagross (Meteor Mash)", "Shadow Scizor"],
+    budget: ["Excadrill (Iron Head)", "Dialga (Iron Head)", "Melmetal (Double Iron Bash)", "Scizor (Iron Head)"]
+  },
+  fairy: {
+    mega: ["Mega Gardevoir"],
+    advanced: ["Gardevoir (Dazzling Gleam)", "Shadow Gardevoir", "Shadow Granbull", "Xerneas (Geomancy)"],
+    budget: ["Sylveon (Dazzling Gleam)", "Togekiss (Dazzling Gleam)", "Granbull (Play Rough)", "Florges (Moonblast)"]
+  }
+};
+
+const typeChart: Record<string, Record<string, number>> = {
+  normal: { rock: 0.5, ghost: 0, steel: 0.5 },
+  fire: { fire: 0.5, water: 0.5, grass: 2, ice: 2, bug: 2, rock: 0.5, dragon: 0.5, steel: 2 },
+  water: { fire: 2, water: 0.5, grass: 0.5, ground: 2, rock: 2, dragon: 0.5 },
+  electric: { water: 2, electric: 0.5, grass: 0.5, ground: 0, flying: 2, dragon: 0.5 },
+  grass: { fire: 0.5, water: 2, grass: 0.5, poison: 0.5, ground: 2, flying: 0.5, bug: 0.5, rock: 2, dragon: 0.5, steel: 0.5 },
+  ice: { fire: 0.5, water: 0.5, grass: 2, ice: 0.5, ground: 2, flying: 2, dragon: 2, steel: 0.5 },
+  fighting: { normal: 2, ice: 2, poison: 0.5, flying: 0.5, psychic: 0.5, bug: 0.5, rock: 2, ghost: 0, dark: 2, steel: 2, fairy: 0.5 },
+  poison: { grass: 2, poison: 0.5, ground: 0.5, rock: 0.5, ghost: 0.5, steel: 0, fairy: 2 },
+  ground: { fire: 2, electric: 2, grass: 0.5, poison: 2, flying: 0, bug: 0.5, rock: 2, steel: 2 },
+  flying: { electric: 0.5, grass: 2, fighting: 2, bug: 2, rock: 0.5, steel: 0.5 },
+  psychic: { fighting: 2, poison: 2, psychic: 0.5, dark: 0, steel: 0.5 },
+  bug: { fire: 0.5, fighting: 0.5, poison: 0.5, flying: 0.5, ghost: 0.5, steel: 0.5, grass: 2, psychic: 2, dark: 2, fairy: 0.5 },
+  rock: { fire: 2, ice: 2, fighting: 0.5, ground: 0.5, flying: 2, bug: 2, steel: 0.5 },
+  ghost: { normal: 0, psychic: 2, ghost: 2, dark: 0.5 },
+  dragon: { dragon: 2, steel: 0.5, fairy: 0 },
+  dark: { fighting: 0.5, psychic: 2, ghost: 2, dark: 0.5, fairy: 0.5 },
+  steel: { fire: 0.5, water: 0.5, electric: 0.5, ice: 2, rock: 2, steel: 0.5, fairy: 2 },
+  fairy: { fire: 0.5, fighting: 2, poison: 0.5, dragon: 2, dark: 2, steel: 0.5 }
+};
+
+function parseCpString(cpStr?: string): { min: number; max: number } {
+  if (!cpStr) return { min: 0, max: 0 };
+  const parts = cpStr.split(/[–-]/).map(p => parseInt(p.replace(/[^\d]/g, ''), 10));
+  if (parts.length === 2) {
+    return { min: parts[0] || 0, max: parts[1] || 0 };
+  }
+  if (parts.length === 1) {
+    return { min: 0, max: parts[0] || 0 };
+  }
+  return { min: 0, max: 0 };
+}
+
+export function generateDynamicCounters(
+  bossName: string, 
+  bossTypes: string[], 
+  scrapedCpRange?: string, 
+  scrapedBoostedCpRange?: string, 
+  scrapedWeatherBoosts?: string[]
+): RaidCounters {
+  const vulnerabilities: { type: string; multiplier: number }[] = [];
+  const cleanBossTypes = bossTypes.map(t => t.toLowerCase());
+
+  for (const attackingType of Object.keys(typeChart)) {
+    let multiplier = 1.0;
+    for (const defenderType of cleanBossTypes) {
+      const effect = typeChart[attackingType][defenderType];
+      if (effect !== undefined) {
+        multiplier *= effect;
+      }
+    }
+    if (multiplier > 1.0) {
+      vulnerabilities.push({ type: attackingType, multiplier });
+    }
+  }
+
+  vulnerabilities.sort((a, b) => b.multiplier - a.multiplier);
+
+  const weaknesses = vulnerabilities.map(v => {
+    const capType = v.type.charAt(0).toUpperCase() + v.type.slice(1);
+    return v.multiplier > 2.0 ? `${capType} (2x)` : capType;
+  });
+
+  const megaCounters: string[] = [];
+  const advancedCounters: string[] = [];
+  const budgetCounters: string[] = [];
+
+  for (const vuln of vulnerabilities) {
+    const attackers = typeAttackersDb[vuln.type];
+    if (attackers) {
+      attackers.mega.forEach(c => { if (!megaCounters.includes(c)) megaCounters.push(c); });
+      attackers.advanced.forEach(c => { if (!advancedCounters.includes(c)) advancedCounters.push(c); });
+      attackers.budget.forEach(c => { if (!budgetCounters.includes(c)) budgetCounters.push(c); });
+    }
+  }
+
+  const regularCp = parseCpString(scrapedCpRange);
+  const boostedCp = parseCpString(scrapedBoostedCpRange);
+
+  return {
+    bossName,
+    weaknesses,
+    megaCounters: megaCounters.slice(0, 3),
+    advancedCounters: advancedCounters.slice(0, 4),
+    budgetCounters: budgetCounters.slice(0, 4),
+    minCp: regularCp.min,
+    maxCp: regularCp.max,
+    minBoostedCp: boostedCp.min,
+    maxBoostedCp: boostedCp.max,
+    weatherBoosts: scrapedWeatherBoosts || []
+  };
+}
 
 const BOSS_COUNTERS_DB: Record<string, { bestCounters: string[]; details: string }> = {
   "persian": {
@@ -475,6 +1054,114 @@ const BOSS_COUNTERS_DB: Record<string, { bestCounters: string[]; details: string
   "houndoom": {
     bestCounters: ["Kyogre (Waterfall/Surf)", "Terrakion (Double Kick/Sacred Sword)", "Machamp (Counter/Dynamic Punch)"],
     details: "Dark/Fire typ. Má slabost vůči vodě, boji, zemi a kameni. Terrakion nebo Kyogre ho zničí bez problémů."
+  }
+};
+
+const HUB_RATING_DB: Record<string, string> = {
+  "landorus": "A",
+  "machop": "A+",
+  "machamp": "A+",
+  "bagon": "S",
+  "salamence": "S",
+  "beldum": "S",
+  "metagross": "S",
+  "larvitar": "A+",
+  "tyranitar": "A+",
+  "dratini": "A",
+  "dragonite": "A",
+  "gible": "S",
+  "garchomp": "S",
+  "swinub": "S",
+  "mamoswine": "S",
+  "ralts": "A+",
+  "gardevoir": "A+",
+  "gastly": "A",
+  "gengar": "A",
+  "mudkip": "A",
+  "swampert": "A",
+  "starly": "B",
+  "staraptor": "B",
+  "teddiursa": "C",
+  "ursaring": "C",
+  "bellsprout": "B",
+  "victreebel": "B",
+  "oddish": "C",
+  "cacnea": "C",
+  "seedot": "B",
+  "nuzleaf": "B"
+};
+
+const POKEMON_TYPES_DB: Record<string, string[]> = {
+  "persian": ["Normal"],
+  "rhyperior": ["Ground", "Rock"],
+  "kangaskhan": ["Normal"],
+  "nidoking": ["Poison", "Ground"],
+  "landorus": ["Ground", "Flying"],
+  "machop": ["Fighting"],
+  "gallade": ["Psychic", "Fighting"],
+  "aerodactyl": ["Rock", "Flying"],
+  "kingler": ["Water"],
+  "tyranitar": ["Rock", "Dark"],
+  "cradily": ["Rock", "Grass"],
+  "crobat": ["Poison", "Flying"],
+  "bagon": ["Dragon"],
+  "charizard": ["Fire", "Flying"],
+  "hypno": ["Psychic"],
+  "golurk": ["Ground", "Ghost"],
+  "dragonite": ["Dragon", "Flying"],
+  "scizor": ["Bug", "Steel"],
+  "salamence": ["Dragon", "Flying"],
+  "beldum": ["Steel", "Psychic"],
+  "sableye": ["Dark", "Ghost"],
+  "sharpedo": ["Water", "Dark"],
+  "milotic": ["Water"],
+  "houndoom": ["Dark", "Fire"],
+  "gardevoir": ["Psychic", "Fairy"],
+  "flygon": ["Ground", "Dragon"],
+  "reshiram": ["Dragon", "Fire"],
+  "snorlax": ["Normal"],
+  "steelix": ["Steel", "Ground"],
+  "slowbro": ["Water", "Psychic"],
+  "alakazam": ["Psychic"],
+  "blastoise": ["Water"],
+  "ferrothorn": ["Grass", "Steel"],
+  "camerupt": ["Fire", "Ground"],
+  "tyrunt": ["Rock", "Dragon"],
+  "amaura": ["Rock", "Ice"],
+  "axew": ["Dragon"]
+};
+
+function getPokemonImageUrl(name: string): string {
+  let clean = name.toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '');
+  return `https://img.pokemondb.net/sprites/home/normal/${clean}.png`;
+}
+
+const LEADER_COUNTERS_DB: Record<string, { megaCounters: string[]; advancedCounters: string[]; budgetCounters: string[] }> = {
+  "giovanni": {
+    // Persian (Normal) + Kangaskhan/Rhyperior/Machamp + Reshiram (Dragon/Fire)
+    megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Primal Kyogre"],
+    advancedCounters: ["Kyogre (Waterfall/Surf)", "Palkia (Dragon Tail/Spacial Rend)", "Terrakion (Double Kick/Sacred Sword)", "Zekrom (Dragon Breath/Outrage)"],
+    budgetCounters: ["Dragonite (Dragon Breath/Outrage)", "Swampert (Water Gun/Hydro Cannon)", "Garchomp (Dragon Tail/Outrage)", "Machamp (Counter/Dynamic Punch)"]
+  },
+  "cliff": {
+    // Axew (Dragon) + Snorlax/Golurk/Galarian Weezing + Tyranitar/Camerupt/Gallade
+    megaCounters: ["Mega Gardevoir", "Mega Rayquaza", "Mega Salamence"],
+    advancedCounters: ["Mamoswine (Powder Snow/Avalanche)", "Togekiss (Charm/Dazzling Gleam)", "Sylveon (Charm/Moonblast)", "Glaceon (Frost Breath/Avalanche)"],
+    budgetCounters: ["Gardevoir (Charm/Dazzling Gleam)", "Clefable (Charm/Moonblast)", "Dragonite (Dragon Breath/Dragon Claw)", "Granbull (Charm/Play Rough)"]
+  },
+  "arlo": {
+    // Tyrunt (Rock/Dragon) + Steelix/Golurk/Slowbro + Alakazam/Charizard/Scizor
+    megaCounters: ["Mega Swampert", "Mega Gengar", "Mega Rayquaza"],
+    advancedCounters: ["Kyogre (Waterfall/Surf)", "Mamoswine (Powder Snow/Avalanche)", "Tyranitar (Smack Down/Stone Edge)", "Garchomp (Dragon Tail/Outrage)"],
+    budgetCounters: ["Swampert (Water Gun/Hydro Cannon)", "Glaceon (Frost Breath/Avalanche)", "Dragonite (Dragon Breath/Outrage)", "Machamp (Counter/Dynamic Punch)"]
+  },
+  "sierra": {
+    // Amaura (Rock/Ice) + Blastoise/Flygon/Ferrothorn + Milotic/Houndoom/Steelix
+    megaCounters: ["Mega Metagross", "Mega Lucario", "Primal Groudon"],
+    advancedCounters: ["Lucario (Counter/Aura Sphere)", "Kartana (Razor Leaf/Leaf Blade)", "Terrakion (Double Kick/Sacred Sword)", "Conkeldurr (Counter/Dynamic Punch)"],
+    budgetCounters: ["Machamp (Counter/Dynamic Punch)", "Hariyama (Counter/Dynamic Punch)", "Breloom (Counter/Dynamic Punch)", "Blaziken (Counter/Focus Blast)"]
   }
 };
 
@@ -665,7 +1352,13 @@ function isMetaRelevant(pokemonName: string): boolean {
   return (meta.pveRating === 'S' || meta.pveRating === 'A' || meta.pvpRating === 'S' || meta.pvpRating === 'A');
 }
 
-function findRaidCounters(bossName: string): RaidCounters | null {
+function findRaidCounters(
+  bossName: string, 
+  bossTypes?: string[], 
+  scrapedCpRange?: string, 
+  scrapedBoostedCpRange?: string, 
+  scrapedWeatherBoosts?: string[]
+): RaidCounters | null {
   if (!bossName) return null;
   const cleanName = bossName.toLowerCase();
   
@@ -674,6 +1367,17 @@ function findRaidCounters(bossName: string): RaidCounters | null {
       return raidCountersDb[key];
     }
   }
+
+  if (bossTypes && bossTypes.length > 0) {
+    return generateDynamicCounters(
+      bossName, 
+      bossTypes, 
+      scrapedCpRange, 
+      scrapedBoostedCpRange, 
+      scrapedWeatherBoosts
+    );
+  }
+
   return null;
 }
 
@@ -687,336 +1391,16 @@ export async function scrapeEvents(): Promise<EventData[]> {
   return response.data;
 }
 
-// ==========================================
-// 3a. Niantic Official Scraper (Puppeteer)
-// ==========================================
-
-// Shared browser instance — reused across requests to avoid repeated Chromium launches
-let sharedBrowser: Browser | null = null;
-
-async function getBrowser(): Promise<Browser> {
-  if (sharedBrowser && sharedBrowser.connected) {
-    return sharedBrowser;
-  }
-  sharedBrowser = await puppeteer.launch({
-    headless: true,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-gpu',
-      '--no-first-run',
-      '--no-zygote',
-    ]
-  });
-  return sharedBrowser;
-}
-
-// Maps a bonus text to an emoji icon based on keyword matching
-function bonusTextToIcon(text: string): string {
-  const t = text.toLowerCase();
-  if (t.includes('candy') || t.includes('bonbón')) return '🍬';
-  if (t.includes('stardust') || t.includes('hvězdný prach')) return '✨';
-  if (t.includes('hatch') || t.includes('egg') || t.includes('líhnutí') || t.includes('vejce')) return '🥚';
-  if (t.includes('xp') || t.includes('experience') || t.includes('zkušenosti')) return '⚡';
-  if (t.includes('raid pass') || t.includes('raid') || t.includes('pass')) return '🎟️';
-  if (t.includes('rocket') || t.includes('balloon') || t.includes('balón')) return '🎈';
-  if (t.includes('trade') || t.includes('tradovat')) return '🤝';
-  if (t.includes('tm') || t.includes('charged tm') || t.includes('fast tm')) return '🟣';
-  if (t.includes('incense') || t.includes('lure') || t.includes('modul')) return '🌸';
-  if (t.includes('snapshot') || t.includes('photo')) return '📸';
-  if (t.includes('shiny') || t.includes('leskl')) return '⭐';
-  return '🎁';
-}
-
-/**
- * Scrapes event details directly from the official Niantic website (pokemongolive.com).
- * Uses Puppeteer (headless Chromium) to render the JavaScript-based SPA,
- * then extracts data by traversing H2/H3 → ul > li structure as specified in TODO #0.
- *
- * @param eventID  - The event slug (e.g. "community-day-july-2026")
- * @returns Parsed SpecialEventDetails or null if the page is not found / has no relevant content
- */
-export async function scrapeNianticEventDetails(urlOrID: string): Promise<SpecialEventDetails | null> {
-  const nianticUrl = urlOrID.startsWith('http') ? urlOrID : `https://pokemongolive.com/en/news/${urlOrID}`;
-  const eventID = nianticUrl.split('/').pop() || '';
-  
-  // Skip generic event IDs to avoid unnecessary 404s on pokemongolive.com
-  const genericPatterns = [
-    'raidhour',
-    'spotlighthour',
-    'pokemonspotlighthour',
-    'gbl-',
-    'rocket-takeover',
-    'max-monday',
-    'max-mondays',
-    'weekly-'
-  ];
-  if (genericPatterns.some(pattern => eventID.toLowerCase().includes(pattern))) {
-    console.log(`[Niantic] Skipping generic event ID ${eventID} (no official article expected)`);
-    return null;
-  }
-
-  console.log(`[Niantic] Scraping: ${nianticUrl}`);
-
-  let browser: Browser | null = null;
-  try {
-    browser = await getBrowser();
-    const page = await browser.newPage();
-
-    // Block images/fonts/media to speed up loading
-    await page.setRequestInterception(true);
-    page.on('request', (req) => {
-      const type = req.resourceType();
-      if (['image', 'font', 'media'].includes(type)) {
-        req.abort();
-      } else {
-        req.continue();
-      }
-    });
-
-    await page.setUserAgent(
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    );
-
-    const response = await page.goto(nianticUrl, {
-      waitUntil: 'networkidle2',
-      timeout: 20000
-    });
-
-    if (!response || response.status() === 404) {
-      console.log(`[Niantic] 404 for ${nianticUrl}`);
-      await page.close();
-      return null;
-    }
-
-    // Wait for article content to appear
-    try {
-      await page.waitForSelector('article, main h2, main h3, main ul li', { timeout: 8000 });
-    } catch {
-      console.log(`[Niantic] Timeout waiting for content on ${nianticUrl}`);
-      await page.close();
-      return null;
-    }
-
-    // Extract structured data by traversing H2/H3 → ul > li
-    const extracted = await page.evaluate(() => {
-      const bonuses: { text: string; icon: string }[] = [];
-      const spawns: { name: string; isShinyAvailable: boolean }[] = [];
-      const eggs: { distance: string; contents: { name: string }[] }[] = [];
-      const debuts: { name: string; description: string }[] = [];
-      const research: { task: string; reward: string }[] = [];
-
-      // Walk through all headings in the main article/content area
-      const contentRoot = document.querySelector('article') || document.querySelector('main') || document.body;
-      const headings = contentRoot.querySelectorAll('h2, h3');
-
-      headings.forEach((heading) => {
-        const title = heading.textContent?.toLowerCase().trim() || '';
-
-        // Collect all sibling elements until the next heading
-        const siblingLists: Element[] = [];
-        const siblingTexts: string[] = [];
-        let next = heading.nextElementSibling;
-        while (next && !['H2', 'H3', 'H4'].includes(next.tagName)) {
-          if (next.tagName === 'UL' || next.tagName === 'OL') {
-            siblingLists.push(next);
-          } else if (next.tagName === 'P') {
-            const t = next.textContent?.trim();
-            if (t) siblingTexts.push(t);
-          }
-          next = next.nextElementSibling;
-        }
-
-        if (siblingLists.length === 0) return;
-
-        const allItems = siblingLists.flatMap(ul =>
-          Array.from(ul.querySelectorAll('li')).map(li => li.textContent?.trim() || '')
-        ).filter(t => t.length > 0);
-
-        // ── Event Bonuses ──────────────────────────────────────────
-        if (
-          title.includes('bonus') ||
-          title.includes('feature') ||
-          title.includes('event detail') ||
-          title.includes('what')
-        ) {
-          allItems.forEach(item => {
-            bonuses.push({ text: item, icon: '' }); // icon assigned later in TS
-          });
-          return;
-        }
-
-        // ── Wild Spawns / Encounters ───────────────────────────────
-        if (
-          title.includes('wild') ||
-          title.includes('spawn') ||
-          title.includes('encounter') ||
-          title.includes('appearing') ||
-          title.includes('increased spawns') ||
-          title.includes('in the wild')
-        ) {
-          allItems.forEach(item => {
-            const isShiny = item.includes('✦') || item.includes('⭐') || item.toLowerCase().includes('shiny');
-            const cleanName = item.replace(/[✦⭐★\*]/g, '').trim().split('–')[0].split('-')[0].trim();
-            if (cleanName) spawns.push({ name: cleanName, isShinyAvailable: isShiny });
-          });
-          return;
-        }
-
-        // ── Eggs ───────────────────────────────────────────────────
-        if (title.includes('egg') || title.includes('hatch') || title.includes('km')) {
-          const distMatch = title.match(/(\d+)\s*km/i);
-          const distance = distMatch ? distMatch[0] : '7km';
-          const contents = allItems.map(item => ({
-            name: item.replace(/[✦⭐★\*]/g, '').trim().split('–')[0].split('-')[0].trim()
-          })).filter(c => c.name.length > 0);
-          if (contents.length > 0) eggs.push({ distance, contents });
-          return;
-        }
-
-        // ── Debuts / Featured ──────────────────────────────────────
-        if (
-          title.includes('debut') ||
-          title.includes('first time') ||
-          title.includes('new to') ||
-          title.includes('shiny debut') ||
-          title.includes('new shiny') ||
-          title.includes('save shadow') ||
-          title.includes('featured')
-        ) {
-          const desc = siblingTexts.join(' ');
-          allItems.forEach(item => {
-            const cleanName = item.replace(/[✦⭐★\*]/g, '').trim().split('–')[0].trim();
-            if (cleanName) debuts.push({ name: cleanName, description: desc });
-          });
-          return;
-        }
-
-        // ── Field Research ─────────────────────────────────────────
-        if (
-          title.includes('research') ||
-          title.includes('field') ||
-          title.includes('task')
-        ) {
-          allItems.forEach(item => {
-            // Format: "Catch 10 Pokémon – Arrokuda encounter" or "Catch 10 Pokémon: reward"
-            const parts = item.split(/–|-|:/);
-            const task = parts[0]?.trim() || item;
-            const reward = parts.slice(1).join(' ').trim() || '';
-            if (task) research.push({ task, reward });
-          });
-          return;
-        }
-      });
-
-      return { bonuses, spawns, eggs, debuts, research };
-    });
-
-    await page.close();
-
-    if (!extracted) return null;
-
-    const bonuses = extracted.bonuses
-      .filter(b => b.text.length > 0)
-      .map(b => ({
-        text: { cs: b.text, en: b.text }, // translateTextToCs called below
-        icon: b.icon
-      }));
-
-    const spawns = extracted.spawns
-      .filter(s => s.name.length > 1)
-      .map(s => ({
-        name: s.name,
-        image: '',
-        isShinyAvailable: s.isShinyAvailable,
-        isHighPriority: isMetaRelevant(s.name)
-      }));
-
-    const eggs = extracted.eggs.map(e => ({
-      distance: e.distance,
-      contents: e.contents.map(c => ({
-        name: c.name,
-        image: '',
-        isShinyAvailable: false
-      }))
-    }));
-
-    const debuts = extracted.debuts.map(d => ({
-      name: d.name,
-      image: '',
-      description: {
-        cs: translateTextToCs(d.description || `${d.name} debutuje v Pokémon GO!`),
-        en: d.description || `${d.name} debuts in Pokémon GO!`
-      }
-    }));
-
-    const research = extracted.research.map(r => ({
-      task: {
-        cs: translateTextToCs(r.task),
-        en: r.task
-      },
-      reward: r.reward,
-      image: '',
-      isShinyAvailable: false
-    }));
-
-    // Post-process bonuses: apply icon heuristic and translation
-    const processedBonuses = bonuses.map(b => ({
-      text: {
-        cs: translateTextToCs(b.text.en),
-        en: b.text.en
-      },
-      icon: bonusTextToIcon(b.text.en)
-    }));
-
-    const hasData =
-      processedBonuses.length > 0 ||
-      spawns.length > 0 ||
-      eggs.length > 0 ||
-      debuts.length > 0 ||
-      research.length > 0;
-
-    if (!hasData) {
-      console.log(`[Niantic] No structured data found for ${eventID}`);
-      return null;
-    }
-
-    console.log(`[Niantic] ✅ ${eventID}: bonuses=${processedBonuses.length}, spawns=${spawns.length}, eggs=${eggs.length}, debuts=${debuts.length}, research=${research.length}`);
-
-    return {
-      eventID,
-      bonuses: processedBonuses.length > 0 ? processedBonuses : undefined,
-      debuts: debuts.length > 0 ? debuts : undefined,
-      spawns: spawns.length > 0 ? spawns : undefined,
-      eggs: eggs.length > 0 ? eggs : undefined,
-      research: research.length > 0 ? research : undefined,
-    };
-
-  } catch (err: any) {
-    console.error(`[Niantic] Error scraping ${eventID}:`, err.message);
-    return null;
-  }
-}
-
-// ==========================================
-// 3b. Leek Duck Fallback Scraper (Cheerio)
-// ==========================================
-
-/**
- * Fallback scraper using Cheerio + axios against leekduck.com.
- * Used when Niantic scraping fails or returns no data.
- */
 async function scrapeLeekDuckEventDetails(eventID: string, link: string): Promise<SpecialEventDetails | null> {
   const response = await axios.get(link, {
     headers: {
       'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
   });
-
+  
   const html = response.data;
   const $ = cheerio.load(html);
-
+  
   const bonuses: any[] = [];
   const debuts: any[] = [];
   const spawns: any[] = [];
@@ -1165,6 +1549,248 @@ async function scrapeLeekDuckEventDetails(eventID: string, link: string): Promis
 }
 
 // ==========================================
+// 3a. Niantic Official Scraper (Puppeteer)
+// ==========================================
+
+let sharedBrowser: Browser | null = null;
+
+async function getBrowser(): Promise<Browser> {
+  if (sharedBrowser && sharedBrowser.connected) {
+    return sharedBrowser;
+  }
+  sharedBrowser = await puppeteer.launch({
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--no-first-run',
+      '--no-zygote',
+    ]
+  });
+  return sharedBrowser;
+}
+
+function bonusTextToIcon(text: string): string {
+  const t = text.toLowerCase();
+  if (t.includes('candy') || t.includes('bonbón')) return '🍬';
+  if (t.includes('stardust') || t.includes('hvězdný prach')) return '✨';
+  if (t.includes('hatch') || t.includes('egg') || t.includes('líhnutí') || t.includes('vejce')) return '🥚';
+  if (t.includes('xp') || t.includes('experience') || t.includes('zkušenosti')) return '⚡';
+  if (t.includes('raid pass') || t.includes('raid') || t.includes('pass')) return '🎟️';
+  if (t.includes('rocket') || t.includes('balloon') || t.includes('balón')) return '🎈';
+  if (t.includes('trade') || t.includes('tradovat')) return '🤝';
+  if (t.includes('tm') || t.includes('charged tm') || t.includes('fast tm')) return '🟣';
+  if (t.includes('incense') || t.includes('lure') || t.includes('modul')) return '🌸';
+  if (t.includes('snapshot') || t.includes('photo')) return '📸';
+  if (t.includes('shiny') || t.includes('leskl')) return '⭐';
+  return '🎁';
+}
+
+export async function scrapeNianticEventDetails(urlOrID: string): Promise<SpecialEventDetails | null> {
+  const nianticUrl = urlOrID.startsWith('http') ? urlOrID : `https://pokemongolive.com/en/news/${urlOrID}`;
+  const eventID = nianticUrl.split('/').pop() || '';
+  
+  // Skip generic event IDs to avoid unnecessary 404s on pokemongolive.com
+  const genericPatterns = [
+    'raidhour',
+    'spotlighthour',
+    'pokemonspotlighthour',
+    'gbl-',
+    'rocket-takeover',
+    'max-monday',
+    'max-mondays',
+    'weekly-'
+  ];
+  if (genericPatterns.some(pattern => eventID.toLowerCase().includes(pattern))) {
+    console.log(`[Niantic] Skipping generic event ID ${eventID} (no official article expected)`);
+    return null;
+  }
+
+  console.log(`[Niantic] Scraping: ${nianticUrl}`);
+
+  try {
+    const browser = await getBrowser();
+    const page = await browser.newPage();
+
+    await page.setRequestInterception(true);
+    page.on('request', (req) => {
+      const type = req.resourceType();
+      if (['image', 'font', 'media'].includes(type)) {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });
+
+    await page.setUserAgent(
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    );
+
+    const response = await page.goto(nianticUrl, {
+      waitUntil: 'networkidle2',
+      timeout: 20000
+    });
+
+    if (!response || response.status() === 404) {
+      console.log(`[Niantic] 404 for ${nianticUrl}`);
+      await page.close();
+      return null;
+    }
+
+    try {
+      await page.waitForSelector('article, main h2, main h3, main ul li', { timeout: 8000 });
+    } catch {
+      console.log(`[Niantic] Timeout waiting for content on ${nianticUrl}`);
+      await page.close();
+      return null;
+    }
+
+    const extracted = await page.evaluate(() => {
+      const bonuses: { text: string; icon: string }[] = [];
+      const spawns: { name: string; isShinyAvailable: boolean }[] = [];
+      const eggs: { distance: string; contents: { name: string }[] }[] = [];
+      const debuts: { name: string; description: string }[] = [];
+      const research: { task: string; reward: string }[] = [];
+
+      const contentRoot = document.querySelector('article') || document.querySelector('main') || document.body;
+      const headings = contentRoot.querySelectorAll('h2, h3');
+
+      headings.forEach((heading) => {
+        const title = heading.textContent?.toLowerCase().trim() || '';
+
+        const siblingLists: Element[] = [];
+        const siblingTexts: string[] = [];
+        let next = heading.nextElementSibling;
+        while (next && !['H2', 'H3', 'H4'].includes(next.tagName)) {
+          if (next.tagName === 'UL' || next.tagName === 'OL') {
+            siblingLists.push(next);
+          } else if (next.tagName === 'P') {
+            const t = next.textContent?.trim();
+            if (t) siblingTexts.push(t);
+          }
+          next = next.nextElementSibling;
+        }
+
+        if (siblingLists.length === 0) return;
+
+        const allItems = siblingLists.flatMap(ul =>
+          Array.from(ul.querySelectorAll('li')).map(li => li.textContent?.trim() || '')
+        ).filter(t => t.length > 0);
+
+        if (title.includes('bonus') || title.includes('feature') || title.includes('event detail') || title.includes('what')) {
+          allItems.forEach(item => { bonuses.push({ text: item, icon: '' }); });
+          return;
+        }
+
+        if (title.includes('wild') || title.includes('spawn') || title.includes('encounter') || title.includes('appearing') || title.includes('in the wild')) {
+          allItems.forEach(item => {
+            const isShiny = item.includes('✦') || item.includes('⭐') || item.toLowerCase().includes('shiny');
+            const cleanName = item.replace(/[✦⭐★\*]/g, '').trim().split('–')[0].split('-')[0].trim();
+            if (cleanName) spawns.push({ name: cleanName, isShinyAvailable: isShiny });
+          });
+          return;
+        }
+
+        if (title.includes('egg') || title.includes('hatch') || title.includes('km')) {
+          const distMatch = title.match(/(\d+)\s*km/i);
+          const distance = distMatch ? distMatch[0] : '7km';
+          const contents = allItems.map(item => ({
+            name: item.replace(/[✦⭐★\*]/g, '').trim().split('–')[0].split('-')[0].trim()
+          })).filter(c => c.name.length > 0);
+          if (contents.length > 0) eggs.push({ distance, contents });
+          return;
+        }
+
+        if (title.includes('debut') || title.includes('first time') || title.includes('new to') || title.includes('shiny debut') || title.includes('new shiny') || title.includes('save shadow') || title.includes('featured')) {
+          const desc = siblingTexts.join(' ');
+          allItems.forEach(item => {
+            const cleanName = item.replace(/[✦⭐★\*]/g, '').trim().split('–')[0].trim();
+            if (cleanName) debuts.push({ name: cleanName, description: desc });
+          });
+          return;
+        }
+
+        if (title.includes('research') || title.includes('field') || title.includes('task')) {
+          allItems.forEach(item => {
+            const parts = item.split(/-|:|–/);
+            const task = parts[0]?.trim() || item;
+            const reward = parts.slice(1).join(' ').trim() || '';
+            if (task) research.push({ task, reward });
+          });
+          return;
+        }
+      });
+
+      return { bonuses, spawns, eggs, debuts, research };
+    });
+
+    await page.close();
+
+    if (!extracted) return null;
+
+    const processedBonuses = extracted.bonuses
+      .filter(b => b.text.length > 0)
+      .map(b => ({
+        text: { cs: translateTextToCs(b.text), en: b.text },
+        icon: bonusTextToIcon(b.text)
+      }));
+
+    const spawns = extracted.spawns
+      .filter(s => s.name.length > 1)
+      .map(s => ({
+        name: s.name,
+        image: '',
+        isShinyAvailable: s.isShinyAvailable,
+        isHighPriority: isMetaRelevant(s.name)
+      }));
+
+    const eggs = extracted.eggs.map(e => ({
+      distance: e.distance,
+      contents: e.contents.map(c => ({ name: c.name, image: '', isShinyAvailable: false }))
+    }));
+
+    const debuts = extracted.debuts.map(d => ({
+      name: d.name,
+      image: '',
+      description: {
+        cs: translateTextToCs(d.description || `${d.name} debutuje v Pokémon GO!`),
+        en: d.description || `${d.name} debuts in Pokémon GO!`
+      }
+    }));
+
+    const research = extracted.research.map(r => ({
+      task: { cs: translateTextToCs(r.task), en: r.task },
+      reward: r.reward,
+      image: '',
+      isShinyAvailable: false
+    }));
+
+    const hasData = processedBonuses.length > 0 || spawns.length > 0 || eggs.length > 0 || debuts.length > 0 || research.length > 0;
+    if (!hasData) {
+      console.log(`[Niantic] No structured data found for ${eventID}`);
+      return null;
+    }
+
+    console.log(`[Niantic] ✅ ${eventID}: bonuses=${processedBonuses.length}, spawns=${spawns.length}, eggs=${eggs.length}, debuts=${debuts.length}, research=${research.length}`);
+
+    return {
+      eventID,
+      bonuses: processedBonuses.length > 0 ? processedBonuses : undefined,
+      debuts: debuts.length > 0 ? debuts : undefined,
+      spawns: spawns.length > 0 ? spawns : undefined,
+      eggs: eggs.length > 0 ? eggs : undefined,
+      research: research.length > 0 ? research : undefined,
+    };
+
+  } catch (err: any) {
+    console.error(`[Niantic] Error scraping ${eventID}:`, err.message);
+    return null;
+  }
+}
+
+// ==========================================
 // 3c. News Listing Crawler & Matchers
 // ==========================================
 
@@ -1176,16 +1802,12 @@ export interface NianticArticle {
 let newsListingCache: NianticArticle[] | null = null;
 let newsListingFetchedAt = 0;
 
-/**
- * Scrapes the first page of Niantic's official news listing
- */
 export async function scrapeNianticNewsListing(): Promise<NianticArticle[]> {
   console.log('[Niantic] Fetching news listing from https://pokemongolive.com/en/news/...');
   try {
     const browser = await getBrowser();
     const page = await browser.newPage();
 
-    // Block resources for performance
     await page.setRequestInterception(true);
     page.on('request', (req) => {
       const type = req.resourceType();
@@ -1208,7 +1830,7 @@ export async function scrapeNianticNewsListing(): Promise<NianticArticle[]> {
     try {
       await page.waitForSelector('main a, article, .news-list, [class*="newsCard"]', { timeout: 8000 });
     } catch {
-      // ignore, wait finished or failed
+      // ignore
     }
 
     const articles = await page.evaluate(() => {
@@ -1221,7 +1843,6 @@ export async function scrapeNianticNewsListing(): Promise<NianticArticle[]> {
         })
         .filter(item => item.href.includes('/post/') || item.href.includes('/news/'))
         .map(item => {
-          // Clean dates (e.g. "Jul 15, 2026") from title
           const titleClean = item.title.replace(/^[A-Za-z]{3}\s+\d{1,2},\s+\d{4}/, '').trim();
           return {
             href: item.href.startsWith('http') ? item.href : `https://pokemongolive.com${item.href}`,
@@ -1240,9 +1861,6 @@ export async function scrapeNianticNewsListing(): Promise<NianticArticle[]> {
   }
 }
 
-/**
- * Gets cached news listing or scrapes fresh one if expired
- */
 export async function getNianticNewsListing(): Promise<NianticArticle[]> {
   const now = Date.now();
   if (newsListingCache && (now - newsListingFetchedAt < 15 * 60 * 1000)) {
@@ -1253,9 +1871,6 @@ export async function getNianticNewsListing(): Promise<NianticArticle[]> {
   return newsListingCache;
 }
 
-/**
- * Compares event name against Niantic article title using word overlap
- */
 export function matchEventToArticle(eventName: string, articleTitle: string): boolean {
   const cleanEvent = eventName.toLowerCase()
     .replace(/[^a-z0-9\s]/g, '')
@@ -1272,7 +1887,6 @@ export function matchEventToArticle(eventName: string, articleTitle: string): bo
     return true;
   }
 
-  // Token overlap check: if at least 2 distinct long words match
   const eventWords = cleanEvent.split(' ').filter(w => w.length > 3);
   if (eventWords.length > 0) {
     const matchingWords = eventWords.filter(word => cleanArticle.includes(word));
@@ -1284,11 +1898,8 @@ export function matchEventToArticle(eventName: string, articleTitle: string): bo
   return false;
 }
 
-/**
- * Compares Leek Duck event slug against Niantic article title/slug
- */
 export function matchSlugToTitle(slug: string, articleTitle: string, articleUrl: string): boolean {
-  const cleanSlug = slug.toLowerCase().replace(/-\d{4}$/, ''); // strip year like "-2026"
+  const cleanSlug = slug.toLowerCase().replace(/-\d{4}$/, '');
   const cleanUrl = articleUrl.toLowerCase();
   
   if (cleanUrl.endsWith(`/${cleanSlug}`) || cleanUrl.endsWith(`/${cleanSlug.replace(/-/g, '')}`)) {
@@ -1307,16 +1918,7 @@ export function matchSlugToTitle(slug: string, articleTitle: string, articleUrl:
 // 3d. Orchestrator: Niantic → Leek Duck Fallback
 // ==========================================
 
-/**
- * Main exported function for fetching event details.
- * Strategy:
- *   1. Fetch or load cached Niantic news listing
- *   2. Find matching article using title overlap or slug comparison
- *   3. If matched, crawl Niantic article
- *   4. If no match / fails → fallback to Leek Duck via Cheerio
- */
 export async function scrapeEventDetails(eventID: string, link: string, name?: string): Promise<SpecialEventDetails | null> {
-  // Step 1: Try official Niantic source by searching the crawled news list
   try {
     const articles = await getNianticNewsListing();
     let matchedArticle: NianticArticle | undefined;
@@ -1345,7 +1947,6 @@ export async function scrapeEventDetails(eventID: string, link: string, name?: s
     console.warn(`[scrapeEventDetails] Niantic lookup error for ${eventID}: ${err.message} — falling back to Leek Duck`);
   }
 
-  // Step 2: Fallback to Leek Duck
   if (!link) {
     console.warn(`[scrapeEventDetails] No fallback link for ${eventID}`);
     return null;
@@ -1402,7 +2003,7 @@ export async function scrapeRaidBosses(): Promise<ScrapedRaidBoss[]> {
       if (typeText) types.push(typeText);
     });
 
-    const matchedCounters = findRaidCounters(name);
+    const matchedCounters = findRaidCounters(name, types, cpRange, boostedCpRange, weatherBoosts);
 
     bosses.push({
       name,
@@ -1422,7 +2023,7 @@ export async function scrapeRaidBosses(): Promise<ScrapedRaidBoss[]> {
     const tierHeader = $(tierEl).find('h2.header').text().trim().toLowerCase();
     let tier: ScrapedRaidBoss['tier'] = '1';
     if (tierHeader.includes('5-star')) tier = '5';
-    else if (tierHeader.includes('mega') || tierHeader.includes('primal')) tier = 'mega';
+    else if (tierHeader.includes('mega')) tier = 'mega';
     else if (tierHeader.includes('3-star')) tier = '3';
     else if (tierHeader.includes('1-star')) tier = '1';
 
@@ -1479,9 +2080,9 @@ export async function scrapeRocketLineups(): Promise<{
     else if (name.includes('Sierra')) avatar = '🧣';
 
     // Parse lineup slots
-    const slot1: string[] = [];
-    const slot2: string[] = [];
-    const slot3: string[] = [];
+    const slot1: { name: string; types: string[]; image: string }[] = [];
+    const slot2: { name: string; types: string[]; image: string }[] = [];
+    const slot3: { name: string; types: string[]; image: string }[] = [];
     let encounterPokemonName = '';
 
     profile.find('.lineup-info .slot').each((_, slotEl) => {
@@ -1494,7 +2095,9 @@ export async function scrapeRocketLineups(): Promise<{
         const pkmn = $(pkmnEl);
         const pkmnName = pkmn.attr('data-pokemon') || '';
         if (pkmnName && pkmnName !== 'Placeholder') {
-          targetSlot.push(pkmnName);
+          const pkmnTypes = POKEMON_TYPES_DB[pkmnName.toLowerCase()] || [];
+          const pkmnImage = getPokemonImageUrl(pkmnName);
+          targetSlot.push({ name: pkmnName, types: pkmnTypes, image: pkmnImage });
           if (isEncounter && !encounterPokemonName) {
             encounterPokemonName = pkmnName;
           }
@@ -1508,7 +2111,7 @@ export async function scrapeRocketLineups(): Promise<{
 
     if (isGiovanni || isLeader) {
       // Reward definition
-      const rewardName = encounterPokemonName || (isGiovanni ? slot3[0] : slot1[0]) || '???';
+      const rewardName = encounterPokemonName || (isGiovanni ? slot3[0]?.name : slot1[0]?.name) || '???';
       const meta = findPokemonMeta(rewardName);
       
       const member: RocketMember = {
@@ -1519,31 +2122,25 @@ export async function scrapeRocketLineups(): Promise<{
           pveRating: meta?.pveRating || 'None',
           pvpRating: meta?.pvpRating || 'None',
           worthGrinding: meta ? (meta.pveRating === 'S' || meta.pveRating === 'A' || meta.pvpRating === 'S' || meta.pvpRating === 'A') : false,
-          reason: meta?.notes || `Shadow ${rewardName} je užitečný pokémon do hry.`
+          reason: meta?.notes || `Shadow ${rewardName} je užitečný pokémon do hry.`,
+          hubRating: HUB_RATING_DB[rewardName.toLowerCase()] || ''
         },
         lineup: { slot1, slot2, slot3 },
-        counters: []
+        counters: {
+          megaCounters: [],
+          advancedCounters: [],
+          budgetCounters: []
+        }
       };
 
-      // Assemble counters for lineup
-      const uniqueLineupPkmn = Array.from(new Set([...slot1, ...slot2, ...slot3]));
-      uniqueLineupPkmn.forEach(pkmnName => {
-        const counterInfo = BOSS_COUNTERS_DB[pkmnName.toLowerCase()];
-        if (counterInfo) {
-          member.counters.push({
-            bossPokemon: pkmnName,
-            bestCounters: counterInfo.bestCounters,
-            details: counterInfo.details
-          });
-        } else {
-          // Default fallback counter if not in DB
-          member.counters.push({
-            bossPokemon: pkmnName,
-            bestCounters: ["Lucario (Counter/Aura Sphere)", "Mamoswine (Powder Snow/Avalanche)", "Kyogre (Waterfall/Surf)"],
-            details: `Proti ${pkmnName} použijte jeho typové slabosti a nejlepší stínové či mega pokémony.`
-          });
-        }
-      });
+      // Get overall lineup counters
+      const leaderKey = (isGiovanni ? 'giovanni' : name).toLowerCase();
+      const leaderCounters = LEADER_COUNTERS_DB[leaderKey];
+      member.counters = leaderCounters || {
+        megaCounters: ["Mega Gardevoir", "Mega Rayquaza", "Mega Swampert"],
+        advancedCounters: ["Lucario (Counter/Aura Sphere)", "Mamoswine (Powder Snow/Avalanche)", "Mewtwo (Confusion/Psystrike)"],
+        budgetCounters: ["Machamp (Counter/Dynamic Punch)", "Gardevoir (Charm/Dazzling Gleam)", "Glaceon (Frost Breath/Avalanche)"]
+      };
 
       if (isGiovanni) {
         giovanni = member;
@@ -1580,7 +2177,7 @@ export async function scrapeRocketLineups(): Promise<{
         type,
         difficulty: mappedGrunt.difficulty,
         worthFighting: mappedGrunt.worthFighting,
-        shadowPokemon: slot1.length ? slot1 : [encounterPokemonName],
+        shadowPokemon: slot1.length ? slot1.map(s => s.name) : [encounterPokemonName],
         counters: mappedGrunt.counters
       });
     }
@@ -1592,21 +2189,23 @@ export async function scrapeRocketLineups(): Promise<{
       name: "Giovanni",
       avatar: "👑",
       reward: {
-        name: "Shadow Landorus",
-        pveRating: "A",
-        pvpRating: "B",
-        worthGrinding: false,
-        reason: "Shadow Landorus (Incarnate Forme) je silný Ground útočník, ale zaostává za Therian formou."
+        name: "Reshiram",
+        pveRating: "S",
+        pvpRating: "A",
+        worthGrinding: true,
+        reason: "Shadow Reshiram je absolutně dominantní článkový/ohnivý útočník. Jeden z nejsilnějších Shadow legenčích vůbec.",
+        hubRating: "S"
       },
       lineup: {
-        slot1: ["Persian"],
-        slot2: ["Rhyperior", "Kangaskhan", "Nidoking"],
-        slot3: ["Landorus"]
+        slot1: [{ name: "Persian", types: ["Normal"], image: getPokemonImageUrl("Persian") }],
+        slot2: [
+          { name: "Kangaskhan", types: ["Normal"], image: getPokemonImageUrl("Kangaskhan") },
+          { name: "Rhyperior", types: ["Ground", "Rock"], image: getPokemonImageUrl("Rhyperior") },
+          { name: "Machamp", types: ["Fighting"], image: getPokemonImageUrl("Machamp") }
+        ],
+        slot3: [{ name: "Reshiram", types: ["Dragon", "Fire"], image: getPokemonImageUrl("Reshiram") }]
       },
-      counters: [
-        { bossPokemon: "Persian", bestCounters: ["Lucario", "Terrakion"], details: "Persian má slabost na bojové útoky." },
-        { bossPokemon: "Shadow Landorus", bestCounters: ["Mamoswine", "Glaceon"], details: "Dvojitá slabost na led." }
-      ]
+      counters: LEADER_COUNTERS_DB["giovanni"]
     };
   }
 
@@ -1615,13 +2214,15 @@ export async function scrapeRocketLineups(): Promise<{
     leaders: leaders.length ? leaders : [
       {
         name: "Cliff", avatar: "💪",
-        reward: { name: "Shadow Machop", pveRating: "S", pvpRating: "A", worthGrinding: true, reason: "Shadow Machamp je špičkový bojový útočník." },
-        lineup: { slot1: ["Machop"], slot2: ["Aerodactyl", "Gallade"], slot3: ["Tyranitar"] },
-        counters: [{ bossPokemon: "Machop", bestCounters: ["Mewtwo"], details: "Slabost na psychic." }]
+        reward: { name: "Shadow Machop", pveRating: "S", pvpRating: "A", worthGrinding: true, reason: "Shadow Machamp je špičkový bojový útočník.", hubRating: "A+" },
+        lineup: { slot1: [{ name: "Machop", types: ["Fighting"], image: getPokemonImageUrl("Machop") }], slot2: [{ name: "Aerodactyl", types: ["Rock", "Flying"], image: getPokemonImageUrl("Aerodactyl") }, { name: "Gallade", types: ["Psychic", "Fighting"], image: getPokemonImageUrl("Gallade") }], slot3: [{ name: "Tyranitar", types: ["Rock", "Dark"], image: getPokemonImageUrl("Tyranitar") }] },
+        counters: { megaCounters: ["Mega Gardevoir", "Mega Alakazam"], advancedCounters: ["Mewtwo (Confusion/Psystrike)"], budgetCounters: ["Machamp (Counter/Dynamic Punch)"] }
       }
     ],
     grunts: grunts.length ? grunts : [
-      { phraseCs: "Normální neznamená slabý!", phraseEn: "Normal does not mean weak.", type: "Normal", difficulty: "Easy", worthFighting: false, shadowPokemon: ["Teddiursa"], counters: ["Machamp"] }
+      { phraseCs: "Normální neznamená slabý!", phraseEn: "Normal does not mean weak.", type: "Normal", difficulty: "Easy", worthFighting: false, shadowPokemon: ["Teddiursa", "Hoothoot", "Porygon"], counters: ["Lucario", "Machamp", "Terrakion"] },
+      { phraseCs: "Víš, jak horký může být pokémoní dech?", phraseEn: "Do you know how hot Pokémon fire breath can get?", type: "Fire", difficulty: "Easy", worthFighting: true, shadowPokemon: ["Litwick", "Ponyta", "Torchic"], counters: ["Kyogre", "Rhyperior", "Swampert"] },
+      { phraseCs: "Tyto vody jsou zrádné!", phraseEn: "These waters are treacherous!", type: "Water", difficulty: "Medium", worthFighting: true, shadowPokemon: ["Mudkip", "Tentacool", "Krabby"], counters: ["Kartana", "Xurkitree", "Zarude"] }
     ]
   };
 }

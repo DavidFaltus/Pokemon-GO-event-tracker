@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import './TimelineView.css';
+import './CalendarView.css';
 import { EventCard } from './EventCard';
 import type { EventData } from './EventCard';
 import { translations } from '../data/translations';
@@ -25,13 +26,18 @@ const MONTH_NAMES: { [key in Language]: string[] } = {
   ja: [
     '1月', '2月', '3月', '4月', '5月', '6月',
     '7月', '8月', '9月', '10月', '11月', '12月'
+  ],
+  ru: [
+    'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
   ]
 };
 
 const WEEKDAY_NAMES: { [key in Language]: string[] } = {
   cs: ['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'],
   en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-  ja: ['日', '月', '火', '水', '木', '金', '土']
+  ja: ['日', '月', '火', '水', '木', '金', '土'],
+  ru: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб']
 };
 
 export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezone }) => {

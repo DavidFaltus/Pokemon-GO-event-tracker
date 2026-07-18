@@ -4,7 +4,7 @@ interface AdContainerProps {
   type: 'banner' | 'sidebar' | 'rectangle' | 'inline';
   slot?: string;
   client?: string;
-  lang?: 'cs' | 'en' | 'ja';
+  lang?: 'cs' | 'en' | 'ja' | 'ru';
 }
 
 export const AdContainer: React.FC<AdContainerProps> = ({ 

@@ -55,21 +55,21 @@
     },
     "counters": {
       "megaCounters": [
-        "Mega Swampert",
+        "Mega Rayquaza",
         "Mega Garchomp",
         "Primal Kyogre"
       ],
       "advancedCounters": [
-        "Lucario (Counter/Aura Sphere)",
-        "Mamoswine (Powder Snow/Avalanche)",
         "Kyogre (Waterfall/Surf)",
-        "Terrakion (Double Kick/Sacred Sword)"
+        "Palkia (Dragon Tail/Spacial Rend)",
+        "Terrakion (Double Kick/Sacred Sword)",
+        "Zekrom (Dragon Breath/Outrage)"
       ],
       "budgetCounters": [
-        "Machamp (Counter/Dynamic Punch)",
-        "Glaceon (Frost Breath/Avalanche)",
-        "Hariyama (Counter/Dynamic Punch)",
-        "Swampert (Water Gun/Hydro Cannon)"
+        "Dragonite (Dragon Breath/Outrage)",
+        "Swampert (Water Gun/Hydro Cannon)",
+        "Garchomp (Dragon Tail/Outrage)",
+        "Machamp (Counter/Dynamic Punch)"
       ]
     }
   },
@@ -147,20 +147,20 @@
       "counters": {
         "megaCounters": [
           "Mega Gardevoir",
-          "Mega Alakazam",
-          "Mega Rayquaza"
+          "Mega Rayquaza",
+          "Mega Salamence"
         ],
         "advancedCounters": [
-          "Mewtwo (Confusion/Psystrike)",
-          "Metagross (Bullet Punch/Meteor Mash)",
+          "Mamoswine (Powder Snow/Avalanche)",
           "Togekiss (Charm/Dazzling Gleam)",
-          "Lucario (Counter/Aura Sphere)"
+          "Sylveon (Charm/Moonblast)",
+          "Glaceon (Frost Breath/Avalanche)"
         ],
         "budgetCounters": [
-          "Machamp (Counter/Dynamic Punch)",
           "Gardevoir (Charm/Dazzling Gleam)",
-          "Alakazam (Confusion/Psychic)",
-          "Espeon (Confusion/Psychic)"
+          "Clefable (Charm/Moonblast)",
+          "Dragonite (Dragon Breath/Dragon Claw)",
+          "Granbull (Charm/Play Rough)"
         ]
       }
     },
@@ -240,21 +240,21 @@
       },
       "counters": {
         "megaCounters": [
-          "Mega Gardevoir",
-          "Mega Rayquaza",
-          "Mega Charizard Y"
+          "Mega Swampert",
+          "Mega Gengar",
+          "Mega Rayquaza"
         ],
         "advancedCounters": [
+          "Kyogre (Waterfall/Surf)",
           "Mamoswine (Powder Snow/Avalanche)",
-          "Togekiss (Charm/Dazzling Gleam)",
-          "Reshiram (Fire Fang/Overheat)",
-          "Sylveon (Charm/Moonblast)"
+          "Tyranitar (Smack Down/Stone Edge)",
+          "Garchomp (Dragon Tail/Outrage)"
         ],
         "budgetCounters": [
+          "Swampert (Water Gun/Hydro Cannon)",
           "Glaceon (Frost Breath/Avalanche)",
-          "Gardevoir (Charm/Dazzling Gleam)",
-          "Charizard (Fire Spin/Blast Burn)",
-          "Clefable (Charm/Moonblast)"
+          "Dragonite (Dragon Breath/Outrage)",
+          "Machamp (Counter/Dynamic Punch)"
         ]
       }
     },
@@ -333,21 +333,21 @@
       },
       "counters": {
         "megaCounters": [
-          "Mega Charizard Y",
-          "Mega Gengar",
-          "Mega Houndoom"
+          "Mega Metagross",
+          "Mega Lucario",
+          "Primal Groudon"
         ],
         "advancedCounters": [
-          "Chandelure (Fire Spin/Shadow Ball)",
-          "Togekiss (Charm/Dazzling Gleam)",
-          "Machamp (Counter/Dynamic Punch)",
-          "Kartana (Razor Leaf/Leaf Blade)"
+          "Lucario (Counter/Aura Sphere)",
+          "Kartana (Razor Leaf/Leaf Blade)",
+          "Terrakion (Double Kick/Sacred Sword)",
+          "Conkeldurr (Counter/Dynamic Punch)"
         ],
         "budgetCounters": [
-          "Charizard (Fire Spin/Blast Burn)",
-          "Gardevoir (Charm/Dazzling Gleam)",
-          "Flareon (Fire Spin/Overheat)",
-          "Granbull (Charm/Play Rough)"
+          "Machamp (Counter/Dynamic Punch)",
+          "Hariyama (Counter/Dynamic Punch)",
+          "Breloom (Counter/Dynamic Punch)",
+          "Blaziken (Counter/Focus Blast)"
         ]
       }
     }

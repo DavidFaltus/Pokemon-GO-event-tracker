@@ -175,6 +175,8 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
 
   return (
     <div className="raid-view-container">
+      <h1 className="tab-seo-title">{t.tabs_raid}</h1>
+      <p className="tab-seo-description">{(t as any).seo_raid_desc}</p>
       {/* Tier Filter Pills */}
       <div className="filter-pill-container font-small">
         <button 

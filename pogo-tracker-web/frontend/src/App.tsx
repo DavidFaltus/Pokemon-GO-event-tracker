@@ -242,6 +242,51 @@ const trackGAEvent = (action: string, category: string, label?: string) => {
   }
 };
 
+const getLangFromPath = (path: string): Language | null => {
+  const cleanPath = path.toLowerCase().replace(/\/$/, '');
+  if (cleanPath === '/cs' || cleanPath === '/sk') return 'cs';
+  if (cleanPath === '/jp' || cleanPath === '/ja') return 'ja';
+  if (cleanPath === '/ru') return 'ru';
+  if (cleanPath === '/us' || cleanPath === '/en') return 'en';
+  return null;
+};
+
+const getPathForLang = (l: Language): string => {
+  if (l === 'cs') return '/cs';
+  if (l === 'ja') return '/jp';
+  if (l === 'ru') return '/ru';
+  return '/us';
+};
+
+const detectUserLanguage = (): Language => {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (tz) {
+      const czSvkTzs = ['europe/prague', 'europe/bratislava', 'europe/kosice'];
+      if (czSvkTzs.some(t => tz.toLowerCase().includes(t))) {
+        return 'cs';
+      }
+      if (tz.toLowerCase().includes('asia/tokyo')) {
+        return 'ja';
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to detect timezone:', e);
+  }
+
+  const browserLanguages = navigator.languages
+    ? navigator.languages.map(l => l.toLowerCase().substring(0, 2))
+    : [navigator.language.toLowerCase().substring(0, 2)];
+
+  for (const bLang of browserLanguages) {
+    if (bLang === 'cs' || bLang === 'sk') return 'cs';
+    if (bLang === 'ja') return 'ja';
+    if (bLang === 'ru') return 'ru';
+  }
+
+  return 'en';
+};
+
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('events');
   const showAds = activeTab !== 'settings' && activeTab !== 'admin';
@@ -273,13 +318,49 @@ function App() {
     totalEvents: number;
   }>({ lastScrapedAt: null, nextScrapeAt: null, isRunning: false, totalEvents: 0 });
   const [lang, setLang] = useState<Language>(() => {
+    // 1. Zkusíme zjistit jazyk z URL path
+    const urlLang = getLangFromPath(window.location.pathname);
+    if (urlLang) {
+      localStorage.setItem('pogo_tracker_lang', urlLang);
+      return urlLang;
+    }
+
+    // 2. Pokud není v URL, zkusíme localStorage
     const saved = localStorage.getItem('pogo_tracker_lang');
-    if (saved === 'en' || saved === 'cs' || saved === 'ja') return saved;
-    const browserLang = navigator.language.substring(0, 2);
-    if (browserLang === 'cs') return 'cs';
-    if (browserLang === 'ja') return 'ja';
-    return 'en';
+    if (saved === 'en' || saved === 'cs' || saved === 'ja' || saved === 'ru') return saved as Language;
+
+    // 3. Jinak automatická detekce lokace/jazyka
+    const detected = detectUserLanguage();
+    localStorage.setItem('pogo_tracker_lang', detected);
+    return detected;
   });
+
+  // Udržování správné URL cesty podle jazyka (pokud neběžíme v Capacitoru)
+  useEffect(() => {
+    const isCapacitor = !!(window as any).Capacitor || 
+                        window.location.protocol === 'capacitor:' || 
+                        window.location.protocol === 'file:';
+    if (isCapacitor) return;
+
+    const expectedPath = getPathForLang(lang);
+    if (window.location.pathname !== expectedPath) {
+      window.history.replaceState(null, '', expectedPath + window.location.search + window.location.hash);
+    }
+  }, [lang]);
+
+  // Naslouchání na tlačítka zpět/vpřed v prohlížeči (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      const urlLang = getLangFromPath(window.location.pathname);
+      if (urlLang && urlLang !== lang) {
+        setLang(urlLang);
+        localStorage.setItem('pogo_tracker_lang', urlLang);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [lang]);
   
   const [timezone, setTimezone] = useState<string>(() => {
     return localStorage.getItem('pogo_tracker_timezone') || Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Prague';
@@ -388,11 +469,21 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  const t = translations[lang];
+  const t = translations[lang] ?? translations['en'];
 
   const handleSetLang = (newLang: Language) => {
     setLang(newLang);
     localStorage.setItem('pogo_tracker_lang', newLang);
+
+    const isCapacitor = !!(window as any).Capacitor || 
+                        window.location.protocol === 'capacitor:' || 
+                        window.location.protocol === 'file:';
+    if (!isCapacitor) {
+      const newPath = getPathForLang(newLang);
+      if (window.location.pathname !== newPath) {
+        window.history.pushState(null, '', newPath + window.location.search + window.location.hash);
+      }
+    }
   };
 
   const getAdjustedEvents = (): EventData[] => {
@@ -458,10 +549,12 @@ function App() {
               ? `Nový event přidán: ${event.name}`
               : lang === 'ja'
               ? `新しいイベントが追加されました: ${event.name}`
+              : lang === 'ru'
+              ? `Добавлено новое событие: ${event.name}`
               : `New event added: ${event.name}`;
             
             const startDateStr = new Date(event.start).toLocaleDateString(
-              lang === 'cs' ? 'cs-CZ' : lang === 'ja' ? 'ja-JP' : 'en-US',
+              lang === 'cs' ? 'cs-CZ' : lang === 'ja' ? 'ja-JP' : lang === 'ru' ? 'ru-RU' : 'en-US',
               { day: 'numeric', month: 'long' }
             );
 
@@ -469,6 +562,8 @@ function App() {
               ? `Do kalendáře byl přidán nový event "${event.name}" (začíná ${startDateStr}).`
               : lang === 'ja'
               ? `カレンダーに新しいイベント「${event.name}」が追加されました（開始日: ${startDateStr}）。`
+              : lang === 'ru'
+              ? `В календарь добавлено новое событие «${event.name}» (начало ${startDateStr}).`
               : `A new event "${event.name}" has been added to the calendar (starts on ${startDateStr}).`;
 
             triggerNotification(
@@ -575,25 +670,33 @@ function App() {
           if (timeSinceStartMs < oneDayMs) {
             let bodyText = lang === 'cs'
               ? `Event ${event.name} právě probíhá! Otevřete aplikaci pro zobrazení meta doporučení.`
+              : lang === 'ru'
+              ? `Событие ${event.name} уже активно! Откройте приложение для просмотра деталей.`
               : `Event ${event.name} is now active! Open the app to check raid counters and details.`;
             
             // Customize body based on event type
             if (event.eventType === 'pokemon-spotlight-hour') {
               bodyText = lang === 'cs'
                 ? `Spotlight Hour pro ${event.name} právě běží! Rychle chytat!`
+                : lang === 'ru'
+                ? `Spotlight Hour для ${event.name} идёт! Ловите скорее!`
                 : `Spotlight Hour for ${event.name} is running! Go catch 'em!`;
             } else if (event.eventType === 'raid-hour') {
               bodyText = lang === 'cs'
                 ? `Raid Hour právě začíná! Připravte si Remote Passy.`
+                : lang === 'ru'
+                ? `Raid Hour начался! Приготовьте Remote Pass.`
                 : `Raid Hour has started! Get your Remote Passes ready.`;
             } else if (event.eventType === 'community-day') {
               bodyText = lang === 'cs'
                 ? `${event.name} začíná! Získejte speciální evoluční útok!`
+                : lang === 'ru'
+                ? `${event.name} начинается! Эволюция открывает особый приём!`
                 : `${event.name} is starting! Evolve to get the special move!`;
             }
 
             triggerNotification(
-              lang === 'cs' ? `🔴 Začal event: ${event.name}` : `🔴 Active Event: ${event.name}`,
+              lang === 'cs' ? `🔴 Začal event: ${event.name}` : lang === 'ru' ? `🔴 Активное событие: ${event.name}` : `🔴 Active Event: ${event.name}`,
               bodyText,
               event.eventType,
               event.link
@@ -661,8 +764,8 @@ function App() {
           {scraperStatus.lastScrapedAt && (
             <span
               title={scraperStatus.isRunning
-                ? (lang === 'cs' ? 'Stahování dat...' : 'Fetching data...')
-                : (lang === 'cs' ? `Příští aktualizace: ${new Date(scraperStatus.nextScrapeAt || '').toLocaleTimeString(lang === 'cs' ? 'cs-CZ' : 'en-US', { hour: '2-digit', minute: '2-digit' })}` : `Next update: ${new Date(scraperStatus.nextScrapeAt || '').toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`)}
+                ? (lang === 'cs' ? 'Stahování dat...' : lang === 'ru' ? 'Загрузка данных...' : 'Fetching data...')
+                : (lang === 'cs' ? `Příští aktualizace: ${new Date(scraperStatus.nextScrapeAt || '').toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' })}` : lang === 'ru' ? `Следующее обновление: ${new Date(scraperStatus.nextScrapeAt || '').toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}` : `Next update: ${new Date(scraperStatus.nextScrapeAt || '').toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`)}
               style={{
                 fontSize: '10px',
                 color: 'var(--text-muted)',
@@ -679,14 +782,14 @@ function App() {
                     background: 'var(--accent-color)',
                     animation: 'pulse 1.5s ease-in-out infinite'
                   }} />
-                  {lang === 'cs' ? 'Aktualizuji...' : 'Updating...'}
+                  {lang === 'cs' ? 'Aktualizuji...' : lang === 'ru' ? 'Обновляю...' : 'Updating...'}
                 </span>
               ) : (
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                   <Clock size={10} />
-                  {lang === 'cs' ? 'Aktualizováno: ' : 'Updated: '}
+                  {lang === 'cs' ? 'Aktualizováno: ' : lang === 'ru' ? 'Обновлено: ' : 'Updated: '}
                   {new Date(scraperStatus.lastScrapedAt).toLocaleTimeString(
-                    lang === 'cs' ? 'cs-CZ' : 'en-US',
+                    lang === 'cs' ? 'cs-CZ' : lang === 'ru' ? 'ru-RU' : 'en-US',
                     { hour: '2-digit', minute: '2-digit' }
                   )}
                 </span>
@@ -775,11 +878,13 @@ function App() {
           <p style={{ fontSize: '10px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.4' }}>
             {lang === 'cs' 
               ? 'Tato aplikace je neoficiální fanouškovský projekt. Nemá žádné přidružení ke společnostmi Niantic, Nintendo nebo The Pokémon Company.' 
+              : lang === 'ru'
+              ? 'Это приложение является неофициальным фанатским проектом и не связано с Niantic, Nintendo или The Pokémon Company.'
               : 'This app is an unofficial fan project and has no affiliation with Niantic, Nintendo, or The Pokémon Company.'
             }
           </p>
           <p style={{ fontSize: '10px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.4' }}>
-            {lang === 'cs' ? 'Data událostí poskytuje ' : 'Event data powered by '}{' '}
+            {lang === 'cs' ? 'Data událostí poskytuje ' : lang === 'ru' ? 'Данные о событиях от ' : 'Event data powered by '}{' '}
             <a 
               href="https://leekduck.com" 
               target="_blank" 
@@ -806,7 +911,7 @@ function App() {
             onMouseOver={(e) => (e.currentTarget.style.color = 'var(--accent-color)')}
             onMouseOut={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
           >
-            {lang === 'cs' ? 'Ochrana soukromí & Právní info' : 'Privacy Policy & Disclaimer'}
+            {lang === 'cs' ? 'Ochrana soukromí & Právní info' : lang === 'ru' ? 'Конфиденциальность и правовая информация' : 'Privacy Policy & Disclaimer'}
           </a>
         </div>
       </aside>
@@ -831,13 +936,13 @@ function App() {
                       animation: 'pulse 1.5s ease-in-out infinite',
                       flexShrink: 0
                     }} />
-                    {lang === 'cs' ? 'Aktualizuji...' : 'Updating...'}
+                    {lang === 'cs' ? 'Aktualizuji...' : lang === 'ru' ? 'Обновляю...' : 'Updating...'}
                   </>
                 ) : (
                   <>
                     <Clock size={10} />
                     {new Date(scraperStatus.lastScrapedAt).toLocaleTimeString(
-                      lang === 'cs' ? 'cs-CZ' : 'en-US',
+                      lang === 'cs' ? 'cs-CZ' : lang === 'ru' ? 'ru-RU' : 'en-US',
                       { hour: '2-digit', minute: '2-digit' }
                     )}
                   </>
@@ -859,6 +964,8 @@ function App() {
               <>
                 {activeTab === 'events' && (
                   <div className="tab-content events-tab">
+                    <h1 className="tab-seo-title">{t.tabs_events}</h1>
+                    <p className="tab-seo-description">{t.seo_events_desc}</p>
                     {/* Active / Upcoming Status Tabs */}
                     {viewMode !== 'timeline' && (
                       <div className="status-tabs-container">
@@ -868,7 +975,7 @@ function App() {
                           style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                         >
                           <Play size={14} fill="currentColor" stroke="none" />
-                          {lang === 'cs' ? 'Probíhá' : 'Active'}
+                          {lang === 'cs' ? 'Probíhá' : lang === 'ru' ? 'Активные' : 'Active'}
                         </button>
                         <button 
                           className={`status-tab-btn ${statusFilter === 'upcoming' ? 'active' : ''}`}
@@ -876,7 +983,7 @@ function App() {
                           style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                         >
                           <Clock size={14} />
-                          {lang === 'cs' ? 'Připravuje se' : 'Upcoming'}
+                          {lang === 'cs' ? 'Připravuje se' : lang === 'ru' ? 'Скоро' : 'Upcoming'}
                         </button>
                       </div>
                     )}

@@ -242,6 +242,51 @@ const trackGAEvent = (action: string, category: string, label?: string) => {
   }
 };
 
+const getLangFromPath = (path: string): Language | null => {
+  const cleanPath = path.toLowerCase().replace(/\/$/, '');
+  if (cleanPath === '/cs' || cleanPath === '/sk') return 'cs';
+  if (cleanPath === '/jp' || cleanPath === '/ja') return 'ja';
+  if (cleanPath === '/ru') return 'ru';
+  if (cleanPath === '/us' || cleanPath === '/en') return 'en';
+  return null;
+};
+
+const getPathForLang = (l: Language): string => {
+  if (l === 'cs') return '/cs';
+  if (l === 'ja') return '/jp';
+  if (l === 'ru') return '/ru';
+  return '/us';
+};
+
+const detectUserLanguage = (): Language => {
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (tz) {
+      const czSvkTzs = ['europe/prague', 'europe/bratislava', 'europe/kosice'];
+      if (czSvkTzs.some(t => tz.toLowerCase().includes(t))) {
+        return 'cs';
+      }
+      if (tz.toLowerCase().includes('asia/tokyo')) {
+        return 'ja';
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to detect timezone:', e);
+  }
+
+  const browserLanguages = navigator.languages
+    ? navigator.languages.map(l => l.toLowerCase().substring(0, 2))
+    : [navigator.language.toLowerCase().substring(0, 2)];
+
+  for (const bLang of browserLanguages) {
+    if (bLang === 'cs' || bLang === 'sk') return 'cs';
+    if (bLang === 'ja') return 'ja';
+    if (bLang === 'ru') return 'ru';
+  }
+
+  return 'en';
+};
+
 function App() {
   const [activeTab, setActiveTab] = useState<TabType>('events');
   const showAds = activeTab !== 'settings' && activeTab !== 'admin';
@@ -273,13 +318,49 @@ function App() {
     totalEvents: number;
   }>({ lastScrapedAt: null, nextScrapeAt: null, isRunning: false, totalEvents: 0 });
   const [lang, setLang] = useState<Language>(() => {
+    // 1. Zkusíme zjistit jazyk z URL path
+    const urlLang = getLangFromPath(window.location.pathname);
+    if (urlLang) {
+      localStorage.setItem('pogo_tracker_lang', urlLang);
+      return urlLang;
+    }
+
+    // 2. Pokud není v URL, zkusíme localStorage
     const saved = localStorage.getItem('pogo_tracker_lang');
-    if (saved === 'en' || saved === 'cs' || saved === 'ja') return saved;
-    const browserLang = navigator.language.substring(0, 2);
-    if (browserLang === 'cs') return 'cs';
-    if (browserLang === 'ja') return 'ja';
-    return 'en';
+    if (saved === 'en' || saved === 'cs' || saved === 'ja' || saved === 'ru') return saved as Language;
+
+    // 3. Jinak automatická detekce lokace/jazyka
+    const detected = detectUserLanguage();
+    localStorage.setItem('pogo_tracker_lang', detected);
+    return detected;
   });
+
+  // Udržování správné URL cesty podle jazyka (pokud neběžíme v Capacitoru)
+  useEffect(() => {
+    const isCapacitor = !!(window as any).Capacitor || 
+                        window.location.protocol === 'capacitor:' || 
+                        window.location.protocol === 'file:';
+    if (isCapacitor) return;
+
+    const expectedPath = getPathForLang(lang);
+    if (window.location.pathname !== expectedPath) {
+      window.history.replaceState(null, '', expectedPath + window.location.search + window.location.hash);
+    }
+  }, [lang]);
+
+  // Naslouchání na tlačítka zpět/vpřed v prohlížeči (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      const urlLang = getLangFromPath(window.location.pathname);
+      if (urlLang && urlLang !== lang) {
+        setLang(urlLang);
+        localStorage.setItem('pogo_tracker_lang', urlLang);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [lang]);
   
   const [timezone, setTimezone] = useState<string>(() => {
     return localStorage.getItem('pogo_tracker_timezone') || Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Prague';
@@ -388,11 +469,21 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  const t = translations[lang];
+  const t = translations[lang] ?? translations['en'];
 
   const handleSetLang = (newLang: Language) => {
     setLang(newLang);
     localStorage.setItem('pogo_tracker_lang', newLang);
+
+    const isCapacitor = !!(window as any).Capacitor || 
+                        window.location.protocol === 'capacitor:' || 
+                        window.location.protocol === 'file:';
+    if (!isCapacitor) {
+      const newPath = getPathForLang(newLang);
+      if (window.location.pathname !== newPath) {
+        window.history.pushState(null, '', newPath + window.location.search + window.location.hash);
+      }
+    }
   };
 
   const getAdjustedEvents = (): EventData[] => {
@@ -859,6 +950,8 @@ function App() {
               <>
                 {activeTab === 'events' && (
                   <div className="tab-content events-tab">
+                    <h1 className="tab-seo-title">{t.tabs_events}</h1>
+                    <p className="tab-seo-description">{t.seo_events_desc}</p>
                     {/* Active / Upcoming Status Tabs */}
                     {viewMode !== 'timeline' && (
                       <div className="status-tabs-container">

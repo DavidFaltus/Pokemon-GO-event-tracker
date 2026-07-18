@@ -1,4 +1,4 @@
-export type Language = 'cs' | 'en' | 'ja';
+export type Language = 'cs' | 'en' | 'ja' | 'ru';
 
 export const translations = {
   cs: {
@@ -10,6 +10,10 @@ export const translations = {
     tabs_eggs: "Vejce",
     tabs_ranking: "Žebříčky",
     tabs_settings: "Nastavení",
+    seo_events_desc: "Kompletní kalendář událostí v Pokémon GO. Sledujte aktuální a nadcházející Community Days, Spotlight Hours, Raid Hours, Rakeťáky a další herní akce přizpůsobené vašemu času.",
+    seo_raid_desc: "Průvodce Pokémon GO raidy. Zde najdete aktuální sestavu 1-Star, 3-Star, 5-Star a Mega raid bossů, doporučené countery, slabosti a přehled 100% IV hodnot (CP).",
+    seo_rocket_desc: "Průvodce boji s Team GO Rocket. Zjistěte, jak porazit řadové členy (Grunts), lídry Sierra, Cliffa, Arla a šéfa Giovanniho. Přehled aktuálních sestav a nejlepších counterů.",
+    seo_ranking_desc: "PvE žebříček nejlepších Pokémonů a útoků pro nájezdy (raidy). Porovnejte statistiky útoku, obrany, výdrže a zjistěte optimální kombinace útoků (movesety) s nejvyšším DPS.",
 
     // Ditto & Eggs
     ditto_disguises_title: "Ditto Převleky",
@@ -187,6 +191,10 @@ export const translations = {
     tabs_eggs: "Eggs",
     tabs_ranking: "Rankings",
     tabs_settings: "Settings",
+    seo_events_desc: "Complete event calendar for Pokémon GO. Keep track of active and upcoming Community Days, Spotlight Hours, Raid Hours, Rocket Takeovers, and other game events adjusted to your local timezone.",
+    seo_raid_desc: "Pokémon GO Raid Guide. View the current 1-Star, 3-Star, 5-Star, and Mega Raid boss lineups, recommended counters, weaknesses, and 100% IV (CP) stats.",
+    seo_rocket_desc: "Team GO Rocket counter guide. Learn how to defeat Grunts, Leaders (Sierra, Cliff, Arlo), and Boss Giovanni. Find the best matchup strategies and current shadow lineups.",
+    seo_ranking_desc: "PvE Pokémon rankings and database. Compare attack, defense, and stamina stats to find the best attackers and optimal movesets with highest DPS.",
 
     // Ditto & Eggs
     ditto_disguises_title: "Ditto Disguises",
@@ -365,6 +373,10 @@ export const translations = {
     tabs_eggs: "タマゴ",
     tabs_ranking: "ランキング",
     tabs_settings: "設定",
+    seo_events_desc: "ポケモンGOのイベントカレンダー。コミュニティ・デイ、スポットライトアワー、レイドアワー、ロケット団占拠などの開催スケジュールをローカルタイムゾーンで確認できます。",
+    seo_raid_desc: "ポケモンGO レイドボス対策ガイド。現在出現中の星1、星3、伝説（星5）、メガレイドボスの対策ポケモン、弱点、個体値100%（CP）の一覧を表示します。",
+    seo_rocket_desc: "GOロケット団対策ガイド。したっぱ、リーダー（シエラ、クリフ、アルロ）、ボスのサカキの戦闘ラインナップとおすすめの対策ポケモンを紹介します。",
+    seo_ranking_desc: "レイドバトル（PvE）向けの最強ポケモンランキング。攻撃・防御・HPの種族値や、DPS（秒間ダメージ）が最も高くなるおすすめの最適技構成を比較できます。",
 
     // Ditto & Eggs
     ditto_disguises_title: "メタモンのへんそう",
@@ -532,6 +544,188 @@ export const translations = {
     legal_disclaimer_title: "法的免責事項",
     legal_disclaimer_text: "このアプリはファンによる非公式プロジェクトであり、Niantic、Nintendo、Game Freak、Creatures、またはポケモンカンパニーとは一切関係ありません。ポケモンのコンテンツ、名称、画像、商標はそれぞれの所有者の財産であり、フェアユースの原則に基づき情報提供目的で使用されています。",
     legal_powered_by: "イベントデータは以下のコミュニティプロジェクトが提供しています"
+  },
+
+  ru: {
+    // Nav
+    tabs_events: "События",
+    tabs_raid: "Рейды",
+    tabs_rocket: "Ракета",
+    tabs_ditto: "Метаморф",
+    tabs_eggs: "Яйца",
+    tabs_ranking: "Рейтинг",
+    tabs_settings: "Настройки",
+    seo_events_desc: "Полный календарь событий Pokémon GO. Отслеживайте активные и предстоящие Дни сообщества, Часы спавна, Часы рейдов и другие мероприятия с учетом вашего часового пояса.",
+    seo_raid_desc: "Рейд-гайд Pokémon GO. Узнайте текущих боссов 1-Star, 3-Star, 5-Star и Мега-рейдов, лучшие контр-пики, уязвимости и характеристики 100% IV (CP).",
+    seo_rocket_desc: "Гайд по сражениям с Командой R. Узнайте, как победить пехотинцев (Grunts), лидеров Сиерру, Клиффа, Арло и босса Джованни. Список составов и лучших покемонов против них.",
+    seo_ranking_desc: "Рейтинг PvE покемонов для рейдов. Сравнивайте показатели атаки, защиты и выносливости, чтобы найти лучших атакующих покемонов с максимальным DPS.",
+
+    // Ditto & Eggs
+    ditto_disguises_title: "Маскировки Метаморфа",
+    ditto_disguises_desc: "Метаморф маскируется под этих покемонов в дикой природе. Вы узнаете, что это Метаморф, только после поимки! Все маскировки могут быть блестящими (и превратиться в Блестящего Метаморфа).",
+    eggs_pool_title: "Вылупление из яиц",
+    eggs_pool_desc: "Текущий список покемонов, вылупляющихся из яиц каждой дистанции в этом сезоне.",
+    rarity_level: "Уровень редкости",
+    egg_cp_max: "Макс. CP (IV 100%)",
+
+    // Rankings
+    ranking_title: "PvE Рейтинг покемонов",
+    ranking_search_placeholder: "Поиск покемона...",
+    ranking_type_all: "Все типы",
+    ranking_attack: "Атака",
+    ranking_defense: "Защита",
+    ranking_stamina: "Выносливость",
+    ranking_max_cp: "Макс. CP",
+    ranking_ideal_moveset: "Идеальный набор атак (PvE)",
+    ranking_no_results: "Покемоны не найдены.",
+    ranking_score: "Очки",
+    ranking_show_details: "Показать характеристики и атаки",
+
+    // Header
+    header_live: "Актуальные данные",
+    header_offline: "Офлайн режим",
+    header_active: "Активно",
+
+    // Filters
+    filter_all: "Все",
+    filter_cd: "Community Day",
+    filter_spotlight: "Spotlight Hour",
+    filter_raid_hour: "Raid Hour",
+    filter_rocket: "Ракетная Команда",
+    filter_gbl: "GO Боевая Лига",
+    filter_max_mondays: "Max Mondays",
+    filter_other: "Другие",
+
+    // Status
+    status_active: "Активно",
+    status_upcoming: "Скоро",
+    status_ended: "Завершено",
+    status_starts_in: "Начало через: ",
+    status_ends_in: "Конец через: ",
+    status_ended_label: "Завершено",
+
+    // Event Details
+    details_official_link: "Смотреть на Leek Duck",
+    details_raid_bosses: "Рейд-боссы:",
+    details_recommended_counters: "Рекомендованные контрпикеры:",
+    details_weaknesses: "Слабости",
+    details_level_mega: "Мега и Прайм",
+    details_level_advanced: "Продвинутые контрпикеры",
+    details_level_budget: "Для начинающих",
+    details_standard_cp: "Обычный CP:",
+    details_weather_cp: "CP с погодным бонусом:",
+    details_boost_weather: "Погода-бустер:",
+    details_shiny_version: "Блестящая версия:",
+    details_shiny_available: "Блестящий доступен в рейдах (шанс ~1:20)",
+    details_empty_category: "В этой категории событий не найдено.",
+    details_select_day: "Выберите день в календаре для просмотра событий.",
+    details_no_events_day: "На этот день событий не запланировано.",
+    details_events_for: "События для:",
+    details_add_to_calendar: "Добавить в Google Календарь",
+    details_special_event_title: "Гид по специальному событию",
+    details_debuts: "Дебюты и новинки:",
+    details_bonuses: "Бонусы события:",
+    details_spawns: "Появление в дикой природе:",
+    details_eggs: "Пул яиц:",
+    details_research: "Полевые исследования:",
+    details_custom_notes: "Мои заметки к событию:",
+    details_custom_notes_placeholder: "Пишите здесь свои планы на событие, время рейдов...",
+    details_checklist: "Мой планировщик и задачи:",
+    details_add_task: "Добавить",
+    details_new_task_placeholder: "Напр., сделать особый обмен",
+    details_priority_spawn: "Приоритет",
+    details_shiny_short: "Шанс блестящего",
+
+    // Rocket Tab
+    rocket_tab_leaders: "Лидеры и Босс",
+    rocket_tab_grunts: "Гид по рядовым",
+    rocket_boss_badge: "Босс Команды GO Ракета",
+    rocket_leader_badge: "Лидер Команды GO Ракета",
+    rocket_active_reward: "Активная награда",
+    rocket_doporuceno: "Стоит фармить",
+    rocket_lineup: "Боевой состав",
+    rocket_slot_1: "Слот 1",
+    rocket_slot_2: "Слот 2",
+    rocket_slot_3: "Слот 3",
+    rocket_counters: "Рекомендуемые команды-контрпикеры",
+    rocket_best_counters: "Лучшие контрпикеры:",
+    rocket_hub_rating: "Рейтинг PoGO Hub",
+    rocket_lineup_counters: "Рекомендуемые команды против всего состава",
+    rocket_or: "или",
+    rocket_grunt_phrase: "Фраза:",
+    rocket_grunt_reward: "Награда (Тёмный):",
+    rocket_grunt_counters: "Лучшие контрпикеры:",
+    rocket_grunt_difficulty: "Сложность:",
+    rocket_grunt_worth: "Стоит сражаться?",
+    rocket_yes: "Да, однозначно!",
+    rocket_no: "Нет, лучше игнорировать",
+    rocket_difficulty_easy: "Лёгкая",
+    rocket_difficulty_medium: "Средняя",
+    rocket_difficulty_hard: "Сложная",
+
+    // Settings Tab
+    settings_title: "Настройки приложения",
+    settings_language: "Язык приложения",
+    settings_push_title: "Системные push-уведомления",
+    settings_status: "Статус:",
+    settings_granted: "Разрешено",
+    settings_denied: "Заблокировано",
+    settings_default: "Не разрешено",
+    settings_enable_btn: "Включить уведомления браузера",
+    settings_test_btn: "Отправить тестовое уведомление",
+    settings_help: "Если включить уведомления, приложение сообщит вам о начале нового события, даже если оно в фоновом режиме.",
+    settings_filter_title: "Фильтр уведомлений",
+    settings_visibility_title: "Отображаемые типы событий",
+    settings_history_title: "История уведомлений",
+    settings_mark_read: "Отметить все как прочитанные",
+    settings_clear: "Очистить историю",
+    settings_empty_history: "Уведомлений ещё не было.",
+
+    // Pref labels
+    pref_all: "Все уведомления",
+    pref_cd: "Community Days",
+    pref_spotlight: "Spotlight Hours",
+    pref_raid_hour: "Raid Hours",
+    pref_raid_battles: "Ротации рейдов",
+    pref_major: "Крупные события",
+    pref_rocket: "Захваты Команды GO Ракета",
+    pref_gbl: "GO Боевая Лига и День",
+    pref_hatch: "Дни вылупления и яичные события",
+    pref_research_day: "Дни исследований и задания",
+    pref_showcase: "Витрины PokéStop",
+    pref_max_mondays: "Max Mondays",
+    settings_layout_title: "Вид событий",
+    settings_layout_list: "Показать списком",
+    settings_layout_timeline: "Показать временной шкалой",
+    details_pokemongo_link: "Официальное событие",
+
+    // Loading
+    loading_text: "Загрузка событий Pokémon GO...",
+
+    // Bonuses
+    bonuses_title: "Активные бонусы прямо сейчас",
+    bonuses_free_pass: "Бесплатный ежедневный Raid Pass из залов",
+    bonuses_max_coins: "Макс. 50 PokéCoins в день из залов",
+    bonuses_active_now: "Активные бонусы события:",
+    bonuses_cd_special: "3-часовые приманки и благовония активны",
+    bonuses_cd_stardust: "Половина звёздной пыли за обмен и доп. особый обмен",
+    bonuses_rocket_frustration: "Можно убрать Ярость с помощью ТМ",
+    bonuses_spotlight_double: "Двойной бонус за поимку/передачу",
+    bonuses_show_btn: "Показать активные бонусы",
+    gps_title: "GPS и часовые пояса",
+    gps_sync_btn: "Синхронизировать время через GPS",
+    gps_syncing: "Определяю местоположение и часовой пояс...",
+    gps_success: "Синхронизация выполнена! Часовой пояс установлен: ",
+    gps_error: "Не удалось получить местоположение. Убедитесь, что GPS включён.",
+    gps_current_tz: "Текущий часовой пояс: ",
+    timeline_toggle_list: "Список",
+    timeline_toggle_timeline: "Временная шкала",
+    active_filter_now: "Прямо сейчас",
+    active_filter_week: "На этой неделе",
+    active_filter_month: "В этом месяце",
+    legal_disclaimer_title: "Правовая оговорка",
+    legal_disclaimer_text: "Это приложение является неофициальным фанатским проектом и не имеет никакой связи или аффилиации с компаниями Niantic, Nintendo, Game Freak, Creatures или The Pokémon Company. Весь контент, имена, изображения и торговые марки покемонов являются собственностью соответствующих правообладателей и используются в информационных целях согласно принципу добросовестного использования.",
+    legal_powered_by: "Данные о событиях предоставляются и поддерживаются сообществом"
   }
 };
 
@@ -540,6 +734,7 @@ export function getLocalizedString(str: any, lang: Language): string {
   if (typeof str === 'string') return str;
   if (lang === 'ja') return str.ja || str.en || str.cs || '';
   if (lang === 'cs') return str.cs || str.en || '';
+  if (lang === 'ru') return str.ru || str.en || str.cs || '';
   return str.en || str.cs || '';
 }
 
@@ -548,9 +743,10 @@ export function getLocalizedString(str: any, lang: Language): string {
  * Usage: t3(lang, 'Czech text', 'English text', 'Japanese text')
  * If Japanese text is omitted, falls back to English.
  */
-export function t3(lang: Language, cs: string, en: string, ja?: string): string {
+export function t3(lang: Language, cs: string, en: string, ja?: string, ru?: string): string {
   if (lang === 'ja') return ja || en;
   if (lang === 'cs') return cs;
+  if (lang === 'ru') return ru || en;
   return en;
 }
 
@@ -560,5 +756,6 @@ export function t3(lang: Language, cs: string, en: string, ja?: string): string 
 export function getLocale(lang: Language): string {
   if (lang === 'ja') return 'ja-JP';
   if (lang === 'cs') return 'cs-CZ';
+  if (lang === 'ru') return 'ru-RU';
   return 'en-US';
 }

@@ -484,3 +484,171 @@
   flex-direction: column;
   gap: 12px;
 }
+
+/* Focus Section (Top 5 Drops) */
+.grunts-focus-section {
+  background-color: var(--bg-card);
+  border: 1px solid rgba(250, 204, 21, 0.25); /* Gold outline */
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.05) 0%, rgba(23, 25, 33, 0.4) 100%);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 20px rgba(250, 204, 21, 0.05);
+}
+
+.grunts-focus-section h3 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #facc15; /* Gold */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.focus-description {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-top: -4px;
+}
+
+.focus-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.focus-card {
+  display: flex;
+  align-items: center;
+  background-color: rgba(6, 7, 9, 0.35);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 10px 14px;
+  gap: 14px;
+  transition: all 0.2s ease;
+}
+
+.focus-card:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+  border-color: rgba(250, 204, 21, 0.3);
+}
+
+.focus-card-rank {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #facc15; /* Gold */
+  min-width: 24px;
+  text-align: center;
+}
+
+.focus-card-pokemon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1.2;
+  min-width: 0;
+}
+
+.focus-pokemon-img-wrapper {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.focus-pokemon-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.focus-pokemon-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.focus-pokemon-name {
+  font-size: 0.85rem;
+  font-weight: 750;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.focus-pokemon-evo {
+  font-size: 0.65rem;
+  color: #34d399; /* Green */
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.focus-card-grunt {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex: 1.5;
+  min-width: 0;
+  text-align: right;
+}
+
+.focus-grunt-phrase {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.focus-grunt-type {
+  display: inline-flex;
+}
+
+@media (max-width: 480px) {
+  .focus-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 12px;
+  }
+  
+  .focus-card-rank {
+    align-self: flex-start;
+    min-width: unset;
+    font-size: 0.95rem;
+  }
+  
+  .focus-card-pokemon {
+    flex: unset;
+  }
+  
+  .focus-card-grunt {
+    flex: unset;
+    align-items: flex-start;
+    text-align: left;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 6px;
+  }
+  
+  .focus-grunt-phrase {
+    max-width: 100%;
+    white-space: normal;
+  }
+}

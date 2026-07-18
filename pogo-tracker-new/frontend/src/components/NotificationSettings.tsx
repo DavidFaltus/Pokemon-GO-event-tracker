@@ -63,7 +63,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
     if (!navigator.geolocation) {
       setSyncStatus({
         type: 'error',
-        text: lang === 'cs' ? 'Geolokace není tímto prohlížečem podporována.' : 'Geolocation is not supported by this browser.'
+        text: lang === 'cs' ? 'Geolokace není tímto prohlížečem podporována.' : lang === 'ru' ? 'Геолокация не поддерживается этим браузером.' : 'Geolocation is not supported by this browser.'
       });
       return;
     }
@@ -115,10 +115,12 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
 
   const testNotification = () => {
     triggerNotification(
-      lang === 'cs' ? "🎯 Testovací notifikace" : "🎯 Test Notification",
+      lang === 'cs' ? "🎯 Testovací notifikace" : lang === 'ru' ? "🎯 Тестовое уведомление" : "🎯 Test Notification",
       lang === 'cs' 
         ? "Vše funguje! Budeme vás upozorňovat na začátky Pokémon GO eventů s meta radami." 
-        : "Everything works! We will notify you when Pokemon GO events start with helpful tips.",
+        : lang === 'ru'
+          ? "Всё работает! Мы уведомим вас о начале событий Pokémon GO с полезными советами."
+          : "Everything works! We will notify you when Pokemon GO events start with helpful tips.",
       "general"
     );
   };
@@ -175,6 +177,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
             <option value="cs">Čeština (Czech)</option>
             <option value="en">English</option>
             <option value="ja">日本語 (Japanese)</option>
+            <option value="ru">Русский (Russian)</option>
           </select>
         </div>
       </div>
@@ -334,12 +337,14 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
       <div className="settings-card privacy-card" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
           <span className="duotone-icon duotone-white"><Lock size={16} /></span>
-          {lang === 'cs' ? 'Ochrana soukromí' : 'Privacy Policy'}
+          {lang === 'cs' ? 'Ochrana soukromí' : lang === 'ru' ? 'Политика конфиденциальности' : 'Privacy Policy'}
         </h3>
         <p className="help-text" style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
           {lang === 'cs' 
             ? 'Naše zásady ochrany osobních údajů v souladu s nařízením GDPR a pravidly Google AdSense.' 
-            : 'Our privacy policy complies with GDPR regulations and Google AdSense guidelines.'
+            : lang === 'ru'
+              ? 'Наша политика конфиденциальности соответствует требованиям GDPR и правилам Google AdSense.'
+              : 'Our privacy policy complies with GDPR regulations and Google AdSense guidelines.'
           }
         </p>
         <a 
@@ -359,7 +364,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
             borderRadius: '8px'
           }}
         >
-          {lang === 'cs' ? 'Zobrazit Zásady ochrany osobních údajů' : 'View Privacy Policy'}
+          {lang === 'cs' ? 'Zobrazit Zásady ochrany osobních údajů' : lang === 'ru' ? 'Просмотреть политику конфиденциальности' : 'View Privacy Policy'}
         </a>
       </div>
 
@@ -368,12 +373,14 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
         <div className="settings-card admin-access-card" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
             <span className="duotone-icon duotone-white"><Lock size={16} /></span>
-            {lang === 'cs' ? 'Administrace systému' : 'System Administration'}
+            {lang === 'cs' ? 'Administrace systému' : lang === 'ru' ? 'Системное администрирование' : 'System Administration'}
           </h3>
           <p className="help-text" style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-muted)' }}>
             {lang === 'cs'
               ? 'Administrační panel pro správce k ruční úpravě a přidávání herních událostí.'
-              : 'Administration panel for managers to manually edit and add game events.'
+              : lang === 'ru'
+                ? 'Панель администрирования для управляющих, позволяющая вручную редактировать и добавлять игровые события.'
+                : 'Administration panel for managers to manually edit and add game events.'
             }
           </p>
           <button
@@ -392,7 +399,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
             }}
           >
             <Lock size={14} />
-            {lang === 'cs' ? 'Vstoupit do administrace' : 'Enter Administration'}
+            {lang === 'cs' ? 'Vstoupit do administrace' : lang === 'ru' ? 'Войти в администрацию' : 'Enter Administration'}
           </button>
         </div>
       )}

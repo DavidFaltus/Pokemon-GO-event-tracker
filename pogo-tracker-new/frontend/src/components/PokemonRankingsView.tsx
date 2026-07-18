@@ -131,10 +131,11 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
 
   return (
     <div className="pokemon-rankings-container">
+      <p className="tab-seo-description">{(t as any).seo_ranking_desc}</p>
       <div className="rankings-header-card">
         <div className="rankings-title-row">
           <Trophy size={28} className="trophy-icon" />
-          <h2>{t.ranking_title}</h2>
+          <h1 className="tab-seo-title" style={{ margin: 0, padding: 0 }}>{t.ranking_title}</h1>
         </div>
 
         {/* Search Bar */}

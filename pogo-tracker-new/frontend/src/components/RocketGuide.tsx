@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './RocketGuide.css';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
@@ -191,13 +191,75 @@ const getGruntPhrase = (grunt: GruntData, lang: Language): string => {
 export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
   const [mode, setMode] = useState<ModeType>('leaders');
   const [selectedLeader, setSelectedLeader] = useState<string>('Giovanni');
-  const [gruntSearch, setGruntSearch] = useState<string>('');
   
   const [rocketData, setRocketData] = useState<{ giovanni: RocketMember; leaders: RocketMember[]; grunts: GruntData[] } | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const t = translations[lang];
+
+  const getShadowPokemonScore = (pokemonName: string): number => {
+    const baseRating = getPokemonHubRating(pokemonName);
+    const evoInfo = getEvolutionInfo(pokemonName);
+    const rating = evoInfo ? evoInfo.rating : baseRating;
+    
+    switch (rating) {
+      case 'S': return 5;
+      case 'A+': return 4.5;
+      case 'A': return 4;
+      case 'B': return 3;
+      case 'C': return 2;
+      default: return 1;
+    }
+  };
+
+  const topDrops = useMemo(() => {
+    if (!rocketData || !rocketData.grunts) return [];
+    
+    const drops: {
+      pokemon: string;
+      score: number;
+      rating: string;
+      evoName?: string;
+      gruntType: string;
+      gruntPhraseCs: string;
+      gruntPhraseEn: string;
+    }[] = [];
+    
+    rocketData.grunts.forEach(grunt => {
+      grunt.shadowPokemon.forEach(p => {
+        const score = getShadowPokemonScore(p);
+        const baseRating = getPokemonHubRating(p);
+        const evoInfo = getEvolutionInfo(p);
+        const rating = evoInfo ? evoInfo.rating : baseRating;
+        
+        drops.push({
+          pokemon: p,
+          score,
+          rating: rating || 'C',
+          evoName: evoInfo?.evolution,
+          gruntType: grunt.type,
+          gruntPhraseCs: grunt.phraseCs,
+          gruntPhraseEn: grunt.phraseEn
+        });
+      });
+    });
+    
+    drops.sort((a, b) => b.score - a.score);
+    
+    const uniqueDrops: typeof drops = [];
+    const seenPokemon = new Set<string>();
+    
+    for (const drop of drops) {
+      if (!seenPokemon.has(drop.pokemon.toLowerCase())) {
+        seenPokemon.add(drop.pokemon.toLowerCase());
+        uniqueDrops.push(drop);
+        if (uniqueDrops.length === 5) break;
+      }
+    }
+    
+    return uniqueDrops;
+  }, [rocketData]);
 
   useEffect(() => {
     const fetchRocket = async () => {
@@ -242,13 +304,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
 
   const currentMember = getMember(selectedLeader);
 
-  const filteredGrunts = rocketData.grunts.filter(grunt => {
-    const phrase = getGruntPhrase(grunt, lang);
-    const matchesSearch = 
-      phrase.toLowerCase().includes(gruntSearch.toLowerCase()) ||
-      grunt.type.toLowerCase().includes(gruntSearch.toLowerCase());
-    return matchesSearch;
-  });
+  const filteredGrunts = rocketData ? rocketData.grunts : [];
 
   const getDifficultyLabel = (diff: string) => {
     if (diff === 'Easy') return t.rocket_difficulty_easy;
@@ -304,6 +360,8 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
 
   return (
     <div className="rocket-guide">
+      <h1 className="tab-seo-title">{t.tabs_rocket}</h1>
+      <p className="tab-seo-description">{(t as any).seo_rocket_desc}</p>
       {/* Mode Switcher */}
       <div className="mode-switcher">
         <button 
@@ -500,13 +558,58 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
       ) : (
         /* Grunts List Mode */
         <div className="grunts-container">
-          <input
-            type="text"
-            placeholder={lang === 'ja' ? "セリフやタイプでさがす..." : lang === 'cs' ? "Hledat podle fráze nebo typu..." : "Search by phrase or type..."}
-            className="search-input"
-            value={gruntSearch}
-            onChange={(e) => setGruntSearch(e.target.value)}
-          />
+          {/* Focus Section (Top 5 Drops) */}
+          {topDrops.length > 0 && (
+            <div className="grunts-focus-section">
+              <h3>
+                <span className="duotone-icon duotone-yellow"><Trophy size={16} fill="currentColor" stroke="none" /></span>
+                {lang === 'cs' ? 'Doporučené cíle (Top 5 Shadow Pokémonů)' : lang === 'ja' ? '注目すべきしたっぱ (トップ5ドロップ)' : 'Target Priority (Top 5 Shadow Drops)'}
+              </h3>
+              <p className="focus-description">
+                {lang === 'cs' 
+                  ? 'Tito shadow Pokémoni se nejvíce vyplatí farmit na základě síly jejich evolucí v PvE.' 
+                  : lang === 'ja' 
+                  ? 'PvEの強さと進化先に基づいて、最も捕まえる価値が高いシャドウポケモンです。' 
+                  : 'These shadow Pokémon are the most rewarding to hunt based on their PvE evolution strength.'}
+              </p>
+              <div className="focus-grid">
+                {topDrops.map((drop, idx) => (
+                  <div key={idx} className="focus-card">
+                    <div className="focus-card-rank">#{idx + 1}</div>
+                    <div className="focus-card-pokemon">
+                      <div className="focus-pokemon-img-wrapper">
+                        <ShadowIcon style={{ position: 'absolute', top: '-2px', right: '-2px', width: '10px', height: '10px', filter: 'none', color: '#c084fc' }} />
+                        <img 
+                          src={getPokemonIconUrl(drop.pokemon)} 
+                          alt={drop.pokemon} 
+                          className="focus-pokemon-img"
+                          onError={(e) => {
+                            handlePokemonImageError(e.target as HTMLImageElement, drop.pokemon);
+                          }}
+                        />
+                      </div>
+                      <div className="focus-pokemon-meta">
+                        <span className="focus-pokemon-name">{getPokemonName(drop.pokemon, lang)}</span>
+                        {drop.evoName && (
+                          <span className="focus-pokemon-evo">
+                            ➔ {lang === 'ja' ? 'シャドウ' : 'Shadow'} {getPokemonName(drop.evoName, lang)} ({drop.rating} Tier)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="focus-card-grunt">
+                      <div className="focus-grunt-phrase">
+                        "{lang === 'cs' ? drop.gruntPhraseCs : lang === 'ja' ? getGruntPhrase({ phraseCs: drop.gruntPhraseCs, phraseEn: drop.gruntPhraseEn, type: drop.gruntType } as any, 'ja') : drop.gruntPhraseEn}"
+                      </div>
+                      <div className="focus-grunt-type">
+                        <TypeBadge typeStr={drop.gruntType} lang={lang} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="grunts-list">
             {filteredGrunts.map((grunt, idx) => (

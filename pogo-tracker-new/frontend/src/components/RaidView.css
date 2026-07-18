@@ -20,6 +20,10 @@
     gap: 16px;
     align-items: start;
   }
+
+  .raid-boss-card.expanded {
+    grid-column: 1 / -1;
+  }
 }
 
 .raid-boss-card {

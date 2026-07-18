@@ -34,6 +34,8 @@ export const DittoEggsView: React.FC<DittoEggsViewProps> = ({ lang, mode }) => {
     <div className="ditto-eggs-view-container">
       {mode === 'ditto' ? (
         <div className="ditto-section">
+          <h1 className="tab-seo-title">{t.ditto_disguises_title}</h1>
+          <p className="tab-seo-description">{t.ditto_disguises_desc}</p>
           <div className="ditto-disguises-grid">
             {dittoDisguises.map(poke => (
               <div key={poke.name} className="disguise-card">
@@ -66,6 +68,8 @@ export const DittoEggsView: React.FC<DittoEggsViewProps> = ({ lang, mode }) => {
         </div>
       ) : (
         <div className="eggs-section">
+          <h1 className="tab-seo-title">{t.eggs_pool_title}</h1>
+          <p className="tab-seo-description">{t.eggs_pool_desc}</p>
           {/* Egg Tiers Selector */}
           <div className="egg-tiers-selector">
             {eggPools.map(pool => (

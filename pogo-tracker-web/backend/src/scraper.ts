@@ -1140,24 +1140,28 @@ function getPokemonImageUrl(name: string): string {
 
 const LEADER_COUNTERS_DB: Record<string, { megaCounters: string[]; advancedCounters: string[]; budgetCounters: string[] }> = {
   "giovanni": {
-    megaCounters: ["Mega Swampert", "Mega Garchomp", "Primal Kyogre"],
-    advancedCounters: ["Lucario (Counter/Aura Sphere)", "Mamoswine (Powder Snow/Avalanche)", "Kyogre (Waterfall/Surf)", "Terrakion (Double Kick/Sacred Sword)"],
-    budgetCounters: ["Machamp (Counter/Dynamic Punch)", "Glaceon (Frost Breath/Avalanche)", "Hariyama (Counter/Dynamic Punch)", "Swampert (Water Gun/Hydro Cannon)"]
+    // Persian (Normal) + Kangaskhan/Rhyperior/Machamp + Reshiram (Dragon/Fire)
+    megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Primal Kyogre"],
+    advancedCounters: ["Kyogre (Waterfall/Surf)", "Palkia (Dragon Tail/Spacial Rend)", "Terrakion (Double Kick/Sacred Sword)", "Zekrom (Dragon Breath/Outrage)"],
+    budgetCounters: ["Dragonite (Dragon Breath/Outrage)", "Swampert (Water Gun/Hydro Cannon)", "Garchomp (Dragon Tail/Outrage)", "Machamp (Counter/Dynamic Punch)"]
   },
   "cliff": {
-    megaCounters: ["Mega Gardevoir", "Mega Alakazam", "Mega Rayquaza"],
-    advancedCounters: ["Mewtwo (Confusion/Psystrike)", "Metagross (Bullet Punch/Meteor Mash)", "Togekiss (Charm/Dazzling Gleam)", "Lucario (Counter/Aura Sphere)"],
-    budgetCounters: ["Machamp (Counter/Dynamic Punch)", "Gardevoir (Charm/Dazzling Gleam)", "Alakazam (Confusion/Psychic)", "Espeon (Confusion/Psychic)"]
+    // Axew (Dragon) + Snorlax/Golurk/Galarian Weezing + Tyranitar/Camerupt/Gallade
+    megaCounters: ["Mega Gardevoir", "Mega Rayquaza", "Mega Salamence"],
+    advancedCounters: ["Mamoswine (Powder Snow/Avalanche)", "Togekiss (Charm/Dazzling Gleam)", "Sylveon (Charm/Moonblast)", "Glaceon (Frost Breath/Avalanche)"],
+    budgetCounters: ["Gardevoir (Charm/Dazzling Gleam)", "Clefable (Charm/Moonblast)", "Dragonite (Dragon Breath/Dragon Claw)", "Granbull (Charm/Play Rough)"]
   },
   "arlo": {
-    megaCounters: ["Mega Gardevoir", "Mega Rayquaza", "Mega Charizard Y"],
-    advancedCounters: ["Mamoswine (Powder Snow/Avalanche)", "Togekiss (Charm/Dazzling Gleam)", "Reshiram (Fire Fang/Overheat)", "Sylveon (Charm/Moonblast)"],
-    budgetCounters: ["Glaceon (Frost Breath/Avalanche)", "Gardevoir (Charm/Dazzling Gleam)", "Charizard (Fire Spin/Blast Burn)", "Clefable (Charm/Moonblast)"]
+    // Tyrunt (Rock/Dragon) + Steelix/Golurk/Slowbro + Alakazam/Charizard/Scizor
+    megaCounters: ["Mega Swampert", "Mega Gengar", "Mega Rayquaza"],
+    advancedCounters: ["Kyogre (Waterfall/Surf)", "Mamoswine (Powder Snow/Avalanche)", "Tyranitar (Smack Down/Stone Edge)", "Garchomp (Dragon Tail/Outrage)"],
+    budgetCounters: ["Swampert (Water Gun/Hydro Cannon)", "Glaceon (Frost Breath/Avalanche)", "Dragonite (Dragon Breath/Outrage)", "Machamp (Counter/Dynamic Punch)"]
   },
   "sierra": {
-    megaCounters: ["Mega Charizard Y", "Mega Gengar", "Mega Houndoom"],
-    advancedCounters: ["Chandelure (Fire Spin/Shadow Ball)", "Togekiss (Charm/Dazzling Gleam)", "Machamp (Counter/Dynamic Punch)", "Kartana (Razor Leaf/Leaf Blade)"],
-    budgetCounters: ["Charizard (Fire Spin/Blast Burn)", "Gardevoir (Charm/Dazzling Gleam)", "Flareon (Fire Spin/Overheat)", "Granbull (Charm/Play Rough)"]
+    // Amaura (Rock/Ice) + Blastoise/Flygon/Ferrothorn + Milotic/Houndoom/Steelix
+    megaCounters: ["Mega Metagross", "Mega Lucario", "Primal Groudon"],
+    advancedCounters: ["Lucario (Counter/Aura Sphere)", "Kartana (Razor Leaf/Leaf Blade)", "Terrakion (Double Kick/Sacred Sword)", "Conkeldurr (Counter/Dynamic Punch)"],
+    budgetCounters: ["Machamp (Counter/Dynamic Punch)", "Hariyama (Counter/Dynamic Punch)", "Breloom (Counter/Dynamic Punch)", "Blaziken (Counter/Focus Blast)"]
   }
 };
 
@@ -2185,23 +2189,23 @@ export async function scrapeRocketLineups(): Promise<{
       name: "Giovanni",
       avatar: "👑",
       reward: {
-        name: "Shadow Landorus",
-        pveRating: "A",
-        pvpRating: "B",
-        worthGrinding: false,
-        reason: "Shadow Landorus (Incarnate Forme) je silný Ground útočník, ale zaostává za Therian formou.",
-        hubRating: "A"
+        name: "Reshiram",
+        pveRating: "S",
+        pvpRating: "A",
+        worthGrinding: true,
+        reason: "Shadow Reshiram je absolutně dominantní článkový/ohnivý útočník. Jeden z nejsilnějších Shadow legenčích vůbec.",
+        hubRating: "S"
       },
       lineup: {
         slot1: [{ name: "Persian", types: ["Normal"], image: getPokemonImageUrl("Persian") }],
-        slot2: [{ name: "Rhyperior", types: ["Ground", "Rock"], image: getPokemonImageUrl("Rhyperior") }, { name: "Kangaskhan", types: ["Normal"], image: getPokemonImageUrl("Kangaskhan") }, { name: "Nidoking", types: ["Poison", "Ground"], image: getPokemonImageUrl("Nidoking") }],
-        slot3: [{ name: "Landorus", types: ["Ground", "Flying"], image: getPokemonImageUrl("Landorus") }]
+        slot2: [
+          { name: "Kangaskhan", types: ["Normal"], image: getPokemonImageUrl("Kangaskhan") },
+          { name: "Rhyperior", types: ["Ground", "Rock"], image: getPokemonImageUrl("Rhyperior") },
+          { name: "Machamp", types: ["Fighting"], image: getPokemonImageUrl("Machamp") }
+        ],
+        slot3: [{ name: "Reshiram", types: ["Dragon", "Fire"], image: getPokemonImageUrl("Reshiram") }]
       },
-      counters: {
-        megaCounters: ["Mega Swampert", "Mega Garchomp", "Primal Kyogre"],
-        advancedCounters: ["Lucario (Counter/Aura Sphere)", "Mamoswine (Powder Snow/Avalanche)"],
-        budgetCounters: ["Machamp (Counter/Dynamic Punch)", "Glaceon (Frost Breath/Avalanche)"]
-      }
+      counters: LEADER_COUNTERS_DB["giovanni"]
     };
   }
 
@@ -2216,7 +2220,9 @@ export async function scrapeRocketLineups(): Promise<{
       }
     ],
     grunts: grunts.length ? grunts : [
-      { phraseCs: "Normální neznamená slabý!", phraseEn: "Normal does not mean weak.", type: "Normal", difficulty: "Easy", worthFighting: false, shadowPokemon: ["Teddiursa"], counters: ["Machamp"] }
+      { phraseCs: "Normální neznamená slabý!", phraseEn: "Normal does not mean weak.", type: "Normal", difficulty: "Easy", worthFighting: false, shadowPokemon: ["Teddiursa", "Hoothoot", "Porygon"], counters: ["Lucario", "Machamp", "Terrakion"] },
+      { phraseCs: "Víš, jak horký může být pokémoní dech?", phraseEn: "Do you know how hot Pokémon fire breath can get?", type: "Fire", difficulty: "Easy", worthFighting: true, shadowPokemon: ["Litwick", "Ponyta", "Torchic"], counters: ["Kyogre", "Rhyperior", "Swampert"] },
+      { phraseCs: "Tyto vody jsou zrádné!", phraseEn: "These waters are treacherous!", type: "Water", difficulty: "Medium", worthFighting: true, shadowPokemon: ["Mudkip", "Tentacool", "Krabby"], counters: ["Kartana", "Xurkitree", "Zarude"] }
     ]
   };
 }

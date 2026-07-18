@@ -815,3 +815,33 @@ body {
   flex-direction: column;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
+
+/* SEO Descriptions for Tabs */
+.tab-seo-description {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 20px;
+  padding: 10px 14px;
+  background-color: rgba(23, 25, 33, 0.45);
+  border-left: 3px solid var(--accent-color);
+  border-radius: 0 10px 10px 0;
+  backdrop-filter: blur(8px);
+  opacity: 0.95;
+  border-top: 1px solid rgba(255, 255, 255, 0.02);
+  border-right: 1px solid rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+/* SEO Titles for Tabs */
+.tab-seo-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+  padding: 0 4px;
+  background: linear-gradient(135deg, var(--text-primary) 30%, var(--text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -0.02em;
+}
