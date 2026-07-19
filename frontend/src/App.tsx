@@ -1115,37 +1115,37 @@ function App() {
         {/* Mobile Bottom Navigation Bar (Hidden on Desktop) */}
         <nav className="bottom-nav">
           <button className={`nav-item ${activeTab === 'events' ? 'active' : ''}`} onClick={() => setActiveTab('events')}>
-            <span className="nav-icon">📅</span>
+            <span className="nav-icon"><Calendar size={20} /></span>
             <span className="nav-text">{t.tabs_events}</span>
           </button>
           
           <button className={`nav-item ${activeTab === 'raid' ? 'active' : ''}`} onClick={() => setActiveTab('raid')}>
-            <span className="nav-icon">👾</span>
+            <span className="nav-icon"><Swords size={20} /></span>
             <span className="nav-text">{t.tabs_raid}</span>
           </button>
 
           <button className={`nav-item ${activeTab === 'rocket' ? 'active' : ''}`} onClick={() => setActiveTab('rocket')}>
-            <span className="nav-icon">🚀</span>
+            <span className="nav-icon"><Shield size={20} /></span>
             <span className="nav-text">{t.tabs_rocket}</span>
           </button>
 
           <button className={`nav-item ${activeTab === 'ditto' ? 'active' : ''}`} onClick={() => setActiveTab('ditto')}>
-            <span className="nav-icon">✨</span>
+            <span className="nav-icon"><Sparkles size={20} /></span>
             <span className="nav-text">{t.tabs_ditto}</span>
           </button>
 
           <button className={`nav-item ${activeTab === 'eggs' ? 'active' : ''}`} onClick={() => setActiveTab('eggs')}>
-            <span className="nav-icon">🥚</span>
+            <span className="nav-icon"><Egg size={20} /></span>
             <span className="nav-text">{t.tabs_eggs}</span>
           </button>
 
           <button className={`nav-item ${activeTab === 'ranking' ? 'active' : ''}`} onClick={() => setActiveTab('ranking')}>
-            <span className="nav-icon">🏆</span>
+            <span className="nav-icon"><Trophy size={20} /></span>
             <span className="nav-text">{t.tabs_ranking}</span>
           </button>
 
           <button className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>
-            <span className="nav-icon">⚙️</span>
+            <span className="nav-icon"><Settings size={20} /></span>
             <span className="nav-text">{t.tabs_settings}</span>
           </button>
         </nav>
