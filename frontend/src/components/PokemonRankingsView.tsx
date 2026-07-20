@@ -281,6 +281,57 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                     </div>
                   </div>
 
+                  {/* Pokemon Sprite */}
+                  <div className="ranking-poke-img-wrapper">
+                    <img 
+                      src={resolveImage(undefined, undefined, poke.name)} 
+                      alt={poke.name} 
+                      className="ranking-poke-img"
+                      onError={(e) => {
+                        handlePokemonImageError(e.target as HTMLImageElement, poke.name);
+                      }}
+                    />
+                  </div>
+
+                  {/* Info and Type column */}
+                  <div className="ranking-poke-main-info">
+                    <div className="poke-title-flex">
+                      <span className="poke-name">
+                        {getPokemonName(poke.name, lang)}
+                        {poke.isShadow && <Flame size={14} className="status-inline-icon shadow-icon" style={{ color: '#c084fc' }} />}
+                        {poke.isMega && <Sparkles size={14} className="status-inline-icon mega-icon" style={{ color: '#fbbf24' }} />}
+                        {poke.isPrimal && <Flame size={14} className="status-inline-icon primal-icon" style={{ color: '#f87171' }} />}
+                      </span>
+                      <span className="poke-dex-id">#{poke.pokedexId}</span>
+                    </div>
+                    <div className="poke-badges-flex">
+                      <div className="poke-types-row">
+                        {poke.types.map(type => (
+                          <TypeBadge key={type} typeStr={type} lang={lang} />
+                        ))}
+                      </div>
+                      {/* Special status tags with icons */}
+                      {poke.isShadow && (
+                        <span className="status-tag shadow-tag">
+                          <Flame size={11} />
+                          {getStatusTagName('Shadow', lang)}
+                        </span>
+                      )}
+                      {poke.isMega && (
+                        <span className="status-tag mega-tag">
+                          <Sparkles size={11} />
+                          {getStatusTagName('Mega', lang)}
+                        </span>
+                      )}
+                      {poke.isPrimal && (
+                        <span className="status-tag primal-tag">
+                          <Flame size={11} />
+                          {getStatusTagName('Primal', lang)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
                   {/* Score badge (Equivalent vs Basic) */}
                   <div className="ranking-score-badge" style={{
                     background: (rankingMode === 'er' ? dialgaDex.erScore : poke.pveScore) >= 95
@@ -297,60 +348,17 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                     </span>
                   </div>
 
-                  {/* Pokemon Sprite */}
-                  <div className="ranking-poke-img-wrapper">
-                    <img 
-                      src={resolveImage(undefined, undefined, poke.name)} 
-                      alt={poke.name} 
-                      className="ranking-poke-img"
-                      onError={(e) => {
-                        handlePokemonImageError(e.target as HTMLImageElement, poke.name);
-                      }}
-                    />
+                  {/* Prominent Expand Chevron Badge with Text Hint */}
+                  <div className="poke-expand-hint-badge">
+                    <span className="expand-hint-text">
+                      {isExpanded ? (lang === 'cs' ? 'Zavřít' : 'Close') : (lang === 'cs' ? 'Detail' : 'Detail')}
+                    </span>
+                    {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   </div>
+                </div>
 
-                  {/* Info and Type column */}
-                  <div className="ranking-poke-main-info">
-                    <div className="poke-title-flex" style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span className="poke-name" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-                        {getPokemonName(poke.name, lang)}
-                        {poke.isShadow && <Flame size={14} className="status-inline-icon shadow-icon" style={{ color: '#c084fc' }} />}
-                        {poke.isMega && <Sparkles size={14} className="status-inline-icon mega-icon" style={{ color: '#fbbf24' }} />}
-                        {poke.isPrimal && <Flame size={14} className="status-inline-icon primal-icon" style={{ color: '#f87171' }} />}
-                      </span>
-                      <span className="poke-dex-id">#{poke.pokedexId}</span>
-                      <div className="collapse-chevron-wrapper" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', opacity: 0.6, color: 'var(--text-muted)' }}>
-                        {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                      </div>
-                    </div>
-                    <div className="poke-badges-flex">
-                      <div className="poke-types-row">
-                        {poke.types.map(type => (
-                          <TypeBadge key={type} typeStr={type} lang={lang} />
-                        ))}
-                      </div>
-                      {/* Special status tags with icons */}
-                      {poke.isShadow && (
-                        <span className="status-tag shadow-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                          <Flame size={11} />
-                          {getStatusTagName('Shadow', lang)}
-                        </span>
-                      )}
-                      {poke.isMega && (
-                        <span className="status-tag mega-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                          <Sparkles size={11} />
-                          {getStatusTagName('Mega', lang)}
-                        </span>
-                      )}
-                      {poke.isPrimal && (
-                        <span className="status-tag primal-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                          <Flame size={11} />
-                          {getStatusTagName('Primal', lang)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
+                {/* Base Stats & Ideal Moveset preview section */}
+                <div className="ranking-row-middle-preview">
                   {/* Base Stats column */}
                   <div className="ranking-stats-col">
                     <div className="stat-item">

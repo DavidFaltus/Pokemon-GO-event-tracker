@@ -794,6 +794,40 @@ subtle-glow {
   white-space: nowrap;
 }
 
+/* Expand Hint Badge (Detail ▼ / Zavřít ▲) */
+.poke-expand-hint-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #c084fc;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: auto;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ranking-pokemon-row:hover .poke-expand-hint-badge {
+  background: rgba(168, 85, 247, 0.25);
+  border-color: rgba(168, 85, 247, 0.5);
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.3);
+}
+
+.ranking-row-middle-preview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+}
+
 /* Responsiveness for table row */
 @media (max-width: 1799px) {
   .ranking-pokemon-row {
@@ -813,105 +847,133 @@ subtle-glow {
     flex: 1 1 240px;
     width: auto;
   }
-  
-  .ranking-pokemon-row.collapsed .ranking-stats-col {
-    display: none;
-  }
-  
-  .ranking-pokemon-row.collapsed .ranking-moveset-col {
-    display: none;
-  }
 }
 
-/* Always show stats and movesets on large screens >= 1800px, override collapsed state */
+/* Always show stats and movesets on large screens >= 1800px */
 @media (min-width: 1800px) {
-  .ranking-pokemon-row {
-    cursor: default !important;
-  }
-  
   .ranking-stats-col {
-    display: grid !important;
+    grid-display: grid !important;
   }
   
   .ranking-moveset-col {
     display: flex !important;
   }
-  
-  /* Hide chevron on large screens */
-  .collapse-chevron-wrapper {
-    display: none !important;
-  }
 }
 
-@media (max-width: 600px) {
-  .ranking-pokemon-row {
-    display: grid;
-    grid-template-columns: 52px 1fr 52px;
-    gap: 12px;
+@media (max-width: 768px) {
+  .rankings-header-card {
     padding: 14px;
   }
-  
-  .ranking-rank-col {
-    grid-column: 1;
-    grid-row: 1;
-  }
-  
-  .ranking-score-badge {
-    grid-column: 3;
-    grid-row: 1;
-    position: static;
-    justify-self: end;
-    align-self: center;
-  }
-  
-  .ranking-poke-img-wrapper {
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: center;
-    align-self: center;
-    width: 84px;
-    height: 84px;
-  }
-  
-  .ranking-poke-img {
-    width: 76px;
-    height: 76px;
-  }
-  
-  .ranking-poke-main-info {
-    grid-column: span 3;
-    grid-row: 2;
-  }
-  
-  .ranking-stats-col {
-    grid-column: span 3;
-    grid-row: 3;
-    width: 100%;
-    border-left: none;
-    padding: 10px 0 0 0;
-    border-top: 1px solid var(--border-color);
-  }
-  
-  .ranking-moveset-col {
-    grid-column: span 3;
-    grid-row: 4;
-    width: 100%;
-    padding-top: 10px;
-    border-top: 1px dashed rgba(255, 255, 255, 0.05);
+
+  .rankings-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
   }
 
-  .egg-tiers-selector {
+  .ranking-mode-selector-header {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-start;
     flex-wrap: wrap;
-    overflow-x: visible;
-    gap: 8px;
-    justify-content: center;
+    gap: 6px;
   }
-  
-  .egg-tier-btn {
-    flex: 1 1 calc(33.33% - 8px);
-    min-width: 90px;
+
+  .mode-toggle-btn {
+    flex: 1 1 auto;
     justify-content: center;
-    padding: 8px 12px;
+    font-size: 0.72rem;
+    padding: 6px 10px;
+  }
+
+  .ranking-pokemon-row {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .ranking-row-top-main {
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .ranking-rank-col {
+    flex-direction: row;
+    gap: 4px;
+  }
+
+  .rank-badge {
+    width: 46px;
+    padding: 3px;
+  }
+
+  .rank-badge .rank-num {
+    font-size: 0.92rem;
+  }
+
+  .ranking-poke-img-wrapper {
+    width: 48px;
+    height: 48px;
+  }
+
+  .ranking-poke-img {
+    width: 44px;
+    height: 44px;
+  }
+
+  .ranking-poke-main-info {
+    flex: 1 1 140px;
+    min-width: 120px;
+  }
+
+  .poke-name {
+    font-size: 0.9rem;
+    font-weight: 800;
+  }
+
+  .ranking-score-badge {
+    padding: 4px 8px;
+    border-radius: 8px;
+  }
+
+  .score-val {
+    font-size: 1rem;
+  }
+
+  .poke-expand-hint-badge {
+    padding: 3px 8px;
+    font-size: 0.7rem;
+  }
+
+  .ranking-row-middle-preview {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .ranking-stats-col {
+    grid-template-columns: repeat(2, 1fr);
+    width: 100%;
+    padding: 0;
+    border: none;
+  }
+
+  .ranking-moveset-col {
+    width: 100%;
+  }
+
+  .expanded-sections-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .movesets-top5-card, .counters-section-card, .dialgadex-metrics-card {
+    padding: 10px;
+  }
+
+  .moveset-row-item {
+    flex-wrap: wrap;
+    gap: 4px;
   }
 }
 
