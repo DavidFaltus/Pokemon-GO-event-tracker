@@ -440,6 +440,45 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
                 {lang === 'cs' ? 'Zobrazit Zásady ochrany osobních údajů' : lang === 'ru' ? 'Просмотреть политику конфиденциальности' : 'View Privacy Policy'}
               </a>
             </div>
+
+            {/* Admin Portal Direct Access Card */}
+            <div className="settings-card admin-access-card" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <span className="duotone-icon duotone-white"><Lock size={16} /></span>
+                {lang === 'cs' ? 'Administrace (/admin)' : 'Admin Portal (/admin)'}
+              </h3>
+              <p className="help-text" style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                {lang === 'cs'
+                  ? 'Správa událostí, manuální spouštění scraperu a import/export textových souborů se scrapem.'
+                  : 'Manage events, manually trigger scraper, and import/export raw scrape text files.'}
+              </p>
+              <a 
+                href="/admin"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.history.pushState(null, '', '/admin');
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+                className="primary-btn"
+                style={{ 
+                  display: 'inline-flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center',
+                  gap: '6px',
+                  textDecoration: 'none', 
+                  marginTop: 'auto',
+                  textAlign: 'center',
+                  fontSize: '0.8rem',
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                  color: '#ffffff'
+                }}
+              >
+                <Lock size={14} />
+                {lang === 'cs' ? 'Vstoupit do Administrace' : 'Open Admin Portal'}
+              </a>
+            </div>
           </div>
         </div>
       </div>

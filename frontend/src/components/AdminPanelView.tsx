@@ -6,8 +6,9 @@ import {
   ArrowLeft, Lock, Plus, Trash2, Save, AlertTriangle, CheckCircle,
   EyeOff, Search, Edit, Database, Upload, RefreshCw, Server,
   Image, PackageOpen, ChevronDown, ChevronUp, X, FileJson, Zap,
-  Star, Egg, Swords, Gift
+  Star, Egg, Swords, Gift, Download, FileText, Sparkles
 } from 'lucide-react';
+import { EventCard } from './EventCard';
 import type { EventData } from './EventCard';
 import { getPokemonIconUrl } from '../utils/imageResolver';
 
@@ -47,33 +48,65 @@ interface RaidBoss {
   image?: string;
 }
 
+const POPULAR_POKEMON_SUGGESTIONS = [
+  'Pikachu', 'Necrozma', 'Zekrom', 'Frigibax', 'Charizard',
+  'Lucario', 'Gengar', 'Rayquaza', 'Mewtwo', 'Groudon',
+  'Beldum', 'Bagon', 'Larvitar', 'Jangmo-o', 'Ditto'
+];
+
 // ---- Inline Pokemon Icon Picker ----
 const PokemonIconPicker: React.FC<{
   value: string;
   onChange: (name: string) => void;
   placeholder?: string;
 }> = ({ value, onChange, placeholder = 'Pokémon name...' }) => {
+  const [showChips, setShowChips] = useState(false);
   const iconUrl = value.trim() ? getPokemonIconUrl(value.trim()) : null;
 
   return (
-    <div className="poke-icon-picker">
-      {iconUrl && (
-        <img
-          src={iconUrl}
-          alt={value}
-          className="poke-picker-preview"
-          onError={(e) => {
-            (e.target as HTMLImageElement).style.display = 'none';
-          }}
+    <div className="poke-icon-picker-container" style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+      <div className="poke-icon-picker">
+        {iconUrl && (
+          <img
+            src={iconUrl}
+            alt={value}
+            className="poke-picker-preview"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
+          />
+        )}
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={() => setShowChips(true)}
+          placeholder={placeholder}
+          className="poke-picker-input"
         />
+      </div>
+      {showChips && (
+        <div className="poke-chip-suggestions" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '2px' }}>
+          {POPULAR_POKEMON_SUGGESTIONS.slice(0, 7).map(name => (
+            <button
+              key={name}
+              type="button"
+              onClick={() => { onChange(name); setShowChips(false); }}
+              style={{
+                fontSize: '0.68rem',
+                padding: '2px 6px',
+                borderRadius: '6px',
+                background: 'rgba(255,255,255,0.08)',
+                border: '1px solid rgba(255,255,255,0.15)',
+                color: '#cbd5e1',
+                cursor: 'pointer'
+              }}
+            >
+              {name}
+            </button>
+          ))}
+        </div>
       )}
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        className="poke-picker-input"
-      />
     </div>
   );
 };
@@ -609,6 +642,35 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     } catch { setError(lang === 'cs' ? 'Chyba sítě' : 'Network error'); }
   };
 
+  const handleExportScrapedData = (format: 'json' | 'txt') => {
+    const dataStr = format === 'json'
+      ? JSON.stringify(scrapedEvents, null, 2)
+      : scrapedEvents.map(e => `[${e.eventID}] ${e.name} (${e.eventType})\n  Start: ${e.start}\n  End: ${e.end}\n  Link: ${e.link}\n  Image: ${e.image}\n  ExtraData: ${JSON.stringify((e as any).extraData || {})}\n`).join('\n----------------------------------------\n');
+    
+    const blob = new Blob([dataStr], { type: format === 'json' ? 'application/json' : 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pogo_scraped_events_${Date.now()}.${format}`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportSingleEvent = (format: 'json' | 'txt') => {
+    if (!selectedEvent) return;
+    const dataStr = format === 'json'
+      ? JSON.stringify(selectedEvent, null, 2)
+      : `[${selectedEvent.eventID}] ${selectedEvent.name}\nType: ${selectedEvent.eventType}\nHeading: ${selectedEvent.heading}\nStart: ${selectedEvent.start}\nEnd: ${selectedEvent.end}\nLink: ${selectedEvent.link}\nImage: ${selectedEvent.image}\nIsDeleted: ${selectedEvent.isDeleted}\nIsCustom: ${selectedEvent.isCustom}\nExtraData:\n${JSON.stringify(selectedEvent.extraData || {}, null, 2)}`;
+    
+    const blob = new Blob([dataStr], { type: format === 'json' ? 'application/json' : 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${selectedEvent.eventID}_scrape.${format}`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const handleTriggerScraper = async () => {
     setScraperRunning(true);
     setError(''); setSuccessMsg('');
@@ -979,6 +1041,43 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
                     <Save size={16} />{lang === 'cs' ? 'Uložit' : 'Save'}
                   </button>
                 </div>
+
+                {/* Live Event Card Preview */}
+                <div className="admin-card-preview-container" style={{ marginTop: '24px', padding: '16px', borderRadius: '12px', background: 'rgba(15, 23, 42, 0.7)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#e2e8f0', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      <Sparkles size={16} style={{ color: '#fbbf24' }} />
+                      {lang === 'cs' ? 'Živý Náhled Karty Události' : 'Live Event Card Preview'}
+                    </span>
+                    {selectedEvent && (
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <button type="button" onClick={() => handleExportSingleEvent('json')} className="admin-btn-xs" style={{ fontSize: '0.7rem', padding: '4px 10px', borderRadius: '6px', background: 'rgba(255,255,255,0.1)', color: '#cbd5e1', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <Download size={12} /> JSON
+                        </button>
+                        <button type="button" onClick={() => handleExportSingleEvent('txt')} className="admin-btn-xs" style={{ fontSize: '0.7rem', padding: '4px 10px', borderRadius: '6px', background: 'rgba(255,255,255,0.1)', color: '#cbd5e1', border: '1px solid rgba(255,255,255,0.2)', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <FileText size={12} /> TXT
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <EventCard
+                    event={{
+                      eventID: formEventID || 'preview_id',
+                      name: formName || 'Preview Event',
+                      eventType: formEventType || 'other',
+                      heading: formHeading || getHeadingForType(formEventType),
+                      link: formLink || 'https://leekduck.com',
+                      image: formImage || '',
+                      start: formStart ? new Date(formStart).toISOString() : new Date().toISOString(),
+                      end: formEnd ? new Date(formEnd).toISOString() : new Date().toISOString(),
+                      extraData: editMode === 'json'
+                        ? (() => { try { return JSON.parse(formExtraDataJson); } catch { return formExtraData; } })()
+                        : formExtraData
+                    }}
+                    lang={lang}
+                    defaultExpanded={true}
+                  />
+                </div>
               </form>
             ) : (
               <div className="admin-form-placeholder">
@@ -1134,6 +1233,27 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
               <><Upload size={16} />{lang === 'cs' ? 'Spustit Import' : 'Execute Import'}</>
             )}
           </button>
+
+          {/* Export Scraped Data & Text Files Section */}
+          <div className="export-section-card" style={{ marginTop: '24px', padding: '16px', borderRadius: '12px', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
+            <h4 style={{ margin: '0 0 8px 0', fontSize: '0.9rem', color: '#e2e8f0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Download size={16} />
+              {lang === 'cs' ? 'Export Scrapovaných Dat (JSON & Textové soubory)' : 'Export Scraped Data (JSON & Text files)'}
+            </h4>
+            <p className="import-desc" style={{ marginBottom: '12px' }}>
+              {lang === 'cs'
+                ? 'Stáhněte si kompletní databázi scrapovaných událostí ve formátu JSON nebo jako strukturovaný textový soubor (.txt) se všemi detaily.'
+                : 'Download full database of scraped events in JSON format or as structured text files (.txt) with all event details.'}
+            </p>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <button onClick={() => handleExportScrapedData('json')} className="admin-btn btn-secondary">
+                <Download size={14} /> Export Vše (JSON)
+              </button>
+              <button onClick={() => handleExportScrapedData('txt')} className="admin-btn btn-secondary">
+                <FileText size={14} /> Export Vše (TXT Scrape)
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
