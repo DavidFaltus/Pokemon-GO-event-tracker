@@ -208,10 +208,17 @@ subtle-glow {
   border-radius: 16px;
   padding: 16px;
   display: flex;
-  align-items: center;
-  gap: 20px;
+  flex-direction: column;
+  gap: 12px;
   transition: transform 0.2s ease, border-color 0.2s ease;
   position: relative;
+}
+
+.ranking-row-top-main {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
 }
 
 .ranking-pokemon-row:hover {
@@ -232,7 +239,7 @@ subtle-glow {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 52px;
+  width: 54px;
   padding: 4px 4px 3px;
   border-radius: 10px;
   color: white;
@@ -241,17 +248,23 @@ subtle-glow {
   text-align: center;
 }
 
+.rank-num-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 1px;
+}
+
 .rank-badge .rank-hash {
-  font-size: 0.6rem;
-  font-weight: 700;
-  opacity: 0.7;
-  margin-bottom: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  opacity: 0.85;
 }
 
 .rank-badge .rank-num {
   font-size: 1.05rem;
   font-weight: 900;
-  line-height: 1.1;
+  line-height: 1;
 }
 
 .rank-badge .rank-lbl {
@@ -259,11 +272,11 @@ subtle-glow {
   font-weight: 700;
   letter-spacing: 0.06em;
   opacity: 0.85;
-  margin-top: 1px;
+  margin-top: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 48px;
+  max-width: 50px;
 }
 
 .rank-overall {
@@ -471,6 +484,9 @@ subtle-glow {
 
 .fast-move {
   color: #22d3ee; /* Cyan */
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .move-divider {
@@ -482,6 +498,242 @@ subtle-glow {
 
 .charged-move {
   color: #c084fc; /* Light purple */
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.move-type-icon {
+  width: 12px;
+  height: 12px;
+  margin-right: 4px;
+  vertical-align: -1px;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.4));
+}
+
+.legacy-asterisk {
+  color: #fbbf24;
+  font-weight: 900;
+  margin-left: 2px;
+  font-size: 0.85rem;
+  text-shadow: 0 0 6px rgba(251, 191, 36, 0.6);
+}
+
+/* ── Expanded Details Panel (Top 5 Movesets & Counters) ── */
+.poke-expanded-details-panel {
+  width: 100%;
+  margin-top: 4px;
+  animation: fadeIn 0.25s ease-out;
+}
+
+.expanded-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+  margin-bottom: 14px;
+}
+
+.expanded-sections-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.movesets-top5-card, .counters-section-card {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.expanded-card-title {
+  margin: 0 0 4px 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.movesets-table {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.moveset-row-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(6, 7, 9, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.76rem;
+  gap: 8px;
+}
+
+.moveset-row-item.best-moveset {
+  background: rgba(168, 85, 247, 0.12);
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+.moveset-rank-index {
+  font-weight: 800;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.moveset-moves-pair {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.moveset-move {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-primary);
+}
+
+.moveset-plus {
+  color: var(--text-muted);
+  font-size: 0.65rem;
+}
+
+.moveset-stats-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.7rem;
+}
+
+.moveset-dps-val {
+  font-weight: 800;
+  color: #c084fc;
+}
+
+.moveset-pct {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+.legacy-legend-hint {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.counter-types-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.counter-box-lbl {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.counter-types-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.counter-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 0.72rem;
+}
+
+.counter-type-badge.double-weakness {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.weakness-mult {
+  font-weight: 800;
+  color: #f87171;
+  font-size: 0.68rem;
+}
+
+.top-counters-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.counter-poke-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(6, 7, 9, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+.counter-poke-rank {
+  font-weight: 800;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.counter-poke-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.counter-poke-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+.counter-poke-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.counter-poke-moves {
+  font-size: 0.66rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.counter-score-pill {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  padding: 2px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
 }
 
 /* Responsiveness for table row */
