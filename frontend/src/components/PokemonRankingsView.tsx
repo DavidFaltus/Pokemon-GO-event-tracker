@@ -7,7 +7,7 @@ import type { PokemonRankData } from '../data/pokemonRankings';
 import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { TypeBadge } from './EventCard';
 import { getPokemonName, getStatusTagName } from '../utils/pokemonTranslator';
-import { Search, Trophy, Sword, ShieldAlert, Heart, Star, ChevronDown, ChevronUp, Target, Zap, Sparkles } from 'lucide-react';
+import { Search, Trophy, Sword, ShieldAlert, Heart, Star, ChevronDown, ChevronUp, Target, Zap, Sparkles, Flame } from 'lucide-react';
 import {
   getCounterTypes,
   getTopCountersForPokemon,
@@ -74,7 +74,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [expandedPokes, setExpandedPokes] = useState<Set<string>>(new Set());
-  const [rankingMode, setRankingMode] = useState<'dialgadex_er' | 'dialgadex_edps' | 'pve'>('dialgadex_er');
+  const [rankingMode, setRankingMode] = useState<'er' | 'basic'>('er');
 
   const toggleExpand = useCallback((pokeKey: string) => {
     setExpandedPokes(prev => {
@@ -89,9 +89,10 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
   }, []);
 
   const getSortScore = useCallback((poke: PokemonRankData) => {
-    const dd = calculateDialgaDexMetrics(poke);
-    if (rankingMode === 'dialgadex_er') return dd.erScore;
-    if (rankingMode === 'dialgadex_edps') return dd.eDps;
+    if (rankingMode === 'er') {
+      const dd = calculateDialgaDexMetrics(poke);
+      return dd.erScore;
+    }
     return poke.pveScore;
   }, [rankingMode]);
 
@@ -164,9 +165,31 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
     <div className="pokemon-rankings-container">
       <p className="tab-seo-description">{(t as any).seo_ranking_desc}</p>
       <div className="rankings-header-card">
+        {/* Title row with metric toggle aligned to upper right corner */}
         <div className="rankings-title-row">
-          <Trophy size={28} className="trophy-icon" />
-          <h1 className="tab-seo-title" style={{ margin: 0, padding: 0 }}>{t.ranking_title}</h1>
+          <div className="rankings-title-left">
+            <Trophy size={28} className="trophy-icon" />
+            <h1 className="tab-seo-title" style={{ margin: 0, padding: 0 }}>{t.ranking_title}</h1>
+          </div>
+
+          <div className="ranking-mode-selector-header">
+            <button
+              type="button"
+              className={`mode-toggle-btn ${rankingMode === 'er' ? 'active' : ''}`}
+              onClick={() => setRankingMode('er')}
+            >
+              <Sparkles size={13} style={{ color: '#fbbf24' }} />
+              Equivalent ranking
+            </button>
+            <button
+              type="button"
+              className={`mode-toggle-btn ${rankingMode === 'basic' ? 'active' : ''}`}
+              onClick={() => setRankingMode('basic')}
+            >
+              <Trophy size={13} style={{ color: '#60a5fa' }} />
+              Basic ranking
+            </button>
+          </div>
         </div>
 
         {/* Search Bar */}
@@ -179,37 +202,6 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-        </div>
-
-        {/* Metric Mode Selector (DialgaDex vs PVE) */}
-        <div className="ranking-mode-selector" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', marginTop: '4px' }}>
-          <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)' }}>
-            {lang === 'cs' ? 'Metrika Rankingu:' : 'Ranking Metric:'}
-          </span>
-          <button
-            type="button"
-            className={`mode-toggle-btn ${rankingMode === 'dialgadex_er' ? 'active' : ''}`}
-            onClick={() => setRankingMode('dialgadex_er')}
-          >
-            <Sparkles size={13} style={{ color: '#fbbf24' }} />
-            DialgaDex ER (Equivalent Rating)
-          </button>
-          <button
-            type="button"
-            className={`mode-toggle-btn ${rankingMode === 'dialgadex_edps' ? 'active' : ''}`}
-            onClick={() => setRankingMode('dialgadex_edps')}
-          >
-            <Zap size={13} style={{ color: '#c084fc' }} />
-            DialgaDex eDPS (Effective DPS)
-          </button>
-          <button
-            type="button"
-            className={`mode-toggle-btn ${rankingMode === 'pve' ? 'active' : ''}`}
-            onClick={() => setRankingMode('pve')}
-          >
-            <Trophy size={13} style={{ color: '#60a5fa' }} />
-            GamePress PVE Score
-          </button>
         </div>
 
         {/* Type Filter Selector */}
@@ -289,19 +281,19 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                     </div>
                   </div>
 
-                  {/* PVE / DialgaDex Score badge */}
+                  {/* Score badge (Equivalent vs Basic) */}
                   <div className="ranking-score-badge" style={{
-                    background: (rankingMode === 'dialgadex_er' ? dialgaDex.erScore : poke.pveScore) >= 95
+                    background: (rankingMode === 'er' ? dialgaDex.erScore : poke.pveScore) >= 95
                       ? 'linear-gradient(135deg, #eab308, #ca8a04)'
-                      : (rankingMode === 'dialgadex_er' ? dialgaDex.erScore : poke.pveScore) >= 90
+                      : (rankingMode === 'er' ? dialgaDex.erScore : poke.pveScore) >= 90
                       ? 'linear-gradient(135deg, #a855f7, #7e22ce)'
                       : 'linear-gradient(135deg, #3b82f6, #1d4ed8)'
                   }}>
                     <span className="score-val">
-                      {rankingMode === 'dialgadex_edps' ? dialgaDex.eDps : rankingMode === 'dialgadex_er' ? dialgaDex.erScore : poke.pveScore}
+                      {rankingMode === 'er' ? dialgaDex.erScore : poke.pveScore}
                     </span>
                     <span className="score-lbl">
-                      {rankingMode === 'dialgadex_edps' ? 'eDPS' : rankingMode === 'dialgadex_er' ? 'DD ER' : 'PVE'}
+                      {rankingMode === 'er' ? 'ER' : 'BASIC'}
                     </span>
                   </div>
 
@@ -319,8 +311,13 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
 
                   {/* Info and Type column */}
                   <div className="ranking-poke-main-info">
-                    <div className="poke-title-flex" style={{ width: '100%', display: 'flex', alignItems: 'center' }}>
-                      <span className="poke-name">{getPokemonName(poke.name, lang)}</span>
+                    <div className="poke-title-flex" style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span className="poke-name" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                        {getPokemonName(poke.name, lang)}
+                        {poke.isShadow && <Flame size={14} className="status-inline-icon shadow-icon" style={{ color: '#c084fc' }} />}
+                        {poke.isMega && <Sparkles size={14} className="status-inline-icon mega-icon" style={{ color: '#fbbf24' }} />}
+                        {poke.isPrimal && <Flame size={14} className="status-inline-icon primal-icon" style={{ color: '#f87171' }} />}
+                      </span>
                       <span className="poke-dex-id">#{poke.pokedexId}</span>
                       <div className="collapse-chevron-wrapper" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', opacity: 0.6, color: 'var(--text-muted)' }}>
                         {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
@@ -332,10 +329,25 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                           <TypeBadge key={type} typeStr={type} lang={lang} />
                         ))}
                       </div>
-                      {/* Special status tags */}
-                      {poke.isShadow && <span className="status-tag shadow-tag">{getStatusTagName('Shadow', lang)}</span>}
-                      {poke.isMega && <span className="status-tag mega-tag">{getStatusTagName('Mega', lang)}</span>}
-                      {poke.isPrimal && <span className="status-tag primal-tag">{getStatusTagName('Primal', lang)}</span>}
+                      {/* Special status tags with icons */}
+                      {poke.isShadow && (
+                        <span className="status-tag shadow-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          <Flame size={11} />
+                          {getStatusTagName('Shadow', lang)}
+                        </span>
+                      )}
+                      {poke.isMega && (
+                        <span className="status-tag mega-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          <Sparkles size={11} />
+                          {getStatusTagName('Mega', lang)}
+                        </span>
+                      )}
+                      {poke.isPrimal && (
+                        <span className="status-tag primal-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                          <Flame size={11} />
+                          {getStatusTagName('Primal', lang)}
+                        </span>
+                      )}
                     </div>
                   </div>
 

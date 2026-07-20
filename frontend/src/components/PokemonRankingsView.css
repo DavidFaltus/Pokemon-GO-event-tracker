@@ -22,7 +22,23 @@
 .rankings-title-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  width: 100%;
   gap: 12px;
+  flex-wrap: wrap;
+}
+
+.rankings-title-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ranking-mode-selector-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
 }
 
 .rankings-title-row h2 {
@@ -34,6 +50,11 @@
 
 .trophy-icon {
   color: #eab308; /* Gold */
+}
+
+.status-inline-icon {
+  vertical-align: middle;
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.4));
 }
 
 .search-bar-wrapper {
