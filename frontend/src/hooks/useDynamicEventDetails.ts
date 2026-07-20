@@ -6,6 +6,22 @@ export function useDynamicEventDetails(eventID: string, link: string, isExpanded
   const [details, setDetails] = useState<SpecialEventDetails | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [updateTick, setUpdateTick] = useState<number>(0);
+
+  useEffect(() => {
+    const handleEventsUpdated = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const targetId = customEvent.detail?.eventID;
+      if (!targetId || targetId === eventID) {
+        const cacheKey = `pogo_scraped_details_${eventID}`;
+        localStorage.removeItem(cacheKey);
+        setUpdateTick(prev => prev + 1);
+      }
+    };
+
+    window.addEventListener('pogo_events_updated', handleEventsUpdated);
+    return () => window.removeEventListener('pogo_events_updated', handleEventsUpdated);
+  }, [eventID]);
 
   useEffect(() => {
     if (!isExpanded) return;
@@ -28,7 +44,7 @@ export function useDynamicEventDetails(eventID: string, link: string, isExpanded
       setError(null);
 
       try {
-        let url = `${API_BASE_URL}/api/events/${eventID}/details?link=${encodeURIComponent(link)}`;
+        let url = `${API_BASE_URL}/api/events/${eventID}/details?link=${encodeURIComponent(link || '')}`;
         if (name) {
           url += `&name=${encodeURIComponent(name)}`;
         }
@@ -52,7 +68,7 @@ export function useDynamicEventDetails(eventID: string, link: string, isExpanded
     };
 
     fetchDetails();
-  }, [eventID, link, isExpanded, name]);
+  }, [eventID, link, isExpanded, name, updateTick]);
 
   return { details, loading, error };
 }

@@ -664,6 +664,32 @@ function App() {
     loadCachedDataAndFetch();
   }, [lang]);
 
+  // Listen for admin events update signal to re-fetch fresh events list
+  useEffect(() => {
+    const handleEventsUpdated = async () => {
+      console.log("Re-fetching events after admin update...");
+      localStorage.removeItem('pogo_events_cache');
+      localStorage.removeItem('pogo_events_cache_time');
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/events?nocache=true`);
+        if (response.ok) {
+          const data = await response.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setEvents(sanitizeEvents(data));
+            setApiStatus('success');
+            localStorage.setItem('pogo_events_cache', JSON.stringify(data));
+            localStorage.setItem('pogo_events_cache_time', Date.now().toString());
+          }
+        }
+      } catch (err) {
+        console.error("Failed to re-fetch events on update signal:", err);
+      }
+    };
+
+    window.addEventListener('pogo_events_updated', handleEventsUpdated);
+    return () => window.removeEventListener('pogo_events_updated', handleEventsUpdated);
+  }, []);
+
   // Check for newly started events on load/refresh and trigger in-app notifications
   useEffect(() => {
     if (events.length === 0) return;

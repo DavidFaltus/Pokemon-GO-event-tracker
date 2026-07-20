@@ -10,5 +10,32 @@
     "end": "",
     "isDeleted": true,
     "isCustom": false
+  },
+  {
+    "eventID": "ozone-ascent-2026",
+    "name": "Ozone Ascent",
+    "eventType": "event",
+    "heading": "Event",
+    "link": "https://leekduck.com/events/ozone-ascent-2026/",
+    "image": "https://cdn.leekduck.com/assets/img/events/article-images/2026/2026-07-25-ozone-ascent-2026/ozone-ascent-2026.jpg",
+    "start": "2026-07-25T09:00:00.000Z",
+    "end": "2026-07-26T19:00:00.000Z",
+    "extraData": {
+      "generic": {
+        "hasSpawns": false,
+        "hasFieldResearchTasks": false
+      },
+      "featured": [
+        {
+          "name": "Rayquaza",
+          "isShinyAvailable": true
+        }
+      ],
+      "bonuses": [
+        "Field Research guarantees you Meteorite and One encounter with Rayquaza"
+      ]
+    },
+    "isDeleted": false,
+    "isCustom": false
   }
 ]

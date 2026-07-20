@@ -537,6 +537,15 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
         return;
       }
     }
+    let isoStart = formStart;
+    let isoEnd = formEnd;
+    try {
+      const startDate = new Date(formStart);
+      if (!isNaN(startDate.getTime())) isoStart = startDate.toISOString();
+      const endDate = new Date(formEnd);
+      if (!isNaN(endDate.getTime())) isoEnd = endDate.toISOString();
+    } catch { /* keep original */ }
+
     const eventPayload: CustomEventOverride = {
       eventID: formEventID,
       name: formName,
@@ -544,8 +553,8 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
       heading: formHeading || getHeadingForType(formEventType),
       link: formLink,
       image: formImage,
-      start: new Date(formStart).toISOString(),
-      end: new Date(formEnd).toISOString(),
+      start: isoStart,
+      end: isoEnd,
       extraData: parsedExtraData,
       isDeleted: formIsDeleted,
       isCustom: selectedEvent?.isCustom || false
@@ -559,6 +568,10 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
       const data = await res.json();
       if (res.ok && data.success) {
         setSuccessMsg(lang === 'cs' ? 'Událost uložena!' : 'Event saved!');
+        localStorage.removeItem('pogo_events_cache');
+        localStorage.removeItem('pogo_events_cache_time');
+        localStorage.removeItem(`pogo_scraped_details_${formEventID}`);
+        window.dispatchEvent(new CustomEvent('pogo_events_updated', { detail: { eventID: formEventID } }));
         fetchAdminData(token);
         setSelectedEvent(eventPayload);
       } else {
@@ -584,6 +597,10 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
       const data = await res.json();
       if (res.ok && data.success) {
         setSuccessMsg(lang === 'cs' ? 'Odstraněno!' : 'Deleted!');
+        localStorage.removeItem('pogo_events_cache');
+        localStorage.removeItem('pogo_events_cache_time');
+        localStorage.removeItem(`pogo_scraped_details_${selectedEvent.eventID}`);
+        window.dispatchEvent(new CustomEvent('pogo_events_updated', { detail: { eventID: selectedEvent.eventID } }));
         setSelectedEvent(null);
         fetchAdminData(token);
       } else {
@@ -628,6 +645,9 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
       const result = await res.json();
       if (res.ok && result.success) {
         setImportResult(result);
+        localStorage.removeItem('pogo_events_cache');
+        localStorage.removeItem('pogo_events_cache_time');
+        window.dispatchEvent(new CustomEvent('pogo_events_updated'));
         fetchAdminData(token);
       } else {
         setError(result.error || 'Import failed');

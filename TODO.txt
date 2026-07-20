@@ -1,7 +1,11 @@
+FIX: 
+[DONE] Propisování změn po upravení eventu. Po upravení eventu se nezobrazuje aktualizace v v aplikaci ale místo toho po kliknutí na event vyskočí black screen
+[DONE] Občasné načtení úvodního textu místo stránky. Nejspíš kompletně schovat text který byl původně pro SEO a načítal se jako první než se načetla stránka. kazí to zážitek z aplikace
+
 Big update: 
-1: Lepší přístup k administrátorovy než přes normální stránku (pomocí /admin), více možností přidávání a modifikací eventů včetně ikon pro pokemony, nejlépe i textové soubory s kompletním scrapem.
-2: Countery na jednotlivé pokemony v sekci Ranking včetně optimálních movesetů proti konkrétnímu pokemonovy
+2: Countery na jednotlivé pokemony v sekci Ranking včetně optimálních typů proti konkrétnímu pokemonovy. Přidat top 5 kombinací movesetů které pokemon má. Pokud je nějaký move Legacy neboli se dá naučit pouze pomocí Elite TM nebo nějakým speciálním způsobem přidat hvězdičku k útoku. Přidat i ikony typů k jednotlivým abilitám. U rankingu přidat # na levou stranu od čísla, momentálně je nad ním.
 3: ??? Implementace campfire srazů k jednotlivým eventům, seznam všech dostupných srazů v určitém okruhu.
 4: Sběr informací ohledně rankingu z https://www.dialgadex.com případně napodobit totožný výpočet
 
 pogo-admin-2026
+npm run android:sync

@@ -94,7 +94,13 @@
   </head>
   <body>
     <div id="root">
-      <!-- SEO Fallback Content for Crawler / AdSense Approval -->
+      <div style="min-height: 100vh; background-color: #0f1015; display: flex; align-items: center; justify-content: center;">
+        <div style="width: 44px; height: 44px; border: 3px solid rgba(255, 77, 77, 0.2); border-top-color: #ff4d4d; border-radius: 50%; animation: pogo-spin 0.8s linear infinite;"></div>
+        <style>@keyframes pogo-spin { to { transform: rotate(360deg); } }</style>
+      </div>
+    </div>
+    <!-- SEO Fallback Content for Crawler / AdSense Approval (Visually Hidden) -->
+    <div id="seo-fallback" style="display: none;" aria-hidden="true">
       <div style="padding: 20px; font-family: sans-serif; max-width: 800px; margin: 0 auto; line-height: 1.6; color: #e2e8f0; background: #0f1015;">
         <h1>PoGo Events &amp; Meta Guide</h1>
         <p>Vítejte na PoGo Events – nejlepším přehledu aktuálních a plánovaných událostí ve hře Pokémon GO, včetně komplexních meta doporučení, raidových protihráčů a PvE žebříčků. Tato aplikace slouží jako neoficiální průvodce a tracker pro všechny trenéry.</p>

@@ -58,6 +58,79 @@ export interface EventData {
   };
 }
 
+export interface LocalizedString {
+  cs?: string;
+  en?: string;
+  ja?: string;
+}
+
+export function getLocalizedText(
+  value: any,
+  lang: Language = 'en'
+): string {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object') {
+    if (lang === 'ja' && value.ja) return value.ja;
+    if (lang === 'cs' && value.cs) return value.cs;
+    return value.en || value.cs || value.ja || '';
+  }
+  return String(value);
+}
+
+function getBonusInfo(b: any, lang: Language): { text: string; icon: string; image?: string } {
+  if (!b) return { text: '', icon: '🎁' };
+  if (typeof b === 'string') return { text: b, icon: '🎁' };
+  const icon = b.icon || '🎁';
+  const image = b.image;
+  const text = getLocalizedText(b.text, lang);
+  return { text, icon, image };
+}
+
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+  fallbackMessage?: string;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+export class CardErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error("EventCard error caught by CardErrorBoundary:", error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{
+          padding: '16px',
+          margin: '12px 0',
+          borderRadius: '12px',
+          background: 'rgba(239, 68, 68, 0.1)',
+          border: '1px solid rgba(239, 68, 68, 0.3)',
+          color: '#fca5a5',
+          fontSize: '0.85rem'
+        }}>
+          ⚠️ {this.props.fallbackMessage || 'Chyba při zobrazení detailu události.'}
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 const typeTranslations: Record<string, { cs: string; en: string; ja: string }> = {
   normal: { cs: "Normální", en: "Normal", ja: "ノーマル" },
   fire: { cs: "Ohnivý", en: "Fire", ja: "ほのお" },
@@ -528,7 +601,6 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
             {getEventTypeLabel(event.eventType)}
           </span>
           <h3 className="event-title">{event.name}</h3>
-          
           <div className="event-time-info">
             <span className="time-date" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
               <Calendar size={12} />
@@ -544,539 +616,572 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
       </div>
 
       {isExpanded && (
-        <div className="card-expanded-content">
-          <div className="divider"></div>
-          
-          {/* Add to Calendar & Official Link Row */}
-          <div className="expanded-row link-row">
-            {showLeekDuck && (
-              <a href={event.link} target="_blank" rel="noopener noreferrer" className="details-link-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                <ExternalLink size={14} />
-                {event.link.includes('leekduck.com') ? t.details_official_link : t.details_pokemongo_link}
-              </a>
-            )}
-            {showOfficial && officialUrl !== event.link && (
+        <CardErrorBoundary fallbackMessage={lang === 'cs' ? 'Chyba při zobrazení detailu události' : 'Error rendering event details'}>
+          <div className="card-expanded-content">
+            <div className="divider"></div>
+            
+            {/* Add to Calendar & Official Link Row */}
+            <div className="expanded-row link-row">
+              {showLeekDuck && (
+                <a href={event.link} target="_blank" rel="noopener noreferrer" className="details-link-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <ExternalLink size={14} />
+                  {event.link && event.link.includes('leekduck.com') ? t.details_official_link : t.details_pokemongo_link}
+                </a>
+              )}
+              {showOfficial && officialUrl !== event.link && (
+                <a 
+                  href={officialUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="pogo-official-btn"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <ExternalLink size={14} />
+                  {t.details_pokemongo_link}
+                </a>
+              )}
               <a 
-                href={officialUrl} 
+                href={getGoogleCalendarUrl()} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="pogo-official-btn"
+                className="google-calendar-btn"
                 style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
               >
-                <ExternalLink size={14} />
-                {t.details_pokemongo_link}
+                <Calendar size={14} />
+                {t.details_add_to_calendar}
               </a>
-            )}
-            <a 
-              href={getGoogleCalendarUrl()} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="google-calendar-btn"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-            >
-              <Calendar size={14} />
-              {t.details_add_to_calendar}
-            </a>
-          </div>
-
-          {dynamicLoading && (
-            <div className="dynamic-loading-indicator" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              <RefreshCw size={14} className="animate-spin" />
-              {lang === 'cs' ? 'Načítám podrobnosti z Leek Duck...' : 'Loading details from Leek Duck...'}
             </div>
-          )}
 
-          {/* TEMPLATE 1: SPOTLIGHT HOUR TEMPLATE */}
-          {event.eventType === 'pokemon-spotlight-hour' && event.extraData?.spotlight && (
-            <div className="expanded-row spotlight-hour-details-box">
-              <div className="spotlight-content-grid">
-                <div className="spotlight-pokemon-info">
-                  <img 
-                    src={resolveImage(event.extraData?.spotlight?.image || getPokemonImage(event.extraData?.spotlight?.name || ''), event.eventType, event.extraData?.spotlight?.name)} 
-                    alt={event.extraData?.spotlight?.name} 
-                    className="spotlight-pokemon-img"
-                    onError={(e) => {
-                      handlePokemonImageError(e.target as HTMLImageElement, event.extraData?.spotlight?.name || '');
-                    }}
-                  />
-                  <div className="spotlight-poke-meta">
-                    <strong>{event.extraData.spotlight.name}</strong>
-                    {event.extraData.spotlight.canBeShiny && (
-                      <span className="shiny-indicator-badge">✨ Shiny</span>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="spotlight-bonus-info">
-                  <div className="bonus-pill-large">
-                    <span className="bonus-icon">🍬</span>
-                    <div className="bonus-text-wrapper">
-                      <span className="bonus-label">{lang === 'cs' ? 'Aktivní Bonus:' : 'Active Bonus:'}</span>
-                      <strong className="bonus-val">
-                        {translateSpotlightBonus(event.extraData.spotlight.bonus)}
-                      </strong>
-                    </div>
-                  </div>
-                </div>
+            {dynamicLoading && (
+              <div className="dynamic-loading-indicator" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <RefreshCw size={14} className="animate-spin" />
+                {lang === 'cs' ? 'Načítám podrobnosti z Leek Duck...' : 'Loading details from Leek Duck...'}
               </div>
+            )}
 
-              {/* Meta recommendations */}
-              {(() => {
-                const meta = findPokemonMeta(event.extraData.spotlight.name);
-                if (!meta) return null;
-                return (
-                  <div className="spotlight-meta-recommendations">
-                    <h5>📊 PvE & PvP Meta Analysis</h5>
-                    <div className="meta-ratings-row">
-                      <div className="rating-badge">PvE: <strong className={`rating-val val-${meta.pveRating}`}>{meta.pveRating}</strong></div>
-                      <div className="rating-badge">PvP: <strong className={`rating-val val-${meta.pvpRating}`}>{meta.pvpRating}</strong></div>
+            {/* TEMPLATE 1: SPOTLIGHT HOUR TEMPLATE */}
+            {event.eventType === 'pokemon-spotlight-hour' && event.extraData?.spotlight && (
+              <div className="expanded-row spotlight-hour-details-box">
+                <div className="spotlight-content-grid">
+                  <div className="spotlight-pokemon-info">
+                    <img 
+                      src={resolveImage(event.extraData?.spotlight?.image || getPokemonImage(event.extraData?.spotlight?.name || ''), event.eventType, event.extraData?.spotlight?.name)} 
+                      alt={event.extraData?.spotlight?.name || ''} 
+                      className="spotlight-pokemon-img"
+                      onError={(e) => {
+                        handlePokemonImageError(e.target as HTMLImageElement, event.extraData?.spotlight?.name || '');
+                      }}
+                    />
+                    <div className="spotlight-poke-meta">
+                      <strong>{event.extraData.spotlight.name}</strong>
+                      {event.extraData.spotlight.canBeShiny && (
+                        <span className="shiny-indicator-badge">✨ Shiny</span>
+                      )}
                     </div>
-                    <p className="meta-rank-desc"><strong>PvE:</strong> {lang === 'cs' ? meta.pveRankText.cs : meta.pveRankText.en}</p>
-                    <p className="meta-rank-desc"><strong>PvP:</strong> {lang === 'cs' ? meta.pvpRankText.cs : meta.pvpRankText.en}</p>
-                    <div className="meta-moves">
-                      <strong>{lang === 'cs' ? 'Doporučené útoky:' : 'Best Moves:'}</strong> 
-                      <code>{meta.bestFastMove} + {meta.bestChargedMove}</code>
-                    </div>
-                    <p className="meta-notes-text">💡 <em>{lang === 'cs' ? meta.notes.cs : meta.notes.en}</em></p>
                   </div>
-                );
-              })()}
-            </div>
-          )}
+                  
+                  <div className="spotlight-bonus-info">
+                    <div className="bonus-pill-large">
+                      <span className="bonus-icon">🍬</span>
+                      <div className="bonus-text-wrapper">
+                        <span className="bonus-label">{lang === 'cs' ? 'Aktivní Bonus:' : 'Active Bonus:'}</span>
+                        <strong className="bonus-val">
+                          {translateSpotlightBonus(event.extraData.spotlight.bonus || '')}
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-          {/* TEMPLATE 2: COMMUNITY DAY TEMPLATE */}
-          {event.eventType === 'community-day' && (
-            <div className="expanded-row community-day-details-box">
-              {(() => {
-                const cd = event.extraData?.communityday;
-                const featuredPokemon = cd?.spawns?.[0]?.name || event.name.replace(/community\s*day/gi, "").replace(/classic/gi, "").trim();
-                const meta = findPokemonMeta(featuredPokemon);
-                const dexImage = cd?.spawns?.[0]?.image || getPokemonImage(featuredPokemon);
-                
-                const liveBonuses = cd?.bonuses || [];
-                let specialMove = "";
-                let localBonuses = specialDetails?.bonuses || [];
-                const moveBonus = localBonuses.find(b => b.icon === '⚔️');
-                if (moveBonus) {
-                  specialMove = lang === 'cs' ? moveBonus.text.cs : moveBonus.text.en;
-                }
+                {/* Meta recommendations */}
+                {(() => {
+                  const meta = findPokemonMeta(event.extraData?.spotlight?.name || '');
+                  if (!meta) return null;
+                  return (
+                    <div className="spotlight-meta-recommendations">
+                      <h5>📊 PvE & PvP Meta Analysis</h5>
+                      <div className="meta-ratings-row">
+                        <div className="rating-badge">PvE: <strong className={`rating-val val-${meta.pveRating}`}>{meta.pveRating}</strong></div>
+                        <div className="rating-badge">PvP: <strong className={`rating-val val-${meta.pvpRating}`}>{meta.pvpRating}</strong></div>
+                      </div>
+                      <p className="meta-rank-desc"><strong>PvE:</strong> {lang === 'cs' ? meta.pveRankText.cs : meta.pveRankText.en}</p>
+                      <p className="meta-rank-desc"><strong>PvP:</strong> {lang === 'cs' ? meta.pvpRankText.cs : meta.pvpRankText.en}</p>
+                      <div className="meta-moves">
+                        <strong>{lang === 'cs' ? 'Doporučené útoky:' : 'Best Moves:'}</strong> 
+                        <code>{meta.bestFastMove} + {meta.bestChargedMove}</code>
+                      </div>
+                      <p className="meta-notes-text">💡 <em>{lang === 'cs' ? meta.notes.cs : meta.notes.en}</em></p>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
 
-                return (
-                  <>
-                    {/* Featured Spawns */}
-                    <div className="cd-spawns-section">
-                      <h5>{t.details_spawns}</h5>
-                      <div className="cd-spawns-flex">
-                        <div className="cd-spawn-card">
-                          <img 
-                            src={resolveImage(dexImage, event.eventType, featuredPokemon)} 
-                            alt={featuredPokemon} 
-                            className="cd-spawn-img" 
-                            onError={(e) => {
-                              handlePokemonImageError(e.target as HTMLImageElement, featuredPokemon);
-                            }}
-                          />
-                          <span className="cd-spawn-name">{featuredPokemon}</span>
-                          <span className="shiny-badge-mini">✨ Shiny Rate ~1:25</span>
+            {/* TEMPLATE 2: COMMUNITY DAY TEMPLATE */}
+            {event.eventType === 'community-day' && (
+              <div className="expanded-row community-day-details-box">
+                {(() => {
+                  const cd = event.extraData?.communityday;
+                  const featuredPokemon = cd?.spawns?.[0]?.name || event.name.replace(/community\s*day/gi, "").replace(/classic/gi, "").trim();
+                  const meta = findPokemonMeta(featuredPokemon);
+                  const dexImage = cd?.spawns?.[0]?.image || getPokemonImage(featuredPokemon);
+                  
+                  const liveBonuses = cd?.bonuses || [];
+                  let specialMove = "";
+                  let localBonuses = specialDetails?.bonuses || [];
+                  const moveBonus = localBonuses.find((b: any) => getBonusInfo(b, lang).icon === '⚔️');
+                  if (moveBonus) {
+                    specialMove = getBonusInfo(moveBonus, lang).text;
+                  }
+
+                  return (
+                    <>
+                      {/* Featured Spawns */}
+                      <div className="cd-spawns-section">
+                        <h5>{t.details_spawns}</h5>
+                        <div className="cd-spawns-flex">
+                          <div className="cd-spawn-card">
+                            <img 
+                              src={resolveImage(dexImage, event.eventType, featuredPokemon)} 
+                              alt={featuredPokemon} 
+                              className="cd-spawn-img" 
+                              onError={(e) => {
+                                handlePokemonImageError(e.target as HTMLImageElement, featuredPokemon);
+                              }}
+                            />
+                            <span className="cd-spawn-name">{featuredPokemon}</span>
+                            <span className="shiny-badge-mini">✨ Shiny Rate ~1:25</span>
+                          </div>
+                          {cd?.shinies && cd.shinies.length > 0 && (
+                            <div className="cd-shiny-family">
+                              <h6>{lang === 'cs' ? 'Evoluce a Shiny formy:' : 'Shiny Family:'}</h6>
+                              <div className="shiny-family-flex">
+                                {cd.shinies.map((s: any) => (
+                                  <div key={s.name} className="shiny-family-item">
+                                    <img 
+                                      src={resolveImage(s.image, event.eventType, s.name)} 
+                                      alt={getPokemonName(s.name, lang)} 
+                                      onError={(e) => {
+                                        handlePokemonImageError(e.target as HTMLImageElement, s.name);
+                                      }}
+                                    />
+                                    <span>{getPokemonName(s.name, lang)}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
-                        {cd?.shinies && cd.shinies.length > 0 && (
-                          <div className="cd-shiny-family">
-                            <h6>{lang === 'cs' ? 'Evoluce a Shiny formy:' : 'Shiny Family:'}</h6>
-                            <div className="shiny-family-flex">
-                              {cd.shinies.map(s => (
-                                <div key={s.name} className="shiny-family-item">
-                                  <img 
-                                    src={resolveImage(s.image, event.eventType, s.name)} 
-                                    alt={getPokemonName(s.name, lang)} 
-                                    onError={(e) => {
-                                      handlePokemonImageError(e.target as HTMLImageElement, s.name);
-                                    }}
-                                  />
-                                  <span>{getPokemonName(s.name, lang)}</span>
-                                </div>
-                              ))}
+                      </div>
+
+                      {/* CD Bonuses */}
+                      <div className="cd-bonuses-section">
+                        <h5>{t.details_bonuses}</h5>
+                        
+                        {specialMove && (
+                          <div className="cd-special-move-box">
+                            <span className="move-icon">⚔️</span>
+                            <div className="move-text">
+                              <strong>{lang === 'cs' ? 'Exkluzivní útok:' : 'Exclusive Move:'}</strong>
+                              <p>{specialMove}</p>
                             </div>
                           </div>
                         )}
-                      </div>
-                    </div>
 
-                    {/* CD Bonuses */}
-                    <div className="cd-bonuses-section">
-                      <h5>{t.details_bonuses}</h5>
-                      
-                      {specialMove && (
-                        <div className="cd-special-move-box">
-                          <span className="move-icon">⚔️</span>
-                          <div className="move-text">
-                            <strong>{lang === 'cs' ? 'Exkluzivní útok:' : 'Exclusive Move:'}</strong>
-                            <p>{specialMove}</p>
-                          </div>
+                        <div className="cd-bonuses-grid">
+                          {liveBonuses.map((b: any, idx: number) => {
+                            const { text: bText, image: bImg } = getBonusInfo(b, lang);
+                            return (
+                              <div key={idx} className="cd-bonus-item">
+                                {bImg ? <img src={bImg} alt="bonus" className="cd-bonus-icon-img" /> : <span className="cd-bonus-emoji">🎁</span>}
+                                <span>{bText}</span>
+                              </div>
+                            );
+                          })}
+                          {liveBonuses.length === 0 && localBonuses.filter((b: any) => getBonusInfo(b, lang).icon !== '⚔️').map((b: any, idx: number) => {
+                            const { text: bText, icon: bIcon } = getBonusInfo(b, lang);
+                            return (
+                              <div key={idx} className="cd-bonus-item">
+                                <span className="cd-bonus-emoji">{bIcon}</span>
+                                <span>{bText}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Special Research Steps */}
+                      {cd?.specialresearch && cd.specialresearch.length > 0 && (
+                        <div className="cd-research-section">
+                          <h5>🏆 {lang === 'ja' ? 'スペシャルリサーチ:' : lang === 'cs' ? 'Úkoly speciálního výzkumu:' : 'Special Research:'}</h5>
+                          {cd.specialresearch.map((step: any, sIdx: number) => {
+                            const getStepName = (name: string) => {
+                              if (lang === 'ja') {
+                                let jaName = name;
+                                jaName = jaName.replace(/Community Day/gi, 'コミュニティデイ');
+                                const basePoke = getBasePokemonNames().find(p => jaName.toLowerCase().includes(p.toLowerCase()));
+                                if (basePoke) {
+                                  jaName = jaName.replace(new RegExp(basePoke, 'gi'), getPokemonName(basePoke, 'ja'));
+                                }
+                                return jaName;
+                              }
+                              return name;
+                            };
+                            const stepLabel = step.name ? getStepName(step.name) : `${lang === 'cs' ? 'Krok' : 'Step'} ${step.step}`;
+                            return (
+                              <div key={sIdx} className="cd-research-step-box">
+                                <h6>{stepLabel}</h6>
+                              <ul className="cd-tasks-list">
+                                {step.tasks?.map((task: any, tIdx: number) => (
+                                  <li key={tIdx} className="cd-task-item-li">
+                                    <span>{getLocalizedText(task.text, lang)}</span>
+                                    {task.reward && (
+                                      <span className="cd-task-reward">
+                                        🎁 {getLocalizedText(task.reward.text || task.reward, lang)}
+                                      </span>
+                                    )}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )})}
                         </div>
                       )}
 
-                      <div className="cd-bonuses-grid">
-                        {liveBonuses.map((b, idx) => (
-                          <div key={idx} className="cd-bonus-item">
-                            {b.image ? <img src={b.image} alt="bonus" className="cd-bonus-icon-img" /> : <span className="cd-bonus-emoji">🎁</span>}
-                            <span>{b.text}</span>
+                      {/* Meta Analysis */}
+                      {meta && (
+                        <div className="cd-meta-section">
+                          <h5>📊 {lang === 'ja' ? 'メタ分析（対戦＆レイド）' : 'PvE & PvP Meta Analysis'}</h5>
+                          <div className="meta-ratings-row">
+                            <div className="rating-badge">PvE: <strong className={`rating-val val-${meta.pveRating}`}>{meta.pveRating}</strong></div>
+                            <div className="rating-badge">PvP: <strong className={`rating-val val-${meta.pvpRating}`}>{meta.pvpRating}</strong></div>
                           </div>
-                        ))}
-                        {liveBonuses.length === 0 && localBonuses.filter(b => b.icon !== '⚔️').map((b, idx) => (
-                          <div key={idx} className="cd-bonus-item">
-                            <span className="cd-bonus-emoji">{b.icon}</span>
-                            <span>{lang === 'cs' ? b.text.cs : b.text.en}</span>
+                          <p className="meta-rank-desc"><strong>PvE:</strong> {lang === 'cs' ? meta.pveRankText.cs : meta.pveRankText.en}</p>
+                          <p className="meta-rank-desc"><strong>PvP:</strong> {lang === 'cs' ? meta.pvpRankText.cs : meta.pvpRankText.en}</p>
+                          <div className="meta-moves">
+                            <strong>{lang === 'cs' ? 'Doporučené útoky:' : 'Best Moveset:'}</strong> 
+                            <code>{meta.bestFastMove} + {meta.bestChargedMove}</code>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Special Research Steps */}
-                    {cd?.specialresearch && cd.specialresearch.length > 0 && (
-                      <div className="cd-research-section">
-                        <h5>🏆 {lang === 'ja' ? 'スペシャルリサーチ:' : lang === 'cs' ? 'Úkoly speciálního výzkumu:' : 'Special Research:'}</h5>
-                        {cd.specialresearch.map((step, sIdx) => {
-                          const getStepName = (name: string) => {
-                            if (lang === 'ja') {
-                              let jaName = name;
-                              jaName = jaName.replace(/Community Day/gi, 'コミュニティデイ');
-                              const basePoke = getBasePokemonNames().find(p => jaName.toLowerCase().includes(p.toLowerCase()));
-                              if (basePoke) {
-                                jaName = jaName.replace(new RegExp(basePoke, 'gi'), getPokemonName(basePoke, 'ja'));
-                              }
-                              return jaName;
-                            }
-                            return name;
-                          };
-                          const stepLabel = step.name ? getStepName(step.name) : `${lang === 'cs' ? 'Krok' : 'Step'} ${step.step}`;
-                          return (
-                            <div key={sIdx} className="cd-research-step-box">
-                              <h6>{stepLabel}</h6>
-                            <ul className="cd-tasks-list">
-                              {step.tasks?.map((task, tIdx) => (
-                                <li key={tIdx} className="cd-task-item-li">
-                                  <span>{task.text}</span>
-                                  {task.reward && (
-                                    <span className="cd-task-reward">
-                                      🎁 {task.reward.text}
-                                    </span>
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )})}
-                      </div>
-                    )}
-
-                    {/* Meta Analysis */}
-                    {meta && (
-                      <div className="cd-meta-section">
-                        <h5>📊 {lang === 'ja' ? 'メタ分析（対戦＆レイド）' : 'PvE & PvP Meta Analysis'}</h5>
-                        <div className="meta-ratings-row">
-                          <div className="rating-badge">PvE: <strong className={`rating-val val-${meta.pveRating}`}>{meta.pveRating}</strong></div>
-                          <div className="rating-badge">PvP: <strong className={`rating-val val-${meta.pvpRating}`}>{meta.pvpRating}</strong></div>
+                          <p className="meta-notes-text">💡 <em>{lang === 'cs' ? meta.notes.cs : meta.notes.en}</em></p>
                         </div>
-                        <p className="meta-rank-desc"><strong>PvE:</strong> {lang === 'cs' ? meta.pveRankText.cs : meta.pveRankText.en}</p>
-                        <p className="meta-rank-desc"><strong>PvP:</strong> {lang === 'cs' ? meta.pvpRankText.cs : meta.pvpRankText.en}</p>
-                        <div className="meta-moves">
-                          <strong>{lang === 'cs' ? 'Doporučené útoky:' : 'Best Moveset:'}</strong> 
-                          <code>{meta.bestFastMove} + {meta.bestChargedMove}</code>
-                        </div>
-                        <p className="meta-notes-text">💡 <em>{lang === 'cs' ? meta.notes.cs : meta.notes.en}</em></p>
-                      </div>
-                    )}
-                  </>
-                );
-              })()}
-            </div>
-          )}
-
-          {/* TEMPLATE 3: GENERAL SPECIAL EVENT GUIDE (if loaded locally and not CD/Spotlight) */}
-          {event.eventType !== 'pokemon-spotlight-hour' && event.eventType !== 'community-day' && specialDetails && (
-            <div className="expanded-row special-event-guide-box">
-              <div className="special-guide-header">
-                <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>
-                  <span className="duotone-icon duotone-yellow"><Star size={18} fill="currentColor" /></span>
-                  {t.details_special_event_title}
-                </h4>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
+            )}
 
-              {/* Debuts */}
-              {specialDetails.debuts && specialDetails.debuts.length > 0 && (
-                <div className="special-subsection debuts">
-                  <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
-                    <span className="duotone-icon duotone-blue"><Sparkles size={16} /></span>
-                    {t.details_debuts}
-                  </h5>
-                  <div className="debuts-flex">
-                    {specialDetails.debuts.map((d, index) => {
-                      return (
-                        <div key={index} className="debut-item">
-                          <img 
-                            src={resolveImage(d.image, event.eventType, d.name.en)} 
-                            alt={lang === 'ja' ? (d.name.ja || getPokemonName(d.name.en, 'ja')) : (lang === 'cs' ? d.name.cs : d.name.en)} 
-                            className="debut-img" 
-                            onError={(e) => {
-                              handlePokemonImageError(e.target as HTMLImageElement, d.name.en);
-                            }}
-                          />
-                          <div className="debut-info">
-                            <strong className="debut-name">{lang === 'ja' ? (d.name.ja || getPokemonName(d.name.en, 'ja')) : (lang === 'cs' ? d.name.cs : d.name.en)}</strong>
-                            <p className="debut-desc">{lang === 'ja' ? (d.description.ja || d.description.en) : (lang === 'cs' ? d.description.cs : d.description.en)}</p>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+            {/* TEMPLATE 3: GENERAL SPECIAL EVENT GUIDE (if loaded locally and not CD/Spotlight) */}
+            {event.eventType !== 'pokemon-spotlight-hour' && event.eventType !== 'community-day' && specialDetails && (
+              <div className="expanded-row special-event-guide-box">
+                <div className="special-guide-header">
+                  <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <span className="duotone-icon duotone-yellow"><Star size={18} fill="currentColor" /></span>
+                    {t.details_special_event_title}
+                  </h4>
                 </div>
-              )}
 
-              {/* Bonuses */}
-              {specialDetails.bonuses && specialDetails.bonuses.length > 0 && (
-                <div className="special-subsection bonuses">
-                  <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
-                    <span className="duotone-icon duotone-purple"><Gift size={16} /></span>
-                    {t.details_bonuses}
-                  </h5>
-                  <div className="special-bonuses-grid">
-                    {specialDetails.bonuses.map((b, idx) => (
-                      <div key={idx} className="special-bonus-card">
-                        <span className="bonus-emoji">{b.icon}</span>
-                        <p className="bonus-text-label">{lang === 'ja' ? (b.text.ja || b.text.en) : (lang === 'cs' ? b.text.cs : b.text.en)}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Spawns */}
-              {specialDetails.spawns && specialDetails.spawns.length > 0 && (
-                <div className="special-subsection spawns">
-                  <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
-                    <span className="duotone-icon duotone-green"><Leaf size={16} /></span>
-                    {t.details_spawns}
-                  </h5>
-                  <div className="spawns-grid">
-                    {specialDetails.spawns.map(s => {
-                      const isTicked = tickedSpawns.includes(s.name);
-                      return (
-                        <div 
-                          key={s.name} 
-                          className={`spawn-card ${isTicked ? 'ticked' : ''} ${s.isHighPriority ? 'priority' : ''}`}
-                          onClick={() => toggleSpawnTicked(s.name)}
-                        >
-                          <div className="spawn-tick-indicator" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-                            {isTicked ? <Check size={12} strokeWidth={3} /> : <Plus size={12} strokeWidth={3} />}
+                {/* Debuts */}
+                {specialDetails.debuts && specialDetails.debuts.length > 0 && (
+                  <div className="special-subsection debuts">
+                    <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                      <span className="duotone-icon duotone-blue"><Sparkles size={16} /></span>
+                      {t.details_debuts}
+                    </h5>
+                    <div className="debuts-flex">
+                      {specialDetails.debuts.map((d: any, index: number) => {
+                        const debutName = getLocalizedText(d?.name, lang);
+                        const englishName = typeof d?.name === 'object' ? (d.name.en || d.name.cs || '') : (typeof d?.name === 'string' ? d.name : '');
+                        const debutDesc = getLocalizedText(d?.description, lang);
+                        return (
+                          <div key={index} className="debut-item">
+                            <img 
+                              src={resolveImage(d?.image, event.eventType, englishName)} 
+                              alt={debutName} 
+                              className="debut-img" 
+                              onError={(e) => {
+                                handlePokemonImageError(e.target as HTMLImageElement, englishName);
+                              }}
+                            />
+                            <div className="debut-info">
+                              <strong className="debut-name">{debutName}</strong>
+                              <p className="debut-desc">{debutDesc}</p>
+                            </div>
                           </div>
-                          <img 
-                            src={resolveImage(s.image, event.eventType, s.name)} 
-                            alt={getPokemonName(s.name, lang)} 
-                            className="spawn-img" 
-                            onError={(e) => {
-                              handlePokemonImageError(e.target as HTMLImageElement, s.name);
-                            }}
-                          />
-                          <span className="spawn-name">{getPokemonName(s.name, lang)}</span>
-                           {s.habitat && (
-                            <span className="spawn-habitat">{lang === 'cs' ? s.habitat.cs : s.habitat.en}</span>
-                          )}
-                          <div className="spawn-badges">
-                            {s.isHighPriority && (
-                              <span className="spawn-priority-badge" title={t.details_priority_spawn} style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                                <Star size={10} fill="currentColor" stroke="none" /> Meta
-                              </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Bonuses */}
+                {specialDetails.bonuses && specialDetails.bonuses.length > 0 && (
+                  <div className="special-subsection bonuses">
+                    <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                      <span className="duotone-icon duotone-purple"><Gift size={16} /></span>
+                      {t.details_bonuses}
+                    </h5>
+                    <div className="special-bonuses-grid">
+                      {specialDetails.bonuses.map((b: any, idx: number) => {
+                        const { text: bText, icon: bIcon } = getBonusInfo(b, lang);
+                        return (
+                          <div key={idx} className="special-bonus-card">
+                            <span className="bonus-emoji">{bIcon}</span>
+                            <p className="bonus-text-label">{bText}</p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Spawns */}
+                {specialDetails.spawns && specialDetails.spawns.length > 0 && (
+                  <div className="special-subsection spawns">
+                    <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                      <span className="duotone-icon duotone-green"><Leaf size={16} /></span>
+                      {t.details_spawns}
+                    </h5>
+                    <div className="spawns-grid">
+                      {specialDetails.spawns.map((s: any, idx: number) => {
+                        const spawnName = typeof s === 'string' ? s : getLocalizedText(s?.name, lang);
+                        const englishName = typeof s === 'object' && s?.name ? (typeof s.name === 'object' ? s.name.en : s.name) : (typeof s === 'string' ? s : '');
+                        const isTicked = tickedSpawns.includes(spawnName);
+                        const habitatText = s?.habitat ? getLocalizedText(s.habitat, lang) : '';
+                        return (
+                          <div 
+                            key={spawnName || idx} 
+                            className={`spawn-card ${isTicked ? 'ticked' : ''} ${s?.isHighPriority ? 'priority' : ''}`}
+                            onClick={() => toggleSpawnTicked(spawnName)}
+                          >
+                            <div className="spawn-tick-indicator" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                              {isTicked ? <Check size={12} strokeWidth={3} /> : <Plus size={12} strokeWidth={3} />}
+                            </div>
+                            <img 
+                              src={resolveImage(s?.image, event.eventType, englishName || spawnName)} 
+                              alt={getPokemonName(englishName || spawnName, lang)} 
+                              className="spawn-img" 
+                              onError={(e) => {
+                                handlePokemonImageError(e.target as HTMLImageElement, englishName || spawnName);
+                              }}
+                            />
+                            <span className="spawn-name">{getPokemonName(englishName || spawnName, lang)}</span>
+                            {habitatText && (
+                              <span className="spawn-habitat">{habitatText}</span>
                             )}
-                            {s.isShinyAvailable && (
-                              <span className="spawn-shiny-badge" title={t.details_shiny_short} style={{ display: 'inline-flex', alignItems: 'center' }}>
-                                <Sparkles size={10} fill="currentColor" stroke="none" />
-                              </span>
-                            )}
+                            <div className="spawn-badges">
+                              {s?.isHighPriority && (
+                                <span className="spawn-priority-badge" title={t.details_priority_spawn} style={{ display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                  <Star size={10} fill="currentColor" stroke="none" /> Meta
+                                </span>
+                              )}
+                              {s?.isShinyAvailable && (
+                                <span className="spawn-shiny-badge" title={t.details_shiny_short} style={{ display: 'inline-flex', alignItems: 'center' }}>
+                                  <Sparkles size={10} fill="currentColor" stroke="none" />
+                                </span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Eggs */}
-              {specialDetails.eggs && specialDetails.eggs.length > 0 && (
-                <div className="special-subsection eggs">
-                  <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
-                    <span className="duotone-icon duotone-orange"><EggIcon size={16} /></span>
-                    {t.details_eggs}
-                  </h5>
-                  <div className="eggs-section-container">
-                    {specialDetails.eggs.map(egg => (
-                      <div key={egg.distance} className="egg-pool-row">
-                        <div className="egg-pool-header" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                          <span className="egg-icon-large" style={{ display: 'inline-flex', color: '#fb923c' }}><EggIcon size={24} /></span>
-                          <h6>{lang === 'ja' ? `${egg.distance} のプール` : `${egg.distance} Pool`}</h6>
-                        </div>
-                        <div className="egg-contents-flex">
-                          {egg.contents.map(p => (
-                            <div key={p.name} className="egg-pokemon-item">
-                              <img 
-                                src={resolveImage(p.image, event.eventType, p.name)} 
-                                alt={p.name} 
-                                onError={(e) => {
-                                  handlePokemonImageError(e.target as HTMLImageElement, p.name);
-                                }}
-                              />
-                              <span className="egg-p-name">{getPokemonName(p.name, lang)}</span>
-                              {p.isShinyAvailable && (
-                                <span className="shiny-star" style={{ display: 'inline-flex' }}>
+                {/* Eggs */}
+                {specialDetails.eggs && specialDetails.eggs.length > 0 && (
+                  <div className="special-subsection eggs">
+                    <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                      <span className="duotone-icon duotone-orange"><EggIcon size={16} /></span>
+                      {t.details_eggs}
+                    </h5>
+                    <div className="eggs-section-container">
+                      {specialDetails.eggs.map((egg: any, eggIdx: number) => {
+                        const dist = typeof egg?.distance === 'string' ? egg.distance : getLocalizedText(egg?.distance, lang);
+                        return (
+                          <div key={dist || eggIdx} className="egg-pool-row">
+                            <div className="egg-pool-header" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                              <span className="egg-icon-large" style={{ display: 'inline-flex', color: '#fb923c' }}><EggIcon size={24} /></span>
+                              <h6>{lang === 'ja' ? `${dist} のプール` : `${dist} Pool`}</h6>
+                            </div>
+                            <div className="egg-contents-flex">
+                              {egg.contents?.map((p: any, pIdx: number) => {
+                                const pName = typeof p === 'string' ? p : (p?.name ? (typeof p.name === 'object' ? p.name.en : p.name) : '');
+                                const localizedName = typeof p === 'object' && p?.name ? getLocalizedText(p.name, lang) : pName;
+                                return (
+                                  <div key={pName || pIdx} className="egg-pokemon-item">
+                                    <img 
+                                      src={resolveImage(p?.image, event.eventType, pName)} 
+                                      alt={localizedName} 
+                                      onError={(e) => {
+                                        handlePokemonImageError(e.target as HTMLImageElement, pName);
+                                      }}
+                                    />
+                                    <span className="egg-p-name">{getPokemonName(pName || localizedName, lang)}</span>
+                                    {p?.isShinyAvailable && (
+                                      <span className="shiny-star" style={{ display: 'inline-flex' }}>
+                                        <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} />
+                                      </span>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Field Research */}
+                {specialDetails.research && specialDetails.research.length > 0 && (
+                  <div className="special-subsection research">
+                    <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                      <span className="duotone-icon duotone-blue"><Search size={16} /></span>
+                      {t.details_research}
+                    </h5>
+                    <div className="research-tasks-list">
+                      {specialDetails.research.map((r: any, idx: number) => {
+                        const taskText = getLocalizedText(r?.task, lang);
+                        const rewardText = getLocalizedText(r?.reward, lang);
+                        return (
+                          <div key={idx} className="research-task-item">
+                            <div className="task-left" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                              <span className="search-icon" style={{ display: 'inline-flex', color: '#60a5fa' }}><Search size={14} /></span>
+                              <span className="task-text">{taskText}</span>
+                            </div>
+                            <div className="task-right" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                              {rewardText && (
+                                <span className="task-reward" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  <Gift size={12} style={{ color: '#c084fc' }} />
+                                  {rewardText}
+                                </span>
+                              )}
+                              {r?.isShinyAvailable && (
+                                <span className="shiny-star-research" style={{ display: 'inline-flex' }}>
                                   <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} />
                                 </span>
                               )}
                             </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+            )}
 
-              {/* Field Research */}
-              {specialDetails.research && specialDetails.research.length > 0 && (
-                <div className="special-subsection research">
-                  <h5 style={{ display: 'inline-flex', alignItems: 'center' }}>
-                    <span className="duotone-icon duotone-blue"><Search size={16} /></span>
-                    {t.details_research}
-                  </h5>
-                  <div className="research-tasks-list">
-                    {specialDetails.research.map((r, idx) => (
-                      <div key={idx} className="research-task-item">
-                        <div className="task-left" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                          <span className="search-icon" style={{ display: 'inline-flex', color: '#60a5fa' }}><Search size={14} /></span>
-                          <span className="task-text">{lang === 'ja' ? (r.task.ja || r.task.en) : (lang === 'cs' ? r.task.cs : r.task.en)}</span>
-                        </div>
-                        <div className="task-right" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                          <span className="task-reward" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                            <Gift size={12} style={{ color: '#c084fc' }} />
-                            {r.reward}
+            {/* TEMPLATE 4: RAID BOSSES & COUNTERS */}
+            {bosses.length > 0 && (
+              <div className="expanded-row raid-bosses-row">
+                <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <span className="duotone-icon duotone-red"><Swords size={18} /></span>
+                  {t.details_raid_bosses}
+                </h4>
+                <div className="bosses-flex">
+                  {bosses.map((boss: any, bIdx: number) => {
+                    const bossName = typeof boss === 'string' ? boss : (boss?.name || '');
+                    const englishName = typeof boss === 'object' && boss?.name ? boss.name : (typeof boss === 'string' ? boss : '');
+                    const canBeShiny = typeof boss === 'object' ? !!boss?.canBeShiny : false;
+                    return (
+                      <div key={bossName || bIdx} className="boss-item">
+                        <img 
+                          src={resolveImage(typeof boss === 'object' ? boss?.image : undefined, event.eventType, englishName)} 
+                          alt={getPokemonName(bossName, lang)} 
+                          onError={(e) => {
+                            handlePokemonImageError(e.target as HTMLImageElement, englishName);
+                          }}
+                        />
+                        <span className="boss-name">{getPokemonName(bossName, lang)}</span>
+                        {canBeShiny && (
+                          <span className="shiny-indicator" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                            <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} /> Shiny
                           </span>
-                          {r.isShinyAvailable && (
-                            <span className="shiny-star-research" style={{ display: 'inline-flex' }}>
-                              <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} />
-                            </span>
-                          )}
-                        </div>
+                        )}
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
-              )}
-            </div>
-          )}
+              </div>
+            )}
 
-          {/* TEMPLATE 4: RAID BOSSES & COUNTERS */}
-          {bosses.length > 0 && (
-            <div className="expanded-row raid-bosses-row">
-              <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>
-                <span className="duotone-icon duotone-red"><Swords size={18} /></span>
-                {t.details_raid_bosses}
-              </h4>
-              <div className="bosses-flex">
-                {bosses.map(boss => (
-                  <div key={boss.name} className="boss-item">
-                    <img 
-                      src={resolveImage(boss.image, event.eventType, boss.name)} 
-                      alt={getPokemonName(boss.name, lang)} 
-                      onError={(e) => {
-                        handlePokemonImageError(e.target as HTMLImageElement, boss.name);
-                      }}
-                    />
-                    <span className="boss-name">{getPokemonName(boss.name, lang)}</span>
-                    {boss.canBeShiny && (
-                      <span className="shiny-indicator" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                        <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} /> Shiny
-                      </span>
-                    )}
+            {matchedRaidCounters.length > 0 && (
+              <div className="expanded-row raid-counters-row">
+                <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                  <span className="duotone-icon duotone-orange"><Flame size={18} fill="none" /></span>
+                  {t.details_recommended_counters}
+                </h4>
+                {matchedRaidCounters.map(counters => (
+                  <div key={counters.bossName} className="raid-boss-counters-card">
+                    <div className="counters-boss-header">
+                      <h5>{getPokemonName(counters.bossName, lang)}</h5>
+                      <div className="weakness-list">
+                        {t.details_weaknesses}: <span className="type-badges-flex">{counters.weaknesses.map(w => <TypeBadge key={w} typeStr={w} lang={lang} />)}</span>
+                      </div>
+                    </div>
+                    <div className="counters-levels-grid">
+                      {counters.megaCounters.length > 0 && (
+                        <div className="counter-level-col mega">
+                          <span className="level-badge mega">{t.details_level_mega}</span>
+                          <ul>
+                            {counters.megaCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
+                          </ul>
+                        </div>
+                      )}
+                      {counters.advancedCounters.length > 0 && (
+                        <div className="counter-level-col advanced">
+                          <span className="level-badge advanced">{t.details_level_advanced}</span>
+                          <ul>
+                            {counters.advancedCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
+                          </ul>
+                        </div>
+                      )}
+                      {counters.budgetCounters.length > 0 && (
+                        <div className="counter-level-col budget">
+                          <span className="level-badge budget">{t.details_level_budget}</span>
+                          <ul>
+                            {counters.budgetCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                    {/* CP & IV & Weather Boost info */}
+                    <div className="counters-cp-info">
+                      {counters.maxCp > 0 && (
+                        <div className="cp-row">
+                          <span className="cp-header-label">{t.details_standard_cp}</span>
+                          <span className="cp-span">{counters.minCp} – <strong className="hundo-label">{counters.maxCp} CP (100% IV)</strong></span>
+                        </div>
+                      )}
+                      {counters.maxBoostedCp > 0 && (
+                        <div className="cp-row">
+                          <span className="cp-header-label">{t.details_weather_cp}</span>
+                          <span className="cp-span">{counters.minBoostedCp} – <strong className="hundo-label-boost">{counters.maxBoostedCp} CP (100% IV)</strong></span>
+                        </div>
+                      )}
+                      {counters.weatherBoosts.length > 0 && (
+                        <div className="cp-row">
+                          <span className="cp-header-label">{t.details_boost_weather}</span>
+                          <span className="cp-span" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                            {counters.weatherBoosts.map(w => <WeatherIcon key={w} weatherStr={w} />)}
+                          </span>
+                        </div>
+                      )}
+                      <div className="cp-row shiny-info">
+                        <span className="cp-header-label">{t.details_shiny_version}</span>
+                        <span className="cp-span highlight-shiny" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <Sparkles size={12} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} /> {t.details_shiny_available}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-
-          {matchedRaidCounters.length > 0 && (
-            <div className="expanded-row raid-counters-row">
-              <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>
-                <span className="duotone-icon duotone-orange"><Flame size={18} fill="none" /></span>
-                {t.details_recommended_counters}
-              </h4>
-              {matchedRaidCounters.map(counters => (
-                <div key={counters.bossName} className="raid-boss-counters-card">
-                  <div className="counters-boss-header">
-                    <h5>{getPokemonName(counters.bossName, lang)}</h5>
-                    <div className="weakness-list">
-                      {t.details_weaknesses}: <span className="type-badges-flex">{counters.weaknesses.map(w => <TypeBadge key={w} typeStr={w} lang={lang} />)}</span>
-                    </div>
-                  </div>
-                  <div className="counters-levels-grid">
-                    {counters.megaCounters.length > 0 && (
-                      <div className="counter-level-col mega">
-                        <span className="level-badge mega">{t.details_level_mega}</span>
-                        <ul>
-                          {counters.megaCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
-                        </ul>
-                      </div>
-                    )}
-                    {counters.advancedCounters.length > 0 && (
-                      <div className="counter-level-col advanced">
-                        <span className="level-badge advanced">{t.details_level_advanced}</span>
-                        <ul>
-                          {counters.advancedCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
-                        </ul>
-                      </div>
-                    )}
-                    {counters.budgetCounters.length > 0 && (
-                      <div className="counter-level-col budget">
-                        <span className="level-badge budget">{t.details_level_budget}</span>
-                        <ul>
-                          {counters.budgetCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                  {/* CP & IV & Weather Boost info */}
-                  <div className="counters-cp-info">
-                    {counters.maxCp > 0 && (
-                      <div className="cp-row">
-                        <span className="cp-header-label">{t.details_standard_cp}</span>
-                        <span className="cp-span">{counters.minCp} – <strong className="hundo-label">{counters.maxCp} CP (100% IV)</strong></span>
-                      </div>
-                    )}
-                    {counters.maxBoostedCp > 0 && (
-                      <div className="cp-row">
-                        <span className="cp-header-label">{t.details_weather_cp}</span>
-                        <span className="cp-span">{counters.minBoostedCp} – <strong className="hundo-label-boost">{counters.maxBoostedCp} CP (100% IV)</strong></span>
-                      </div>
-                    )}
-                    {counters.weatherBoosts.length > 0 && (
-                      <div className="cp-row">
-                        <span className="cp-header-label">{t.details_boost_weather}</span>
-                        <span className="cp-span" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                          {counters.weatherBoosts.map(w => <WeatherIcon key={w} weatherStr={w} />)}
-                        </span>
-                      </div>
-                    )}
-                    <div className="cp-row shiny-info">
-                      <span className="cp-header-label">{t.details_shiny_version}</span>
-                      <span className="cp-span highlight-shiny" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                        <Sparkles size={12} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} /> {t.details_shiny_available}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-
-        </div>
+            )}
+          </div>
+        </CardErrorBoundary>
       )}
     </div>
   );
