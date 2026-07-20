@@ -7,13 +7,14 @@ import type { PokemonRankData } from '../data/pokemonRankings';
 import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { TypeBadge } from './EventCard';
 import { getPokemonName, getStatusTagName } from '../utils/pokemonTranslator';
-import { Search, Trophy, Sword, ShieldAlert, Heart, Star, ChevronDown, ChevronUp, Target, Zap } from 'lucide-react';
+import { Search, Trophy, Sword, ShieldAlert, Heart, Star, ChevronDown, ChevronUp, Target, Zap, Sparkles } from 'lucide-react';
 import {
   getCounterTypes,
   getTopCountersForPokemon,
   getTopMovesetsForPokemon,
   isLegacyMove
 } from '../utils/pokemonCountersHelper';
+import { calculateDialgaDexMetrics } from '../utils/dialgaDexCalculator';
 
 function getMoveTypeColor(type: string): string {
   const colors: Record<string, string> = {
@@ -68,17 +69,12 @@ const ALL_TYPES = [
   "Rock", "Ghost", "Dragon", "Dark", "Steel", "Fairy"
 ];
 
-const sortFn = (a: { pveScore: number; attack: number; maxCp: number }, b: { pveScore: number; attack: number; maxCp: number }) => {
-  if (b.pveScore !== a.pveScore) return b.pveScore - a.pveScore;
-  if (b.attack !== a.attack) return b.attack - a.attack;
-  return b.maxCp - a.maxCp;
-};
-
 export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }) => {
   const t = translations[lang];
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [expandedPokes, setExpandedPokes] = useState<Set<string>>(new Set());
+  const [rankingMode, setRankingMode] = useState<'dialgadex_er' | 'dialgadex_edps' | 'pve'>('dialgadex_er');
 
   const toggleExpand = useCallback((pokeKey: string) => {
     setExpandedPokes(prev => {
@@ -92,10 +88,25 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
     });
   }, []);
 
+  const getSortScore = useCallback((poke: PokemonRankData) => {
+    const dd = calculateDialgaDexMetrics(poke);
+    if (rankingMode === 'dialgadex_er') return dd.erScore;
+    if (rankingMode === 'dialgadex_edps') return dd.eDps;
+    return poke.pveScore;
+  }, [rankingMode]);
+
+  const dynamicSortFn = useCallback((a: PokemonRankData, b: PokemonRankData) => {
+    const scoreA = getSortScore(a);
+    const scoreB = getSortScore(b);
+    if (scoreB !== scoreA) return scoreB - scoreA;
+    if (b.attack !== a.attack) return b.attack - a.attack;
+    return b.maxCp - a.maxCp;
+  }, [getSortScore]);
+
   // Compute the FULL sorted list (no filters) — used to derive stable ranks
   const fullSortedRankings = useMemo(() => {
-    return [...pokemonRankings].sort(sortFn);
-  }, []);
+    return [...pokemonRankings].sort(dynamicSortFn);
+  }, [dynamicSortFn]);
 
   // Map: uniqueKey -> overall rank (1-based)
   const overallRankMap = useMemo(() => {
@@ -146,8 +157,8 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
       );
     }
 
-    return result.sort(sortFn);
-  }, [searchQuery, selectedType]);
+    return result.sort(dynamicSortFn);
+  }, [searchQuery, selectedType, dynamicSortFn]);
 
   return (
     <div className="pokemon-rankings-container">
@@ -168,6 +179,37 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+        </div>
+
+        {/* Metric Mode Selector (DialgaDex vs PVE) */}
+        <div className="ranking-mode-selector" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', marginTop: '4px' }}>
+          <span style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-muted)' }}>
+            {lang === 'cs' ? 'Metrika Rankingu:' : 'Ranking Metric:'}
+          </span>
+          <button
+            type="button"
+            className={`mode-toggle-btn ${rankingMode === 'dialgadex_er' ? 'active' : ''}`}
+            onClick={() => setRankingMode('dialgadex_er')}
+          >
+            <Sparkles size={13} style={{ color: '#fbbf24' }} />
+            DialgaDex ER (Equivalent Rating)
+          </button>
+          <button
+            type="button"
+            className={`mode-toggle-btn ${rankingMode === 'dialgadex_edps' ? 'active' : ''}`}
+            onClick={() => setRankingMode('dialgadex_edps')}
+          >
+            <Zap size={13} style={{ color: '#c084fc' }} />
+            DialgaDex eDPS (Effective DPS)
+          </button>
+          <button
+            type="button"
+            className={`mode-toggle-btn ${rankingMode === 'pve' ? 'active' : ''}`}
+            onClick={() => setRankingMode('pve')}
+          >
+            <Trophy size={13} style={{ color: '#60a5fa' }} />
+            GamePress PVE Score
+          </button>
         </div>
 
         {/* Type Filter Selector */}
@@ -218,6 +260,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
             const counterTypes = getCounterTypes(poke.types);
             const topCounters = getTopCountersForPokemon(poke, fullSortedRankings);
             const topMovesets = getTopMovesetsForPokemon(poke);
+            const dialgaDex = calculateDialgaDexMetrics(poke);
 
             return (
               <div 
@@ -246,16 +289,20 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                     </div>
                   </div>
 
-                  {/* PVE Score badge */}
+                  {/* PVE / DialgaDex Score badge */}
                   <div className="ranking-score-badge" style={{
-                    background: poke.pveScore >= 95
+                    background: (rankingMode === 'dialgadex_er' ? dialgaDex.erScore : poke.pveScore) >= 95
                       ? 'linear-gradient(135deg, #eab308, #ca8a04)'
-                      : poke.pveScore >= 90
+                      : (rankingMode === 'dialgadex_er' ? dialgaDex.erScore : poke.pveScore) >= 90
                       ? 'linear-gradient(135deg, #a855f7, #7e22ce)'
                       : 'linear-gradient(135deg, #3b82f6, #1d4ed8)'
                   }}>
-                    <span className="score-val">{poke.pveScore}</span>
-                    <span className="score-lbl">PVE</span>
+                    <span className="score-val">
+                      {rankingMode === 'dialgadex_edps' ? dialgaDex.eDps : rankingMode === 'dialgadex_er' ? dialgaDex.erScore : poke.pveScore}
+                    </span>
+                    <span className="score-lbl">
+                      {rankingMode === 'dialgadex_edps' ? 'eDPS' : rankingMode === 'dialgadex_er' ? 'DD ER' : 'PVE'}
+                    </span>
                   </div>
 
                   {/* Pokemon Sprite */}
@@ -318,7 +365,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                       <span className="moveset-header">{t.ranking_ideal_moveset}:</span>
                       {poke.dps && poke.dps > 0 && (
                         <span className="moveset-dps">
-                          DPS: <strong>{poke.dps.toFixed(1)}</strong>
+                          eDPS: <strong>{dialgaDex.eDps}</strong>
                         </span>
                       )}
                     </div>
@@ -336,7 +383,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                   </div>
                 </div>
 
-                {/* Expanded Details Section: Top 5 Movesets & Counter Pokémon */}
+                {/* Expanded Details Section: Top 5 Movesets, DialgaDex Formula & Counter Pokémon */}
                 {isExpanded && (
                   <div className="poke-expanded-details-panel" onClick={(e) => e.stopPropagation()}>
                     <div className="expanded-divider"></div>
@@ -421,6 +468,32 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                               </span>
                             </div>
                           ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* DialgaDex Formula & Metrics Details Box */}
+                    <div className="dialgadex-metrics-card" style={{ background: 'rgba(15, 23, 42, 0.5)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '12px', padding: '14px', marginTop: '12px' }}>
+                      <h4 className="expanded-card-title">
+                        <Sparkles size={15} style={{ color: '#fbbf24' }} />
+                        {lang === 'cs' ? 'DialgaDex Metriky a Simulace (eDPS & ER)' : 'DialgaDex Effective DPS & ER Metrics'}
+                      </h4>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px', marginTop: '8px' }}>
+                        <div className="dd-stat-box" style={{ background: 'rgba(6, 7, 9, 0.3)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', display: 'block' }}>eDPS (Efektivní DPS)</span>
+                          <strong style={{ fontSize: '1.05rem', color: '#c084fc' }}>{dialgaDex.eDps}</strong>
+                        </div>
+                        <div className="dd-stat-box" style={{ background: 'rgba(6, 7, 9, 0.3)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', display: 'block' }}>DialgaDex ER Rating</span>
+                          <strong style={{ fontSize: '1.05rem', color: '#fbbf24' }}>{dialgaDex.erScore} pts</strong>
+                        </div>
+                        <div className="dd-stat-box" style={{ background: 'rgba(6, 7, 9, 0.3)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', display: 'block' }}>Výdrž (Bulk Index)</span>
+                          <strong style={{ fontSize: '1.05rem', color: '#60a5fa' }}>{dialgaDex.bulk}</strong>
+                        </div>
+                        <div className="dd-stat-box" style={{ background: 'rgba(6, 7, 9, 0.3)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', display: 'block' }}>Čas do mdlob (ToF)</span>
+                          <strong style={{ fontSize: '1.05rem', color: '#4ade80' }}>{dialgaDex.timeToFaint}s</strong>
                         </div>
                       </div>
                     </div>
