@@ -261,7 +261,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                 onClick={() => toggleExpand(pokeKey)}
                 style={{ cursor: 'pointer' }}
               >
-                {/* Main Row summary content */}
+                {/* Main Row summary content (Original layout restored) */}
                 <div className="ranking-row-top-main">
                   {/* Left rank column: overall + type rank stacked with # ON THE LEFT */}
                   <div className="ranking-rank-col">
@@ -279,6 +279,22 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                       </div>
                       <span className="rank-lbl">{primaryType.toUpperCase()}</span>
                     </div>
+                  </div>
+
+                  {/* Score badge (Equivalent vs Basic) */}
+                  <div className="ranking-score-badge" style={{
+                    background: (rankingMode === 'er' ? dialgaDex.erScore : poke.pveScore) >= 95
+                      ? 'linear-gradient(135deg, #eab308, #ca8a04)'
+                      : (rankingMode === 'er' ? dialgaDex.erScore : poke.pveScore) >= 90
+                      ? 'linear-gradient(135deg, #a855f7, #7e22ce)'
+                      : 'linear-gradient(135deg, #3b82f6, #1d4ed8)'
+                  }}>
+                    <span className="score-val">
+                      {rankingMode === 'er' ? dialgaDex.erScore : poke.pveScore}
+                    </span>
+                    <span className="score-lbl">
+                      {rankingMode === 'er' ? 'ER' : 'BASIC'}
+                    </span>
                   </div>
 
                   {/* Pokemon Sprite */}
@@ -332,33 +348,6 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                     </div>
                   </div>
 
-                  {/* Score badge (Equivalent vs Basic) */}
-                  <div className="ranking-score-badge" style={{
-                    background: (rankingMode === 'er' ? dialgaDex.erScore : poke.pveScore) >= 95
-                      ? 'linear-gradient(135deg, #eab308, #ca8a04)'
-                      : (rankingMode === 'er' ? dialgaDex.erScore : poke.pveScore) >= 90
-                      ? 'linear-gradient(135deg, #a855f7, #7e22ce)'
-                      : 'linear-gradient(135deg, #3b82f6, #1d4ed8)'
-                  }}>
-                    <span className="score-val">
-                      {rankingMode === 'er' ? dialgaDex.erScore : poke.pveScore}
-                    </span>
-                    <span className="score-lbl">
-                      {rankingMode === 'er' ? 'ER' : 'BASIC'}
-                    </span>
-                  </div>
-
-                  {/* Prominent Expand Chevron Badge with Text Hint */}
-                  <div className="poke-expand-hint-badge">
-                    <span className="expand-hint-text">
-                      {isExpanded ? (lang === 'cs' ? 'Zavřít' : 'Close') : (lang === 'cs' ? 'Detail' : 'Detail')}
-                    </span>
-                    {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </div>
-                </div>
-
-                {/* Base Stats & Ideal Moveset preview section */}
-                <div className="ranking-row-middle-preview">
                   {/* Base Stats column */}
                   <div className="ranking-stats-col">
                     <div className="stat-item">
@@ -379,7 +368,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                     </div>
                   </div>
 
-                  {/* Ideal Moveset column with Type SVG Icons & Legacy asterisk (*) */}
+                  {/* Ideal Moveset column with Detail button under moveset */}
                   <div className="ranking-moveset-col">
                     <div className="moveset-header-row">
                       <span className="moveset-header">{t.ranking_ideal_moveset}:</span>
@@ -399,6 +388,14 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                         <MoveTypeBadgeWithIcon type={poke.bestChargedMove.type} />
                         <span>{poke.bestChargedMove.name}{isChargedLegacy && <span className="legacy-asterisk" title="Legacy / Elite TM Move">*</span>}</span>
                       </span>
+                    </div>
+
+                    {/* Expand hint button placed underneath moveset box on right side */}
+                    <div className="poke-expand-hint-badge">
+                      <span className="expand-hint-text">
+                        {isExpanded ? (lang === 'cs' ? 'Zavřít' : 'Close') : (lang === 'cs' ? 'Detail' : 'Detail')}
+                      </span>
+                      {isExpanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
                     </div>
                   </div>
                 </div>
