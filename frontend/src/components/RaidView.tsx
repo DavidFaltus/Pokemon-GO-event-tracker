@@ -149,13 +149,120 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
     return boss.tier === activeFilter;
   });
 
-  const toggleExpandBoss = (name: string) => {
+  const [inlineBossName, setInlineBossName] = useState<string | null>(null);
+
+  const toggleExpandBoss = (name: string, targetEl?: HTMLElement | null) => {
     if (expandedBoss === name) {
       setExpandedBoss(null);
-    } else {
-      setExpandedBoss(name);
+      setInlineBossName(null);
+      return;
     }
+
+    let isAlone = false;
+
+    if (targetEl && targetEl.parentElement) {
+      const cardEl = targetEl.closest('.raid-boss-card') as HTMLElement;
+      if (cardEl && cardEl.parentElement) {
+        const parent = cardEl.parentElement;
+        const siblings = Array.from(parent.children) as HTMLElement[];
+        const cardSiblings = siblings.filter(el => 
+          el !== cardEl && 
+          (el.classList.contains('event-card') || el.classList.contains('raid-boss-card')) &&
+          el.offsetParent !== null
+        );
+
+        if (cardSiblings.length === 0) {
+          isAlone = true;
+        } else {
+          const currentTop = cardEl.offsetTop;
+          const hasSiblingInSameRow = cardSiblings.some(sibling => 
+            Math.abs(sibling.offsetTop - currentTop) < 12
+          );
+          isAlone = !hasSiblingInSameRow;
+        }
+      }
+    } else {
+      isAlone = window.innerWidth < 600 || filteredBosses.length === 1;
+    }
+
+    if (isAlone) {
+      setInlineBossName(name);
+    } else {
+      setInlineBossName(null);
+    }
+
+    setExpandedBoss(name);
   };
+
+  useEffect(() => {
+    if (expandedBoss && inlineBossName !== expandedBoss) {
+      document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          setExpandedBoss(null);
+          setInlineBossName(null);
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [expandedBoss, inlineBossName]);
+
+  const renderRaidDetails = (_boss: any, counters: any) => (
+    <div className="raid-boss-expanded-details">
+      <div className="expanded-divider"></div>
+      
+      {counters ? (
+        <div className="raid-boss-counters-card no-border" style={{ paddingBottom: 0 }}>
+          <div className="counters-boss-header pad-none">
+            <div className="weakness-list">
+              {t.details_weaknesses}: <span className="type-badges-flex">{counters.weaknesses.map((w: string) => <TypeBadge key={w} typeStr={w} lang={lang} />)}</span>
+            </div>
+          </div>
+          
+          <div className="counters-levels-grid">
+            {counters.megaCounters.length > 0 && (
+              <div className="counter-level-col mega">
+                <span className="level-badge mega">{t.details_level_mega}</span>
+                <ul>
+                  {counters.megaCounters.map((c: string) => <CounterItem key={c} counterStr={c} lang={lang} />)}
+                </ul>
+              </div>
+            )}
+            {counters.advancedCounters.length > 0 && (
+              <div className="counter-level-col advanced">
+                <span className="level-badge advanced">{t.details_level_advanced}</span>
+                <ul>
+                  {counters.advancedCounters.map((c: string) => <CounterItem key={c} counterStr={c} lang={lang} />)}
+                </ul>
+              </div>
+            )}
+            {counters.budgetCounters.length > 0 && (
+              <div className="counter-level-col budget">
+                <span className="level-badge budget">{t.details_level_budget}</span>
+                <ul>
+                  {counters.budgetCounters.map((c: string) => <CounterItem key={c} counterStr={c} lang={lang} />)}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="no-counters-found">
+          <p style={{ margin: 0, padding: '8px 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            {lang === 'ja' 
+              ? 'このボスの対策ポケモンとCP情報は現在利用できません。' 
+              : lang === 'cs' 
+              ? 'Doporučené counters a CP pro tohoto bossa momentálně nejsou k dispozici.' 
+              : 'Recommended counters and CP for this boss are currently unavailable.'}
+          </p>
+        </div>
+      )}
+    </div>
+  );
 
   if (loading) {
     return (
@@ -222,190 +329,176 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
             const isExpanded = expandedBoss === boss.name;
             const counters = boss.counters;
             const uniqueKey = `${boss.name}-${boss.tier}-${idx}`;
+            const isInline = isExpanded && inlineBossName === boss.name;
 
             return (
-              <div 
-                key={uniqueKey} 
-                className={`raid-boss-card tier-${boss.tier.startsWith('shadow') ? 'shadow' : boss.tier} ${isExpanded ? 'expanded' : ''}`}
-              >
+              <React.Fragment key={uniqueKey}>
                 <div 
-                  className="raid-boss-summary" 
-                  onClick={() => toggleExpandBoss(boss.name)}
+                  className={`raid-boss-card tier-${boss.tier.startsWith('shadow') ? 'shadow' : boss.tier} ${isInline ? 'expanded' : ''}`}
                 >
-                  <div className="boss-img-wrapper">
-                    {boss.tier.startsWith('shadow') && (
-                      <ShadowIcon 
-                        className="shadow-aura-effect" 
-                        style={{ 
-                          position: 'absolute', 
-                          top: '-4px', 
-                          right: '-4px',
-                          width: '18px',
-                          height: '18px'
-                        }} 
+                  <div 
+                    className="raid-boss-summary" 
+                    onClick={(e) => toggleExpandBoss(boss.name, e.currentTarget)}
+                  >
+                    <div className="boss-img-wrapper">
+                      {boss.tier.startsWith('shadow') && (
+                        <ShadowIcon 
+                          className="shadow-aura-effect" 
+                          style={{ 
+                            position: 'absolute', 
+                            top: '-4px', 
+                            right: '-4px',
+                            width: '18px',
+                            height: '18px'
+                          }} 
+                        />
+                      )}
+                      <img 
+                        src={resolveImage(boss.image, 'raid', boss.name)} 
+                        alt={getPokemonName(boss.name, lang)} 
+                        onError={(e) => {
+                          handlePokemonImageError(e.target as HTMLImageElement, boss.name);
+                        }}
+                        className="boss-avatar-img"
                       />
-                    )}
-                    <img 
-                      src={resolveImage(boss.image, 'raid', boss.name)} 
-                      alt={getPokemonName(boss.name, lang)} 
-                      onError={(e) => {
-                        handlePokemonImageError(e.target as HTMLImageElement, boss.name);
-                      }}
-                      className="boss-avatar-img"
-                    />
-                  </div>
-                  
-                  <div className="boss-meta-info">
-                     <span className={`boss-tier-badge tier-${boss.tier.startsWith('shadow') ? 'shadow' : boss.tier}`}>
-                       {getTierLabel(boss.tier)}
-                     </span>
-                     <h3 className="boss-title-name" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
-                       {boss.tier.startsWith('shadow') && (
-                         <ShadowIcon style={{ marginRight: '6px', width: '14px', height: '14px', filter: 'none' }} />
-                       )}
-                       <span>{getPokemonName(boss.name, lang)}</span>
-                       {/* PoGO Hub Rating & Evolution Info */}
-                       {(() => {
-                         const rating = getPokemonHubRating(boss.name);
-                         const evoInfo = getEvolutionInfo(boss.name);
-                         const showEvo = evoInfo && ['S', 'A+', 'A'].includes(evoInfo.rating) && boss.name.toLowerCase() !== evoInfo.evolution.toLowerCase();
-                         
-                         if (!rating && !showEvo) return null;
-                         
-                         return (
-                           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                             {rating && (
-                               <HubRatingBadge rating={rating} lang={lang} />
-                             )}
-                             {showEvo && (
-                               <span 
-                                 style={{ 
-                                   fontSize: '0.62rem', 
-                                   color: '#34d399', 
-                                   fontWeight: 600, 
-                                   backgroundColor: 'rgba(16, 185, 129, 0.08)',
-                                   border: '1px solid rgba(16, 185, 129, 0.25)',
-                                   padding: '1px 5px',
-                                   borderRadius: '4px',
-                                   display: 'inline-flex',
-                                   alignItems: 'center',
-                                   gap: '3px'
-                                 }}
-                               >
-                                 <span>➔ {boss.tier.startsWith('shadow') ? (lang === 'ja' ? 'シャドウ' : 'Shadow') : ''} {getPokemonName(evoInfo.evolution, lang)}</span>
-                                 <span style={{ fontWeight: 800 }}>({evoInfo.rating})</span>
-                               </span>
-                             )}
+                    </div>
+                    
+                    <div className="boss-meta-info">
+                       <span className={`boss-tier-badge tier-${boss.tier.startsWith('shadow') ? 'shadow' : boss.tier}`}>
+                         {getTierLabel(boss.tier)}
+                       </span>
+                       <h3 className="boss-title-name" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                         {boss.tier.startsWith('shadow') && (
+                           <ShadowIcon style={{ marginRight: '6px', width: '14px', height: '14px', filter: 'none' }} />
+                         )}
+                         <span>{getPokemonName(boss.name, lang)}</span>
+                         {/* PoGO Hub Rating & Evolution Info */}
+                         {(() => {
+                           const rating = getPokemonHubRating(boss.name);
+                           const evoInfo = getEvolutionInfo(boss.name);
+                           const showEvo = evoInfo && ['S', 'A+', 'A'].includes(evoInfo.rating) && boss.name.toLowerCase() !== evoInfo.evolution.toLowerCase();
+                           
+                           if (!rating && !showEvo) return null;
+                           
+                           return (
+                             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                               {rating && (
+                                 <HubRatingBadge rating={rating} lang={lang} />
+                               )}
+                               {showEvo && (
+                                 <span 
+                                   style={{ 
+                                     fontSize: '0.62rem', 
+                                     color: '#34d399', 
+                                     fontWeight: 600, 
+                                     backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                                     border: '1px solid rgba(16, 185, 129, 0.25)',
+                                     padding: '1px 5px',
+                                     borderRadius: '4px',
+                                     display: 'inline-flex',
+                                     alignItems: 'center',
+                                     gap: '3px'
+                                   }}
+                                 >
+                                   <span>➔ {boss.tier.startsWith('shadow') ? (lang === 'ja' ? 'シャドウ' : 'Shadow') : ''} {getPokemonName(evoInfo.evolution, lang)}</span>
+                                   <span style={{ fontWeight: 800 }}>({evoInfo.rating})</span>
+                                 </span>
+                               )}
+                             </span>
+                           );
+                         })()}
+                       </h3>
+
+                       {boss.canBeShiny && (
+                         <div style={{ marginTop: '3px' }}>
+                           <span className="shiny-star-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', padding: '1px 5px', fontSize: '0.65rem', borderRadius: '4px', backgroundColor: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24', border: '1px solid rgba(251, 191, 36, 0.2)' }}>
+                             <Sparkles size={8} fill="currentColor" stroke="none" /> {lang === 'ja' ? 'ひかる' : 'Shiny'}
                            </span>
-                         );
-                       })()}
-                     </h3>
+                         </div>
+                       )}
+                     </div>
 
-                     {boss.canBeShiny && (
-                       <div style={{ marginTop: '3px' }}>
-                         <span className="shiny-star-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', padding: '1px 5px', fontSize: '0.65rem', borderRadius: '4px', backgroundColor: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24', border: '1px solid rgba(251, 191, 36, 0.2)' }}>
-                           <Sparkles size={8} fill="currentColor" stroke="none" /> {lang === 'ja' ? 'ひかる' : 'Shiny'}
-                         </span>
-                       </div>
-                     )}
-                   </div>
-
-                  <div className="boss-right-info" style={{ marginLeft: 'auto', marginRight: '16px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', textAlign: 'right' }}>
-                    {/* CP range */}
-                    {counters && counters.maxCp > 0 ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
-                        <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                          {counters.minCp} – <strong className="hundo-label" style={{ color: 'var(--tier-s)', fontWeight: 700 }}>{counters.maxCp} CP</strong>
-                        </span>
-                        {counters.maxBoostedCp > 0 && (
-                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                            <span style={{ color: '#60a5fa' }}>⚡</span> {counters.minBoostedCp} – <strong className="hundo-label-boost" style={{ color: '#60a5fa', fontWeight: 600 }}>{counters.maxBoostedCp} CP</strong>
+                    <div className="boss-right-info" style={{ marginLeft: 'auto', marginRight: '16px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', textAlign: 'right' }}>
+                      {/* CP range */}
+                      {counters && counters.maxCp > 0 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                          <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                            {counters.minCp} – <strong className="hundo-label" style={{ color: 'var(--tier-s)', fontWeight: 700 }}>{counters.maxCp} CP</strong>
                           </span>
-                        )}
-                      </div>
-                    ) : boss.cpRange ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
-                        <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                          {boss.cpRange} CP
-                        </span>
-                        {boss.boostedCpRange && (
-                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                            <span style={{ color: '#60a5fa' }}>⚡</span> {boss.boostedCpRange} CP
+                          {counters.maxBoostedCp > 0 && (
+                            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                              <span style={{ color: '#60a5fa' }}>⚡</span> {counters.minBoostedCp} – <strong className="hundo-label-boost" style={{ color: '#60a5fa', fontWeight: 600 }}>{counters.maxBoostedCp} CP</strong>
+                            </span>
+                          )}
+                        </div>
+                      ) : boss.cpRange ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
+                          <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>
+                            {boss.cpRange} CP
                           </span>
-                        )}
-                      </div>
-                    ) : null}
+                          {boss.boostedCpRange && (
+                            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                              <span style={{ color: '#60a5fa' }}>⚡</span> {boss.boostedCpRange} CP
+                            </span>
+                          )}
+                        </div>
+                      ) : null}
 
-                    {/* Weather Boosts */}
-                    {counters && counters.weatherBoosts.length > 0 ? (
-                      <div style={{ display: 'flex', gap: '4px' }}>
-                        {counters.weatherBoosts.map(w => <WeatherIcon key={w} weatherStr={w} />)}
-                      </div>
-                    ) : (boss.weatherBoosts && boss.weatherBoosts.length > 0) ? (
-                      <div style={{ display: 'flex', gap: '4px' }}>
-                        {boss.weatherBoosts.map(w => <WeatherIcon key={w} weatherStr={w} />)}
-                      </div>
-                    ) : null}
+                      {/* Weather Boosts */}
+                      {counters && counters.weatherBoosts.length > 0 ? (
+                        <div style={{ display: 'flex', gap: '4px' }}>
+                          {counters.weatherBoosts.map((w: string) => <WeatherIcon key={w} weatherStr={w} />)}
+                        </div>
+                      ) : (boss.weatherBoosts && boss.weatherBoosts.length > 0) ? (
+                        <div style={{ display: 'flex', gap: '4px' }}>
+                          {boss.weatherBoosts.map((w: string) => <WeatherIcon key={w} weatherStr={w} />)}
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <div className="expand-chevron">
+                      {isExpanded ? '▲' : '▼'}
+                    </div>
                   </div>
 
-                  <div className="expand-chevron">
-                    {isExpanded ? '▲' : '▼'}
-                  </div>
+                  {/* Inline expansion if single item in row */}
+                  {isInline && renderRaidDetails(boss, counters)}
                 </div>
 
-                {isExpanded && (
-                  <div className="raid-boss-expanded-details">
-                    <div className="expanded-divider"></div>
-                    
-                    {counters ? (
-                      <div className="raid-boss-counters-card no-border" style={{ paddingBottom: 0 }}>
-                        <div className="counters-boss-header pad-none">
-                          <div className="weakness-list">
-                            {t.details_weaknesses}: <span className="type-badges-flex">{counters.weaknesses.map(w => <TypeBadge key={w} typeStr={w} lang={lang} />)}</span>
-                          </div>
+                {/* Glassmorphic Modal Overlay if multi-column desktop grid */}
+                {isExpanded && !isInline && (
+                  <div className="event-modal-overlay" onClick={() => setExpandedBoss(null)}>
+                    <div className="event-modal-content" onClick={(e) => e.stopPropagation()}>
+                      <button className="modal-close-btn" onClick={() => setExpandedBoss(null)} aria-label="Close">
+                        ✕
+                      </button>
+
+                      <div className="modal-header-section">
+                        <div className="boss-img-wrapper" style={{ width: '80px', height: '80px' }}>
+                          <img 
+                            src={resolveImage(boss.image, 'raid', boss.name)} 
+                            alt={getPokemonName(boss.name, lang)} 
+                            onError={(e) => {
+                              handlePokemonImageError(e.target as HTMLImageElement, boss.name);
+                            }}
+                            className="boss-avatar-img"
+                          />
                         </div>
-                        
-                        <div className="counters-levels-grid">
-                          {counters.megaCounters.length > 0 && (
-                            <div className="counter-level-col mega">
-                              <span className="level-badge mega">{t.details_level_mega}</span>
-                              <ul>
-                                {counters.megaCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
-                              </ul>
-                            </div>
-                          )}
-                          {counters.advancedCounters.length > 0 && (
-                            <div className="counter-level-col advanced">
-                              <span className="level-badge advanced">{t.details_level_advanced}</span>
-                              <ul>
-                                {counters.advancedCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
-                              </ul>
-                            </div>
-                          )}
-                          {counters.budgetCounters.length > 0 && (
-                            <div className="counter-level-col budget">
-                              <span className="level-badge budget">{t.details_level_budget}</span>
-                              <ul>
-                                {counters.budgetCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
-                              </ul>
-                            </div>
-                          )}
+                        <div className="modal-header-info">
+                          <span className={`boss-tier-badge tier-${boss.tier.startsWith('shadow') ? 'shadow' : boss.tier}`}>
+                            {getTierLabel(boss.tier)}
+                          </span>
+                          <h3 className="boss-title-name" style={{ margin: 0 }}>
+                            {getPokemonName(boss.name, lang)}
+                          </h3>
                         </div>
                       </div>
-                    ) : (
-                      <div className="no-counters-found">
-                        <p style={{ margin: 0, padding: '8px 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                          {lang === 'ja' 
-                            ? 'このボスの対策ポケモンとCP情報は現在利用できません。' 
-                            : lang === 'cs' 
-                            ? 'Doporučené counters a CP pro tohoto bossa momentálně nejsou k dispozici.' 
-                            : 'Recommended counters and CP for this boss are currently unavailable.'}
-                        </p>
-                      </div>
-                    )}
+
+                      {renderRaidDetails(boss, counters)}
+                    </div>
                   </div>
                 )}
-              </div>
+              </React.Fragment>
             );
           })
         )}

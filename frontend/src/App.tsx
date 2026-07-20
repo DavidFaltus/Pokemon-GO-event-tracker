@@ -16,6 +16,8 @@ import { PokemonRankingsView } from './components/PokemonRankingsView';
 import { AdminPanelView } from './components/AdminPanelView';
 import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy } from 'lucide-react';
 
+type TabType = 'events' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'settings' | 'admin';
+
 const PokeballLogo = ({ size = 24 }: { size?: number }) => {
   const uid = 'pbl';
   return (
@@ -221,8 +223,6 @@ const MOCK_EVENTS: EventData[] = [
     }
   }
 ];
-
-type TabType = 'events' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'settings' | 'admin';
 
 const sanitizeEvents = (eventList: EventData[]): EventData[] => {
   return eventList.filter(e => {

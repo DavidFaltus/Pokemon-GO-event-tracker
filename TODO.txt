@@ -5,7 +5,7 @@ FIX:
 Big update: 
 [DONE] 1: Lepší přístup k administrátorovy než přes normální stránku (pomocí /admin), více možností přidávání a modifikací eventů včetně ikon pro pokemony, nejlépe i textové soubory s kompletním scrapem.
 [DONE] 2: Countery na jednotlivé pokemony v sekci Ranking včetně optimálních typů proti konkrétnímu pokemonovy. Přidat top 5 kombinací movesetů které pokemon má. Pokud je nějaký move Legacy neboli se dá naučit pouze pomocí Elite TM nebo nějakým speciálním způsobem přidat hvězdičku k útoku. Přidat i ikony typů k jednotlivým abilitám. U rankingu přidat # na levou stranu od čísla, momentálně je nad ním.
-3: ??? Implementace campfire srazů k jednotlivým eventům, seznam všech dostupných srazů v určitém okruhu.
+[ZRUŠENO] 3: Implementace campfire srazů k jednotlivým eventům (odstraněno na žádost uživatele kvůli nekompatibilitě dynamických URL ze strany Niantic Campfire).
 [DONE] 4: Sběr informací ohledně rankingu z https://www.dialgadex.com případně napodobit totožný výpočet
 
 pogo-admin-2026

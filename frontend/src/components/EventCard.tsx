@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './EventCard.css';
 import { findRaidCounters } from '../data/raidCounters';
 import type { RaidCounters } from '../data/raidCounters';
@@ -561,66 +561,65 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
     return bonus;
   };
 
-  return (
-    <div className={`event-card status-${status} type-${event.eventType} ${isExpanded ? 'expanded' : ''}`}>
-      <div className="card-top" onClick={() => setIsExpanded(!isExpanded)}>
-        <div className="event-img-wrapper">
-          <img 
-            src={resolveImage(event.image, event.eventType, event.name)} 
-            alt={event.name} 
-            onError={(e) => {
-              const img = e.target as HTMLImageElement;
-              img.onerror = null; // Prevent loop
-              
-              const baseName = getBasePokemonName(event.name);
-              const knownNames = getBasePokemonNames();
-              const hasKnownPokemon = knownNames.some(kn => event.name.toLowerCase().includes(kn.toLowerCase()));
-              
-              if (hasKnownPokemon && baseName) {
-                img.src = getPokemonIconUrl(baseName);
-                img.onerror = () => {
-                  img.onerror = null;
-                  img.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
-                };
-              } else {
-                img.src = resolveImage(undefined, event.eventType);
-                img.onerror = () => {
-                  img.onerror = null;
-                  img.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
-                };
-              }
-            }}
-          />
-          <span className={`status-pill ${status}`}>
-            {status === 'active' ? (lang === 'cs' ? '● Probíhá' : '● Active') : status === 'upcoming' ? (lang === 'cs' ? 'Připravuje se' : 'Upcoming') : (lang === 'cs' ? 'Ukončeno' : 'Ended')}
-          </span>
-        </div>
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [useInline, setUseInline] = useState<boolean>(false);
+
+  const handleCardClick = () => {
+    if (isExpanded) {
+      setIsExpanded(false);
+      return;
+    }
+
+    if (cardRef.current && cardRef.current.parentElement) {
+      const parent = cardRef.current.parentElement;
+      const siblings = Array.from(parent.children) as HTMLElement[];
+      const cardSiblings = siblings.filter(el => 
+        el !== cardRef.current && 
+        (el.classList.contains('event-card') || el.classList.contains('raid-boss-card')) &&
+        el.offsetParent !== null
+      );
+
+      if (cardSiblings.length === 0) {
+        setUseInline(true);
+        setIsExpanded(true);
+        return;
+      }
+
+      const currentTop = cardRef.current.offsetTop;
+      const hasSiblingInSameRow = cardSiblings.some(sibling => 
+        Math.abs(sibling.offsetTop - currentTop) < 12
+      );
+
+      setUseInline(!hasSiblingInSameRow);
+    } else {
+      setUseInline(window.innerWidth < 600);
+    }
+
+    setIsExpanded(true);
+  };
+
+  useEffect(() => {
+    if (isExpanded && !useInline) {
+      document.body.style.overflow = 'hidden';
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          setIsExpanded(false);
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', handleKeyDown);
+      };
+    }
+  }, [isExpanded, useInline]);
+
+  const renderExpandedDetails = () => (
+    <CardErrorBoundary fallbackMessage={lang === 'cs' ? 'Chyba při zobrazení detailu události' : 'Error rendering event details'}>
+      <div className="card-expanded-content">
+        <div className="divider"></div>
         
-        <div className="event-details">
-          <span className={`event-type-badge ${event.eventType}`}>
-            {getEventTypeLabel(event.eventType)}
-          </span>
-          <h3 className="event-title">{event.name}</h3>
-          <div className="event-time-info">
-            <span className="time-date" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-              <Calendar size={12} />
-              {formatDate(event.start)} – {formatDate(event.end)}
-            </span>
-            <span className="time-countdown">{timeLeftStr}</span>
-          </div>
-        </div>
-
-        <div className="expand-indicator">
-          {isExpanded ? '▲' : '▼'}
-        </div>
-      </div>
-
-      {isExpanded && (
-        <CardErrorBoundary fallbackMessage={lang === 'cs' ? 'Chyba při zobrazení detailu události' : 'Error rendering event details'}>
-          <div className="card-expanded-content">
-            <div className="divider"></div>
-            
-            {/* Add to Calendar & Official Link Row */}
+        {/* Add to Calendar & Official Link Row */}
             <div className="expanded-row link-row">
               {showLeekDuck && (
                 <a href={event.link} target="_blank" rel="noopener noreferrer" className="details-link-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
@@ -1182,7 +1181,111 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
             )}
           </div>
         </CardErrorBoundary>
+  );
+
+  return (
+    <>
+      <div 
+        ref={cardRef}
+        className={`event-card status-${status} type-${event.eventType} ${isExpanded && useInline ? 'expanded-inline' : ''}`}
+        onClick={handleCardClick}
+        style={{ cursor: 'pointer' }}
+      >
+        <div className="card-top">
+          <div className="event-img-wrapper">
+            <img 
+              src={resolveImage(event.image, event.eventType, event.name)} 
+              alt={event.name} 
+              onError={(e) => {
+                const img = e.target as HTMLImageElement;
+                img.onerror = null;
+                const baseName = getBasePokemonName(event.name);
+                const knownNames = getBasePokemonNames();
+                const hasKnownPokemon = knownNames.some(kn => event.name.toLowerCase().includes(kn.toLowerCase()));
+                if (hasKnownPokemon && baseName) {
+                  img.src = getPokemonIconUrl(baseName);
+                  img.onerror = () => {
+                    img.onerror = null;
+                    img.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
+                  };
+                } else {
+                  img.src = resolveImage(undefined, event.eventType);
+                  img.onerror = () => {
+                    img.onerror = null;
+                    img.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
+                  };
+                }
+              }}
+            />
+            <span className={`status-pill ${status}`}>
+              {status === 'active' ? (lang === 'cs' ? '● Probíhá' : '● Active') : status === 'upcoming' ? (lang === 'cs' ? 'Připravuje se' : 'Upcoming') : (lang === 'cs' ? 'Ukončeno' : 'Ended')}
+            </span>
+          </div>
+          
+          <div className="event-details">
+            <span className={`event-type-badge ${event.eventType}`}>
+              {getEventTypeLabel(event.eventType)}
+            </span>
+            <h3 className="event-title">{event.name}</h3>
+            <div className="event-time-info">
+              <span className="time-date" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <Calendar size={12} />
+                {formatDate(event.start)} – {formatDate(event.end)}
+              </span>
+              <span className="time-countdown">{timeLeftStr}</span>
+            </div>
+          </div>
+
+          <div className="expand-indicator">
+            {isExpanded ? '▲' : '▼'}
+          </div>
+        </div>
+
+        {/* Inline Expansion (single item in row / mobile) */}
+        {isExpanded && useInline && renderExpandedDetails()}
+      </div>
+
+      {/* Glassmorphic Modal Overlay (multiple items in row) */}
+      {isExpanded && !useInline && (
+        <div className="event-modal-overlay" onClick={() => setIsExpanded(false)}>
+          <div className="event-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close-btn" onClick={() => setIsExpanded(false)} aria-label="Close">
+              ✕
+            </button>
+
+            <div className="modal-header-section">
+              <div className="event-img-wrapper large">
+                <img 
+                  src={resolveImage(event.image, event.eventType, event.name)} 
+                  alt={event.name} 
+                  onError={(e) => {
+                    handlePokemonImageError(e.target as HTMLImageElement, getBasePokemonName(event.name) || '');
+                  }}
+                />
+                <span className={`status-pill ${status}`}>
+                  {status === 'active' ? (lang === 'cs' ? '● Probíhá' : '● Active') : status === 'upcoming' ? (lang === 'cs' ? 'Připravuje se' : 'Upcoming') : (lang === 'cs' ? 'Ukončeno' : 'Ended')}
+                </span>
+              </div>
+              
+              <div className="modal-header-info">
+                <span className={`event-type-badge ${event.eventType}`}>
+                  {getEventTypeLabel(event.eventType)}
+                </span>
+                <h3 className="event-title">{event.name}</h3>
+                <div className="event-time-info">
+                  <span className="time-date" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <Calendar size={12} />
+                    {formatDate(event.start)} – {formatDate(event.end)}
+                  </span>
+                  <span className="time-countdown">{timeLeftStr}</span>
+                </div>
+              </div>
+            </div>
+
+            {renderExpandedDetails()}
+          </div>
+        </div>
       )}
-    </div>
+    </>
   );
 };

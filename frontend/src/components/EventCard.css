@@ -15,10 +15,113 @@
     gap: 16px;
     align-items: start;
   }
+}
 
-  .event-card.expanded {
-    grid-column: 1 / -1;
+/* Glassmorphic Event Modal Overlay */
+.event-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(6, 7, 9, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.event-modal-content {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  animation: modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 20px;
+  position: relative;
+}
+
+@keyframes modalPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(10px);
   }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.15s ease;
+}
+
+.modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+.modal-header-section {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding-right: 36px;
+}
+
+.event-img-wrapper.large {
+  width: 90px;
+  height: 90px;
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+
+.modal-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+body.light-mode .event-modal-overlay {
+  background: rgba(15, 23, 42, 0.45);
+}
+
+body.light-mode .event-modal-content {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
+  color: #0f172a !important;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2) !important;
+}
+
+body.light-mode .modal-close-btn {
+  background: #f1f5f9 !important;
+  border: 1px solid rgba(15, 23, 42, 0.15) !important;
+  color: #0f172a !important;
 }
 
 .event-card {
