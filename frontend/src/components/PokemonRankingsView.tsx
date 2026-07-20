@@ -74,7 +74,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [expandedPokes, setExpandedPokes] = useState<Set<string>>(new Set());
-  const [rankingMode, setRankingMode] = useState<'er' | 'basic'>('er');
+  const [rankingMode, setRankingMode] = useState<'er' | 'basic'>('basic');
 
   const toggleExpand = useCallback((pokeKey: string) => {
     setExpandedPokes(prev => {
