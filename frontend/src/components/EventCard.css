@@ -206,7 +206,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: rgba(6, 7, 9, 0.4);
+  background-color: var(--bg-card-hover);
   padding: 8px;
   border-radius: 8px;
   border: 1px solid var(--border-color);
@@ -366,7 +366,7 @@
 
 /* Special Event Guide & Interactive Spawns Tracker */
 .special-event-guide-box {
-  background: rgba(17, 18, 23, 0.4);
+  background: var(--bg-card);
   border: 1px solid rgba(170, 59, 255, 0.2);
   border-radius: 12px;
   padding: 14px;
@@ -699,7 +699,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  background: rgba(0, 0, 0, 0.15);
+  background: var(--bg-card-hover);
   padding: 10px;
   border-radius: 8px;
   border: 1px solid var(--border-color);
@@ -1087,4 +1087,58 @@
   gap: 6px;
   margin: 8px 0 16px 0;
   padding: 0 4px;
+}
+
+/* Light Mode Overrides for Event Cards, Modal, and Details Drawer */
+body.light-mode .special-event-guide-box,
+body.light-mode .special-subsection,
+body.light-mode .debut-item,
+body.light-mode .special-bonus-card,
+body.light-mode .boss-item,
+body.light-mode .spawn-card,
+body.light-mode .egg-pool-row,
+body.light-mode .spotlight-hour-details-box,
+body.light-mode .spotlight-pokemon-info,
+body.light-mode .community-day-details-box,
+body.light-mode .custom-event-planner-box,
+body.light-mode .recommendations-box,
+body.light-mode .matched-pokemon-card,
+body.light-mode .event-custom-notes-area,
+body.light-mode .checklist-task-item,
+body.light-mode .spawn-item,
+body.light-mode .research-item,
+body.light-mode .egg-item,
+body.light-mode .event-details-drawer,
+body.light-mode .event-modal-content,
+body.light-mode .event-card {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05) !important;
+}
+
+body.light-mode .event-title,
+body.light-mode .debut-name,
+body.light-mode .boss-name,
+body.light-mode .matched-header h5,
+body.light-mode .special-guide-header h4,
+body.light-mode .special-subsection h5 {
+  color: #0f172a !important;
+  font-weight: 800;
+}
+
+body.light-mode .time-date,
+body.light-mode .debut-desc,
+body.light-mode .matched-body,
+body.light-mode .no-meta-box {
+  color: #334155 !important;
+}
+
+body.light-mode .event-notes-textarea,
+body.light-mode .checklist-input {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.18) !important;
+  color: #0f172a !important;
 }

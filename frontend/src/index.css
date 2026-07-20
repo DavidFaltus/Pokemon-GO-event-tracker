@@ -12,17 +12,17 @@ html {
   }
 }
 
-:root {
-  /* Color Palette (Light Theme by Default) */
-  --bg-dark: #f3f4f6;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f9fafb;
-  --border-color: #e5e7eb;
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --text-muted: #9ca3af;
-  --bg-body: #e5e7eb;
-  --bg-nav: rgba(255, 255, 255, 0.85);
+:root, [data-theme="dark"] {
+  /* Color Palette (Dark Theme Default) */
+  --bg-dark: #0f1015;
+  --bg-card: #171921;
+  --bg-card-hover: #1e212b;
+  --border-color: #242836;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --bg-body: #060709;
+  --bg-nav: rgba(23, 25, 33, 0.85);
 
   /* Accent Colors */
   --accent-color: #aa3bff;
@@ -48,17 +48,17 @@ html {
   --font-sans: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Dark Theme Overrides */
-[data-theme="dark"] {
-  --bg-dark: #0f1015;
-  --bg-card: #171921;
-  --bg-card-hover: #1e212b;
-  --border-color: #242836;
-  --text-primary: #f3f4f6;
-  --text-secondary: #9ca3af;
-  --text-muted: #6b7280;
-  --bg-body: #060709;
-  --bg-nav: rgba(23, 25, 33, 0.85);
+/* Light Theme Variables */
+[data-theme="light"], body.light-mode {
+  --bg-dark: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --border-color: rgba(15, 23, 42, 0.15);
+  --text-primary: #0f172a;   /* Ultra-dark slate for 100% readability */
+  --text-secondary: #1e293b; /* Dark slate */
+  --text-muted: #334155;     /* Dark slate */
+  --bg-body: #f8fafc;
+  --bg-nav: rgba(255, 255, 255, 0.95);
 }
 
 * {
@@ -725,7 +725,7 @@ body {
 /* Status Tabs (Active / Upcoming) */
 .status-tabs-container {
   display: flex;
-  background-color: rgba(6, 7, 9, 0.4);
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 4px;
@@ -850,14 +850,14 @@ body {
   line-height: 1.5;
   margin-bottom: 20px;
   padding: 10px 14px;
-  background-color: rgba(23, 25, 33, 0.45);
+  background-color: var(--bg-card);
   border-left: 3px solid var(--accent-color);
+  border-top: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
   border-radius: 0 10px 10px 0;
   backdrop-filter: blur(8px);
   opacity: 0.95;
-  border-top: 1px solid rgba(255, 255, 255, 0.02);
-  border-right: 1px solid rgba(255, 255, 255, 0.02);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
 }
 
 /* SEO Titles for Tabs */
@@ -868,4 +868,111 @@ body {
   margin-bottom: 10px;
   padding: 0 4px;
   letter-spacing: -0.02em;
+}
+
+/* ── UNIVERSAL LIGHT MODE OVERRIDES FOR ALL TABS & COMPONENTS ── */
+body.light-mode, [data-theme="light"] body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .app-container {
+  background-color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
+}
+
+/* Light mode for all cards across Raids, Rocket, Eggs, Ditto, Events, Rankings, Settings */
+body.light-mode .event-card,
+body.light-mode .rocket-grunt-card,
+body.light-mode .rocket-guide-container,
+body.light-mode .ditto-disguises-card,
+body.light-mode .egg-pool-card,
+body.light-mode .raid-boss-card,
+body.light-mode .raid-tier-section,
+body.light-mode .rankings-header-card,
+body.light-mode .ranking-pokemon-row,
+body.light-mode .settings-card,
+body.light-mode .active-bonuses-card,
+body.light-mode .calendar-card,
+body.light-mode .timeline-card,
+body.light-mode .meta-explorer-card,
+body.light-mode .boss-card,
+body.light-mode .leader-card,
+body.light-mode .grunt-card,
+body.light-mode .egg-tier-group,
+body.light-mode .disguise-item {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05) !important;
+}
+
+/* Light mode inner containers, chips, and table items */
+body.light-mode .moves-box,
+body.light-mode .moveset-row-item,
+body.light-mode .counter-poke-item,
+body.light-mode .dd-stat-box,
+body.light-mode .movesets-top5-card,
+body.light-mode .counters-section-card,
+body.light-mode .dialgadex-metrics-card,
+body.light-mode .lineup-pokemon-item,
+body.light-mode .grunt-pokemon-chip,
+body.light-mode .egg-pokemon-chip,
+body.light-mode .ditto-pokemon-chip,
+body.light-mode .counter-card,
+body.light-mode .counter-item,
+body.light-mode .bonus-item,
+body.light-mode .spawn-item,
+body.light-mode .research-item,
+body.light-mode .search-bar-wrapper,
+body.light-mode .egg-tier-btn,
+body.light-mode .type-filter-btn,
+body.light-mode .filter-btn,
+body.light-mode .mode-toggle-btn {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+}
+
+/* Force high contrast dark text on white backgrounds */
+body.light-mode p,
+body.light-mode span,
+body.light-mode div,
+body.light-mode h1,
+body.light-mode h2,
+body.light-mode h3,
+body.light-mode h4,
+body.light-mode h5,
+body.light-mode h6,
+body.light-mode label,
+body.light-mode strong,
+body.light-mode small,
+body.light-mode td,
+body.light-mode th {
+  color: #0f172a;
+}
+
+/* SEO Description Box in Light Mode */
+body.light-mode .tab-seo-description {
+  background-color: #ffffff !important;
+  color: #334155 !important;
+  border-left: 3px solid var(--accent-color) !important;
+  border-top: 1px solid rgba(15, 23, 42, 0.12) !important;
+  border-right: 1px solid rgba(15, 23, 42, 0.12) !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.12) !important;
+}
+
+/* Light mode bottom navigation bar */
+body.light-mode .bottom-nav {
+  background-color: #ffffff !important;
+  border-top: 1px solid rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-mode .nav-item {
+  color: #475569 !important;
+}
+
+body.light-mode .nav-item.active {
+  color: #7e22ce !important;
 }

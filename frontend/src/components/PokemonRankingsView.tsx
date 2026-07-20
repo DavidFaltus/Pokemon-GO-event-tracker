@@ -7,7 +7,7 @@ import type { PokemonRankData } from '../data/pokemonRankings';
 import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { TypeBadge } from './EventCard';
 import { getPokemonName, getStatusTagName } from '../utils/pokemonTranslator';
-import { Search, Trophy, Sword, ShieldAlert, Heart, Star, ChevronDown, ChevronUp, Target, Zap, Sparkles, Flame } from 'lucide-react';
+import { Search, Trophy, Sword, ShieldAlert, Heart, Star, ChevronDown, ChevronUp, Target, Zap, Sparkles, SlidersHorizontal } from 'lucide-react';
 import {
   getCounterTypes,
   getTopCountersForPokemon,
@@ -165,34 +165,32 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
     <div className="pokemon-rankings-container">
       <p className="tab-seo-description">{(t as any).seo_ranking_desc}</p>
       <div className="rankings-header-card">
-        {/* Title row with metric toggle aligned to upper right corner */}
         <div className="rankings-title-row">
           <div className="rankings-title-left">
             <Trophy size={28} className="trophy-icon" />
             <h1 className="tab-seo-title" style={{ margin: 0, padding: 0 }}>{t.ranking_title}</h1>
-          </div>
-
-          <div className="ranking-mode-selector-header">
+          </div>          <div className="ranking-mode-selector-header">
             <button
               type="button"
               className={`mode-toggle-btn ${rankingMode === 'er' ? 'active' : ''}`}
               onClick={() => setRankingMode('er')}
+              title="Equivalent ranking (DialgaDex ER)"
             >
-              <Sparkles size={13} style={{ color: '#fbbf24' }} />
-              Equivalent ranking
+              <SlidersHorizontal size={13} />
+              <span>{t.ranking_metric_eq}</span>
             </button>
             <button
               type="button"
               className={`mode-toggle-btn ${rankingMode === 'basic' ? 'active' : ''}`}
               onClick={() => setRankingMode('basic')}
+              title="Basic ranking (GamePress PVE Score)"
             >
-              <Trophy size={13} style={{ color: '#60a5fa' }} />
-              Basic ranking
+              <Zap size={13} />
+              <span>{t.ranking_metric_basic}</span>
             </button>
           </div>
         </div>
 
-        {/* Search Bar */}
         <div className="search-bar-wrapper">
           <Search size={18} className="search-icon" />
           <input 
@@ -204,7 +202,6 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
           />
         </div>
 
-        {/* Type Filter Selector */}
         <div className="types-filter-container">
           <button 
             className={`type-filter-btn ${selectedType === null ? 'active' : ''}`}
@@ -233,7 +230,6 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
         </div>
       </div>
 
-      {/* Rankings List */}
       <div className="rankings-list">
         {filteredRankings.length === 0 ? (
           <div className="no-rankings-found">
@@ -242,9 +238,9 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
         ) : (
           filteredRankings.map((poke) => {
             const pokeKey = getPokeKey(poke);
-            const overallRank = overallRankMap.get(pokeKey) ?? 0;
-            const typeRank = typeRankMap.get(pokeKey) ?? 0;
-            const primaryType = poke.bestChargedMove.type;
+            const overallRank = overallRankMap.get(pokeKey) ?? 1;
+            const typeRank = typeRankMap.get(pokeKey) ?? 1;
+            const primaryType = poke.types[0];
             const isExpanded = expandedPokes.has(pokeKey);
 
             const isFastLegacy = isLegacyMove(poke.bestFastMove.name);
@@ -261,9 +257,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                 onClick={() => toggleExpand(pokeKey)}
                 style={{ cursor: 'pointer' }}
               >
-                {/* Main Row summary content (Original layout restored) */}
                 <div className="ranking-row-top-main">
-                  {/* Left rank column: overall + type rank stacked with # ON THE LEFT */}
                   <div className="ranking-rank-col">
                     <div className="rank-badge rank-overall" title="Celkové pořadí">
                       <div className="rank-num-row">
@@ -281,7 +275,6 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                     </div>
                   </div>
 
-                  {/* Score badge (Equivalent vs Basic) */}
                   <div className="ranking-score-badge" style={{
                     background: (rankingMode === 'er' ? dialgaDex.erScore : poke.pveScore) >= 95
                       ? 'linear-gradient(135deg, #eab308, #ca8a04)'
@@ -297,8 +290,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                     </span>
                   </div>
 
-                  {/* Pokemon Sprite */}
-                  <div className="ranking-poke-img-wrapper">
+                  <div className="ranking-poke-img-wrapper" style={{ position: 'relative' }}>
                     <img 
                       src={resolveImage(undefined, undefined, poke.name)} 
                       alt={poke.name} 
@@ -307,16 +299,34 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                         handlePokemonImageError(e.target as HTMLImageElement, poke.name);
                       }}
                     />
+                    {poke.isShadow && (
+                      <img 
+                        src="https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/static_assets/png/ic_shadow.png" 
+                        alt="Shadow" 
+                        className="poke-sprite-badge-bottom-left shadow-badge-img"
+                        title="Shadow Pokémon"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/shadow-ball.png";
+                        }}
+                      />
+                    )}
+                    {(poke.isMega || poke.isPrimal) && (
+                      <img 
+                        src="https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/static_assets/png/mega_evolution.png" 
+                        alt="Mega" 
+                        className="poke-sprite-badge-bottom-left mega-badge-img"
+                        title="Mega / Primal Pokémon"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = "https://img.pokemondb.net/sprites/items/mega-ring.png";
+                        }}
+                      />
+                    )}
                   </div>
 
-                  {/* Info and Type column */}
                   <div className="ranking-poke-main-info">
                     <div className="poke-title-flex">
                       <span className="poke-name">
                         {getPokemonName(poke.name, lang)}
-                        {poke.isShadow && <Flame size={14} className="status-inline-icon shadow-icon" style={{ color: '#c084fc' }} />}
-                        {poke.isMega && <Sparkles size={14} className="status-inline-icon mega-icon" style={{ color: '#fbbf24' }} />}
-                        {poke.isPrimal && <Flame size={14} className="status-inline-icon primal-icon" style={{ color: '#f87171' }} />}
                       </span>
                       <span className="poke-dex-id">#{poke.pokedexId}</span>
                     </div>
@@ -326,29 +336,24 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                           <TypeBadge key={type} typeStr={type} lang={lang} />
                         ))}
                       </div>
-                      {/* Special status tags with icons */}
                       {poke.isShadow && (
                         <span className="status-tag shadow-tag">
-                          <Flame size={11} />
                           {getStatusTagName('Shadow', lang)}
                         </span>
                       )}
                       {poke.isMega && (
                         <span className="status-tag mega-tag">
-                          <Sparkles size={11} />
                           {getStatusTagName('Mega', lang)}
                         </span>
                       )}
                       {poke.isPrimal && (
                         <span className="status-tag primal-tag">
-                          <Flame size={11} />
                           {getStatusTagName('Primal', lang)}
                         </span>
                       )}
                     </div>
                   </div>
 
-                  {/* Base Stats column */}
                   <div className="ranking-stats-col">
                     <div className="stat-item">
                       <span className="stat-label-icon"><Sword size={12} style={{ color: '#f87171' }} /></span>
@@ -368,7 +373,6 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                     </div>
                   </div>
 
-                  {/* Ideal Moveset column with Detail button under moveset */}
                   <div className="ranking-moveset-col">
                     <div className="moveset-header-row">
                       <span className="moveset-header">{t.ranking_ideal_moveset}:</span>
@@ -390,17 +394,15 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                       </span>
                     </div>
 
-                    {/* Expand hint button placed underneath moveset box on right side */}
                     <div className="poke-expand-hint-badge">
                       <span className="expand-hint-text">
-                        {isExpanded ? (lang === 'cs' ? 'Zavřít' : 'Close') : (lang === 'cs' ? 'Detail' : 'Detail')}
+                        {isExpanded ? t.ranking_detail_close : t.ranking_detail_open}
                       </span>
                       {isExpanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
                     </div>
                   </div>
                 </div>
 
-                {/* Expanded Details Section: Top 5 Movesets, DialgaDex Formula & Counter Pokémon */}
                 {isExpanded && (
                   <div className="poke-expanded-details-panel" onClick={(e) => e.stopPropagation()}>
                     <div className="expanded-divider"></div>
@@ -443,12 +445,12 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                       <div className="counters-section-card">
                         <h4 className="expanded-card-title">
                           <Target size={15} style={{ color: '#f87171' }} />
-                          {lang === 'cs' ? `Nejlepší Countery & Slabiny (${getPokemonName(poke.name, lang)})` : `Top Counters & Weaknesses (${getPokemonName(poke.name, lang)})`}
+                          {t.ranking_top_counters} - {getPokemonName(poke.name, lang)}
                         </h4>
 
                         {/* Optimal Counter Types Row */}
                         <div className="counter-types-box">
-                          <span className="counter-box-lbl">{lang === 'cs' ? 'Optimální typy útoků:' : 'Optimal counter types:'}</span>
+                          <span className="counter-box-lbl">{t.ranking_optimal_counter_types}</span>
                           <div className="counter-types-list">
                             {counterTypes.map(ct => (
                               <span key={ct.type} className={`counter-type-badge ${ct.multiplier >= 2 ? 'double-weakness' : ''}`}>
@@ -462,7 +464,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                         {/* Top 5 Counter Pokémon list */}
                         <div className="top-counters-list">
                           <span className="counter-box-lbl" style={{ marginBottom: '4px' }}>
-                            {lang === 'cs' ? 'Top 5 Pokémonů pro souboj (Counters):' : 'Top 5 Counter Pokémon:'}
+                            {t.ranking_top_counters}:
                           </span>
                           {topCounters.map((cp, idx) => (
                             <div key={idx} className="counter-poke-item">
@@ -481,7 +483,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                                 </span>
                               </div>
                               <span className="counter-score-pill">
-                                {cp.counterRating} pts
+                                {cp.counterRating} {t.ranking_points_short}
                               </span>
                             </div>
                           ))}
@@ -490,27 +492,27 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                     </div>
 
                     {/* DialgaDex Formula & Metrics Details Box */}
-                    <div className="dialgadex-metrics-card" style={{ background: 'rgba(15, 23, 42, 0.5)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '12px', padding: '14px', marginTop: '12px' }}>
+                    <div className="dialgadex-metrics-card">
                       <h4 className="expanded-card-title">
                         <Sparkles size={15} style={{ color: '#fbbf24' }} />
-                        {lang === 'cs' ? 'DialgaDex Metriky a Simulace (eDPS & ER)' : 'DialgaDex Effective DPS & ER Metrics'}
+                        {t.ranking_dialgadex_title}
                       </h4>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px', marginTop: '8px' }}>
-                        <div className="dd-stat-box" style={{ background: 'rgba(6, 7, 9, 0.3)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', display: 'block' }}>eDPS (Efektivní DPS)</span>
-                          <strong style={{ fontSize: '1.05rem', color: '#c084fc' }}>{dialgaDex.eDps}</strong>
+                        <div className="dd-stat-box">
+                          <span className="dd-stat-label">{t.ranking_edps_label}</span>
+                          <strong className="dd-stat-value" style={{ color: '#c084fc' }}>{dialgaDex.eDps}</strong>
                         </div>
-                        <div className="dd-stat-box" style={{ background: 'rgba(6, 7, 9, 0.3)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', display: 'block' }}>DialgaDex ER Rating</span>
-                          <strong style={{ fontSize: '1.05rem', color: '#fbbf24' }}>{dialgaDex.erScore} pts</strong>
+                        <div className="dd-stat-box">
+                          <span className="dd-stat-label">{t.ranking_er_label}</span>
+                          <strong className="dd-stat-value" style={{ color: '#fbbf24' }}>{dialgaDex.erScore} {t.ranking_points_short}</strong>
                         </div>
-                        <div className="dd-stat-box" style={{ background: 'rgba(6, 7, 9, 0.3)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', display: 'block' }}>Výdrž (Bulk Index)</span>
-                          <strong style={{ fontSize: '1.05rem', color: '#60a5fa' }}>{dialgaDex.bulk}</strong>
+                        <div className="dd-stat-box">
+                          <span className="dd-stat-label">{t.ranking_bulk_label}</span>
+                          <strong className="dd-stat-value" style={{ color: '#60a5fa' }}>{dialgaDex.bulk}</strong>
                         </div>
-                        <div className="dd-stat-box" style={{ background: 'rgba(6, 7, 9, 0.3)', padding: '8px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', display: 'block' }}>Čas do mdlob (ToF)</span>
-                          <strong style={{ fontSize: '1.05rem', color: '#4ade80' }}>{dialgaDex.timeToFaint}s</strong>
+                        <div className="dd-stat-box">
+                          <span className="dd-stat-label">{t.ranking_tof_label}</span>
+                          <strong className="dd-stat-value" style={{ color: '#4ade80' }}>{dialgaDex.timeToFaint}s</strong>
                         </div>
                       </div>
                     </div>

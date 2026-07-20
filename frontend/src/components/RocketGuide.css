@@ -88,7 +88,7 @@
 }
 
 .reward-card {
-  background-color: rgba(6, 7, 9, 0.3);
+  background-color: var(--bg-card-hover);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 12px;
@@ -190,7 +190,7 @@
 }
 
 .slot-item-card {
-  background-color: rgba(6, 7, 9, 0.3);
+  background-color: var(--bg-card-hover);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 8px 4px;
@@ -207,7 +207,7 @@
 
 /* V2 Slot Items with Pokemon images and types */
 .slot-item-card-v2 {
-  background-color: rgba(6, 7, 9, 0.35);
+  background-color: var(--bg-card-hover);
   border: 1px solid var(--border-color);
   border-radius: 10px;
   padding: 8px;
@@ -524,7 +524,7 @@
 .focus-card {
   display: flex;
   align-items: center;
-  background-color: rgba(6, 7, 9, 0.35);
+  background-color: var(--bg-card-hover);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 10px 14px;
@@ -651,4 +651,28 @@
     max-width: 100%;
     white-space: normal;
   }
+}
+
+/* Light Mode Overrides for Rocket Guide */
+body.light-mode .grunt-card,
+body.light-mode .leader-card,
+body.light-mode .reward-card,
+body.light-mode .slot-item-card,
+body.light-mode .slot-item-card-v2,
+body.light-mode .shadow-pokemon-tag,
+body.light-mode .focus-card,
+body.light-mode .lineup-column,
+body.light-mode .grunts-focus-section,
+body.light-mode .member-avatar,
+body.light-mode .rocket-guide-container {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .focus-grunt-phrase,
+body.light-mode .focus-description,
+body.light-mode .reward-info h4 {
+  color: #0f172a !important;
 }

@@ -164,7 +164,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: rgba(6, 7, 9, 0.3);
+  background-color: var(--bg-card);
   border: 2px solid transparent;
   color: var(--text-secondary);
   font-family: var(--font-sans);
@@ -236,7 +236,7 @@
 }
 
 .egg-hatch-card {
-  background-color: rgba(6, 7, 9, 0.25);
+  background-color: var(--bg-card-hover);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 12px;
@@ -305,5 +305,40 @@
 .rarity-eggs-flex {
   display: flex;
   gap: 2px;
+}
+
+/* Light Mode Overrides for Ditto & Eggs View */
+body.light-mode .ditto-disguises-card,
+body.light-mode .egg-pool-card,
+body.light-mode .egg-pool-details-card,
+body.light-mode .egg-hatch-card,
+body.light-mode .hatch-card-v2,
+body.light-mode .hatch-img-container,
+body.light-mode .egg-tier-btn,
+body.light-mode .disguise-item,
+body.light-mode .egg-pokemon-chip,
+body.light-mode .sub-tab-bar {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .egg-tier-btn.active {
+  background-color: #faf5ff !important;
+  background: #faf5ff !important;
+  border-color: #9333ea !important;
+  color: #7e22ce !important;
+}
+
+body.light-mode .hatch-name,
+body.light-mode .disguise-pokemon-name {
+  color: #0f172a !important;
+  font-weight: 800;
+}
+
+body.light-mode .hatch-cp,
+body.light-mode .disguise-desc {
+  color: #334155 !important;
 }
 

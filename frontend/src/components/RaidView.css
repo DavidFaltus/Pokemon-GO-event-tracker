@@ -55,7 +55,7 @@
   position: relative;
   width: 50px;
   height: 50px;
-  background-color: rgba(6, 7, 9, 0.4);
+  background-color: var(--bg-card-hover);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -152,7 +152,7 @@
 }
 
 .raid-boss-expanded-details {
-  background-color: rgba(6, 7, 9, 0.15);
+  background-color: var(--bg-card-hover);
 }
 
 .expanded-divider {
@@ -190,7 +190,7 @@
 /* SECTION 1691-1916 */
 
 .raid-boss-counters-card {
-  background-color: rgba(6, 7, 9, 0.3);
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 12px;
@@ -241,7 +241,7 @@
 }
 
 .counter-level-col {
-  background-color: rgba(6, 7, 9, 0.2);
+  background-color: var(--bg-card-hover);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 8px 10px;
@@ -273,7 +273,7 @@
 }
 
 .counter-level-col li.counter-item-card {
-  background-color: rgba(255, 255, 255, 0.02);
+  background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   padding: 8px;
   border-radius: 8px;
@@ -349,6 +349,42 @@
 .counter-level-col li .type-badge-icon {
   width: 8px;
   height: 8px;
+}
+
+/* Light Mode Overrides for Raid View */
+body.light-mode .raid-boss-card,
+body.light-mode .raid-tier-section,
+body.light-mode .raid-boss-item,
+body.light-mode .boss-img-wrapper,
+body.light-mode .counter-item-card,
+body.light-mode .weather-boost-box,
+body.light-mode .counter-card,
+body.light-mode .raid-boss-expanded-details,
+body.light-mode .raid-boss-counters-card,
+body.light-mode .counter-level-col,
+body.light-mode .raid-view-container {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .raid-boss-counters-card.no-border {
+  border: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+body.light-mode .counter-pokemon-name,
+body.light-mode .raid-boss-name,
+body.light-mode .raid-tier-title {
+  color: #0f172a !important;
+  font-weight: 800;
+}
+
+body.light-mode .counter-move-row,
+body.light-mode .raid-boss-cp {
+  color: #334155 !important;
 }
 .counters-cp-info {
   background-color: rgba(6, 7, 9, 0.25);
