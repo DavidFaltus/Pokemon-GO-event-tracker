@@ -2,22 +2,19 @@ import type { PokemonRankData, MoveData } from '../data/pokemonRankings';
 
 // ─── LEGACY / ELITE TM MOVES ────────────────────────────────────────────────
 export const LEGACY_MOVES = new Set<string>([
-  // Fast moves
+  // Fast moves (Elite TM / Event Legacy)
   "Thunder Shock", "Wing Attack", "Vine Whip", "Lick", "Shadow Claw", "Ice Shard", "Dragon Breath",
-  "Smack Down", "Mud-Shot", "Counter", "Bullet Punch", "Poison Jab", "Incinerate", "Water Gun",
-  "Quick Attack", "Tackle", "Bite", "Fury Cutter", "Bug Bite", "Hidden Power", "Gust", "Lock-On",
-  "Spark", "Karate Chop", "Present", "Acid", "Sucker Punch", "Scratch", "Ember", "Rock Smash",
+  "Smack Down", "Counter", "Bullet Punch", "Poison Jab", "Incinerate", "Water Gun",
+  "Quick Attack", "Lock-On", "Gust", "Present", "Karate Chop", "Rollout", "Magical Leaf",
 
-  // Charged moves
-  "Frenzy Plant", "Blast Burn", "Hydro Cannon", "Rock Wrecker", "Meteor Mash", "Psystrike",
+  // Charged moves (Elite TM / Event / Signature Legacy)
+  "Psystrike", "Frenzy Plant", "Blast Burn", "Hydro Cannon", "Rock Wrecker", "Meteor Mash",
   "Roar of Time", "Spacial Rend", "Dragon Ascent", "Sacred Sword", "Aeroblast", "Sacred Fire",
-  "Doom Desire", "Mist Ball", "Luster Purge", "Origin Pulse", "Precipice Blades", "Dragon Pulse",
-  "Shadow Ball", "Hyper Beam", "Grass Knot", "Earth Power", "Synchronoise", "Outrage", "Thunder",
-  "Flamethrower", "Ice Beam", "Moonblast", "Wild Charge", "Dark Void", "Flying Press", "Brave Bird",
-  "Zap Cannon", "Superpower", "Stone Edge", "Magma Storm", "Supercell Slam", "Brutal Swing",
-  "Body Slam", "Draco Meteor", "Focus Blast", "Sludge Wave", "Solar Beam", "Hurricane", "Psychic",
-  "Dynamic Punch", "Close Combat", "Leaf Blade", "Surf", "Hydro Pump", "Overheat", "Aura Sphere",
-  "High Horsepower", "Oblivion Wing", "Sunsteel Strike", "Moongeist Beam", "Behemoth Blade", "Behemoth Bash"
+  "Doom Desire", "Mist Ball", "Luster Purge", "Origin Pulse", "Precipice Blades", "Sunsteel Strike",
+  "Moongeist Beam", "Behemoth Blade", "Behemoth Bash", "Dark Void", "Oblivion Wing", "Geomancy",
+  "Magma Storm", "Aura Sphere", "High Horsepower", "Rage Fist", "Volt Tackle", "Draco Meteor",
+  "Shadow Bone", "Supercell Slam", "Brutal Swing", "Poltergeist", "Tri Attack", "Boomburst",
+  "Icicle Spear", "Zap Cannon", "Flying Press", "Scorching Sands", "Night Slash"
 ]);
 
 export function isLegacyMove(moveName: string): boolean {

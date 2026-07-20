@@ -43,18 +43,18 @@ export const pokemonRankings: PokemonRankData[] = [
     name: "Mega Mewtwo Y",
     pokedexId: 150,
     types: ["Psychic"],
-    attack: 398, defense: 207, stamina: 214, maxCp: 7581, pveScore: 97, dps: 26.84,
-    bestFastMove: { name: "Psycho Cut", type: "Psychic" },
-    bestChargedMove: { name: "Hyper Beam", type: "Normal" },
+    attack: 398, defense: 207, stamina: 214, maxCp: 7581, pveScore: 100, dps: 42.04,
+    bestFastMove: { name: "Confusion", type: "Psychic" },
+    bestChargedMove: { name: "Psystrike", type: "Psychic" },
     isMega: true
   },
   {
     name: "Mega Mewtwo X",
     pokedexId: 150,
     types: ["Psychic","Fighting"],
-    attack: 396, defense: 228, stamina: 214, maxCp: 7581, pveScore: 96, dps: 25.95,
-    bestFastMove: { name: "Psycho Cut", type: "Psychic" },
-    bestChargedMove: { name: "Hyper Beam", type: "Normal" },
+    attack: 396, defense: 228, stamina: 214, maxCp: 7581, pveScore: 99, dps: 40.63,
+    bestFastMove: { name: "Confusion", type: "Psychic" },
+    bestChargedMove: { name: "Psystrike", type: "Psychic" },
     isMega: true
   },
   {
@@ -87,9 +87,9 @@ export const pokemonRankings: PokemonRankData[] = [
     name: "Shadow Mewtwo",
     pokedexId: 150,
     types: ["Psychic"],
-    attack: 300, defense: 182, stamina: 214, maxCp: 4724, pveScore: 90, dps: 22.84,
+    attack: 300, defense: 182, stamina: 214, maxCp: 4724, pveScore: 97, dps: 35.64,
     bestFastMove: { name: "Psycho Cut", type: "Psychic" },
-    bestChargedMove: { name: "Hyper Beam", type: "Normal" },
+    bestChargedMove: { name: "Psystrike", type: "Psychic" },
     isShadow: true
   },
   {
@@ -113,8 +113,8 @@ export const pokemonRankings: PokemonRankData[] = [
     pokedexId: 716,
     types: ["Fairy"],
     attack: 250, defense: 185, stamina: 246, maxCp: 4275, pveScore: 85, dps: 20.35,
-    bestFastMove: { name: "Tackle", type: "Normal" },
-    bestChargedMove: { name: "Giga Impact", type: "Normal" }
+    bestFastMove: { name: "Geomancy", type: "Fairy" },
+    bestChargedMove: { name: "Moonblast", type: "Fairy" }
   },
   {
     name: "Shadow Ursaluna",
@@ -122,7 +122,7 @@ export const pokemonRankings: PokemonRankData[] = [
     types: ["Ground","Normal"],
     attack: 243, defense: 181, stamina: 277, maxCp: 4357, pveScore: 84, dps: 20.48,
     bestFastMove: { name: "Tackle", type: "Normal" },
-    bestChargedMove: { name: "Swift", type: "Normal" },
+    bestChargedMove: { name: "High Horsepower", type: "Ground" },
     isShadow: true
   },
   {
@@ -140,33 +140,33 @@ export const pokemonRankings: PokemonRankData[] = [
     types: ["Fighting","Steel"],
     attack: 250, defense: 292, stamina: 192, maxCp: 4716, pveScore: 81, dps: 19.34,
     bestFastMove: { name: "Metal Claw", type: "Steel" },
-    bestChargedMove: { name: "Giga Impact", type: "Normal" }
+    bestChargedMove: { name: "Close Combat", type: "Fighting" }
   },
   {
     name: "Mega Dragonite",
     pokedexId: 149,
     types: ["Dragon","Flying"],
-    attack: 263, defense: 198, stamina: 209, maxCp: 4287, pveScore: 79, dps: 19.22,
+    attack: 263, defense: 198, stamina: 209, maxCp: 4287, pveScore: 89, dps: 31.5,
     bestFastMove: { name: "Dragon Tail", type: "Dragon" },
-    bestChargedMove: { name: "Hyper Beam", type: "Normal" },
+    bestChargedMove: { name: "Outrage", type: "Dragon" },
     isMega: true
   },
   {
     name: "Shadow Dragonite",
     pokedexId: 149,
     types: ["Dragon","Flying"],
-    attack: 263, defense: 198, stamina: 209, maxCp: 4287, pveScore: 78, dps: 19.81,
+    attack: 263, defense: 198, stamina: 209, maxCp: 4287, pveScore: 86, dps: 28.9,
     bestFastMove: { name: "Dragon Tail", type: "Dragon" },
-    bestChargedMove: { name: "Hyper Beam", type: "Normal" },
+    bestChargedMove: { name: "Outrage", type: "Dragon" },
     isShadow: true
   },
   {
     name: "Mewtwo",
     pokedexId: 150,
     types: ["Psychic"],
-    attack: 300, defense: 182, stamina: 214, maxCp: 4724, pveScore: 76, dps: 19.53,
+    attack: 300, defense: 182, stamina: 214, maxCp: 4724, pveScore: 93, dps: 30.48,
     bestFastMove: { name: "Psycho Cut", type: "Psychic" },
-    bestChargedMove: { name: "Hyper Beam", type: "Normal" }
+    bestChargedMove: { name: "Psystrike", type: "Psychic" }
   },
   {
     name: "Shadow Staraptor",
