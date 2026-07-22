@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:deploy": "cross-env NEXT_PUBLIC_BUILD_TARGET=export next build && node post-build.js",
     "start": "next start",
     "build:android": "cross-env NEXT_PUBLIC_BUILD_TARGET=export next build && npx cap sync",
     "vite:dev": "vite",
