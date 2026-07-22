@@ -16,7 +16,8 @@ import { AdContainer } from './components/AdContainer';
 import { DittoEggsView } from './components/DittoEggsView';
 import { PokemonRankingsView } from './components/PokemonRankingsView';
 import { AdminPanelView } from './components/AdminPanelView';
-import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy } from 'lucide-react';
+import { PogoFilterGeneratorModal } from './components/PogoFilterGeneratorModal';
+import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy, Zap } from 'lucide-react';
 
 type TabType = 'events' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'settings' | 'admin';
 
@@ -436,6 +437,8 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
     if (typeof window === 'undefined') return 'Europe/Prague';
     return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Prague';
   });
+
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   const [visibleEvents, setVisibleEvents] = useState<VisibleEventsPreference>(() => {
     const defaults = {
@@ -915,6 +918,15 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
             <span className="nav-icon"><Settings size={20} /></span>
             <span className="nav-text">{t.tabs_settings}</span>
           </button>
+
+          <button 
+            className="sidebar-nav-item pogo-helper-btn" 
+            onClick={() => setIsFilterModalOpen(true)}
+            style={{ marginTop: '12px', border: '1px solid rgba(56, 189, 248, 0.35)', background: 'rgba(56, 189, 248, 0.08)' }}
+          >
+            <span className="nav-icon"><Zap size={20} style={{ color: '#38bdf8' }} /></span>
+            <span className="nav-text" style={{ color: '#38bdf8', fontWeight: 600 }}>{lang === 'cs' ? 'Filtr do PoGo' : 'PoGo Filter'}</span>
+          </button>
         </nav>
         
         {/* Sidebar Native Ad Placeholder */}
@@ -1202,6 +1214,13 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
           </button>
         </nav>
       </div>
+
+      <PogoFilterGeneratorModal
+        isOpen={isFilterModalOpen}
+        onClose={() => setIsFilterModalOpen(false)}
+        lang={lang}
+        events={events}
+      />
     </div>
   );
 }

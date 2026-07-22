@@ -1,3 +1,4 @@
+import { pokemonRankings } from '../data/pokemonRankings';
 import type { PokemonRankData, MoveData } from '../data/pokemonRankings';
 
 // ─── LEGACY / ELITE TM MOVES ────────────────────────────────────────────────
@@ -215,4 +216,23 @@ function getAltChargedMoveName(poke: PokemonRankData, altIndex: number): string 
     Fairy: "Play Rough", Normal: "Body Slam*"
   };
   return altIndex === 1 ? (defaults1[type] || "Hyper Beam*") : (defaults2[type] || "Return");
+}
+
+export function getTopCountersByName(bossName: string, limit: number = 10): PokemonRankData[] {
+  const clean = bossName.toLowerCase().replace(/^(shadow|mega|primal)\s+/, '').trim();
+  const targetPoke = pokemonRankings.find(p => p.name.toLowerCase().includes(clean)) || {
+    name: bossName, pokedexId: 483, types: ['Dragon', 'Steel'], attack: 275, defense: 211, stamina: 205, maxCp: 4565, pveScore: 90, dps: 25,
+    bestFastMove: { name: 'Dragon Breath', type: 'Dragon' }, bestChargedMove: { name: 'Draco Meteor', type: 'Dragon' }
+  };
+
+  const counters = getTopCountersForPokemon(targetPoke, pokemonRankings);
+  return counters.slice(0, limit).map(c => c.pokemon);
+}
+
+export function getCounterTypesForName(bossName: string): string[] {
+  const clean = bossName.toLowerCase().replace(/^(shadow|mega|primal)\s+/, '').trim();
+  const targetPoke = pokemonRankings.find(p => p.name.toLowerCase().includes(clean));
+  const types = targetPoke ? targetPoke.types : ['Dragon', 'Steel'];
+  const counterInfos = getCounterTypes(types);
+  return counterInfos.map(c => c.type);
 }
