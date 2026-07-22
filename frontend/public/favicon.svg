@@ -1,79 +1,80 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="512" height="512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1a1228" />
-      <stop offset="100%" stop-color="#0f1015" />
-    </linearGradient>
-    <linearGradient id="pokeball-top" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#c084fc" />
-      <stop offset="100%" stop-color="#7e22ce" />
-    </linearGradient>
-    <linearGradient id="pokeball-bottom" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#0f172a" />
-      <stop offset="100%" stop-color="#1e1b4b" />
-    </linearGradient>
-    <radialGradient id="glow-outer" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#aa3bff" stop-opacity="0.35" />
-      <stop offset="100%" stop-color="#aa3bff" stop-opacity="0" />
+    <!-- Outer Badge Background -->
+    <radialGradient id="pogo-badge-bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1e1b4b" />
+      <stop offset="70%" stop-color="#0f1015" />
+      <stop offset="100%" stop-color="#090a0f" />
     </radialGradient>
-    <filter id="glow-filter" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="2.5" result="blur" />
+
+    <!-- Red Top Shell -->
+    <linearGradient id="pogo-red-top" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff4d4d" />
+      <stop offset="40%" stop-color="#ef4444" />
+      <stop offset="100%" stop-color="#b91c1c" />
+    </linearGradient>
+
+    <!-- White Bottom Shell -->
+    <linearGradient id="pogo-white-bot" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="60%" stop-color="#f1f5f9" />
+      <stop offset="100%" stop-color="#cbd5e1" />
+    </linearGradient>
+
+    <!-- Inner Button Glow -->
+    <radialGradient id="pogo-core-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="1" />
+      <stop offset="60%" stop-color="#0284c7" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#0369a1" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Subtle Glow Filter -->
+    <filter id="pogo-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
       <feComposite in="SourceGraphic" in2="blur" operator="over" />
     </filter>
-    <filter id="strong-glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="4" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-    </filter>
-    <clipPath id="ball-clip">
-      <circle cx="50" cy="50" r="42" />
+
+    <clipPath id="pogo-ball-clip">
+      <circle cx="256" cy="256" r="200" />
     </clipPath>
   </defs>
 
-  <!-- Background circle -->
-  <circle cx="50" cy="50" r="50" fill="url(#bg-grad)" />
+  <!-- Dark Circular Badge Background (Transparent Canvas, Perfect Round Circle) -->
+  <circle cx="256" cy="256" r="248" fill="url(#pogo-badge-bg)" stroke="#ef4444" stroke-width="3" stroke-opacity="0.4" filter="url(#pogo-glow)" />
 
-  <!-- Outer glow ring -->
-  <circle cx="50" cy="50" r="50" fill="url(#glow-outer)" />
+  <!-- Outer Ring Glow -->
+  <circle cx="256" cy="256" r="208" fill="none" stroke="#ef4444" stroke-width="4" stroke-opacity="0.3" filter="url(#pogo-glow)" />
 
-  <!-- Purple outer ring -->
-  <circle cx="50" cy="50" r="46" stroke="#c084fc" stroke-width="1.5" stroke-opacity="0.5" fill="none" filter="url(#glow-filter)" />
+  <!-- Pokéball Bottom Shell -->
+  <circle cx="256" cy="256" r="200" fill="url(#pogo-white-bot)" stroke="#0f172a" stroke-width="8" />
 
-  <!-- Pokeball body -->
-  <circle cx="50" cy="50" r="42" fill="url(#pokeball-bottom)" stroke="#2d1f5e" stroke-width="1.5" />
-
-  <!-- Top half (purple) - clipped to ball -->
-  <g clip-path="url(#ball-clip)">
-    <path d="M 8,50 A 42,42 0 0,1 92,50 Z" fill="url(#pokeball-top)" />
+  <!-- Pokéball Top Red Shell -->
+  <g clip-path="url(#pogo-ball-clip)">
+    <path d="M 36,256 A 200,200 0 0,1 476,256 Z" fill="url(#pogo-red-top)" />
   </g>
 
-  <!-- Dividing line -->
-  <line x1="8" y1="50" x2="92" y2="50" stroke="#090d16" stroke-width="5.5" />
+  <!-- Center Black Belt -->
+  <line x1="36" y1="256" x2="476" y2="256" stroke="#090d16" stroke-width="26" />
 
-  <!-- Center button outer ring (dark) -->
-  <circle cx="50" cy="50" r="14" fill="#090d16" />
+  <!-- Center Button Outer Ring (Dark Obsidian) -->
+  <circle cx="256" cy="256" r="64" fill="#090d16" stroke="#1e293b" stroke-width="4" />
 
-  <!-- Center button inner (dark indigo) -->
-  <circle cx="50" cy="50" r="10" fill="#1a0f3a" stroke="#aa3bff" stroke-width="2" />
+  <!-- Center Button Inner Metallic Shell -->
+  <circle cx="256" cy="256" r="46" fill="#f8fafc" stroke="#38bdf8" stroke-width="6" />
 
-  <!-- Center glow dot -->
-  <circle cx="50" cy="50" r="4.5" fill="#c084fc" filter="url(#strong-glow)" />
-  <circle cx="50" cy="50" r="3" fill="#f0e6ff" />
+  <!-- Center Glowing Cyan Gem -->
+  <circle cx="256" cy="256" r="22" fill="url(#pogo-core-glow)" filter="url(#pogo-glow)" />
+  <circle cx="256" cy="256" r="14" fill="#ffffff" />
 
-  <!-- Sparkle: top-right -->
-  <g transform="translate(76,20)" opacity="0.85" filter="url(#glow-filter)">
-    <line x1="0" y1="-5" x2="0" y2="5" stroke="#c084fc" stroke-width="1.5" stroke-linecap="round"/>
-    <line x1="-5" y1="0" x2="5" y2="0" stroke="#c084fc" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Sparkle Accent 1 (Top-Right) -->
+  <g transform="translate(390, 110)" filter="url(#pogo-glow)">
+    <line x1="0" y1="-20" x2="0" y2="20" stroke="#fbbf24" stroke-width="6" stroke-linecap="round" />
+    <line x1="-20" y1="0" x2="20" y2="0" stroke="#fbbf24" stroke-width="6" stroke-linecap="round" />
   </g>
 
-  <!-- Sparkle: bottom-left -->
-  <g transform="translate(22,76)" opacity="0.6" filter="url(#glow-filter)">
-    <line x1="0" y1="-3.5" x2="0" y2="3.5" stroke="#aa3bff" stroke-width="1.2" stroke-linecap="round"/>
-    <line x1="-3.5" y1="0" x2="3.5" y2="0" stroke="#aa3bff" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- Sparkle Accent 2 (Bottom-Left) -->
+  <g transform="translate(110, 390)" opacity="0.8">
+    <line x1="0" y1="-14" x2="0" y2="14" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" />
+    <line x1="-14" y1="0" x2="14" y2="0" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" />
   </g>
-
-  <!-- Sparkle: top-left small -->
-  <circle cx="24" cy="25" r="1.8" fill="#c084fc" opacity="0.7" filter="url(#glow-filter)" />
-
-  <!-- Sparkle: bottom-right small -->
-  <circle cx="76" cy="75" r="1.4" fill="#aa3bff" opacity="0.6" filter="url(#glow-filter)" />
 </svg>

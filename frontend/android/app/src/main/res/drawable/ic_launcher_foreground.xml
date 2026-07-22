@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Center PokeBall Top Red Half -->
+    <path
+        android:fillColor="#EF4444"
+        android:pathData="M 30,54 A 24,24 0 0,1 78,54 Z" />
+    <!-- Center PokeBall Bottom White Half -->
+    <path
+        android:fillColor="#F8FAFC"
+        android:pathData="M 30,54 A 24,24 0 0,0 78,54 Z" />
+    <!-- Center Divider Line -->
+    <path
+        android:strokeColor="#0F172A"
+        android:strokeWidth="3.5"
+        android:pathData="M 30,54 L 78,54" />
+    <!-- Center Button Dark Outer Ring -->
+    <path
+        android:fillColor="#0F172A"
+        android:pathData="M 54,54 m -8,0 a 8,8 0 1,0 16,0 a 8,8 0 1,0 -16,0" />
+    <!-- Center Button Inner White -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:strokeColor="#38BDF8"
+        android:strokeWidth="1"
+        android:pathData="M 54,54 m -5,0 a 5,5 0 1,0 10,0 a 5,5 0 1,0 -10,0" />
+    <!-- Center Button Cyan Gem -->
+    <path
+        android:fillColor="#38BDF8"
+        android:pathData="M 54,54 m -2.5,0 a 2.5,2.5 0 1,0 5,0 a 2.5,2.5 0 1,0 -5,0" />
+</vector>

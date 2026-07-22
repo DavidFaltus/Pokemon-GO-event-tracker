@@ -1,33 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" width="400" height="100">
   <defs>
     <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#1a1228" />
       <stop offset="100%" stop-color="#0f1015" />
     </linearGradient>
-    <linearGradient id="pokeball-top" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#c084fc" />
-      <stop offset="100%" stop-color="#7e22ce" />
+    <linearGradient id="red-top" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff4d4d" />
+      <stop offset="100%" stop-color="#ef4444" />
     </linearGradient>
-    <linearGradient id="pokeball-bottom" x1="0%" y1="100%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#0f172a" />
-      <stop offset="100%" stop-color="#1e1b4b" />
+    <linearGradient id="white-bot" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#e2e8f0" />
     </linearGradient>
     <linearGradient id="text-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#c084fc" />
-      <stop offset="100%" stop-color="#aa3bff" />
+      <stop offset="0%" stop-color="#ef4444" />
+      <stop offset="100%" stop-color="#f87171" />
     </linearGradient>
-    <radialGradient id="glow-bg" cx="15%" cy="50%" r="30%">
-      <stop offset="0%" stop-color="#7e22ce" stop-opacity="0.25" />
-      <stop offset="100%" stop-color="#7e22ce" stop-opacity="0" />
-    </radialGradient>
-    <filter id="glow-filter" x="-30%" y="-30%" width="160%" height="160%">
-      <feGaussianBlur stdDeviation="2" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-    </filter>
-    <filter id="text-glow" x="-5%" y="-30%" width="110%" height="160%">
-      <feGaussianBlur stdDeviation="1.5" result="blur" />
-      <feComposite in="SourceGraphic" in2="blur" operator="over" />
-    </filter>
     <clipPath id="ball-clip-logo">
       <circle cx="50" cy="50" r="38" />
     </clipPath>
@@ -35,34 +23,24 @@
 
   <!-- Background -->
   <rect width="400" height="100" rx="14" fill="url(#bg-grad)" />
-  <rect width="400" height="100" rx="14" fill="url(#glow-bg)" />
 
   <!-- Pokeball icon (centered at x=50, y=50) -->
-  <circle cx="50" cy="50" r="42" stroke="#c084fc" stroke-width="1.2" stroke-opacity="0.4" fill="none" filter="url(#glow-filter)" />
-  <circle cx="50" cy="50" r="38" fill="url(#pokeball-bottom)" stroke="#2d1f5e" stroke-width="1.5" />
+  <circle cx="50" cy="50" r="42" stroke="#ef4444" stroke-width="1.2" stroke-opacity="0.5" fill="none" />
+  <circle cx="50" cy="50" r="38" fill="url(#white-bot)" stroke="#0f172a" stroke-width="1.5" />
   <g clip-path="url(#ball-clip-logo)">
-    <path d="M 12,50 A 38,38 0 0,1 88,50 Z" fill="url(#pokeball-top)" />
+    <path d="M 12,50 A 38,38 0 0,1 88,50 Z" fill="url(#red-top)" />
   </g>
   <line x1="12" y1="50" x2="88" y2="50" stroke="#090d16" stroke-width="5" />
   <circle cx="50" cy="50" r="13" fill="#090d16" />
-  <circle cx="50" cy="50" r="9" fill="#1a0f3a" stroke="#aa3bff" stroke-width="1.8" />
-  <circle cx="50" cy="50" r="4" fill="#c084fc" filter="url(#glow-filter)" />
-  <circle cx="50" cy="50" r="2.5" fill="#f0e6ff" />
-
-  <!-- Sparkles -->
-  <circle cx="82" cy="22" r="1.6" fill="#c084fc" opacity="0.8" filter="url(#glow-filter)" />
-  <circle cx="18" cy="76" r="1.2" fill="#aa3bff" opacity="0.6" filter="url(#glow-filter)" />
+  <circle cx="50" cy="50" r="9" fill="#ffffff" stroke="#38bdf8" stroke-width="1.8" />
+  <circle cx="50" cy="50" r="4" fill="#38bdf8" />
+  <circle cx="50" cy="50" r="2.5" fill="#ffffff" />
 
   <!-- Vertical divider line -->
-  <line x1="102" y1="20" x2="102" y2="80" stroke="#aa3bff" stroke-width="1" stroke-opacity="0.3" />
+  <line x1="102" y1="20" x2="102" y2="80" stroke="#ef4444" stroke-width="1" stroke-opacity="0.3" />
 
   <!-- App name "PokeGO" -->
-  <text x="120" y="46" font-family="'Outfit', 'Inter', sans-serif" font-size="28" font-weight="700" fill="url(#text-grad)" filter="url(#text-glow)" letter-spacing="-0.5">PokeGO</text>
-
-  <!-- "Tracker" in lighter white -->
-  <text x="120" y="46" font-family="'Outfit', 'Inter', sans-serif" font-size="28" font-weight="700" fill="url(#text-grad)" filter="url(#text-glow)" letter-spacing="-0.5" x="120">
-    <tspan fill="#f3f4f6" font-weight="400"> </tspan>
-  </text>
+  <text x="120" y="46" font-family="'Outfit', 'Inter', sans-serif" font-size="28" font-weight="700" fill="url(#text-grad)" letter-spacing="-0.5">PokeGO</text>
   <text x="241" y="46" font-family="'Outfit', 'Inter', sans-serif" font-size="28" font-weight="400" fill="#f3f4f6" letter-spacing="-0.5">Tracker</text>
 
   <!-- Tagline -->

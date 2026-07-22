@@ -1,7 +1,15 @@
+Fix:
+1: nenačítá se admin menu na pogoevents.app/admin
+
 Vylepšení:
-1: bude potřeba vylepšit práci s daty v admin sekci. Přidat kolonku jak na odkaz Oficiální event tak na sekundární odkaz (pokud bude vyplněn ofiko odkaz zobrazit ten),
-místo reálných dat se mi zobrazuje [object Object]. vylepšit linkování na oficiální eventy, na této stránce jsou vždycky všechny aktuální: https://pokemongo.com/news.
-rád bych také kdyby bylo možné zobrazit celý text který byl scrapenutý abych si ho mohl ručně projít, rád bych také do textu přidával. veškeré assety můžeš brát odsud to si zapamatuj: https://github.com/PokeMiners/pogo_assets
+1: Aktualizace raidů častěji a podle časové zóny 
+2: vytvoř si skill na konkrétní proces nasazení aplikace abys na nic příště nezapoměl včetně chyb které se objevují znovu a znovu například špatné nasazení na git, google cloud,...
+tady je git chyba:Run actions/upload-pages-artifact@v3
+Run echo ::group::Archive artifact
+Archive artifact
+  tar: frontend/dist: Cannot open: No such file or directory
+  tar: Error is not recoverable: exiting now
+  Error: Process completed with exit code 2.
 
 Teoretické vylepšení: generace nebo skládání grafiky do jednoduchých souhrnů jako dělá například Leekduck
 
