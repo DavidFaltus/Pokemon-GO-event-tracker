@@ -1,9 +1,15 @@
-const CACHE_NAME = 'pokego-tracker-v4';
+const CACHE_NAME = 'pokego-tracker-v5';
 const ASSETS_TO_CACHE = [
   './',
-  'index.html',
   'manifest.json'
 ];
+
+function isValidCacheRequest(request) {
+  if (!request) return false;
+  if (request.method !== 'GET') return false;
+  const url = request.url || '';
+  return url.startsWith('http://') || url.startsWith('https://');
+}
 
 // Install Event
 self.addEventListener('install', (e) => {
@@ -31,17 +37,29 @@ self.addEventListener('activate', (e) => {
 
 // Fetch Event (Network-first for API/Navigation, Cache-first for static assets)
 self.addEventListener('fetch', (e) => {
+  // Ignore non-http/https requests (e.g. chrome-extension://, moz-extension://)
+  if (!e.request.url.startsWith('http://') && !e.request.url.startsWith('https://')) {
+    return;
+  }
+
+  // Ignore non-GET requests (e.g. POST, PUT, DELETE)
+  if (e.request.method !== 'GET') {
+    return;
+  }
+
   const url = new URL(e.request.url);
 
-  // If it's a navigation request (loading index.html or root), try network first, then cache fallback
+  // Navigation request: try network first, then fallback to cache
   if (e.request.mode === 'navigate' || url.pathname === '/' || url.pathname.endsWith('index.html')) {
     e.respondWith(
       fetch(e.request)
         .then((response) => {
-          const clonedResponse = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(e.request, clonedResponse);
-          });
+          if (response && response.status === 200 && isValidCacheRequest(e.request)) {
+            const clonedResponse = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(e.request, clonedResponse).catch(() => {});
+            });
+          }
           return response;
         })
         .catch(() => {
@@ -51,15 +69,17 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // If it is the ScrapedDuck API call, try network first, then cache fallback
+  // GitHub / Scraped API call: try network first, then cache fallback
   if (url.hostname === 'raw.githubusercontent.com') {
     e.respondWith(
       fetch(e.request)
         .then((response) => {
-          const clonedResponse = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(e.request, clonedResponse);
-          });
+          if (response && response.status === 200 && isValidCacheRequest(e.request)) {
+            const clonedResponse = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(e.request, clonedResponse).catch(() => {});
+            });
+          }
           return response;
         })
         .catch(() => {
@@ -69,7 +89,7 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // Otherwise, standard Cache-first strategy
+  // Standard Cache-first strategy for static assets
   e.respondWith(
     caches.match(e.request).then((cachedResponse) => {
       if (cachedResponse) return cachedResponse;
@@ -77,10 +97,12 @@ self.addEventListener('fetch', (e) => {
         if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
           return networkResponse;
         }
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(e.request, responseToCache);
-        });
+        if (isValidCacheRequest(e.request)) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(e.request, responseToCache).catch(() => {});
+          });
+        }
         return networkResponse;
       });
     })
