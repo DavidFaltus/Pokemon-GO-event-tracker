@@ -257,6 +257,87 @@ app.get('/api/scraper/status', (req, res) => {
 });
 
 // Helper to fetch merged scraped and custom events
+function getOfficialFallbackLink(eventID: string, name: string, start?: string): string {
+  const cleanId = eventID.toLowerCase();
+  const cleanName = name.toLowerCase();
+  
+  if (cleanId.includes("go-fest-2026") || cleanName.includes("go fest 2026")) {
+    return "https://gofest.pokemongolive.com/";
+  }
+  if (cleanId.includes("road-of-legends-2026") || cleanName.includes("road of legends")) {
+    return "https://pokemongolive.com/post/road-of-legends-2026-global/";
+  }
+  if (cleanId.includes("flying-taxi-taken-over-2026") || cleanName.includes("taken over") || cleanName.includes("taken-over")) {
+    return "https://pokemongolive.com/post/flying-taxi-taken-over-2026/";
+  }
+  if (cleanId.includes("flying-taxi-2026") || cleanName.includes("flying taxi")) {
+    return "https://pokemongolive.com/post/flying-taxi-squawkabilly-debut/";
+  }
+  if (cleanId.includes("rocket-takeover-june-2026") || cleanName.includes("shadow landorus") || cleanName.includes("team go rocket takeover")) {
+    return "https://pokemongolive.com/post/flying-taxi-squawkabilly-debut/";
+  }
+  if (cleanId.includes("go-pass-june-2026") || cleanName.includes("go pass")) {
+    return "https://pokemongolive.com/seasons/forever-forward";
+  }
+  if (cleanId.includes("season-23-forever-forward") || cleanName.includes("forever forward")) {
+    return "https://pokemongolive.com/seasons/forever-forward";
+  }
+
+  // Community Days
+  if (cleanId.includes("community-day") || cleanId.includes("communityday")) {
+    let pokeName = "";
+    if (cleanName.includes("frigibax")) pokeName = "frigibax";
+    else if (cleanName.includes("bagon")) pokeName = "bagon";
+    else if (cleanName.includes("beldum")) pokeName = "beldum";
+    else if (cleanName.includes("goomy")) pokeName = "goomy";
+    else if (cleanName.includes("litten")) pokeName = "litten";
+    else if (cleanName.includes("rowlet")) pokeName = "rowlet";
+    else if (cleanName.includes("popplio")) pokeName = "popplio";
+    else if (cleanName.includes("bellsprout")) pokeName = "bellsprout";
+    else if (cleanName.includes("chansey")) pokeName = "chansey";
+
+    let year = "2026";
+    if (start) {
+      const matchYear = start.match(/^(\d{4})/);
+      if (matchYear) year = matchYear[1];
+    }
+
+    let month = "june";
+    if (start) {
+      const dateObj = new Date(start);
+      if (!isNaN(dateObj.getTime())) {
+        const monthsEng = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+        month = monthsEng[dateObj.getMonth()];
+      }
+    }
+
+    if (pokeName) {
+      return `https://pokemongolive.com/post/${pokeName}-community-day-${month}-${year}/`;
+    }
+  }
+
+  // General heuristic
+  let slug = cleanName
+    .replace(/[^\w\s-]/g, '')
+    .trim()
+    .replace(/[-\s]+/g, '-');
+  
+  slug = slug
+    .replace(/-june-\d{4}$/, '')
+    .replace(/-july-\d{4}$/, '')
+    .replace(/-august-\d{4}$/, '')
+    .replace(/-september-\d{4}$/, '');
+
+  let year = "2026";
+  if (start) {
+    const matchYear = start.match(/^(\d{4})/);
+    if (matchYear) year = matchYear[1];
+  }
+
+  return `https://pokemongolive.com/post/${slug}-${year}/`;
+}
+
+// Helper to fetch merged scraped and custom events
 async function getEnrichedEventsList(forceNoCache: boolean = false): Promise<any[]> {
   const cacheKey = 'events_list';
   let scrapedData = forceNoCache ? null : getFromCache<any[]>(cacheKey, 12 * 60 * 60 * 1000);
@@ -296,13 +377,16 @@ async function getEnrichedEventsList(forceNoCache: boolean = false): Promise<any
 
   const enrichedEvents = mergedEvents.map((event: any) => {
     const detailsCache = getFromCache<any>(`details_${event.eventID}`, 24 * 60 * 60 * 1000);
+    let finalLink = event.link;
     if (detailsCache && detailsCache.officialLink) {
-      return {
-        ...event,
-        link: detailsCache.officialLink
-      };
+      finalLink = detailsCache.officialLink;
+    } else if (finalLink && finalLink.includes('leekduck.com')) {
+      finalLink = getOfficialFallbackLink(event.eventID, event.name, event.start);
     }
-    return event;
+    return {
+      ...event,
+      link: finalLink
+    };
   });
 
   enrichedEvents.sort((a: any, b: any) => new Date(a.start).getTime() - new Date(b.start).getTime());

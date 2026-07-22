@@ -1,10 +1,10 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import './PokemonRankingsView.css';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
 import { pokemonRankings } from '../data/pokemonRankings';
 import type { PokemonRankData } from '../data/pokemonRankings';
-import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError, SHADOW_ICON_URL, MEGA_ICON_URL, handleShadowIconError, handleMegaIconError } from '../utils/imageResolver';
 import { TypeBadge } from './EventCard';
 import { getPokemonName, getStatusTagName } from '../utils/pokemonTranslator';
 import { Search, Trophy, Sword, ShieldAlert, Heart, Star, ChevronDown, ChevronUp, Target, Zap, Sparkles, SlidersHorizontal } from 'lucide-react';
@@ -70,11 +70,16 @@ const ALL_TYPES = [
 ];
 
 export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }) => {
-  const t = translations[lang];
+  const t = translations[lang] || translations.cs;
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [expandedPokes, setExpandedPokes] = useState<Set<string>>(new Set());
   const [rankingMode, setRankingMode] = useState<'er' | 'basic'>('basic');
+  const [visibleCount, setVisibleCount] = useState(40);
+
+  useEffect(() => {
+    setVisibleCount(40);
+  }, [searchQuery, selectedType, rankingMode]);
 
   const toggleExpand = useCallback((pokeKey: string) => {
     setExpandedPokes(prev => {
@@ -236,7 +241,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
             <p>{t.ranking_no_results}</p>
           </div>
         ) : (
-          filteredRankings.map((poke) => {
+          filteredRankings.slice(0, visibleCount).map((poke) => {
             const pokeKey = getPokeKey(poke);
             const overallRank = overallRankMap.get(pokeKey) ?? 1;
             const typeRank = typeRankMap.get(pokeKey) ?? 1;
@@ -301,24 +306,20 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                     />
                     {poke.isShadow && (
                       <img 
-                        src="https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/static_assets/png/ic_shadow.png" 
+                        src={SHADOW_ICON_URL} 
                         alt="Shadow" 
                         className="poke-sprite-badge-bottom-left shadow-badge-img"
                         title="Shadow Pokémon"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/shadow-ball.png";
-                        }}
+                        onError={(e) => handleShadowIconError(e.target as HTMLImageElement)}
                       />
                     )}
                     {(poke.isMega || poke.isPrimal) && (
                       <img 
-                        src="https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/static_assets/png/mega_evolution.png" 
+                        src={MEGA_ICON_URL} 
                         alt="Mega" 
                         className="poke-sprite-badge-bottom-left mega-badge-img"
                         title="Mega / Primal Pokémon"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = "https://img.pokemondb.net/sprites/items/mega-ring.png";
-                        }}
+                        onError={(e) => handleMegaIconError(e.target as HTMLImageElement)}
                       />
                     )}
                   </div>
@@ -521,6 +522,18 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
               </div>
             );
           })
+        )}
+        {filteredRankings.length > visibleCount && (
+          <div style={{ textAlign: 'center', marginTop: '20px', marginBottom: '20px' }}>
+            <button
+              type="button"
+              className="mode-toggle-btn active"
+              onClick={() => setVisibleCount(prev => prev + 40)}
+              style={{ padding: '10px 24px', fontSize: '0.9rem', cursor: 'pointer' }}
+            >
+              Zobrazit více ({filteredRankings.length - visibleCount} zbývá)
+            </button>
+          </div>
         )}
       </div>
     </div>

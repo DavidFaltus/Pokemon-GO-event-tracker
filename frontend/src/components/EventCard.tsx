@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
 import './EventCard.css';
 import { findRaidCounters } from '../data/raidCounters';
@@ -24,6 +26,8 @@ export interface EventData {
   eventType: string;
   heading: string;
   link: string;
+  officialLink?: string;
+  secondaryLink?: string;
   image: string;
   start: string;
   end: string;
@@ -213,7 +217,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
   const [showOfficial, setShowOfficial] = useState<boolean>(false);
   const [showLeekDuck, setShowLeekDuck] = useState<boolean>(true);
 
-  const t = translations[lang];
+  const t = translations[lang] || translations.cs;
 
   // Load special event guides (manual overlays/fallbacks)
   const staticDetails = getSpecialEventDetails(event.eventID, event.name);
@@ -222,6 +226,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
 
   // Spawns checklist tick tracker
   const [tickedSpawns, setTickedSpawns] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return [];
     const saved = localStorage.getItem(`pogo_spawns_${event.eventID}`);
     return saved ? JSON.parse(saved) : [];
   });
@@ -234,7 +239,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
       updated = [...tickedSpawns, spawnName];
     }
     setTickedSpawns(updated);
-    localStorage.setItem(`pogo_spawns_${event.eventID}`, JSON.stringify(updated));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`pogo_spawns_${event.eventID}`, JSON.stringify(updated));
+    }
   };
 
 
@@ -621,15 +628,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
         
         {/* Add to Calendar & Official Link Row */}
             <div className="expanded-row link-row">
-              {showLeekDuck && (
-                <a href={event.link} target="_blank" rel="noopener noreferrer" className="details-link-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                  <ExternalLink size={14} />
-                  {event.link && event.link.includes('leekduck.com') ? t.details_official_link : t.details_pokemongo_link}
-                </a>
-              )}
-              {showOfficial && officialUrl !== event.link && (
+              {(event.officialLink || (showOfficial && officialUrl !== event.link)) && (
                 <a 
-                  href={officialUrl} 
+                  href={event.officialLink || officialUrl} 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="pogo-official-btn"
@@ -637,6 +638,20 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                 >
                   <ExternalLink size={14} />
                   {t.details_pokemongo_link}
+                </a>
+              )}
+              {(event.secondaryLink || event.link) && (
+                <a 
+                  href={event.secondaryLink || event.link} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="details-link-btn" 
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <ExternalLink size={14} />
+                  {(event.secondaryLink || event.link).includes('leekduck.com') 
+                    ? t.details_official_link 
+                    : (lang === 'cs' ? 'Průvodce / Odkaz' : 'Guide / Link')}
                 </a>
               )}
               <a 

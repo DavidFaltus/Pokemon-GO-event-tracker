@@ -1,5 +1,31 @@
 import { pokemonRankings } from '../data/pokemonRankings';
 
+export const SHADOW_ICON_URL = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Rocket/ic_shadow.png";
+export const SHADOW_ICON_FALLBACK = "https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/static_assets/png/ic_shadow.png";
+export const SHADOW_ICON_FINAL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/shadow-ball.png";
+
+export const MEGA_ICON_URL = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Ui/mega_evolution.png";
+export const MEGA_ICON_FALLBACK = "https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/static_assets/png/mega_evolution.png";
+export const MEGA_ICON_FINAL = "https://img.pokemondb.net/sprites/items/mega-ring.png";
+
+export function handleShadowIconError(img: HTMLImageElement): void {
+  if (img.src === SHADOW_ICON_URL) {
+    img.src = SHADOW_ICON_FALLBACK;
+  } else {
+    img.onerror = null;
+    img.src = SHADOW_ICON_FINAL;
+  }
+}
+
+export function handleMegaIconError(img: HTMLImageElement): void {
+  if (img.src === MEGA_ICON_URL) {
+    img.src = MEGA_ICON_FALLBACK;
+  } else {
+    img.onerror = null;
+    img.src = MEGA_ICON_FINAL;
+  }
+}
+
 let basePokemonNamesCache: string[] | null = null;
 
 export function getBasePokemonNames(): string[] {

@@ -1401,6 +1401,21 @@ async function scrapeLeekDuckEventDetails(eventID: string, link: string): Promis
   const html = response.data;
   const $ = cheerio.load(html);
   
+  // Find official pokemongolive.com link on the page
+  let officialLink: string | undefined;
+  $('a').each((_, aEl) => {
+    const href = $(aEl).attr('href');
+    if (href) {
+      if (href.includes('pokemongolive.com/post') || href.includes('pokemongolive.com/news') || href.includes('pokemongolive.com/en/post') || href.includes('pokemongolive.com/en/news')) {
+        officialLink = href;
+      } else if (href.includes('pokemongolive.com') && !officialLink) {
+        officialLink = href;
+      } else if (href.includes('nianticlabs.com') && !officialLink) {
+        officialLink = href;
+      }
+    }
+  });
+
   const bonuses: any[] = [];
   const debuts: any[] = [];
   const spawns: any[] = [];
@@ -1535,9 +1550,10 @@ async function scrapeLeekDuckEventDetails(eventID: string, link: string): Promis
     }
   });
 
-  if (bonuses.length > 0 || debuts.length > 0 || spawns.length > 0 || eggs.length > 0 || research.length > 0) {
+  if (officialLink || bonuses.length > 0 || debuts.length > 0 || spawns.length > 0 || eggs.length > 0 || research.length > 0) {
     return {
       eventID,
+      officialLink,
       bonuses: bonuses.length > 0 ? bonuses : undefined,
       debuts: debuts.length > 0 ? debuts : undefined,
       spawns: spawns.length > 0 ? spawns : undefined,
@@ -1919,48 +1935,53 @@ export function matchSlugToTitle(slug: string, articleTitle: string, articleUrl:
 // ==========================================
 
 export async function scrapeEventDetails(eventID: string, link: string, name?: string): Promise<SpecialEventDetails | null> {
-  try {
-    const articles = await getNianticNewsListing();
-    let matchedArticle: NianticArticle | undefined;
-
-    if (name) {
-      matchedArticle = articles.find(art => matchEventToArticle(name, art.title));
-    }
-
-    if (!matchedArticle) {
-      matchedArticle = articles.find(art => matchSlugToTitle(eventID, art.title, art.href));
-    }
-
-    if (matchedArticle) {
-      console.log(`[scrapeEventDetails] Found official Niantic article for ${eventID}: ${matchedArticle.href}`);
-      const nianticResult = await scrapeNianticEventDetails(matchedArticle.href);
-      if (nianticResult) {
-        nianticResult.officialLink = matchedArticle.href;
-        console.log(`[scrapeEventDetails] ✅ Using Niantic data for ${eventID}`);
-        return nianticResult;
-      }
-      console.log(`[scrapeEventDetails] Niantic scrape returned no data for ${eventID}, falling back to Leek Duck`);
-    } else {
-      console.log(`[scrapeEventDetails] No matching official Niantic article for ${eventID}`);
-    }
-  } catch (err: any) {
-    console.warn(`[scrapeEventDetails] Niantic lookup error for ${eventID}: ${err.message} — falling back to Leek Duck`);
-  }
-
   if (!link) {
-    console.warn(`[scrapeEventDetails] No fallback link for ${eventID}`);
+    console.warn(`[scrapeEventDetails] No link provided for event ${eventID}`);
     return null;
   }
+
+  // 1. Always scrape details from Leek Duck
+  let leekResult: SpecialEventDetails | null = null;
   try {
-    const leekResult = await scrapeLeekDuckEventDetails(eventID, link);
-    if (leekResult) {
-      console.log(`[scrapeEventDetails] 🦆 Using Leek Duck fallback data for ${eventID}`);
-    }
-    return leekResult;
+    leekResult = await scrapeLeekDuckEventDetails(eventID, link);
   } catch (err: any) {
-    console.error(`[scrapeEventDetails] Leek Duck fallback also failed for ${eventID}: ${err.message}`);
+    console.error(`[scrapeEventDetails] Leek Duck scraping failed for ${eventID}: ${err.message}`);
+  }
+
+  if (!leekResult) {
     return null;
   }
+
+  // 2. Try to find/match the official pokemongolive.com link
+  let officialLink: string | undefined = leekResult.officialLink;
+
+  if (!officialLink) {
+    try {
+      const articles = await getNianticNewsListing();
+      let matchedArticle: NianticArticle | undefined;
+
+      if (name) {
+        matchedArticle = articles.find(art => matchEventToArticle(name, art.title));
+      }
+
+      if (!matchedArticle) {
+        matchedArticle = articles.find(art => matchSlugToTitle(eventID, art.title, art.href));
+      }
+
+      if (matchedArticle) {
+        officialLink = matchedArticle.href;
+        console.log(`[scrapeEventDetails] Found matched official Niantic article for ${eventID}: ${officialLink}`);
+      }
+    } catch (err: any) {
+      console.warn(`[scrapeEventDetails] Niantic listing matching failed for ${eventID}: ${err.message}`);
+    }
+  }
+
+  if (officialLink) {
+    leekResult.officialLink = officialLink;
+  }
+
+  return leekResult;
 }
 
 export async function scrapeRaidBosses(): Promise<ScrapedRaidBoss[]> {

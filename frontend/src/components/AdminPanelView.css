@@ -567,9 +567,29 @@
 
 /* EXTRA DATA SECTION */
 .extra-data-section {
+  position: relative;
   border: 1px solid rgba(168, 85, 247, 0.15);
   border-radius: 16px;
   overflow: hidden;
+}
+
+.admin-details-loader-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 8, 20, 0.85);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 16px;
+  gap: 10px;
+  color: #a855f7;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .extra-data-header {

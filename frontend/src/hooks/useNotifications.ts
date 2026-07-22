@@ -46,7 +46,6 @@ export function useNotifications() {
   const [permission, setPermission] = useState<NotificationPermission>('default');
 
   const [preferences, setPreferences] = useState<NotificationPreference>(() => {
-    const saved = localStorage.getItem('pogo_tracker_notif_prefs');
     const defaults: NotificationPreference = {
       all: true,
       communityDays: true,
@@ -58,6 +57,8 @@ export function useNotifications() {
       maxMondays: true,
       newEvents: true,
     };
+    if (typeof window === 'undefined') return defaults;
+    const saved = localStorage.getItem('pogo_tracker_notif_prefs');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
@@ -68,6 +69,7 @@ export function useNotifications() {
   });
 
   const [inAppNotifications, setInAppNotifications] = useState<InAppNotification[]>(() => {
+    if (typeof window === 'undefined') return [];
     const saved = localStorage.getItem('pogo_tracker_in_app_notifs');
     if (saved) {
       try {

@@ -6,7 +6,7 @@ import {
   ArrowLeft, Lock, Plus, Trash2, Save, AlertTriangle, CheckCircle,
   EyeOff, Search, Edit, Database, Upload, RefreshCw, Server,
   Image, PackageOpen, ChevronDown, ChevronUp, X, FileJson, Zap,
-  Star, Egg, Swords, Gift, Download, FileText, Sparkles
+  Star, Egg, Swords, Gift, Download, FileText, Sparkles, ExternalLink
 } from 'lucide-react';
 import { EventCard } from './EventCard';
 import type { EventData } from './EventCard';
@@ -17,12 +17,26 @@ interface AdminPanelViewProps {
   onBack: () => void;
 }
 
+export const formatLocalizedString = (val: any, targetLang: Language = 'cs'): string => {
+  if (!val) return '';
+  if (typeof val === 'string') return val;
+  if (typeof val === 'object') {
+    if (val[targetLang]) return String(val[targetLang]);
+    if (val.cs) return String(val.cs);
+    if (val.en) return String(val.en);
+    return JSON.stringify(val);
+  }
+  return String(val);
+};
+
 interface CustomEventOverride {
   eventID: string;
   name: string;
   eventType: string;
   heading: string;
   link: string;
+  officialLink?: string;
+  secondaryLink?: string;
   image: string;
   start: string;
   end: string;
@@ -159,7 +173,7 @@ const StructuredEditor: React.FC<{
             <div key={i} className="se-text-row">
               <input
                 type="text"
-                value={b}
+                value={formatLocalizedString(b, lang)}
                 onChange={(e) => {
                   const nb = [...bonuses];
                   nb[i] = e.target.value;
@@ -189,7 +203,7 @@ const StructuredEditor: React.FC<{
           {spawns.map((s, i) => (
             <div key={i} className="se-pokemon-row">
               <PokemonIconPicker
-                value={s.name}
+                value={formatLocalizedString(s.name, 'en')}
                 onChange={(name) => { const ns = [...spawns]; ns[i] = { ...ns[i], name }; setSpawns(ns); }}
               />
               <label className="se-shiny-checkbox">
@@ -221,7 +235,7 @@ const StructuredEditor: React.FC<{
           {featured.map((f, i) => (
             <div key={i} className="se-pokemon-row">
               <PokemonIconPicker
-                value={f.name}
+                value={formatLocalizedString(f.name, 'en')}
                 onChange={(name) => { const nf = [...featured]; nf[i] = { ...nf[i], name }; setFeatured(nf); }}
               />
               <label className="se-shiny-checkbox">
@@ -253,7 +267,7 @@ const StructuredEditor: React.FC<{
           {raidBosses.map((r, i) => (
             <div key={i} className="se-pokemon-row">
               <PokemonIconPicker
-                value={r.name}
+                value={formatLocalizedString(r.name, 'en')}
                 onChange={(name) => { const nr = [...raidBosses]; nr[i] = { ...nr[i], name }; setRaidBosses(nr); }}
               />
               <label className="se-shiny-checkbox">
@@ -374,6 +388,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   // Edit mode: 'visual' or 'json'
   const [editMode, setEditMode] = useState<'visual' | 'json'>('visual');
   const [jsonExpanded, setJsonExpanded] = useState(false);
+  const [detailsLoading, setDetailsLoading] = useState<boolean>(false);
 
   // Form fields
   const [formEventID, setFormEventID] = useState<string>('');
@@ -381,6 +396,10 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   const [formEventType, setFormEventType] = useState<string>('other');
   const [formHeading, setFormHeading] = useState<string>('');
   const [formLink, setFormLink] = useState<string>('');
+  const [formOfficialLink, setFormOfficialLink] = useState<string>('');
+  const [formSecondaryLink, setFormSecondaryLink] = useState<string>('');
+  const [formScrapedText, setFormScrapedText] = useState<string>('');
+  const [showRawTextEditor, setShowRawTextEditor] = useState<boolean>(false);
   const [formImage, setFormImage] = useState<string>('');
   const [formStart, setFormStart] = useState<string>('');
   const [formEnd, setFormEnd] = useState<string>('');
@@ -489,7 +508,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     if (adminTab === 'cache' && isLoggedIn) fetchCacheStats();
   }, [adminTab, isLoggedIn, fetchScraperStatus, fetchCacheStats]);
 
-  const selectEventForEditing = (event: EventData | CustomEventOverride) => {
+  const selectEventForEditing = async (event: EventData | CustomEventOverride) => {
     setError('');
     setSuccessMsg('');
     const override = customOverrides.find(o => o.eventID === event.eventID);
@@ -512,6 +531,10 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     setFormEventType(activeEvent.eventType);
     setFormHeading(activeEvent.heading);
     setFormLink(activeEvent.link);
+    setFormOfficialLink((activeEvent as any).officialLink || (activeEvent.link && activeEvent.link.includes('pokemongolive.com') ? activeEvent.link : ''));
+    setFormSecondaryLink((activeEvent as any).secondaryLink || (activeEvent.link && activeEvent.link.includes('leekduck.com') ? activeEvent.link : ''));
+    const rawTxt = activeEvent.extraData?.rawDescription || activeEvent.extraData?.scrapedText || activeEvent.extraData?.description || activeEvent.heading || '';
+    setFormScrapedText(typeof rawTxt === 'object' ? formatLocalizedString(rawTxt, 'cs') : String(rawTxt));
     setFormImage(activeEvent.image);
     const fmt = (s: string) => s ? s.substring(0, 16) : '';
     setFormStart(fmt(activeEvent.start));
@@ -520,11 +543,50 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     const extra = activeEvent.extraData || {};
     setFormExtraData(extra);
     setFormExtraDataJson(JSON.stringify(extra, null, 2));
+
+    // Fetch full details asynchronously to populate the form and prevent data loss
+    setDetailsLoading(true);
+    try {
+      let url = `${API_BASE_URL}/api/events/${activeEvent.eventID}/details`;
+      const queryParams = [];
+      if (activeEvent.link) queryParams.push(`link=${encodeURIComponent(activeEvent.link)}`);
+      if (activeEvent.name) queryParams.push(`name=${encodeURIComponent(activeEvent.name)}`);
+      if (queryParams.length > 0) url += `?${queryParams.join('&')}`;
+
+      const res = await fetch(url);
+      if (res.ok) {
+        const fetchedDetails = await res.json();
+        setSelectedEvent(current => {
+          if (current && current.eventID === activeEvent.eventID) {
+            if (fetchedDetails && Object.keys(fetchedDetails).length > 0) {
+              setFormExtraData(fetchedDetails);
+              setFormExtraDataJson(JSON.stringify(fetchedDetails, null, 2));
+              if (fetchedDetails.rawDescription || fetchedDetails.scrapedText) {
+                const rawVal = fetchedDetails.rawDescription || fetchedDetails.scrapedText;
+                setFormScrapedText(typeof rawVal === 'object' ? formatLocalizedString(rawVal, 'cs') : String(rawVal));
+              }
+              return { ...current, extraData: fetchedDetails };
+            }
+          }
+          return current;
+        });
+      }
+    } catch (err) {
+      console.error("Failed to fetch event details for editing:", err);
+    } finally {
+      setSelectedEvent(current => {
+        if (current && current.eventID === activeEvent.eventID) {
+          setDetailsLoading(false);
+        }
+        return current;
+      });
+    }
   };
 
   const handleCreateNewEvent = () => {
     setError('');
     setSuccessMsg('');
+    setDetailsLoading(false);
     const randomId = 'custom_' + Date.now();
     const newEvent: CustomEventOverride = {
       eventID: randomId,
@@ -579,16 +641,23 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
       if (!isNaN(endDate.getTime())) isoEnd = endDate.toISOString();
     } catch { /* keep original */ }
 
+    const finalExtraData = {
+      ...(parsedExtraData || {}),
+      rawDescription: formScrapedText
+    };
+
     const eventPayload: CustomEventOverride = {
       eventID: formEventID,
       name: formName,
       eventType: formEventType,
       heading: formHeading || getHeadingForType(formEventType),
-      link: formLink,
+      link: formOfficialLink || formSecondaryLink || formLink,
+      officialLink: formOfficialLink,
+      secondaryLink: formSecondaryLink,
       image: formImage,
       start: isoStart,
       end: isoEnd,
-      extraData: parsedExtraData,
+      extraData: finalExtraData,
       isDeleted: formIsDeleted,
       isCustom: selectedEvent?.isCustom || false
     };
@@ -935,9 +1004,74 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
                     <label>Heading</label>
                     <input type="text" value={formHeading} onChange={(e) => setFormHeading(e.target.value)} />
                   </div>
-                  <div className="form-field">
-                    <label>Link / URL</label>
-                    <input type="url" value={formLink} onChange={(e) => setFormLink(e.target.value)} />
+                  
+                  <div className="form-field full-width-field">
+                    <label>{lang === 'cs' ? 'Oficiální odkaz (pokemongo.com)' : 'Official Link (pokemongo.com)'}</label>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input
+                        type="url"
+                        value={formOfficialLink}
+                        onChange={(e) => setFormOfficialLink(e.target.value)}
+                        placeholder="https://pokemongolive.com/news/..."
+                        style={{ flex: 1 }}
+                      />
+                      <a
+                        href="https://pokemongo.com/news"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="admin-btn btn-secondary"
+                        style={{ whiteSpace: 'nowrap', fontSize: '0.75rem', padding: '6px 12px', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                      >
+                        <ExternalLink size={12} /> {lang === 'cs' ? 'Novinky pokemongo.com' : 'Official News'}
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="form-field full-width-field">
+                    <label>{lang === 'cs' ? 'Sekundární / Komunitní odkaz (Leek Duck)' : 'Secondary / Community Link (Leek Duck)'}</label>
+                    <input
+                      type="url"
+                      value={formSecondaryLink}
+                      onChange={(e) => setFormSecondaryLink(e.target.value)}
+                      placeholder="https://leekduck.com/events/..."
+                    />
+                  </div>
+
+                  {/* Scraped Raw Text Section */}
+                  <div className="form-field full-width-field" style={{ marginTop: '4px', marginBottom: '8px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label style={{ margin: 0, fontWeight: 600 }}>
+                        <FileText size={13} style={{ display: 'inline', marginRight: '5px', verticalAlign: 'middle' }} />
+                        {lang === 'cs' ? 'Celý scrapený text (Raw Text ze zdroje)' : 'Full Scraped Raw Text'}
+                      </label>
+                      <button
+                        type="button"
+                        className="se-add-btn-sm"
+                        onClick={() => setShowRawTextEditor(prev => !prev)}
+                        style={{ cursor: 'pointer', padding: '4px 10px' }}
+                      >
+                        {showRawTextEditor ? (lang === 'cs' ? 'Skrýt text' : 'Hide text') : (lang === 'cs' ? 'Zobrazit / Upravit text' : 'Show / Edit text')}
+                      </button>
+                    </div>
+                    {showRawTextEditor && (
+                      <textarea
+                        value={formScrapedText}
+                        onChange={(e) => setFormScrapedText(e.target.value)}
+                        placeholder={lang === 'cs' ? 'Kompletní znění textu z LeekDuck / Niantic. Můžete doplňovat vlastní text...' : 'Complete raw text scraped. You can edit or append custom notes...'}
+                        rows={8}
+                        style={{
+                          width: '100%',
+                          padding: '10px',
+                          borderRadius: '8px',
+                          background: 'rgba(0,0,0,0.35)',
+                          border: '1px solid rgba(255,255,255,0.18)',
+                          color: '#e2e8f0',
+                          fontFamily: 'monospace',
+                          fontSize: '0.82rem',
+                          resize: 'vertical'
+                        }}
+                      />
+                    )}
                   </div>
 
                   {/* Image with live preview */}
@@ -970,6 +1104,12 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
 
                 {/* Extra Data Editor */}
                 <div className="extra-data-section">
+                  {detailsLoading && (
+                    <div className="admin-details-loader-overlay">
+                      <RefreshCw size={18} className="spin-icon" />
+                      <span>{lang === 'cs' ? 'Načítání detailů události...' : 'Loading event details...'}</span>
+                    </div>
+                  )}
                   <div className="extra-data-header">
                     <span className="extra-data-title">
                       <PackageOpen size={15} />

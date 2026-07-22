@@ -16,10 +16,10 @@
     "name": "Ozone Ascent",
     "eventType": "event",
     "heading": "Event",
-    "link": "https://leekduck.com/events/ozone-ascent-2026/",
+    "link": "https://pokemongo.com/news/ozone-ascent-2026",
     "image": "https://cdn.leekduck.com/assets/img/events/article-images/2026/2026-07-25-ozone-ascent-2026/ozone-ascent-2026.jpg",
-    "start": "2026-07-25T09:00:00.000Z",
-    "end": "2026-07-26T19:00:00.000Z",
+    "start": "2026-07-25T08:00:00.000Z",
+    "end": "2026-07-26T18:00:00.000Z",
     "extraData": {
       "generic": {
         "hasSpawns": false,
@@ -33,6 +33,91 @@
       ],
       "bonuses": [
         "Field Research guarantees you Meteorite and One encounter with Rayquaza"
+      ]
+    },
+    "isDeleted": false,
+    "isCustom": false
+  },
+  {
+    "eventID": "fire-and-ice-hatch-day-2026",
+    "name": "Fire and Ice Hatch Day",
+    "eventType": "event",
+    "heading": "Event",
+    "link": "https://pokemongo.com/en/news/fire-and-ice-hatch-day-2026",
+    "image": "https://cdn.leekduck.com/assets/img/events/article-images/2026/2026-08-08-fire-and-ice-hatch-day-2026/fire-and-ice-hatch-day-2026.jpg",
+    "start": "2026-08-08T10:00:00.000Z",
+    "end": "2026-08-08T16:00:00.000Z",
+    "extraData": {
+      "generic": {
+        "hasSpawns": false,
+        "hasFieldResearchTasks": false
+      }
+    },
+    "isDeleted": false,
+    "isCustom": false
+  },
+  {
+    "eventID": "pokemon-go-fest-2026-global-sunday-raid-makeup",
+    "name": "GO Fest 2026 Sunday Raid Makeup",
+    "eventType": "pokemon-go-fest",
+    "heading": "Pokémon GO Fest",
+    "link": "https://pokemongo.com/news/gofest2026-global-update",
+    "image": "https://cdn.leekduck.com/assets/img/events/article-images/2026/2026-07-26-pokemon-go-fest-2026-global-sunday-raid-makeup/pokemon-go-fest-2026-global-sunday-raid-makeup.jpg",
+    "start": "2026-07-26T09:00:00.000Z",
+    "end": "2026-07-26T18:00:00.000Z",
+    "extraData": {
+      "eventID": "pokemon-go-fest-2026-global-sunday-raid-makeup",
+      "officialLink": "https://pokemongolive.com/en/news/gofest2026-global-update",
+      "bonuses": [
+        {
+          "text": {
+            "cs": "Up to twelve free Raid Passes per day by spinning Photo Discs at Gyms",
+            "en": "Up to twelve free Raid Passes per day by spinning Photo Discs at Gyms"
+          },
+          "icon": "🎟️"
+        },
+        {
+          "text": {
+            "cs": "Premier Balls will be more effective at catching Pokémon after raids",
+            "en": "Premier Balls will be more effective at catching Pokémon after raids"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "There will be no limit on Remote Raids for all Trainers from Saturday, July 25, at 1:00 p.m. PDT to Sunday, July 26, at 11:59 p.m. PDT",
+            "en": "There will be no limit on Remote Raids for all Trainers from Saturday, July 25, at 1:00 p.m. PDT to Sunday, July 26, at 11:59 p.m. PDT"
+          },
+          "icon": "🎟️"
+        },
+        {
+          "text": {
+            "cs": "Link Charge cap will increase to 2,000",
+            "en": "Link Charge cap will increase to 2,000"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Additional 5,000 XP from completed raids",
+            "en": "Additional 5,000 XP from completed raids"
+          },
+          "icon": "⚡"
+        },
+        {
+          "text": {
+            "cs": "Additional 3 Candy from completing 5-star and higher raids",
+            "en": "Additional 3 Candy from completing 5-star and higher raids"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "Additional 1 Candy XL from completing 5-star and higher raids",
+            "en": "Additional 1 Candy XL from completing 5-star and higher raids"
+          },
+          "icon": "🍬"
+        }
       ]
     },
     "isDeleted": false,

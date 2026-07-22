@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect } from 'react';
 import { useNotifications } from './hooks/useNotifications';
 import { EventCard } from './components/EventCard';
@@ -287,11 +289,54 @@ const detectUserLanguage = (): Language => {
   return 'en';
 };
 
-function App() {
+const safeLocalStorage = {
+  getItem: (key: string): string | null => {
+    if (typeof window === 'undefined') return null;
+    try { return localStorage.getItem(key); } catch { return null; }
+  },
+  setItem: (key: string, value: string): void => {
+    if (typeof window === 'undefined') return;
+    try { localStorage.setItem(key, value); } catch {}
+  },
+  removeItem: (key: string): void => {
+    if (typeof window === 'undefined') return;
+    try { localStorage.removeItem(key); } catch {}
+  }
+};
+
+const getTabFromUrlPath = (pathname: string): TabType => {
+  const p = pathname.toLowerCase();
+  if (p === '/admin' || p.startsWith('/admin/')) return 'admin';
+  if (p.includes('/raids')) return 'raid';
+  if (p.includes('/rocket')) return 'rocket';
+  if (p.includes('/rankings') || p.includes('/ranking')) return 'ranking';
+  if (p.includes('/ditto')) return 'ditto';
+  if (p.includes('/eggs')) return 'eggs';
+  if (p.includes('/settings')) return 'settings';
+  return 'events';
+};
+
+const getUrlPathForTab = (tab: TabType, l: Language): string => {
+  if (tab === 'admin') return '/admin';
+  const prefix = `/${l}`;
+  switch (tab) {
+    case 'raid': return `${prefix}/raids`;
+    case 'rocket': return `${prefix}/rocket`;
+    case 'ranking': return `${prefix}/rankings`;
+    case 'ditto': return `${prefix}/ditto`;
+    case 'eggs': return `${prefix}/eggs`;
+    case 'settings': return `${prefix}/settings`;
+    case 'events':
+    default: return prefix;
+  }
+};
+
+function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?: TabType } = {}) {
   const [activeTab, setActiveTab] = useState<TabType>(() => {
-    // Detect /admin URL path on initial load
-    const pathname = window.location.pathname.toLowerCase();
-    if (pathname === '/admin' || pathname.startsWith('/admin/')) return 'admin';
+    if (initialTab) return initialTab;
+    if (typeof window !== 'undefined') {
+      return getTabFromUrlPath(window.location.pathname);
+    }
     return 'events';
   });
   const showAds = activeTab !== 'settings' && activeTab !== 'admin';
@@ -306,15 +351,15 @@ function App() {
   const [statusFilter, setStatusFilter] = useState<'active' | 'upcoming'>('active');
   
   const [viewMode, setViewMode] = useState<'list' | 'timeline'>(() => {
-    const saved = localStorage.getItem('pogo_tracker_view_mode');
+    const saved = safeLocalStorage.getItem('pogo_tracker_view_mode');
     return (saved === 'list' || saved === 'timeline') ? saved : 'list';
   });
 
   useEffect(() => {
-    localStorage.setItem('pogo_tracker_view_mode', viewMode);
+    safeLocalStorage.setItem('pogo_tracker_view_mode', viewMode);
   }, [viewMode]);
 
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [_apiStatus, setApiStatus] = useState<'success' | 'fallback'>('fallback');
   const [scraperStatus, setScraperStatus] = useState<{
     lastScrapedAt: string | null;
@@ -323,74 +368,50 @@ function App() {
     totalEvents: number;
   }>({ lastScrapedAt: null, nextScrapeAt: null, isRunning: false, totalEvents: 0 });
   const [lang, setLang] = useState<Language>(() => {
+    if (initialLang) return initialLang;
+    if (typeof window === 'undefined') return 'cs';
     // 1. Zkusíme zjistit jazyk z URL path
     const urlLang = getLangFromPath(window.location.pathname);
     if (urlLang) {
-      localStorage.setItem('pogo_tracker_lang', urlLang);
+      safeLocalStorage.setItem('pogo_tracker_lang', urlLang);
       return urlLang;
     }
 
-    // 2. Pokud není v URL, zkusíme localStorage
-    const saved = localStorage.getItem('pogo_tracker_lang');
+    // 2. Pokud není v URL, zkusíme safeLocalStorage
+    const saved = safeLocalStorage.getItem('pogo_tracker_lang');
     if (saved === 'en' || saved === 'cs' || saved === 'ja' || saved === 'ru') return saved as Language;
 
     // 3. Jinak automatická detekce lokace/jazyka
     const detected = detectUserLanguage();
-    localStorage.setItem('pogo_tracker_lang', detected);
+    safeLocalStorage.setItem('pogo_tracker_lang', detected);
     return detected;
   });
 
-  // Udržování správné URL cesty podle jazyka (pokud neběžíme v Capacitoru)
+  // Dynamická aktualizace URL adresy v adresním řádku prohlížeče při přepnutí záložky nebo jazyka
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const isCapacitor = !!(window as any).Capacitor || 
                         window.location.protocol === 'capacitor:' || 
                         window.location.protocol === 'file:';
     if (isCapacitor) return;
 
-    // Don't modify URL when on /admin route
-    const currentPath = window.location.pathname.toLowerCase();
-    if (currentPath === '/admin' || currentPath.startsWith('/admin/')) return;
-
-    const expectedPath = getPathForLang(lang);
-    if (window.location.pathname !== expectedPath) {
-      window.history.replaceState(null, '', expectedPath + window.location.search + window.location.hash);
-    }
-  }, [lang]);
-
-  // Keep /admin URL in sync when user opens admin tab directly
-  useEffect(() => {
-    const isCapacitor = !!(window as any).Capacitor || 
-                        window.location.protocol === 'capacitor:' || 
-                        window.location.protocol === 'file:';
-    if (isCapacitor) return;
-
-    if (activeTab === 'admin') {
-      if (!window.location.pathname.toLowerCase().startsWith('/admin')) {
-        window.history.pushState(null, '', '/admin' + window.location.search);
-      }
-    } else {
-      const currentPath = window.location.pathname.toLowerCase();
-      if (currentPath === '/admin' || currentPath.startsWith('/admin/')) {
-        window.history.pushState(null, '', getPathForLang(lang) + window.location.search);
-      }
+    const targetPath = getUrlPathForTab(activeTab, lang);
+    if (window.location.pathname !== targetPath) {
+      window.history.pushState(null, '', targetPath + window.location.search + window.location.hash);
     }
   }, [activeTab, lang]);
 
   // Naslouchání na tlačítka zpět/vpřed v prohlížeči (popstate)
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     const handlePopState = () => {
-      const pathname = window.location.pathname.toLowerCase();
-      if (pathname === '/admin' || pathname.startsWith('/admin/')) {
-        setActiveTab('admin');
-        return;
-      }
+      const newTab = getTabFromUrlPath(window.location.pathname);
+      setActiveTab(newTab);
       const urlLang = getLangFromPath(window.location.pathname);
       if (urlLang && urlLang !== lang) {
         setLang(urlLang);
-        localStorage.setItem('pogo_tracker_lang', urlLang);
+        safeLocalStorage.setItem('pogo_tracker_lang', urlLang);
       }
-      // Navigate back to events if leaving admin
-      setActiveTab(prev => prev === 'admin' ? 'events' : prev);
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -398,17 +419,22 @@ function App() {
   }, [lang]);
   
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    const saved = localStorage.getItem('pogo_tracker_theme');
+    const saved = safeLocalStorage.getItem('pogo_tracker_theme');
     return (saved === 'light' || saved === 'dark') ? saved : 'light';
   });
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('pogo_tracker_theme', theme);
+    if (typeof window !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', theme);
+      safeLocalStorage.setItem('pogo_tracker_theme', theme);
+    }
   }, [theme]);
 
   const [timezone, setTimezone] = useState<string>(() => {
-    return localStorage.getItem('pogo_tracker_timezone') || Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Prague';
+    const saved = safeLocalStorage.getItem('pogo_tracker_timezone');
+    if (saved) return saved;
+    if (typeof window === 'undefined') return 'Europe/Prague';
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Prague';
   });
 
   const [visibleEvents, setVisibleEvents] = useState<VisibleEventsPreference>(() => {

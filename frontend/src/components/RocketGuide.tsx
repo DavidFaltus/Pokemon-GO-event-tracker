@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useMemo } from 'react';
 import './RocketGuide.css';
 import { translations } from '../data/translations';
@@ -8,24 +10,23 @@ import { getPokemonName } from '../utils/pokemonTranslator';
 import { API_BASE_URL } from '../config';
 import { Zap, Users, Gift, Flame, Swords, Shield, MessageSquare, Gem, Moon, Glasses, Trophy } from 'lucide-react';
 import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
-import { resolveImage, getPokemonIconUrl, handlePokemonImageError } from '../utils/imageResolver';
+import { resolveImage, getPokemonIconUrl, handlePokemonImageError, SHADOW_ICON_URL, handleShadowIconError } from '../utils/imageResolver';
 
 const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
-  <svg
-    viewBox="0 0 24 24"
-    fill="currentColor"
+  <img
+    src={SHADOW_ICON_URL}
+    alt="Shadow"
     className={className}
     style={{
-      width: '14px',
-      height: '14px',
-      color: '#c084fc',
+      width: '18px',
+      height: '18px',
+      objectFit: 'contain',
       display: 'inline-block',
       verticalAlign: 'middle',
       ...style
     }}
-  >
-    <path d="M12 2C11.5 3.5 10 5.5 8.5 7C7 8.5 5.5 10.5 5.5 13C5.5 16.5 8.5 19.5 12 19.5C15.5 19.5 18.5 16.5 18.5 13C18.5 10.5 17 8.5 15.5 7C14 5.5 12.5 3.5 12 2ZM12 17C10.5 17 9.5 16 9.5 14.5C9.5 13 11 11.5 12 10C13 11.5 14.5 13 14.5 14.5C14.5 16 13.5 17 12 17Z" />
-  </svg>
+    onError={(e) => handleShadowIconError(e.target as HTMLImageElement)}
+  />
 );
 
 const getLeaderIcon = (name: string, size = 16) => {
@@ -196,7 +197,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const t = translations[lang];
+  const t = translations[lang] || translations.cs;
 
   const getShadowPokemonScore = (pokemonName: string): number => {
     const baseRating = getPokemonHubRating(pokemonName);

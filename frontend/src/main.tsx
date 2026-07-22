@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.tsx'
+import App from './App'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -10,9 +10,10 @@ createRoot(document.getElementById('root')!).render(
 )
 
 // Register Service Worker for PWA offline capability
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
+const metaEnv = (import.meta as any).env || {};
+if ('serviceWorker' in navigator && metaEnv.PROD) {
   window.addEventListener('load', () => {
-    const base = import.meta.env.BASE_URL;
+    const base = metaEnv.BASE_URL || '/';
     const swPath = base.endsWith('/') ? `${base}sw.js` : `${base}/sw.js`;
     navigator.serviceWorker.register(swPath)
       .then((reg) => {

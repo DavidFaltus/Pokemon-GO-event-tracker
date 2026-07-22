@@ -14,13 +14,21 @@ export function useDynamicEventDetails(eventID: string, link: string, isExpanded
       const targetId = customEvent.detail?.eventID;
       if (!targetId || targetId === eventID) {
         const cacheKey = `pogo_scraped_details_${eventID}`;
-        localStorage.removeItem(cacheKey);
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem(cacheKey);
+        }
         setUpdateTick(prev => prev + 1);
       }
     };
 
-    window.addEventListener('pogo_events_updated', handleEventsUpdated);
-    return () => window.removeEventListener('pogo_events_updated', handleEventsUpdated);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('pogo_events_updated', handleEventsUpdated);
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('pogo_events_updated', handleEventsUpdated);
+      }
+    };
   }, [eventID]);
 
   useEffect(() => {
@@ -28,13 +36,15 @@ export function useDynamicEventDetails(eventID: string, link: string, isExpanded
 
     // 1. Check local storage cache
     const cacheKey = `pogo_scraped_details_${eventID}`;
-    const cached = localStorage.getItem(cacheKey);
-    if (cached) {
-      try {
-        setDetails(JSON.parse(cached));
-        return;
-      } catch (e) {
-        console.error("Failed to parse cached details", e);
+    if (typeof window !== 'undefined') {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        try {
+          setDetails(JSON.parse(cached));
+          return;
+        } catch (e) {
+          console.error("Failed to parse cached details", e);
+        }
       }
     }
 
@@ -54,7 +64,9 @@ export function useDynamicEventDetails(eventID: string, link: string, isExpanded
         const data = await res.json();
         
         if (data) {
-          localStorage.setItem(cacheKey, JSON.stringify(data));
+          if (typeof window !== 'undefined') {
+            localStorage.setItem(cacheKey, JSON.stringify(data));
+          }
           setDetails(data);
         } else {
           setDetails(null);
