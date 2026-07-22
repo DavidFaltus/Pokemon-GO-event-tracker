@@ -388,19 +388,36 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
     return detected;
   });
 
-  // Dynamická aktualizace URL adresy v adresním řádku prohlížeče při přepnutí záložky nebo jazyka
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const isCapacitor = !!(window as any).Capacitor || 
-                        window.location.protocol === 'capacitor:' || 
-                        window.location.protocol === 'file:';
-    if (isCapacitor) return;
-
-    const targetPath = getUrlPathForTab(activeTab, lang);
-    if (window.location.pathname !== targetPath) {
-      window.history.pushState(null, '', targetPath + window.location.search + window.location.hash);
+  const changeTab = (newTab: TabType) => {
+    setActiveTab(newTab);
+    if (typeof window !== 'undefined') {
+      const isCapacitor = !!(window as any).Capacitor || 
+                          window.location.protocol === 'capacitor:' || 
+                          window.location.protocol === 'file:';
+      if (!isCapacitor) {
+        const targetPath = getUrlPathForTab(newTab, lang);
+        if (window.location.pathname !== targetPath) {
+          window.history.pushState(null, '', targetPath);
+        }
+      }
     }
-  }, [activeTab, lang]);
+  };
+
+  const changeLang = (newLang: Language) => {
+    setLang(newLang);
+    safeLocalStorage.setItem('pogo_tracker_lang', newLang);
+    if (typeof window !== 'undefined') {
+      const isCapacitor = !!(window as any).Capacitor || 
+                          window.location.protocol === 'capacitor:' || 
+                          window.location.protocol === 'file:';
+      if (!isCapacitor) {
+        const targetPath = getUrlPathForTab(activeTab, newLang);
+        if (window.location.pathname !== targetPath) {
+          window.history.pushState(null, '', targetPath);
+        }
+      }
+    }
+  };
 
   // Naslouchání na tlačítka zpět/vpřed v prohlížeči (popstate)
   useEffect(() => {
@@ -865,7 +882,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
         <nav className="sidebar-nav">
           <button 
             className={`sidebar-nav-item ${activeTab === 'events' ? 'active' : ''}`} 
-            onClick={() => setActiveTab('events')}
+            onClick={() => changeTab('events')}
           >
             <span className="nav-icon"><Calendar size={20} /></span>
             <span className="nav-text">{t.tabs_events}</span>
@@ -873,7 +890,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
           
           <button 
             className={`sidebar-nav-item ${activeTab === 'raid' ? 'active' : ''}`} 
-            onClick={() => setActiveTab('raid')}
+            onClick={() => changeTab('raid')}
           >
             <span className="nav-icon"><Swords size={20} /></span>
             <span className="nav-text">{t.tabs_raid}</span>
@@ -881,7 +898,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
 
           <button 
             className={`sidebar-nav-item ${activeTab === 'rocket' ? 'active' : ''}`} 
-            onClick={() => setActiveTab('rocket')}
+            onClick={() => changeTab('rocket')}
           >
             <span className="nav-icon"><Shield size={20} /></span>
             <span className="nav-text">{t.tabs_rocket}</span>
@@ -889,7 +906,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
 
           <button 
             className={`sidebar-nav-item ${activeTab === 'ditto' ? 'active' : ''}`} 
-            onClick={() => setActiveTab('ditto')}
+            onClick={() => changeTab('ditto')}
           >
             <span className="nav-icon"><Sparkles size={20} /></span>
             <span className="nav-text">{t.tabs_ditto}</span>
@@ -897,7 +914,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
 
           <button 
             className={`sidebar-nav-item ${activeTab === 'eggs' ? 'active' : ''}`} 
-            onClick={() => setActiveTab('eggs')}
+            onClick={() => changeTab('eggs')}
           >
             <span className="nav-icon"><Egg size={20} /></span>
             <span className="nav-text">{t.tabs_eggs}</span>
@@ -905,7 +922,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
 
           <button 
             className={`sidebar-nav-item ${activeTab === 'ranking' ? 'active' : ''}`} 
-            onClick={() => setActiveTab('ranking')}
+            onClick={() => changeTab('ranking')}
           >
             <span className="nav-icon"><Trophy size={20} /></span>
             <span className="nav-text">{t.tabs_ranking}</span>
@@ -913,7 +930,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
 
           <button 
             className={`sidebar-nav-item ${activeTab === 'settings' ? 'active' : ''}`} 
-            onClick={() => setActiveTab('settings')}
+            onClick={() => changeTab('settings')}
           >
             <span className="nav-icon"><Settings size={20} /></span>
             <span className="nav-text">{t.tabs_settings}</span>
@@ -1178,37 +1195,37 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
 
         {/* Mobile Bottom Navigation Bar (Hidden on Desktop) */}
         <nav className="bottom-nav">
-          <button className={`nav-item ${activeTab === 'events' ? 'active' : ''}`} onClick={() => setActiveTab('events')}>
+          <button className={`nav-item ${activeTab === 'events' ? 'active' : ''}`} onClick={() => changeTab('events')}>
             <span className="nav-icon"><Calendar size={20} /></span>
             <span className="nav-text">{t.tabs_events}</span>
           </button>
           
-          <button className={`nav-item ${activeTab === 'raid' ? 'active' : ''}`} onClick={() => setActiveTab('raid')}>
+          <button className={`nav-item ${activeTab === 'raid' ? 'active' : ''}`} onClick={() => changeTab('raid')}>
             <span className="nav-icon"><Swords size={20} /></span>
             <span className="nav-text">{t.tabs_raid}</span>
           </button>
 
-          <button className={`nav-item ${activeTab === 'rocket' ? 'active' : ''}`} onClick={() => setActiveTab('rocket')}>
+          <button className={`nav-item ${activeTab === 'rocket' ? 'active' : ''}`} onClick={() => changeTab('rocket')}>
             <span className="nav-icon"><Shield size={20} /></span>
             <span className="nav-text">{t.tabs_rocket}</span>
           </button>
 
-          <button className={`nav-item ${activeTab === 'ditto' ? 'active' : ''}`} onClick={() => setActiveTab('ditto')}>
+          <button className={`nav-item ${activeTab === 'ditto' ? 'active' : ''}`} onClick={() => changeTab('ditto')}>
             <span className="nav-icon"><Sparkles size={20} /></span>
             <span className="nav-text">{t.tabs_ditto}</span>
           </button>
 
-          <button className={`nav-item ${activeTab === 'eggs' ? 'active' : ''}`} onClick={() => setActiveTab('eggs')}>
+          <button className={`nav-item ${activeTab === 'eggs' ? 'active' : ''}`} onClick={() => changeTab('eggs')}>
             <span className="nav-icon"><Egg size={20} /></span>
             <span className="nav-text">{t.tabs_eggs}</span>
           </button>
 
-          <button className={`nav-item ${activeTab === 'ranking' ? 'active' : ''}`} onClick={() => setActiveTab('ranking')}>
+          <button className={`nav-item ${activeTab === 'ranking' ? 'active' : ''}`} onClick={() => changeTab('ranking')}>
             <span className="nav-icon"><Trophy size={20} /></span>
             <span className="nav-text">{t.tabs_ranking}</span>
           </button>
 
-          <button className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => setActiveTab('settings')}>
+          <button className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => changeTab('settings')}>
             <span className="nav-icon"><Settings size={20} /></span>
             <span className="nav-text">{t.tabs_settings}</span>
           </button>
