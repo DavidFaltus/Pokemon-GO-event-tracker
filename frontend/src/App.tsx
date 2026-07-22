@@ -673,9 +673,6 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
       // 2. If no cache or cache is older than 8 hours, fetch fresh data
       if (!isCacheValid) {
         try {
-          if (cachedEvents.length === 0) {
-            setLoading(true); // Show loading spinner only if we have zero cached events
-          }
           const response = await fetch(`${API_BASE_URL}/api/events`);
           if (!response.ok) throw new Error('API request failed');
           const data = await response.json();

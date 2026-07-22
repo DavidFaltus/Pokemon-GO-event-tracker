@@ -8,8 +8,11 @@ export const metadata: Metadata = {
   keywords: ['Pokémon GO', 'events', 'raid boss', 'Team GO Rocket', 'leek duck', 'pogo tracker', 'pokemongo'],
   authors: [{ name: 'Pokémon GO Community' }],
   icons: {
-    icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico' }
+    ],
+    apple: '/favicon.svg',
   },
   manifest: '/manifest.json',
 };
@@ -31,6 +34,8 @@ export default function RootLayout({
   return (
     <html lang="cs" data-theme="dark">
       <head>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="shortcut icon" href="/favicon.ico" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
