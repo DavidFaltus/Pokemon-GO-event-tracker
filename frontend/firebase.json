@@ -9,7 +9,7 @@
     ],
     "headers": [
       {
-        "source": "/assets/**",
+        "source": "/_next/static/**",
         "headers": [
           {
             "key": "Cache-Control",
@@ -18,11 +18,11 @@
         ]
       },
       {
-        "source": "@(index.html|sw.js|manifest.json)",
+        "source": "**",
         "headers": [
           {
             "key": "Cache-Control",
-            "value": "no-cache, no-store, must-revalidate"
+            "value": "no-cache, no-store, must-revalidate, max-age=0"
           }
         ]
       }

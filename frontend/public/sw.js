@@ -1,80 +1,49 @@
-const CACHE_NAME = 'pokego-tracker-v5';
-const ASSETS_TO_CACHE = [
-  './',
-  'manifest.json'
-];
+const CACHE_NAME = 'pokego-tracker-v6';
 
-function isValidCacheRequest(request) {
-  if (!request) return false;
-  if (request.method !== 'GET') return false;
-  const url = request.url || '';
-  return url.startsWith('http://') || url.startsWith('https://');
-}
-
-// Install Event
+// Install Event - skip waiting immediately
 self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    }).then(() => self.skipWaiting())
-  );
+  self.skipWaiting();
 });
 
-// Activate Event
+// Activate Event - delete ALL old caches and claim clients
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
+        keys.map((key) => caches.delete(key))
       );
     }).then(() => self.clients.claim())
   );
 });
 
-// Fetch Event (Network-first for API/Navigation, Cache-first for static assets)
+// Fetch Event
 self.addEventListener('fetch', (e) => {
   // Ignore non-http/https requests (e.g. chrome-extension://, moz-extension://)
   if (!e.request.url.startsWith('http://') && !e.request.url.startsWith('https://')) {
     return;
   }
 
-  // Ignore non-GET requests (e.g. POST, PUT, DELETE)
+  // Ignore non-GET requests
   if (e.request.method !== 'GET') {
     return;
   }
 
-  const url = new URL(e.request.url);
-
-  // Navigation request: try network first, then fallback to cache
-  if (e.request.mode === 'navigate' || url.pathname === '/' || url.pathname.endsWith('index.html')) {
+  // CRITICAL: NEVER cache navigation requests (HTML pages). Always fetch fresh from network!
+  if (e.request.mode === 'navigate') {
     e.respondWith(
-      fetch(e.request)
-        .then((response) => {
-          if (response && response.status === 200 && isValidCacheRequest(e.request)) {
-            const clonedResponse = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(e.request, clonedResponse).catch(() => {});
-            });
-          }
-          return response;
-        })
-        .catch(() => {
-          return caches.match(e.request);
-        })
+      fetch(e.request).catch(() => caches.match(e.request))
     );
     return;
   }
+
+  const url = new URL(e.request.url);
 
   // GitHub / Scraped API call: try network first, then cache fallback
   if (url.hostname === 'raw.githubusercontent.com') {
     e.respondWith(
       fetch(e.request)
         .then((response) => {
-          if (response && response.status === 200 && isValidCacheRequest(e.request)) {
+          if (response && response.status === 200) {
             const clonedResponse = response.clone();
             caches.open(CACHE_NAME).then((cache) => {
               cache.put(e.request, clonedResponse).catch(() => {});
@@ -82,29 +51,30 @@ self.addEventListener('fetch', (e) => {
           }
           return response;
         })
-        .catch(() => {
-          return caches.match(e.request);
-        })
+        .catch(() => caches.match(e.request))
     );
     return;
   }
 
-  // Standard Cache-first strategy for static assets
-  e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
-      return fetch(e.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+  // Static assets (images, fonts): cache-first with network fallback
+  if (url.pathname.match(/\.(png|jpg|jpeg|svg|gif|webp|woff2?|ttf)$/i)) {
+    e.respondWith(
+      caches.match(e.request).then((cachedResponse) => {
+        if (cachedResponse) return cachedResponse;
+        return fetch(e.request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(e.request, responseToCache).catch(() => {});
+            });
+          }
           return networkResponse;
-        }
-        if (isValidCacheRequest(e.request)) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(e.request, responseToCache).catch(() => {});
-          });
-        }
-        return networkResponse;
-      });
-    })
-  );
+        });
+      })
+    );
+    return;
+  }
+
+  // All other requests pass straight to network
+  e.respondWith(fetch(e.request));
 });
