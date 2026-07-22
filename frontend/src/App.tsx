@@ -39,7 +39,7 @@ const PokeballLogo = ({ size = 24 }: { size?: number }) => {
         </linearGradient>
         <linearGradient id={`${uid}-bot`} x1="0%" y1="100%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#ffffff" />
-          <stop offset="100%" stop-color="#cbd5e1" />
+          <stop offset="100%" stopColor="#cbd5e1" />
         </linearGradient>
         <filter id={`${uid}-glow`} x="-30%" y="-30%" width="160%" height="160%">
           <feGaussianBlur stdDeviation="2.5" result="blur" />
