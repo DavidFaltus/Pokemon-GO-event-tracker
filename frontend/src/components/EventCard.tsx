@@ -9,7 +9,7 @@ import type { Language } from '../data/translations';
 import { getSpecialEventDetails, getPokemonImage } from '../data/specialEvents';
 import { findPokemonMeta } from '../data/pokemonMeta';
 import { useDynamicEventDetails } from '../hooks/useDynamicEventDetails';
-import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Flame, RefreshCw, Plus, Check } from 'lucide-react';
+import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Flame, RefreshCw, Plus, Check, Zap } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
 import { resolveImage, handlePokemonImageError, getBasePokemonName, getBasePokemonNames, getPokemonIconUrl } from '../utils/imageResolver';
 import { getPokemonName } from '../utils/pokemonTranslator';
