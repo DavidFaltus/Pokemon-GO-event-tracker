@@ -17,7 +17,7 @@ import { DittoEggsView } from './components/DittoEggsView';
 import { PokemonRankingsView } from './components/PokemonRankingsView';
 import { AdminPanelView } from './components/AdminPanelView';
 import { PogoFilterGeneratorModal } from './components/PogoFilterGeneratorModal';
-import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy, Zap } from 'lucide-react';
+import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy, Zap, Filter } from 'lucide-react';
 
 type TabType = 'events' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'settings' | 'admin';
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import Script from 'next/script';
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 
@@ -42,21 +43,6 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
-        {/* Google Tag (gtag.js) */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-17PT93VMXQ" />
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-MKGYZSS7GK" />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-
-              gtag('config', 'G-17PT93VMXQ');
-              gtag('config', 'G-MKGYZSS7GK');
-            `,
-          }}
-        />
         {/* Google AdSense Script */}
         <script
           async
@@ -65,6 +51,25 @@ export default function RootLayout({
         />
       </head>
       <body>
+        {/* Google Tag (gtag.js) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-17PT93VMXQ"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-MKGYZSS7GK"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-17PT93VMXQ');
+            gtag('config', 'G-MKGYZSS7GK');
+          `}
+        </Script>
         <div id="root">
           {children}
         </div>
