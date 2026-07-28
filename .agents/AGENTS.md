@@ -49,6 +49,6 @@ Projekt je sloučen do jediné frontendové složky (`frontend`) spravující ja
 
 ## 5. Důsledná lokalizace obsahu (Localization Policy)
 
-*   **Zákaz tvrdého kódování jednoho jazyka:** Pro veškeré popisné texty v databázích (např. bonusy, debuty, úkoly, popisy) používejte datový typ `LocalizedString` (objekt `{ cs: string, en: string }`). Nikdy nepište natvrdo české řetězce (např. "Speciální kostýmový Pikachu") do polí, která se zobrazují uživatelům v anglické verzi.
+*   **Zákaz tvrdého kódování jednoho jazyka:** Pro veškeré popisné texty v databázích (např. bonusy, debuty, úkoly, popisy) i UI prvcích používejte datový typ `LocalizedString` (objekt `{ cs: string, en: string }`) nebo podmíněné zobrazení podle `lang` (`cs`, `en`, `ja`, `ru`). Nikdy nepište natvrdo české řetězce do polí, která se zobrazují uživatelům v jiné jazykové verzi.
 *   **Vykreslování na frontendu:** Při zobrazení lokalizovaných polí na frontendu vždy použijte aktuální jazyk aplikace, např. `{lang === 'cs' ? item.name.cs : item.name.en}`.
 *   **Resolver a fallbacky:** Do resolverů obrázků a chybových handlerů (např. `resolveImage`, `handlePokemonImageError`) předávejte jako název Pokémona vždy anglickou verzi (`item.name.en`), aby se předešlo 404 chybám při načítání obrázků.
