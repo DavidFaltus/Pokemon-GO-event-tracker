@@ -8,10 +8,11 @@ import { TypeBadge } from './EventCard';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import type { EventData } from './EventCard';
 import { API_BASE_URL } from '../config';
-import { Sparkles, Trophy, Filter, Zap } from 'lucide-react';
+import { Sparkles, Trophy } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
 import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
 import { resolveImage, handlePokemonImageError, SHADOW_ICON_URL, handleShadowIconError } from '../utils/imageResolver';
+import { DirectRaidFilterBox } from './DirectRaidFilterBox';
 
 const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
   <img
@@ -97,7 +98,7 @@ interface RaidBoss {
 
 type FilterTier = 'all' | '5' | 'mega' | '3' | '1';
 
-export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
+export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator }) => {
   const [activeFilter, setActiveFilter] = useState<FilterTier>('all');
   const [expandedBoss, setExpandedBoss] = useState<string | null>(null);
   const [bosses, setBosses] = useState<RaidBoss[]>([]);
@@ -107,25 +108,45 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
   const t = translations[lang] || translations.cs;
 
   useEffect(() => {
-    const fetchRaids = async () => {
+    let isMounted = true;
+
+    const fetchRaids = async (forceNoCache: boolean = false) => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${API_BASE_URL}/api/raids`);
+        const url = `${API_BASE_URL}/api/raids${forceNoCache ? '?nocache=true' : ''}`;
+        const response = await fetch(url, { cache: 'no-store' });
         if (!response.ok) throw new Error('Failed to fetch raids');
         const data = await response.json();
-        if (Array.isArray(data)) {
+        if (isMounted && Array.isArray(data)) {
           setBosses(data);
         }
       } catch (err) {
         console.error('Failed to load raids from backend:', err);
-        setError(lang === 'ja' ? 'APIからレイド情報を読み込めませんでした。' : lang === 'cs' ? 'Chyba při načítání raidů z API.' : 'Failed to load raids from API.');
+        if (isMounted) {
+          setError(lang === 'ja' ? 'APIからレイド情報を読み込めませんでした。' : lang === 'cs' ? 'Chyba při načítání raidů z API.' : 'Failed to load raids from API.');
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     fetchRaids();
+
+    const handleFocus = () => {
+      fetchRaids(true);
+    };
+    window.addEventListener('focus', handleFocus);
+
+    const interval = setInterval(() => {
+      fetchRaids(true);
+    }, 10 * 60 * 1000);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener('focus', handleFocus);
+      clearInterval(interval);
+    };
   }, [lang]);
 
   const getTierLabel = (tier: string) => {
@@ -211,7 +232,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
     }
   }, [expandedBoss, inlineBossName]);
 
-  const renderRaidDetails = (_boss: any, counters: any) => (
+  const renderRaidDetails = (boss: any, counters: any) => (
     <div className="raid-boss-expanded-details">
       <div className="expanded-divider"></div>
       
@@ -261,6 +282,8 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
           </p>
         </div>
       )}
+      {/* Direct copyable filter for recommended raid counters */}
+      <DirectRaidFilterBox bossName={boss.name} lang={lang} onOpenFilterGenerator={onOpenFilterGenerator} />
     </div>
   );
 
@@ -454,34 +477,6 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                           {boss.weatherBoosts.map((w: string) => <WeatherIcon key={w} weatherStr={w} />)}
                         </div>
                       ) : null}
-
-                      {onOpenFilterGenerator && (
-                        <button
-                          className="pogo-raid-filter-btn"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onOpenFilterGenerator(boss.name);
-                          }}
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            padding: '3px 8px',
-                            fontSize: '0.7rem',
-                            fontWeight: 600,
-                            borderRadius: '6px',
-                            background: 'rgba(56, 189, 248, 0.12)',
-                            border: '1px solid rgba(56, 189, 248, 0.3)',
-                            color: '#38bdf8',
-                            cursor: 'pointer',
-                            marginTop: '4px'
-                          }}
-                          title={lang === 'cs' ? 'Generovat filtr do Pokémon GO' : 'Generate Pokémon GO filter'}
-                        >
-                          <Zap size={11} />
-                          <span>Filter generator</span>
-                        </button>
-                      )}
                     </div>
 
                     <div className="expand-chevron">

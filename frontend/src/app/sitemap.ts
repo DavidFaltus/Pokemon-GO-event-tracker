@@ -1,4 +1,4 @@
-import { MetadataRoute } from 'next';
+import type { MetadataRoute } from 'next';
 import { API_BASE_URL } from '@/config';
 
 export const dynamic = 'force-static';
@@ -45,6 +45,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
       {
         url: `${baseUrl}/${lang}/rocket`,
+        lastModified: new Date(),
+        changeFrequency: 'daily',
+        priority: 0.8,
+      },
+      {
+        url: `${baseUrl}/${lang}/filter`,
         lastModified: new Date(),
         changeFrequency: 'daily',
         priority: 0.8,

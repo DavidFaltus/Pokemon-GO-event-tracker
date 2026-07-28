@@ -24,19 +24,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: isCzech
-      ? 'Obsah Vajíček & Líhnutí (2km, 5km, 7km, 10km, 12km) | Pokémon GO Event Tracker'
-      : 'Egg Hatch Chart & Pool | Pokémon GO Event Tracker',
+      ? 'Filter generator pro Pokémon GO | Pokémon GO Event Tracker'
+      : 'Pokémon GO Search Filter Generator | Pokémon GO Event Tracker',
     description: isCzech
-      ? 'Aktuální seznam Pokémonů líhnoucích se z 2km, 5km, 7km, 10km a 12km vajíček v této sezóně.'
-      : 'Current egg hatch pools for 2km, 5km, 7km, 10km, and 12km eggs in Pokémon GO.',
+      ? 'Vygenerujte si vyhledávací filtr s nejlepšími countery pro jakékoliv Pokémon GO raid bossy.'
+      : 'Generate search filter with top counters for any Pokémon GO raid bosses.',
   };
 }
 
-export default async function EggsPage({ params }: PageProps) {
+export default async function FilterPage({ params }: PageProps) {
   const unwrappedParams = await params;
   const rawLang = unwrappedParams.lang || 'cs';
   const validLanguages: Language[] = ['cs', 'en', 'ja', 'ru'];
   const lang: Language = validLanguages.includes(rawLang as Language) ? (rawLang as Language) : 'cs';
 
-  return <App initialLang={lang} initialTab="eggs" />;
+  return <App initialLang={lang} initialTab="filter" />;
 }

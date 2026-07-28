@@ -1,10 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import './PogoFilterGeneratorModal.css';
-import { Language, translations } from '../data/translations';
-import { pokemonRankings, PokemonRankData } from '../data/pokemonRankings';
+import type { Language } from '../data/translations';
 import { getTopCountersByName, getCounterTypesForName } from '../utils/pokemonCountersHelper';
-import { Copy, Check, Filter, Zap, Sparkles, Shield, Flame, X, Search, Award } from 'lucide-react';
-import { EventData } from './EventCard';
+import { Copy, Check, Filter, Zap, Sparkles, Shield, X, Search, Award } from 'lucide-react';
+import type { EventData } from './EventCard';
 
 interface PogoFilterGeneratorModalProps {
   isOpen: boolean;
@@ -84,20 +83,34 @@ export const PogoFilterGeneratorModal: React.FC<PogoFilterGeneratorModalProps> =
   const [selectedBoss, setSelectedBoss] = useState<string>(initialRaidBoss);
   const [copiedType, setCopiedType] = useState<string | null>(null);
 
+  // Sync selectedBoss when initialRaidBoss prop or modal visibility changes
+  useEffect(() => {
+    if (initialRaidBoss) {
+      setSelectedBoss(initialRaidBoss);
+    }
+  }, [initialRaidBoss, isOpen]);
+
   // Search filter options
   const [includeShadow, setIncludeShadow] = useState(true);
   const [includeMega, setIncludeMega] = useState(true);
   const [minIVStar, setMinIVStar] = useState(true); // 3*,4*
+  const [includeMoves, setIncludeMoves] = useState(true); // @ice,@dragon...
 
-  // Popular Raid Bosses list
-  const popularBosses = [
-    'Palkia', 'Dialga', 'Rayquaza', 'Mewtwo', 'Giratina', 'Kyogre', 'Groudon',
-    'Lucario', 'Tyranitar', 'Garchomp', 'Reshiram', 'Zekrom', 'Heatran', 'Darkrai'
-  ];
+  // Dynamic Raid Bosses chips list
+  const popularBosses = useMemo(() => {
+    const baseList = [
+      'Palkia', 'Dialga', 'Rayquaza', 'Salamence', 'Mewtwo', 'Giratina', 'Kyogre', 'Groudon',
+      'Lucario', 'Tyranitar', 'Garchomp', 'Reshiram', 'Zekrom', 'Heatran', 'Darkrai'
+    ];
+    if (initialRaidBoss && !baseList.some(b => b.toLowerCase() === initialRaidBoss.toLowerCase())) {
+      return [initialRaidBoss, ...baseList];
+    }
+    return baseList;
+  }, [initialRaidBoss]);
 
   // ─── RAID COUNTERS FILTER LOGIC ──────────────────────────────────────────
   const topCounters = useMemo(() => {
-    return getTopCountersByName(selectedBoss, 12);
+    return getTopCountersByName(selectedBoss, 20);
   }, [selectedBoss]);
 
   const counterTypes = useMemo(() => {
@@ -111,6 +124,12 @@ export const PogoFilterGeneratorModal: React.FC<PogoFilterGeneratorModalProps> =
     return uniqueIds.join(',');
   }, [topCounters]);
 
+  // Move types string (@dragon,@ice)
+  const moveTypesString = useMemo(() => {
+    if (counterTypes.length === 0) return '';
+    return counterTypes.map(t => `@${t.toLowerCase()}`).join(',');
+  }, [counterTypes]);
+
   // Generate full combined search string
   const fullSearchString = useMemo(() => {
     if (!idSearchString) return '';
@@ -118,18 +137,20 @@ export const PogoFilterGeneratorModal: React.FC<PogoFilterGeneratorModalProps> =
     if (minIVStar) parts.push('3*,4*');
     
     let prefix = '';
-    if (includeMega && includeShadow) prefix = 'mega,shadow&';
-    else if (includeMega) prefix = 'mega&';
-    else if (includeShadow) prefix = 'shadow&';
+    if (includeMega && includeShadow) prefix = 'mega,shadow';
+    else if (includeMega) prefix = 'mega';
+    else if (includeShadow) prefix = 'shadow';
 
-    return `${parts.length ? parts.join('&') + '&' : ''}${prefix}${idSearchString}`;
-  }, [idSearchString, includeMega, includeShadow, minIVStar]);
+    if (prefix) parts.push(prefix);
 
-  // Move types string (@dragon,@ice)
-  const moveTypesString = useMemo(() => {
-    if (counterTypes.length === 0) return '';
-    return counterTypes.map(t => `@${t.toLowerCase()}`).join(',');
-  }, [counterTypes]);
+    if (includeMoves && moveTypesString) {
+      parts.push(moveTypesString);
+    }
+
+    parts.push(idSearchString);
+
+    return parts.join('&');
+  }, [idSearchString, includeMega, includeShadow, minIVStar, includeMoves, moveTypesString]);
 
   // ─── ACTIVE EVENT MEGA EVOLUTION LOGIC ─────────────────────────────────
   const activeEventsList = useMemo(() => {
@@ -224,7 +245,14 @@ export const PogoFilterGeneratorModal: React.FC<PogoFilterGeneratorModalProps> =
         {activeTab === 'counters' && (
           <div className="pogo-filter-tab-content">
             <div className="pogo-boss-select-group">
-              <label><Search size={14} /> {lang === 'cs' ? 'Vyberte Raid Bossa:' : 'Select Raid Boss:'}</label>
+              <label><Search size={14} /> {lang === 'cs' ? 'Vyberte nebo zadejte Pokémona:' : 'Select or type Pokémon:'}</label>
+              <input
+                type="text"
+                className="pogo-boss-search-input"
+                value={selectedBoss}
+                onChange={e => setSelectedBoss(e.target.value)}
+                placeholder={lang === 'cs' ? 'Napište jméno Pokémona (např. Salamence, Rayquaza)...' : 'Type Pokémon name (e.g. Salamence, Rayquaza)...'}
+              />
               <div className="pogo-boss-chips">
                 {popularBosses.map(boss => (
                   <button
@@ -265,10 +293,18 @@ export const PogoFilterGeneratorModal: React.FC<PogoFilterGeneratorModalProps> =
               <label className="pogo-checkbox-label">
                 <input
                   type="checkbox"
+                  checked={includeMoves}
+                  onChange={e => setIncludeMoves(e.target.checked)}
+                />
+                <span>{lang === 'cs' ? 'Filtrovat i účinné typy útoků (@útok)' : 'Filter by matching move types (@move)'}</span>
+              </label>
+              <label className="pogo-checkbox-label">
+                <input
+                  type="checkbox"
                   checked={includeShadow}
                   onChange={e => setIncludeShadow(e.target.checked)}
                 />
-                <span>{lang === 'cs' ? 'Zahrnout Shadow (shadow&)' : 'Include Shadow (shadow&)'}</span>
+                <span>{lang === 'cs' ? 'Zahrnout Shadow' : 'Include Shadow'}</span>
               </label>
               <label className="pogo-checkbox-label">
                 <input

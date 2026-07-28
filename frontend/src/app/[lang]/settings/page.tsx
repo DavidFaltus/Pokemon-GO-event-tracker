@@ -1,7 +1,6 @@
-import React from 'react';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import App from '@/App';
-import { Language } from '@/data/translations';
+import type { Language } from '@/data/translations';
 
 export const revalidate = 300;
 

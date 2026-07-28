@@ -16,10 +16,10 @@ import { AdContainer } from './components/AdContainer';
 import { DittoEggsView } from './components/DittoEggsView';
 import { PokemonRankingsView } from './components/PokemonRankingsView';
 import { AdminPanelView } from './components/AdminPanelView';
-import { PogoFilterGeneratorModal } from './components/PogoFilterGeneratorModal';
-import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy, Zap, Filter } from 'lucide-react';
+import { FilterGeneratorView } from './components/FilterGeneratorView';
+import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy, Filter } from 'lucide-react';
 
-type TabType = 'events' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'settings' | 'admin';
+type TabType = 'events' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin';
 
 const PokeballLogo = ({ size = 24 }: { size?: number }) => {
   const uid = 'pbl';
@@ -403,22 +403,6 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
     }
   };
 
-  const changeLang = (newLang: Language) => {
-    setLang(newLang);
-    safeLocalStorage.setItem('pogo_tracker_lang', newLang);
-    if (typeof window !== 'undefined') {
-      const isCapacitor = !!(window as any).Capacitor || 
-                          window.location.protocol === 'capacitor:' || 
-                          window.location.protocol === 'file:';
-      if (!isCapacitor) {
-        const targetPath = getUrlPathForTab(activeTab, newLang);
-        if (window.location.pathname !== targetPath) {
-          window.history.pushState(null, '', targetPath);
-        }
-      }
-    }
-  };
-
   // Naslouchání na tlačítka zpět/vpřed v prohlížeči (popstate)
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -455,7 +439,6 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
     return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Prague';
   });
 
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [filterModalInitialBoss, setFilterModalInitialBoss] = useState<string>('Palkia');
 
   const handleOpenFilterGenerator = (bossName?: string) => {
@@ -463,7 +446,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
       const cleanBoss = bossName.replace(/shadow|mega/gi, '').trim();
       setFilterModalInitialBoss(cleanBoss || bossName);
     }
-    setIsFilterModalOpen(true);
+    changeTab('filter');
   };
 
   const [visibleEvents, setVisibleEvents] = useState<VisibleEventsPreference>(() => {
@@ -943,8 +926,8 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
           </button>
 
           <button 
-            className={`sidebar-nav-item ${isFilterModalOpen ? 'active' : ''}`} 
-            onClick={() => handleOpenFilterGenerator()}
+            className={`sidebar-nav-item ${activeTab === 'filter' ? 'active' : ''}`} 
+            onClick={() => changeTab('filter')}
           >
             <span className="nav-icon"><Filter size={20} /></span>
             <span className="nav-text">Filter generator</span>
@@ -1178,6 +1161,10 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
                   </div>
                 )}
 
+                {activeTab === 'filter' && (
+                  <FilterGeneratorView lang={lang} initialRaidBoss={filterModalInitialBoss} />
+                )}
+
                 {activeTab === 'admin' && (
                   <div className="tab-content admin-tab">
                     <AdminPanelView lang={lang} onBack={() => setActiveTab('events')} />
@@ -1242,22 +1229,14 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
           </button>
 
           <button 
-            className={`nav-item ${isFilterModalOpen ? 'active' : ''}`} 
-            onClick={() => handleOpenFilterGenerator()}
+            className={`nav-item ${activeTab === 'filter' ? 'active' : ''}`} 
+            onClick={() => changeTab('filter')}
           >
             <span className="nav-icon"><Filter size={20} /></span>
             <span className="nav-text">Filter generator</span>
           </button>
         </nav>
       </div>
-
-      <PogoFilterGeneratorModal
-        isOpen={isFilterModalOpen}
-        onClose={() => setIsFilterModalOpen(false)}
-        lang={lang}
-        events={events}
-        initialRaidBoss={filterModalInitialBoss}
-      />
     </div>
   );
 }

@@ -72,8 +72,8 @@ export function useDynamicEventDetails(eventID: string, link: string, isExpanded
           setDetails(null);
         }
       } catch (err) {
-        console.error("Failed to fetch event details from API:", err);
         setError("Failed to fetch event details");
+        setDetails(null);
       } finally {
         setLoading(false);
       }

@@ -396,12 +396,12 @@ async function getEnrichedEventsList(forceNoCache: boolean = false): Promise<any
 // Helper to fetch raid bosses
 async function getRaidBossesList(forceNoCache: boolean = false): Promise<any[]> {
   const cacheKey = 'raid_bosses';
-  const cachedData = forceNoCache ? null : getFromCache<any>(cacheKey, 24 * 60 * 60 * 1000);
+  const cachedData = forceNoCache ? null : getFromCache<any>(cacheKey, 1 * 60 * 60 * 1000); // 1 hour TTL for fresh lineup updates
   if (cachedData) return cachedData;
 
   const { scrapeRaidBosses } = await import('./scraper');
   const data = await scrapeRaidBosses();
-  setToCache(cacheKey, data, 24 * 60 * 60 * 1000);
+  setToCache(cacheKey, data, 1 * 60 * 60 * 1000);
   return data;
 }
 

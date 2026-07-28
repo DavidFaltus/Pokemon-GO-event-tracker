@@ -1,6 +1,5 @@
-import React from 'react';
 import App from '@/App';
-import { Language } from '@/data/translations';
+import type { Language } from '@/data/translations';
 
 export const revalidate = 300;
 

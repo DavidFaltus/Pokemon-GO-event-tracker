@@ -9,6 +9,7 @@ Tento soubor obsahuje specifická pravidla, architektonický přehled a technick
 *   **ŽÁDNÝ Plánovač, Poznámky a Checklisty u karet eventů:** Do detailů karet událostí (`EventCard.tsx`) nikdy neimplementujte ani nepřidávejte žádné textové poznámky, uživatelské úkoly (tasks), checklisty ani plánovače. Uživatel tyto funkce v kartách eventů výslovně nechce.
 *   **Prémiový vzhled a čistý design:** Aplikace využívá tmavý režim (glassmorphic a HSL barevná schémata). Nepoužívejte čisté, křiklavé barvy (např. základní červená/zelená/modrá). Využívejte barevné přechody (gradients), mikroanimace a citlivě zvolené barvy pro typy Pokémonů a vzácnost.
 *   **Zákaz automatického git push:** Neprovádějte `git push` automaticky po každé změně. Změny pouze upravte/otesjte a počkejte na výslovný pokyn nebo schválení uživatelem před odesláním na GitHub.
+*   **Jednotný vizuální styl aplikace:** Veškeré nové stránky, záložky, komponenty a prvky (např. `FilterGeneratorView`) musí přísně dodržovat jednotný designový systém aplikace – používat zavedené proměnné (`var(--bg-card)`, `var(--border-color)`, `var(--text-primary)`, `var(--text-muted)`), glassmorphic panely se zaoblením 12–16px, jemné záře a standardizovaná tlačítka.
 
 ---
 

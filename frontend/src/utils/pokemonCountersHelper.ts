@@ -85,7 +85,8 @@ export interface CounterPokemonInfo {
 
 export function getTopCountersForPokemon(
   targetPokemon: PokemonRankData,
-  allRankings: PokemonRankData[]
+  allRankings: PokemonRankData[],
+  limit: number = 20
 ): CounterPokemonInfo[] {
   const counterTypes = getCounterTypes(targetPokemon.types);
   const primaryCounterTypeNames = new Set(counterTypes.map(c => c.type));
@@ -111,19 +112,19 @@ export function getTopCountersForPokemon(
 
   scored.sort((a, b) => b.counterRating - a.counterRating);
 
-  // Take top 5 unique species
-  const top5: CounterPokemonInfo[] = [];
+  // Take top unique species up to limit (including Megas, Shadows, Legendaries, and Budget options)
+  const topList: CounterPokemonInfo[] = [];
   const usedDex = new Set<number>();
 
   for (const item of scored) {
     if (!usedDex.has(item.pokemon.pokedexId)) {
       usedDex.add(item.pokemon.pokedexId);
-      top5.push(item);
-      if (top5.length >= 5) break;
+      topList.push(item);
+      if (topList.length >= limit) break;
     }
   }
 
-  return top5;
+  return topList;
 }
 
 // ─── TOP 5 MOVESETS FOR A POKEMON ───────────────────────────────────────────
@@ -218,15 +219,15 @@ function getAltChargedMoveName(poke: PokemonRankData, altIndex: number): string 
   return altIndex === 1 ? (defaults1[type] || "Hyper Beam*") : (defaults2[type] || "Return");
 }
 
-export function getTopCountersByName(bossName: string, limit: number = 10): PokemonRankData[] {
+export function getTopCountersByName(bossName: string, limit: number = 20): PokemonRankData[] {
   const clean = bossName.toLowerCase().replace(/^(shadow|mega|primal)\s+/, '').trim();
   const targetPoke = pokemonRankings.find(p => p.name.toLowerCase().includes(clean)) || {
     name: bossName, pokedexId: 483, types: ['Dragon', 'Steel'], attack: 275, defense: 211, stamina: 205, maxCp: 4565, pveScore: 90, dps: 25,
     bestFastMove: { name: 'Dragon Breath', type: 'Dragon' }, bestChargedMove: { name: 'Draco Meteor', type: 'Dragon' }
   };
 
-  const counters = getTopCountersForPokemon(targetPoke, pokemonRankings);
-  return counters.slice(0, limit).map(c => c.pokemon);
+  const counters = getTopCountersForPokemon(targetPoke, pokemonRankings, limit);
+  return counters.map(c => c.pokemon);
 }
 
 export function getCounterTypesForName(bossName: string): string[] {
@@ -235,4 +236,28 @@ export function getCounterTypesForName(bossName: string): string[] {
   const types = targetPoke ? targetPoke.types : ['Dragon', 'Steel'];
   const counterInfos = getCounterTypes(types);
   return counterInfos.map(c => c.type);
+}
+
+export function getTopCountersFilterString(bossName: string, includeMoves: boolean = true, includeStars: boolean = true): string {
+  const topCounters = getTopCountersByName(bossName, 20);
+  if (topCounters.length === 0) return '';
+  
+  const uniqueIds = Array.from(new Set(topCounters.map(c => c.pokedexId)));
+  const counterTypes = getCounterTypesForName(bossName);
+  
+  const parts: string[] = [];
+
+  if (includeStars) {
+    parts.push('3*,4*');
+  }
+
+  // Include move type filter e.g. "@ice,@dragon,@fairy,@rock"
+  if (includeMoves && counterTypes.length > 0) {
+    const moveTypesStr = counterTypes.map(t => `@${t.toLowerCase()}`).join(',');
+    parts.push(moveTypesStr);
+  }
+
+  parts.push(uniqueIds.join(','));
+
+  return parts.join('&');
 }

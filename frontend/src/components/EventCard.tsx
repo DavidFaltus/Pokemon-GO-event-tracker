@@ -9,10 +9,11 @@ import type { Language } from '../data/translations';
 import { getSpecialEventDetails, getPokemonImage } from '../data/specialEvents';
 import { findPokemonMeta } from '../data/pokemonMeta';
 import { useDynamicEventDetails } from '../hooks/useDynamicEventDetails';
-import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Flame, RefreshCw, Plus, Check, Zap } from 'lucide-react';
+import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Flame, RefreshCw, Plus, Check } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
 import { resolveImage, handlePokemonImageError, getBasePokemonName, getBasePokemonNames, getPokemonIconUrl } from '../utils/imageResolver';
 import { getPokemonName } from '../utils/pokemonTranslator';
+import { DirectRaidFilterBox } from './DirectRaidFilterBox';
 
 const EggIcon = ({ size = 16 }: { size?: number }) => (
   <svg viewBox="0 0 100 120" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
@@ -216,7 +217,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
   const [isExpanded, setIsExpanded] = useState<boolean>(defaultExpanded || false);
   const [officialUrl, setOfficialUrl] = useState<string>('');
   const [showOfficial, setShowOfficial] = useState<boolean>(false);
-  const [showLeekDuck, setShowLeekDuck] = useState<boolean>(true);
+  const [, setShowLeekDuck] = useState<boolean>(true);
 
   const t = translations[lang] || translations.cs;
 
@@ -665,31 +666,12 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                 <Calendar size={14} />
                 {t.details_add_to_calendar}
               </a>
-              {onOpenFilterGenerator && (event.eventType === 'raid-hour' || event.eventType === 'raid-battles' || bosses.length > 0) && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const firstBoss = (typeof bosses[0] === 'object' ? bosses[0]?.name : bosses[0]) || event.name.replace(/raid\s*(hour|battles|rotation|day)/gi, '').trim();
-                    onOpenFilterGenerator(firstBoss);
-                  }}
-                  className="filter-generator-btn"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '6px 12px',
-                    fontSize: '0.8rem',
-                    fontWeight: 600,
-                    borderRadius: '8px',
-                    background: 'rgba(56, 189, 248, 0.12)',
-                    border: '1px solid rgba(56, 189, 248, 0.35)',
-                    color: '#38bdf8',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <Zap size={14} />
-                  <span>Filter generator</span>
-                </button>
+              {(event.eventType === 'raid-hour' || event.eventType === 'raid-battles' || bosses.length > 0) && (
+                <DirectRaidFilterBox
+                  bossName={(typeof bosses[0] === 'object' ? bosses[0]?.name : bosses[0]) || event.name.replace(/raid\s*(hour|battles|rotation|day)/gi, '').trim()}
+                  lang={lang}
+                  onOpenFilterGenerator={onOpenFilterGenerator}
+                />
               )}
             </div>
 
@@ -1140,34 +1122,6 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                           <span className="shiny-indicator" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                             <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} /> Shiny
                           </span>
-                        )}
-                        {onOpenFilterGenerator && (
-                          <button
-                            type="button"
-                            className="boss-filter-btn"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onOpenFilterGenerator(englishName || bossName);
-                            }}
-                            style={{
-                              marginTop: '4px',
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: '3px',
-                              fontSize: '0.65rem',
-                              fontWeight: 600,
-                              padding: '2px 6px',
-                              borderRadius: '4px',
-                              backgroundColor: 'rgba(56, 189, 248, 0.12)',
-                              border: '1px solid rgba(56, 189, 248, 0.3)',
-                              color: '#38bdf8',
-                              cursor: 'pointer'
-                            }}
-                            title={lang === 'cs' ? 'Generovat filtr do Pokémon GO' : 'Generate Pokémon GO filter'}
-                          >
-                            <Zap size={9} />
-                            <span>Filter</span>
-                          </button>
                         )}
                       </div>
                     );

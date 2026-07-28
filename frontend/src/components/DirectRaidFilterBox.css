@@ -1,0 +1,122 @@
+/* DirectRaidFilterBox Glassmorphic Styling (Purple Theme) */
+
+.direct-raid-filter-container {
+  background: linear-gradient(135deg, rgba(24, 20, 38, 0.9), rgba(18, 15, 30, 0.4));
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3), inset 0 0 12px rgba(168, 85, 247, 0.08);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-top: 12px;
+  margin-bottom: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.direct-raid-filter-container.compact {
+  padding: 8px 10px;
+  margin-top: 8px;
+  border-radius: 8px;
+}
+
+.direct-raid-filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.direct-raid-filter-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #c084fc;
+  letter-spacing: 0.2px;
+}
+
+.direct-boss-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(168, 85, 247, 0.4));
+}
+
+.title-zap-icon {
+  color: #a855f7;
+  filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.6));
+  flex-shrink: 0;
+}
+
+.direct-raid-filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.direct-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  border: none;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.direct-copy-btn:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4);
+}
+
+.direct-copy-btn.copied {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.direct-customize-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.direct-customize-btn:hover {
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+  border-color: #a855f7;
+}
+
+.direct-filter-code-box {
+  background: rgba(8, 12, 22, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+  overflow: hidden;
+}
+
+.direct-filter-code-box:hover {
+  border-color: rgba(168, 85, 247, 0.5);
+}
+
+.direct-filter-code-box code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8rem;
+  color: #c084fc;
+  word-break: break-all;
+}

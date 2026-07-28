@@ -12,7 +12,7 @@ interface CalendarViewProps {
 }
 
 export const CalendarView: React.FC<CalendarViewProps> = ({ events, lang, timezone }) => {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date(2026, 5, 17)); // Target June 2026
+  const [currentDate, setCurrentDate] = useState<Date>(() => new Date()); // Dynamically defaults to current month
   const [selectedDayEvents, setSelectedDayEvents] = useState<EventData[]>([]);
   const [selectedDayLabel, setSelectedDayLabel] = useState<string>('');
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
