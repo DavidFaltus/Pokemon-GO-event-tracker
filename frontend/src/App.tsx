@@ -1256,7 +1256,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
         onClose={() => setIsFilterModalOpen(false)}
         lang={lang}
         events={events}
-        onOpenFilterGenerator={handleOpenFilterGenerator}
+        initialRaidBoss={filterModalInitialBoss}
       />
     </div>
   );
