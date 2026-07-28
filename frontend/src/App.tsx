@@ -1,5 +1,7 @@
 'use client';
 
+import './index.css';
+import './App.css';
 import { useState, useEffect } from 'react';
 import { useNotifications } from './hooks/useNotifications';
 import { EventCard } from './components/EventCard';

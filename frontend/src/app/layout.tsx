@@ -1,5 +1,7 @@
 import React from 'react';
 import Script from 'next/script';
+import '../index.css';
+import '../App.css';
 import './globals.css';
 import type { Metadata, Viewport } from 'next';
 
