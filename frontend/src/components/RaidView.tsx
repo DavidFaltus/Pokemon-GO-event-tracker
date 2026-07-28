@@ -8,7 +8,7 @@ import { TypeBadge } from './EventCard';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import type { EventData } from './EventCard';
 import { API_BASE_URL } from '../config';
-import { Sparkles, Trophy } from 'lucide-react';
+import { Sparkles, Trophy, Filter, Zap } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
 import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
 import { resolveImage, handlePokemonImageError, SHADOW_ICON_URL, handleShadowIconError } from '../utils/imageResolver';
@@ -69,6 +69,7 @@ const HubRatingBadge: React.FC<{ rating: string; lang: Language }> = ({ rating, 
 interface RaidViewProps {
   events?: EventData[]; // Left for compatibility
   lang: Language;
+  onOpenFilterGenerator?: (bossName?: string) => void;
 }
 
 interface RaidBoss {
@@ -453,6 +454,34 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang }) => {
                           {boss.weatherBoosts.map((w: string) => <WeatherIcon key={w} weatherStr={w} />)}
                         </div>
                       ) : null}
+
+                      {onOpenFilterGenerator && (
+                        <button
+                          className="pogo-raid-filter-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onOpenFilterGenerator(boss.name);
+                          }}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            padding: '3px 8px',
+                            fontSize: '0.7rem',
+                            fontWeight: 600,
+                            borderRadius: '6px',
+                            background: 'rgba(56, 189, 248, 0.12)',
+                            border: '1px solid rgba(56, 189, 248, 0.3)',
+                            color: '#38bdf8',
+                            cursor: 'pointer',
+                            marginTop: '4px'
+                          }}
+                          title={lang === 'cs' ? 'Generovat filtr do Pokémon GO' : 'Generate Pokémon GO filter'}
+                        >
+                          <Zap size={11} />
+                          <span>Filter generator</span>
+                        </button>
+                      )}
                     </div>
 
                     <div className="expand-chevron">

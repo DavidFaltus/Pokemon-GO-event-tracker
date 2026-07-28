@@ -456,6 +456,15 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
   });
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [filterModalInitialBoss, setFilterModalInitialBoss] = useState<string>('Palkia');
+
+  const handleOpenFilterGenerator = (bossName?: string) => {
+    if (bossName) {
+      const cleanBoss = bossName.replace(/shadow|mega/gi, '').trim();
+      setFilterModalInitialBoss(cleanBoss || bossName);
+    }
+    setIsFilterModalOpen(true);
+  };
 
   const [visibleEvents, setVisibleEvents] = useState<VisibleEventsPreference>(() => {
     const defaults = {
@@ -934,12 +943,11 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
           </button>
 
           <button 
-            className="sidebar-nav-item pogo-helper-btn" 
-            onClick={() => setIsFilterModalOpen(true)}
-            style={{ marginTop: '12px', border: '1px solid rgba(56, 189, 248, 0.35)', background: 'rgba(56, 189, 248, 0.08)' }}
+            className={`sidebar-nav-item ${isFilterModalOpen ? 'active' : ''}`} 
+            onClick={() => handleOpenFilterGenerator()}
           >
-            <span className="nav-icon"><Zap size={20} style={{ color: '#38bdf8' }} /></span>
-            <span className="nav-text" style={{ color: '#38bdf8', fontWeight: 600 }}>{lang === 'cs' ? 'Filtr do PoGo' : 'PoGo Filter'}</span>
+            <span className="nav-icon"><Filter size={20} /></span>
+            <span className="nav-text">Filter generator</span>
           </button>
         </nav>
         
@@ -1108,7 +1116,13 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
                           </div>
                         ) : (
                           getFilteredEvents().map(event => (
-                            <EventCard key={event.eventID} event={event} lang={lang} timezone={timezone} />
+                            <EventCard 
+                              key={event.eventID} 
+                              event={event} 
+                              lang={lang} 
+                              timezone={timezone} 
+                              onOpenFilterGenerator={handleOpenFilterGenerator}
+                            />
                           ))
                         )}
                       </div>
@@ -1118,7 +1132,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
 
                 {activeTab === 'raid' && (
                   <div className="tab-content raid-tab">
-                    <RaidView events={getAdjustedEvents()} lang={lang} />
+                    <RaidView events={getAdjustedEvents()} lang={lang} onOpenFilterGenerator={handleOpenFilterGenerator} />
                   </div>
                 )}
 
@@ -1226,6 +1240,14 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
             <span className="nav-icon"><Settings size={20} /></span>
             <span className="nav-text">{t.tabs_settings}</span>
           </button>
+
+          <button 
+            className={`nav-item ${isFilterModalOpen ? 'active' : ''}`} 
+            onClick={() => handleOpenFilterGenerator()}
+          >
+            <span className="nav-icon"><Filter size={20} /></span>
+            <span className="nav-text">Filter generator</span>
+          </button>
         </nav>
       </div>
 
@@ -1234,6 +1256,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
         onClose={() => setIsFilterModalOpen(false)}
         lang={lang}
         events={events}
+        onOpenFilterGenerator={handleOpenFilterGenerator}
       />
     </div>
   );

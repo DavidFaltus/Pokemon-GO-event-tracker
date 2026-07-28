@@ -207,9 +207,10 @@ interface EventCardProps {
   lang: Language;
   timezone?: string;
   defaultExpanded?: boolean;
+  onOpenFilterGenerator?: (bossName?: string) => void;
 }
 
-export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, defaultExpanded }) => {
+export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, defaultExpanded, onOpenFilterGenerator }) => {
   const [timeLeftStr, setTimeLeftStr] = useState<string>('');
   const [status, setStatus] = useState<'upcoming' | 'active' | 'ended'>('upcoming');
   const [isExpanded, setIsExpanded] = useState<boolean>(defaultExpanded || false);
@@ -664,6 +665,32 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                 <Calendar size={14} />
                 {t.details_add_to_calendar}
               </a>
+              {onOpenFilterGenerator && (event.eventType === 'raid-hour' || event.eventType === 'raid-battles' || bosses.length > 0) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const firstBoss = (typeof bosses[0] === 'object' ? bosses[0]?.name : bosses[0]) || event.name.replace(/raid\s*(hour|battles|rotation|day)/gi, '').trim();
+                    onOpenFilterGenerator(firstBoss);
+                  }}
+                  className="filter-generator-btn"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '6px 12px',
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    borderRadius: '8px',
+                    background: 'rgba(56, 189, 248, 0.12)',
+                    border: '1px solid rgba(56, 189, 248, 0.35)',
+                    color: '#38bdf8',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <Zap size={14} />
+                  <span>Filter generator</span>
+                </button>
+              )}
             </div>
 
             {dynamicLoading && (
@@ -1113,6 +1140,34 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
                           <span className="shiny-indicator" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                             <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} /> Shiny
                           </span>
+                        )}
+                        {onOpenFilterGenerator && (
+                          <button
+                            type="button"
+                            className="boss-filter-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onOpenFilterGenerator(englishName || bossName);
+                            }}
+                            style={{
+                              marginTop: '4px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '3px',
+                              fontSize: '0.65rem',
+                              fontWeight: 600,
+                              padding: '2px 6px',
+                              borderRadius: '4px',
+                              backgroundColor: 'rgba(56, 189, 248, 0.12)',
+                              border: '1px solid rgba(56, 189, 248, 0.3)',
+                              color: '#38bdf8',
+                              cursor: 'pointer'
+                            }}
+                            title={lang === 'cs' ? 'Generovat filtr do Pokémon GO' : 'Generate Pokémon GO filter'}
+                          >
+                            <Zap size={9} />
+                            <span>Filter</span>
+                          </button>
                         )}
                       </div>
                     );
