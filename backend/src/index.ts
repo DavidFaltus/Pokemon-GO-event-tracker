@@ -689,16 +689,15 @@ let spaShellCache = '';
 async function getSpaShell(): Promise<string> {
   if (spaShellCache) return spaShellCache;
   try {
-    // Try production local path first (bundled in container), then development path
-    const prodPath = path.join(__dirname, 'app.html');
-    const devPath = path.join(__dirname, '..', '..', 'frontend', 'dist', 'app.html');
-    let localPath = '';
+    const candidatePaths = [
+      path.join(__dirname, 'app.html'),
+      path.join(__dirname, '..', 'app.html'),
+      path.join(process.cwd(), 'app.html'),
+      path.join(process.cwd(), 'dist', 'app.html'),
+      path.join(__dirname, '..', '..', 'frontend', 'dist', 'app.html')
+    ];
 
-    if (fs.existsSync(prodPath)) {
-      localPath = prodPath;
-    } else if (fs.existsSync(devPath)) {
-      localPath = devPath;
-    }
+    const localPath = candidatePaths.find(p => fs.existsSync(p));
 
     if (localPath) {
       spaShellCache = fs.readFileSync(localPath, 'utf-8');
@@ -708,11 +707,15 @@ async function getSpaShell(): Promise<string> {
 
     // Production fallback: fetch from the Firebase Hosting CDN
     console.log('[SPA Shell] Local file not found. Fetching from live CDN...');
-    const response = await axios.get('https://pogoevents.app/app.html', { timeout: 5000 });
-    spaShellCache = response.data;
-    console.log('[SPA Shell] Loaded successfully from live CDN');
+    const response = await axios.get('https://pogoevents.app/cs.html', { timeout: 5000 });
+    if (response.data && response.data.length > 5000) {
+      spaShellCache = response.data;
+      console.log('[SPA Shell] Loaded successfully from live CDN');
+      return spaShellCache;
+    }
   } catch (err: any) {
     console.error('[SPA Shell] Failed to load SPA shell:', err.message);
+  }
     // Return standard fallback
     return `<!DOCTYPE html>
 <html>

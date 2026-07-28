@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename);
 const outDir = path.join(__dirname, 'out');
 const distDir = path.join(__dirname, 'dist');
 const backendAppHtml = path.join(__dirname, '..', 'backend', 'app.html');
+const backendDistAppHtml = path.join(__dirname, '..', 'backend', 'dist', 'app.html');
 
 function copyDirSync(src, dest) {
   if (!fs.existsSync(dest)) {
@@ -34,7 +35,7 @@ const indexHtml = path.join(distDir, 'index.html');
 const csHtml = path.join(distDir, 'cs.html');
 const appHtml = path.join(distDir, 'app.html');
 
-// Pick the full-rendered HTML page (prefer cs.html or index.html if > 15KB)
+// Pick the full-rendered HTML page (prefer cs.html or index.html if > 10KB)
 let sourceHtml = null;
 if (fs.existsSync(csHtml) && fs.statSync(csHtml).size > 10000) {
   sourceHtml = csHtml;
@@ -47,10 +48,17 @@ if (fs.existsSync(csHtml) && fs.statSync(csHtml).size > 10000) {
 if (sourceHtml) {
   fs.copyFileSync(sourceHtml, appHtml);
   fs.copyFileSync(sourceHtml, backendAppHtml);
+  
+  const backendDistDir = path.dirname(backendDistAppHtml);
+  if (!fs.existsSync(backendDistDir)) {
+    fs.mkdirSync(backendDistDir, { recursive: true });
+  }
+  fs.copyFileSync(sourceHtml, backendDistAppHtml);
+
   if (sourceHtml === csHtml) {
     fs.copyFileSync(sourceHtml, indexHtml);
   }
-  console.log(`Successfully updated dist/app.html, dist/index.html and backend/app.html from ${path.basename(sourceHtml)} (${fs.statSync(sourceHtml).size} bytes)!`);
+  console.log(`Successfully updated dist/app.html, dist/index.html, backend/app.html, and backend/dist/app.html from ${path.basename(sourceHtml)} (${fs.statSync(sourceHtml).size} bytes)!`);
 } else {
   console.error('Error: No valid HTML file found in dist directory!');
   process.exit(1);
