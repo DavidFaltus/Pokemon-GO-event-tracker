@@ -34,13 +34,24 @@ const indexHtml = path.join(distDir, 'index.html');
 const csHtml = path.join(distDir, 'cs.html');
 const appHtml = path.join(distDir, 'app.html');
 
-const sourceHtml = fs.existsSync(indexHtml) ? indexHtml : (fs.existsSync(csHtml) ? csHtml : null);
+// Pick the full-rendered HTML page (prefer cs.html or index.html if > 15KB)
+let sourceHtml = null;
+if (fs.existsSync(csHtml) && fs.statSync(csHtml).size > 10000) {
+  sourceHtml = csHtml;
+} else if (fs.existsSync(indexHtml) && fs.statSync(indexHtml).size > 10000) {
+  sourceHtml = indexHtml;
+} else if (fs.existsSync(indexHtml)) {
+  sourceHtml = indexHtml;
+}
 
 if (sourceHtml) {
   fs.copyFileSync(sourceHtml, appHtml);
   fs.copyFileSync(sourceHtml, backendAppHtml);
-  console.log(`Successfully updated dist/app.html and backend/app.html from ${path.basename(sourceHtml)}!`);
+  if (sourceHtml === csHtml) {
+    fs.copyFileSync(sourceHtml, indexHtml);
+  }
+  console.log(`Successfully updated dist/app.html, dist/index.html and backend/app.html from ${path.basename(sourceHtml)} (${fs.statSync(sourceHtml).size} bytes)!`);
 } else {
-  console.error('Error: No HTML file found in dist directory!');
+  console.error('Error: No valid HTML file found in dist directory!');
   process.exit(1);
 }

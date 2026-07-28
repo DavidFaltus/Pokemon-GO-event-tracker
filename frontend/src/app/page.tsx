@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import App from '@/App';
 
 export default function Home() {
-  redirect('/cs');
+  return <App initialLang="cs" initialTab="events" />;
 }
