@@ -221,6 +221,138 @@ export const pokemonMetaDb: Record<string, PokemonMetaInfo> = {
 };
 
 export const raidCountersDb: Record<string, RaidCounters> = {
+  "larvitar": {
+    bossName: "Larvitar",
+    weaknesses: ["Water (2x)", "Grass (2x)", "Fighting", "Ground", "Steel", "Ice"],
+    megaCounters: ["Primal Kyogre", "Mega Swampert", "Mega Sceptile"],
+    advancedCounters: ["Kyogre (Origin Pulse)", "Kartana (Razor Leaf)", "Zarude (Vine Whip)", "Shadow Swampert"],
+    budgetCounters: ["Swampert (Hydro Cannon)", "Roserade (Grass Knot)", "Gyarados (Hydro Pump)", "Excadrill (Drill Run)"],
+    minCp: 594,
+    maxCp: 640,
+    minBoostedCp: 742,
+    maxBoostedCp: 800,
+    weatherBoosts: ["Slunečno (Sunny)", "Částečně oblačno (Partly Cloudy)"]
+  },
+  "cranidos": {
+    bossName: "Cranidos",
+    weaknesses: ["Water", "Grass", "Fighting", "Ground", "Steel"],
+    megaCounters: ["Primal Kyogre", "Mega Swampert", "Mega Lucario"],
+    advancedCounters: ["Kyogre (Origin Pulse)", "Kartana (Razor Leaf)", "Terrakion (Sacred Sword)", "Metagross (Meteor Mash)"],
+    budgetCounters: ["Machamp (Dynamic Punch)", "Swampert (Hydro Cannon)", "Excadrill (Drill Run)", "Roserade (Grass Knot)"],
+    minCp: 981,
+    maxCp: 1040,
+    minBoostedCp: 1227,
+    maxBoostedCp: 1300,
+    weatherBoosts: ["Částečně oblačno (Partly Cloudy)"]
+  },
+  "shieldon": {
+    bossName: "Shieldon",
+    weaknesses: ["Fighting (2x)", "Ground (2x)", "Water"],
+    megaCounters: ["Mega Lucario", "Primal Groudon", "Primal Kyogre"],
+    advancedCounters: ["Terrakion (Sacred Sword)", "Lucario (Aura Sphere)", "Groudon (Precipice Blades)", "Kyogre (Origin Pulse)"],
+    budgetCounters: ["Machamp (Dynamic Punch)", "Conkeldurr (Dynamic Punch)", "Excadrill (Earthquake)", "Swampert (Hydro Cannon)"],
+    minCp: 462,
+    maxCp: 508,
+    minBoostedCp: 577,
+    maxBoostedCp: 635,
+    weatherBoosts: ["Částečně oblačno (Partly Cloudy)", "Sněžení (Snow)"]
+  },
+  "sinistea": {
+    bossName: "Sinistea",
+    weaknesses: ["Ghost", "Dark"],
+    megaCounters: ["Mega Tyranitar", "Mega Gengar", "Mega Houndoom"],
+    advancedCounters: ["Hydreigon (Brutal Swing)", "Darkrai (Dark Pulse)", "Giratina Origin (Shadow Ball)", "Chandelure (Shadow Ball)"],
+    budgetCounters: ["Tyranitar (Crunch)", "Weavile (Foul Play)", "Houndoom (Foul Play)", "Gengar (Shadow Ball)"],
+    minCp: 489,
+    maxCp: 534,
+    minBoostedCp: 611,
+    maxBoostedCp: 668,
+    weatherBoosts: ["Mlha (Fog)"]
+  },
+  "hisuian samurott": {
+    bossName: "Hisuian Samurott",
+    weaknesses: ["Electric", "Grass", "Fighting", "Bug", "Fairy"],
+    megaCounters: ["Mega Manectric", "Mega Sceptile", "Mega Lucario", "Mega Rayquaza"],
+    advancedCounters: ["Kartana (Razor Leaf)", "Terrakion (Sacred Sword)", "Xurkitree (Discharge)", "Lucario (Aura Sphere)"],
+    budgetCounters: ["Machamp (Dynamic Punch)", "Electivire (Wild Charge)", "Roserade (Grass Knot)", "Tapu Koko (Thunderbolt)"],
+    minCp: 1530,
+    maxCp: 1613,
+    minBoostedCp: 1913,
+    maxBoostedCp: 2017,
+    weatherBoosts: ["Deštivo (Rainy)", "Mlha (Fog)"]
+  },
+  "excadrill": {
+    bossName: "Excadrill",
+    weaknesses: ["Fire", "Water", "Fighting", "Ground"],
+    megaCounters: ["Mega Blaziken", "Primal Kyogre", "Primal Groudon", "Mega Lucario"],
+    advancedCounters: ["Reshiram (Fusion Flare)", "Kyogre (Origin Pulse)", "Groudon (Precipice Blades)", "Terrakion (Sacred Sword)"],
+    budgetCounters: ["Chandelure (Overheat)", "Swampert (Hydro Cannon)", "Machamp (Dynamic Punch)", "Charizard (Blast Burn)"],
+    minCp: 1785,
+    maxCp: 1867,
+    minBoostedCp: 2231,
+    maxBoostedCp: 2334,
+    weatherBoosts: ["Slunečno (Sunny)", "Sněžení (Snow)"]
+  },
+  "drampa": {
+    bossName: "Drampa",
+    weaknesses: ["Fighting", "Ice", "Dragon", "Fairy"],
+    megaCounters: ["Mega Lucario", "Mega Gardevoir", "Mega Rayquaza", "Mega Glalie"],
+    advancedCounters: ["Terrakion (Sacred Sword)", "Rayquaza (Outrage)", "Palkia Origin (Spacial Rend)", "Lucario (Aura Sphere)"],
+    budgetCounters: ["Machamp (Dynamic Punch)", "Dragonite (Outrage)", "Gardevoir (Dazzling Gleam)", "Mamoswine (Avalanche)"],
+    minCp: 1642,
+    maxCp: 1722,
+    minBoostedCp: 2053,
+    maxBoostedCp: 2153,
+    weatherBoosts: ["Větrno (Windy)", "Částečně oblačno (Partly Cloudy)"]
+  },
+  "solgaleo": {
+    bossName: "Solgaleo",
+    weaknesses: ["Fire", "Ground", "Ghost", "Dark"],
+    megaCounters: ["Mega Blaziken", "Mega Charizard Y", "Mega Tyranitar", "Mega Gengar"],
+    advancedCounters: ["Reshiram (Fusion Flare)", "Hydreigon (Brutal Swing)", "Groudon (Precipice Blades)", "Darkrai (Dark Pulse)", "Shadow Chandelure"],
+    budgetCounters: ["Charizard (Blast Burn)", "Tyranitar (Crunch)", "Excadrill (Earthquake)", "Chandelure (Shadow Ball)", "Darmanitan (Overheat)"],
+    minCp: 2217,
+    maxCp: 2307,
+    minBoostedCp: 2771,
+    maxBoostedCp: 2884,
+    weatherBoosts: ["Slunečno (Sunny)", "Větrno (Windy)"]
+  },
+  "lunala": {
+    bossName: "Lunala",
+    weaknesses: ["Ghost (2x)", "Dark (2x)"],
+    megaCounters: ["Mega Gengar", "Mega Tyranitar", "Mega Houndoom"],
+    advancedCounters: ["Hydreigon (Brutal Swing)", "Tyranitar (Brutal Swing)", "Giratina Origin (Shadow Ball)", "Darkrai (Dark Pulse)"],
+    budgetCounters: ["Chandelure (Shadow Ball)", "Weavile (Foul Play)", "Honchkrow (Dark Pulse)", "Gengar (Shadow Ball)"],
+    minCp: 2217,
+    maxCp: 2307,
+    minBoostedCp: 2771,
+    maxBoostedCp: 2884,
+    weatherBoosts: ["Mlha (Fog)", "Větrno (Windy)"]
+  },
+  "mega aggron": {
+    bossName: "Mega Aggron",
+    weaknesses: ["Fighting", "Ground", "Fire"],
+    megaCounters: ["Mega Blaziken", "Primal Groudon", "Mega Charizard Y", "Mega Heracross"],
+    advancedCounters: ["Terrakion (Sacred Sword)", "Reshiram (Fusion Flare)", "Groudon (Precipice Blades)", "Lucario (Aura Sphere)", "Shadow Excadrill"],
+    budgetCounters: ["Machamp (Dynamic Punch)", "Conkeldurr (Dynamic Punch)", "Excadrill (Earthquake)", "Chandelure (Overheat)", "Darmanitan (Overheat)"],
+    minCp: 1636,
+    maxCp: 1714,
+    minBoostedCp: 2045,
+    maxBoostedCp: 2143,
+    weatherBoosts: ["Sněžení (Snow)"]
+  },
+  "aggron": {
+    bossName: "Aggron",
+    weaknesses: ["Fighting (2x)", "Ground (2x)", "Water"],
+    megaCounters: ["Mega Lucario", "Primal Groudon", "Primal Kyogre", "Mega Heracross"],
+    advancedCounters: ["Terrakion (Sacred Sword)", "Lucario (Aura Sphere)", "Groudon (Precipice Blades)", "Kyogre (Origin Pulse)"],
+    budgetCounters: ["Machamp (Dynamic Punch)", "Conkeldurr (Dynamic Punch)", "Excadrill (Earthquake)", "Rhyperior (High Horsepower)"],
+    minCp: 1636,
+    maxCp: 1714,
+    minBoostedCp: 2045,
+    maxBoostedCp: 2143,
+    weatherBoosts: ["Částečně oblačno (Partly Cloudy)", "Sněžení (Snow)"]
+  },
   // Necrozma forms
   "necrozma": {
     bossName: "Necrozma",
@@ -1352,7 +1484,7 @@ function isMetaRelevant(pokemonName: string): boolean {
   return (meta.pveRating === 'S' || meta.pveRating === 'A' || meta.pvpRating === 'S' || meta.pvpRating === 'A');
 }
 
-function findRaidCounters(
+export function findRaidCounters(
   bossName: string, 
   bossTypes?: string[], 
   scrapedCpRange?: string, 
@@ -1984,16 +2116,127 @@ export async function scrapeEventDetails(eventID: string, link: string, name?: s
   return leekResult;
 }
 
-export async function scrapeRaidBosses(): Promise<ScrapedRaidBoss[]> {
-  const url = 'https://leekduck.com/raid-bosses/';
-  const response = await axios.get(url, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+function getPokemonIconUrl(name: string): string {
+  const clean = name.toLowerCase()
+    .replace(/\s*\([^)]*\)/g, '')
+    .replace(/^shadow\s+/i, '')
+    .replace(/^mega\s+/i, '')
+    .replace(/[^a-z0-9]/g, '');
+  return `https://img.pokemondb.net/sprites/home/normal/${clean}.png`;
+}
+
+export async function scrapePoGOHubRaidBosses(): Promise<ScrapedRaidBoss[]> {
+  let browser;
+  try {
+    const puppeteer = await import('puppeteer');
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+    const page = await browser.newPage();
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36');
+
+    await page.goto('https://pokemongohub.net/post/guide/current-go-raids/', { waitUntil: 'domcontentloaded', timeout: 30000 });
+
+    const rawTiers = await page.evaluate(() => {
+      const results: Record<string, string[]> = {};
+      const headings = document.querySelectorAll('h2, h3');
+      headings.forEach(h => {
+        const title = h.textContent ? h.textContent.trim().toLowerCase() : '';
+        let tierKey: ScrapedRaidBoss['tier'] | null = null;
+
+        if (title === '1-star raids') tierKey = '1';
+        else if (title === '3-star raids') tierKey = '3';
+        else if (title === '5-star raids') tierKey = '5';
+        else if (title === 'mega raids') tierKey = 'mega';
+        else if (title.includes('1-star shadow')) tierKey = 'shadow-1';
+        else if (title.includes('3-star shadow')) tierKey = 'shadow-3';
+        else if (title.includes('5-star shadow')) tierKey = 'shadow-5';
+
+        if (tierKey) {
+          const names: string[] = [];
+          let curr = h.nextElementSibling;
+          while (curr && !['H2', 'H3'].includes(curr.tagName)) {
+            const links = curr.querySelectorAll('a');
+            links.forEach(a => {
+              const text = a.textContent ? a.textContent.trim() : '';
+              if (text && text.length < 40 && !text.includes('Guide') && !text.includes('Counter') && !text.includes('Raid')) {
+                names.push(text);
+              }
+            });
+            const lis = curr.querySelectorAll('li');
+            lis.forEach(li => {
+              const text = li.textContent ? li.textContent.trim() : '';
+              if (text && text.length < 40) names.push(text);
+            });
+            if (curr.tagName === 'P' || curr.tagName === 'DIV') {
+              const lines = (curr as HTMLElement).innerText.split('\n').map(l => l.trim()).filter(l => l.length > 0 && l.length < 40);
+              lines.forEach(l => {
+                if (!l.includes('Guide') && !l.includes('Counter') && !l.includes('Raid') && !l.includes('One-Star')) {
+                  names.push(l);
+                }
+              });
+            }
+            curr = curr.nextElementSibling;
+          }
+          results[tierKey] = Array.from(new Set(names));
+        }
+      });
+      return results;
+    });
+
+    const bosses: ScrapedRaidBoss[] = [];
+    for (const [tier, names] of Object.entries(rawTiers)) {
+      for (const name of names) {
+        const matchedCounters = findRaidCounters(name);
+        bosses.push({
+          name,
+          tier: tier as ScrapedRaidBoss['tier'],
+          image: getPokemonIconUrl(name),
+          canBeShiny: true,
+          cpRange: matchedCounters ? `${matchedCounters.minCp} - ${matchedCounters.maxCp}` : undefined,
+          boostedCpRange: matchedCounters ? `${matchedCounters.minBoostedCp} - ${matchedCounters.maxBoostedCp}` : undefined,
+          weatherBoosts: matchedCounters?.weatherBoosts,
+          types: undefined,
+          counters: matchedCounters
+        });
+      }
     }
-  });
+    if (bosses.length > 0) {
+      console.log(`[scrapePoGOHubRaidBosses] Successfully scraped ${bosses.length} live raid bosses from Pokémon GO Hub`);
+      return bosses;
+    }
+  } catch (err: any) {
+    console.warn(`[scrapePoGOHubRaidBosses] Failed to scrape PoGO Hub: ${err.message}`);
+  } finally {
+    if (browser) await browser.close().catch(() => {});
+  }
+  return [];
+}
+
+export async function scrapeRaidBosses(scrapedEvents?: EventData[]): Promise<ScrapedRaidBoss[]> {
+  // 1. Try Pokémon GO Hub first (up-to-date live source for all raid tiers)
+  const pogoHubBosses = await scrapePoGOHubRaidBosses();
+  if (pogoHubBosses.length >= 5) {
+    return pogoHubBosses;
+  }
+
+  // 2. Fallback to LeekDuck
+  console.log('[scrapeRaidBosses] PoGO Hub returned incomplete data, falling back to LeekDuck...');
+  const url = 'https://leekduck.com/raid-bosses/';
+  let html = '';
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      }
+    });
+    html = response.data;
+  } catch (err: any) {
+    console.warn(`[scrapeRaidBosses] Failed to fetch LeekDuck raid bosses page: ${err.message}`);
+  }
   
-  const html = response.data;
-  const $ = cheerio.load(html);
+  const $ = cheerio.load(html || '<div></div>');
   const bosses: ScrapedRaidBoss[] = [];
 
   // Helper to parse card
@@ -2065,6 +2308,85 @@ export async function scrapeRaidBosses(): Promise<ScrapedRaidBoss[]> {
       parseCard(cardEl, tier);
     });
   });
+
+  // 3. Smart Sync with Active Raid Events (removes stale ended bosses & inserts current active bosses)
+  try {
+    const eventsList = (scrapedEvents && scrapedEvents.length > 0) ? scrapedEvents : await scrapeEvents().catch(() => []);
+    const now = Date.now();
+
+    const parseRaidEvent = (event: EventData) => {
+      const name = event.name.trim();
+      let bossName = '';
+      let tier: ScrapedRaidBoss['tier'] | null = null;
+
+      const m5 = name.match(/^(.+?)\s+in\s+5-star\s+Raid\s+Battles/i);
+      const mMega = name.match(/^(.+?)\s+in\s+Mega\s+Raids/i);
+      const mShadow = name.match(/^(.+?)\s+in\s+Shadow\s+Raids/i);
+      const mPrimal = name.match(/^(.+?)\s+in\s+Primal\s+Raids/i);
+      const mElite = name.match(/^(.+?)\s+in\s+Elite\s+Raid\s+Battles/i);
+
+      if (m5) { bossName = m5[1].trim(); tier = '5'; }
+      else if (mMega) { bossName = mMega[1].trim(); tier = 'mega'; }
+      else if (mShadow) { bossName = mShadow[1].trim(); tier = 'shadow-5'; }
+      else if (mPrimal) { bossName = mPrimal[1].trim(); tier = 'mega'; }
+      else if (mElite) { bossName = mElite[1].trim(); tier = '5'; }
+
+      return { bossName, tier };
+    };
+
+    const activeRaidEvents: { bossName: string; tier: ScrapedRaidBoss['tier'] }[] = [];
+    const endedRaidEvents: { bossName: string; tier: ScrapedRaidBoss['tier'] }[] = [];
+
+    for (const ev of eventsList) {
+      if (!ev.eventType.includes('raid')) continue;
+      const parsed = parseRaidEvent(ev);
+      if (!parsed.bossName || !parsed.tier) continue;
+
+      const startMs = new Date(ev.start).getTime();
+      const endMs = new Date(ev.end).getTime();
+
+      if (now >= startMs && now <= endMs) {
+        activeRaidEvents.push(parsed as any);
+      } else if (now > endMs) {
+        endedRaidEvents.push(parsed as any);
+      }
+    }
+
+    // A. Remove ended bosses if there are active events for that tier
+    const activeTiers = new Set(activeRaidEvents.map(e => e.tier));
+    for (const ended of endedRaidEvents) {
+      if (activeTiers.has(ended.tier)) {
+        for (let i = bosses.length - 1; i >= 0; i--) {
+          if (bosses[i].tier === ended.tier && bosses[i].name.toLowerCase().includes(ended.bossName.toLowerCase())) {
+            console.log(`[scrapeRaidBosses] Removing stale boss "${bosses[i].name}" (Tier ${ended.tier}) whose event ended`);
+            bosses.splice(i, 1);
+          }
+        }
+      }
+    }
+
+    // B. Ensure active event bosses are present in bosses array
+    for (const active of activeRaidEvents) {
+      const exists = bosses.some(b => b.tier === active.tier && b.name.toLowerCase().includes(active.bossName.toLowerCase()));
+      if (!exists) {
+        console.log(`[scrapeRaidBosses] Adding active event boss "${active.bossName}" (Tier ${active.tier})`);
+        const matchedCounters = findRaidCounters(active.bossName);
+        bosses.push({
+          name: active.bossName,
+          tier: active.tier,
+          image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${active.bossName.toLowerCase()}.png`,
+          canBeShiny: true,
+          cpRange: matchedCounters ? `${matchedCounters.minCp} - ${matchedCounters.maxCp}` : undefined,
+          boostedCpRange: matchedCounters ? `${matchedCounters.minBoostedCp} - ${matchedCounters.maxBoostedCp}` : undefined,
+          weatherBoosts: matchedCounters?.weatherBoosts,
+          types: undefined,
+          counters: matchedCounters
+        });
+      }
+    }
+  } catch (err: any) {
+    console.warn(`[scrapeRaidBosses] Error syncing with active events: ${err.message}`);
+  }
 
   return bosses;
 }

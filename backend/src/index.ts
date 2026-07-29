@@ -197,7 +197,10 @@ async function runScheduledScraper(triggeredBy: 'cron' | 'startup' | 'admin' = '
       }
     }
 
-    // ── 5. Save updated metadata ────────────────────────────────────
+    // ── 5. Refresh raid bosses list ─────────────────────────────────
+    await getRaidBossesList(true).catch(err => console.error('[Scheduler] Error updating raid bosses:', err));
+
+    // ── 6. Save updated metadata ────────────────────────────────────
     const nextScrapeAt = new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString();
     saveScraperMeta({
       lastScrapedAt: new Date().toISOString(),
@@ -399,8 +402,9 @@ async function getRaidBossesList(forceNoCache: boolean = false): Promise<any[]> 
   const cachedData = forceNoCache ? null : getFromCache<any>(cacheKey, 1 * 60 * 60 * 1000); // 1 hour TTL for fresh lineup updates
   if (cachedData) return cachedData;
 
+  const events = await getEnrichedEventsList(false).catch(() => []);
   const { scrapeRaidBosses } = await import('./scraper');
-  const data = await scrapeRaidBosses();
+  const data = await scrapeRaidBosses(events);
   setToCache(cacheKey, data, 1 * 60 * 60 * 1000);
   return data;
 }
@@ -728,8 +732,6 @@ async function getSpaShell(): Promise<string> {
   <div id="root"></div>
 </body>
 </html>`;
-  }
-  return spaShellCache;
 }
 
 function isBot(userAgent: string | undefined): boolean {

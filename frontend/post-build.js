@@ -58,7 +58,19 @@ if (sourceHtml) {
   if (sourceHtml === csHtml) {
     fs.copyFileSync(sourceHtml, indexHtml);
   }
-  console.log(`Successfully updated dist/app.html, dist/index.html, backend/app.html, and backend/dist/app.html from ${path.basename(sourceHtml)} (${fs.statSync(sourceHtml).size} bytes)!`);
+
+  // Ensure /admin has a static dist/admin/index.html fallback
+  const adminHtml = path.join(distDir, 'admin.html');
+  const adminDir = path.join(distDir, 'admin');
+  const adminIndexHtml = path.join(adminDir, 'index.html');
+  if (fs.existsSync(adminHtml)) {
+    if (!fs.existsSync(adminDir)) {
+      fs.mkdirSync(adminDir, { recursive: true });
+    }
+    fs.copyFileSync(adminHtml, adminIndexHtml);
+  }
+
+  console.log(`Successfully updated dist/app.html, dist/index.html, dist/admin/index.html, backend/app.html, and backend/dist/app.html from ${path.basename(sourceHtml)} (${fs.statSync(sourceHtml).size} bytes)!`);
 } else {
   console.error('Error: No valid HTML file found in dist directory!');
   process.exit(1);

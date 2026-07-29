@@ -6,6 +6,8 @@
       "**/.*",
       "**/node_modules/**"
     ],
+    "cleanUrls": true,
+    "trailingSlash": false,
     "headers": [
       {
         "source": "/_next/static/**",
@@ -24,6 +26,22 @@
             "value": "no-cache, no-store, must-revalidate, max-age=0"
           }
         ]
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "/api/**",
+        "run": {
+          "serviceId": "pogo-tracker-backend",
+          "region": "europe-west3"
+        }
+      },
+      {
+        "source": "**",
+        "run": {
+          "serviceId": "pogo-tracker-backend",
+          "region": "europe-west3"
+        }
       }
     ]
   }

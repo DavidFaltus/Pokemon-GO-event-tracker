@@ -45,14 +45,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
   
   const t = translations[lang];
 
-  // 1. Find the earliest start date among events to focus the calendar on the active month
+  // Focus the timeline view on the current active month by default
   const initialDate = useMemo(() => {
-    if (events.length > 0) {
-      const earliest = new Date(events[0].start);
-      return new Date(earliest.getFullYear(), earliest.getMonth(), 1);
-    }
-    return new Date();
-  }, [events]);
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), 1);
+  }, []);
 
   const [viewDate, setViewDate] = useState<Date>(initialDate);
 
@@ -66,6 +63,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
 
   const handleNextMonth = () => {
     setViewDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+  };
+
+  const handleToday = () => {
+    const now = new Date();
+    setViewDate(new Date(now.getFullYear(), now.getMonth(), 1));
   };
 
   // Helper to extract pokemon icon
@@ -211,10 +213,27 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
       
       {/* Calendar Header with Month/Year Navigation */}
       <div className="calendar-header">
-        <div className="calendar-title-nav">
+        <div className="calendar-title-nav" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <button className="calendar-nav-btn" onClick={handlePrevMonth} aria-label="Previous Month">‹</button>
           <h2>{MONTH_NAMES[lang][month]} {year}</h2>
           <button className="calendar-nav-btn" onClick={handleNextMonth} aria-label="Next Month">›</button>
+          <button 
+            className="calendar-today-btn" 
+            onClick={handleToday} 
+            style={{
+              padding: '4px 10px',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              borderRadius: '6px',
+              border: '1px solid var(--border-color)',
+              backgroundColor: 'var(--bg-card)',
+              color: 'var(--text-primary)',
+              cursor: 'pointer',
+              marginLeft: '6px'
+            }}
+          >
+            {lang === 'ja' ? '今月' : lang === 'cs' ? 'Dnes' : 'Today'}
+          </button>
         </div>
         
         {/* Simple Legend for Event Categories */}
