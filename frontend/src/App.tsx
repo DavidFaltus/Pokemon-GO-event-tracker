@@ -920,19 +920,20 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
           </button>
 
           <button 
-            className={`sidebar-nav-item ${activeTab === 'settings' ? 'active' : ''}`} 
-            onClick={() => changeTab('settings')}
-          >
-            <span className="nav-icon"><Settings size={20} /></span>
-            <span className="nav-text">{t.tabs_settings}</span>
-          </button>
-
-          <button 
             className={`sidebar-nav-item ${activeTab === 'filter' ? 'active' : ''}`} 
             onClick={() => changeTab('filter')}
           >
             <span className="nav-icon"><Filter size={20} /></span>
             <span className="nav-text">Filter generator</span>
+          </button>
+
+          <button 
+            className={`sidebar-nav-item settings-item ${activeTab === 'settings' ? 'active' : ''}`} 
+            onClick={() => changeTab('settings')}
+            style={{ marginTop: '28px' }}
+          >
+            <span className="nav-icon"><Settings size={20} /></span>
+            <span className="nav-text">{t.tabs_settings}</span>
           </button>
         </nav>
         
@@ -1003,7 +1004,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
             <PokeballLogo size={24} />
             <h1>PoGo Events</h1>
           </div>
-          <div className="header-stats">
+          <div className="header-stats" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {/* Scraper status in mobile header */}
             {scraperStatus.lastScrapedAt && (
               <span style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
@@ -1028,6 +1029,14 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
                 )}
               </span>
             )}
+            <button 
+              className={`header-settings-btn ${activeTab === 'settings' ? 'active' : ''}`} 
+              onClick={() => changeTab('settings')}
+              aria-label={t.tabs_settings}
+              title={t.tabs_settings}
+            >
+              <Settings size={18} />
+            </button>
           </div>
         </header>
 
@@ -1223,11 +1232,6 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
           <button className={`nav-item ${activeTab === 'ranking' ? 'active' : ''}`} onClick={() => changeTab('ranking')}>
             <span className="nav-icon"><Trophy size={20} /></span>
             <span className="nav-text">{t.tabs_ranking}</span>
-          </button>
-
-          <button className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`} onClick={() => changeTab('settings')}>
-            <span className="nav-icon"><Settings size={20} /></span>
-            <span className="nav-text">{t.tabs_settings}</span>
           </button>
 
           <button 
