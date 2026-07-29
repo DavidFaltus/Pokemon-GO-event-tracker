@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1084389140873",
+    "project_id": "pokego-event-tracker-2026",
+    "storage_bucket": "pokego-event-tracker-2026.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1084389140873:android:f1e1c594dfb0ab9c771958",
+        "android_client_info": {
+          "package_name": "com.pokego.eventtracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGBOjCJnoa5hiC5t_aXJq4XGArYyixN0s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

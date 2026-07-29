@@ -208,13 +208,15 @@ interface EventCardProps {
   lang: Language;
   timezone?: string;
   defaultExpanded?: boolean;
+  useInline?: boolean;
   onOpenFilterGenerator?: (bossName?: string) => void;
 }
 
-export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, defaultExpanded, onOpenFilterGenerator }) => {
+export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, defaultExpanded, useInline: propsUseInline, onOpenFilterGenerator }) => {
   const [timeLeftStr, setTimeLeftStr] = useState<string>('');
   const [status, setStatus] = useState<'upcoming' | 'active' | 'ended'>('upcoming');
   const [isExpanded, setIsExpanded] = useState<boolean>(defaultExpanded || false);
+  const [useInline, setUseInline] = useState<boolean>(propsUseInline ?? false);
   const [officialUrl, setOfficialUrl] = useState<string>('');
   const [showOfficial, setShowOfficial] = useState<boolean>(false);
   const [, setShowLeekDuck] = useState<boolean>(true);
@@ -571,7 +573,6 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
   };
 
   const cardRef = useRef<HTMLDivElement>(null);
-  const [useInline, setUseInline] = useState<boolean>(false);
 
   const handleCardClick = () => {
     if (isExpanded) {

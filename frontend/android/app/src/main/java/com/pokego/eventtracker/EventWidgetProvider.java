@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
 public class EventWidgetProvider extends AppWidgetProvider {
     private static final String TAG = "EventWidgetProvider";
     private static final String ACTION_REFRESH = "com.pokego.eventtracker.ACTION_REFRESH";
-    private static final String API_URL = "https://pogo-tracker-backend-1084389140873.europe-west3.run.app/api/events";
+    private static final String API_URL = "https://pogoevents.app/api/events";
     
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());

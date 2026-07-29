@@ -390,7 +390,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
         <div className="calendar-modal-overlay" onClick={() => setActiveModalEvent(null)}>
           <div className="calendar-modal-content" onClick={e => e.stopPropagation()}>
             <button className="calendar-modal-close" onClick={() => setActiveModalEvent(null)}>✕</button>
-            <EventCard event={activeModalEvent} lang={lang} timezone={timezone} defaultExpanded={true} />
+            <EventCard event={activeModalEvent} lang={lang} timezone={timezone} defaultExpanded={true} useInline={true} />
           </div>
         </div>
       )}

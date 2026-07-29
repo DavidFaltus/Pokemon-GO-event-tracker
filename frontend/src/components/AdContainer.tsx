@@ -13,13 +13,18 @@ export const AdContainer: React.FC<AdContainerProps> = ({
   client = "ca-pub-8800056915088711", // User AdSense Client ID
   lang = 'cs' 
 }) => {
+  const adRef = React.useRef<HTMLModElement>(null);
+
   useEffect(() => {
-    // Attempt to load Google AdSense ads if script is present
-    if (slot && typeof window !== 'undefined') {
-      try {
-        ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
-      } catch (e) {
-        console.warn("Google AdSense initialization skipped or failed:", e);
+    // Attempt to load Google AdSense ads if script is present and element not filled yet
+    if (slot && typeof window !== 'undefined' && adRef.current) {
+      const status = adRef.current.getAttribute('data-adsbygoogle-status');
+      if (!status) {
+        try {
+          ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+        } catch (e) {
+          // Ignore duplicate push in dev mode
+        }
       }
     }
   }, [slot]);
@@ -100,6 +105,7 @@ export const AdContainer: React.FC<AdContainerProps> = ({
           {isJapanese ? 'スポンサー提供' : isCzech ? 'Sponzorovaný obsah' : 'Sponsored Content'}
         </span>
         <ins 
+          ref={adRef}
           className="adsbygoogle"
           style={{ 
             display: 'block', 

@@ -4,7 +4,8 @@ import { useNotifications } from '../hooks/useNotifications';
 import type { NotificationPreference } from '../hooks/useNotifications';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
-import { MapPin, CheckCircle, AlertTriangle, Bell, SlidersHorizontal, Eye, Scale, Lock, Globe, LayoutGrid, Sun, Moon } from 'lucide-react';
+import { MapPin, CheckCircle, AlertTriangle, Bell, SlidersHorizontal, Eye, Scale, Lock, Globe, LayoutGrid, Sun, Moon, Layers } from 'lucide-react';
+import OverlayPlugin from '../utils/overlayPlugin';
 
 export interface VisibleEventsPreference {
   communityDays: boolean;
@@ -50,6 +51,25 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
   const isNative = typeof window !== 'undefined' && !!(window as any).Capacitor;
   const [gpsSyncing, setGpsSyncing] = React.useState(false);
   const [syncStatus, setSyncStatus] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [overlayActive, setOverlayActive] = React.useState(false);
+
+  const toggleOverlay = async () => {
+    try {
+      if (overlayActive) {
+        await OverlayPlugin.stopOverlay();
+        setOverlayActive(false);
+      } else {
+        const perm = await OverlayPlugin.isPermissionGranted();
+        if (!perm.granted) {
+          await OverlayPlugin.requestPermission();
+        }
+        await OverlayPlugin.startOverlay();
+        setOverlayActive(true);
+      }
+    } catch (err: any) {
+      console.warn('Overlay toggle failed:', err);
+    }
+  };
 
   const {
     permission,
@@ -238,6 +258,40 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
                 <span className="checkbox-label">{(t as any).settings_theme_dark || 'Dark'}</span>
               </label>
             </div>
+          </div>
+
+          {/* Mobile Floating Overlay Settings Card */}
+          <div className="settings-card overlay-picker-card">
+            <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+              <span className="duotone-icon duotone-white"><Layers size={16} /></span>
+              {t.settings_overlay_title}
+            </h3>
+            <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '12px', lineHeight: '1.4' }}>
+              {t.settings_overlay_desc}
+            </p>
+            <button
+              onClick={toggleOverlay}
+              className={`test-notification-btn ${overlayActive ? 'active' : ''}`}
+              style={{
+                width: '100%',
+                padding: '10px 14px',
+                borderRadius: '10px',
+                background: overlayActive ? 'var(--accent-gradient)' : 'var(--bg-card)',
+                border: '1px solid var(--border-color)',
+                color: '#fff',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              <Layers size={16} />
+              {overlayActive
+                ? t.settings_overlay_active
+                : t.settings_overlay_inactive}
+            </button>
           </div>
 
           {/* Event Layout Selector */}

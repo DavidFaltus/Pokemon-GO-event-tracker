@@ -924,7 +924,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
             onClick={() => changeTab('filter')}
           >
             <span className="nav-icon"><Filter size={20} /></span>
-            <span className="nav-text">Filter generator</span>
+            <span className="nav-text">{t.tabs_filter}</span>
           </button>
 
           <button 
@@ -1239,7 +1239,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
             onClick={() => changeTab('filter')}
           >
             <span className="nav-icon"><Filter size={20} /></span>
-            <span className="nav-text">Filter generator</span>
+            <span className="nav-text">{t.tabs_filter}</span>
           </button>
         </nav>
       </div>

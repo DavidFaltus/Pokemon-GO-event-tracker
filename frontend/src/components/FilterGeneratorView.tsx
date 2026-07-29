@@ -104,23 +104,72 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
     setTimeout(() => setCopied(false), 2500);
   };
 
+  const getText = (key: string) => {
+    switch (key) {
+      case 'title':
+        if (lang === 'ja') return 'ポケモンGO 検索フィルタージェネレーター';
+        if (lang === 'ru') return 'Генератор поискового фильтра для Pokémon GO';
+        if (lang === 'en') return 'Pokémon GO Search Filter Generator';
+        return 'Generátor vyhledávacího filtru do Pokémon GO';
+      case 'desc':
+        if (lang === 'ja') return 'ポケモンGOのボックス用検索文字列を自動生成します。生成されたコードをゲーム内の検索バーに貼り付けると、最適な対策ポケモンを即座に絞り込めます！';
+        if (lang === 'ru') return 'Генерирует точную строку поиска атак и типов для хранилища Pokémon GO. Вставьте код в поисковую строку игры для быстрого выбора лучших контр-пиков!';
+        if (lang === 'en') return 'Generates exact move & type search strings for your Pokémon GO storage. Paste the string into your in-game search bar to instantly find your best raid counters!';
+        return 'Vygeneruje přesný vyhledávací řetězec útoků a typů pro Pokémon GO inventář. Vložte vygenerovaný text do vyhledávacího pole ve hře pro okamžité nalezení nejlepších raid counterů!';
+      case 'select_prompt':
+        if (lang === 'ja') return 'ポケモンを選択または入力:';
+        if (lang === 'ru') return 'Выберите или введите любого покемона:';
+        if (lang === 'en') return 'Select or type any Pokémon:';
+        return 'Vyberte nebo zadejte libovolného Pokémona:';
+      case 'placeholder':
+        if (lang === 'ja') return 'ポケモン名を入力（例: ボーマンダ, レックウザ, ネクロズマ）...';
+        if (lang === 'ru') return 'Введите имя покемона (напр. Саламенс, Райкваза, Некрозма)...';
+        if (lang === 'en') return 'Type Pokémon name (e.g. Salamence, Rayquaza, Necrozma)...';
+        return 'Napište jméno Pokémona (např. Salamence, Rayquaza, Necrozma)...';
+      case 'suggestions':
+        if (lang === 'ja') return '候補:';
+        if (lang === 'ru') return 'Подсказки:';
+        if (lang === 'en') return 'Suggestions:';
+        return 'Našeptávač:';
+      case 'bosses_header':
+        if (lang === 'ja') return '近日のイベントレイドボス＆人気ポケモン:';
+        if (lang === 'ru') return 'Рейд-боссы в предстоящих событиях и популярные:';
+        if (lang === 'en') return 'Raid bosses in upcoming events & popular:';
+        return 'Raid bossové v nadchádzajících událostech & populární:';
+      case 'filter_output':
+        if (lang === 'ja') return '検索フィルター';
+        if (lang === 'ru') return 'Поисковый фильтр';
+        if (lang === 'en') return 'Search filter';
+        return 'Vyhledávací filtr';
+      case 'copy':
+        if (lang === 'ja') return 'コピー';
+        if (lang === 'ru') return 'Копировать';
+        if (lang === 'en') return 'Copy';
+        return 'Kopírovat';
+      case 'copied':
+        if (lang === 'ja') return 'コピー完了！';
+        if (lang === 'ru') return 'Скопировано!';
+        if (lang === 'en') return 'Copied!';
+        return 'Zkopírováno!';
+      default:
+        return '';
+    }
+  };
+
   return (
     <div className="tab-content filter-generator-view">
-      <h1 className="tab-seo-title">
-        <Filter size={24} style={{ color: 'var(--accent-purple, #a855f7)', verticalAlign: 'middle', marginRight: '8px' }} />
-        {lang === 'cs' ? 'Filter generator' : 'Filter generator'}
-      </h1>
-      <p className="tab-seo-description">
-        {lang === 'cs'
-          ? 'Vyberte jakéhokoliv Raid bossa nebo zadejte jméno libovolného Pokémona pro okamžité vygenerování vyhledávacího filtru do Pokémon GO.'
-          : 'Select any Raid boss or type any Pokémon name to instantly generate a search filter for Pokémon GO.'}
-      </p>
+      <div className="filter-generator-header">
+        <h1 className="tab-seo-title">
+          <Filter size={24} style={{ color: 'var(--accent-purple, #a855f7)', verticalAlign: 'middle', marginRight: '8px' }} />
+          {getText('title')}
+        </h1>
+        <p className="tab-seo-description">{getText('desc')}</p>
+      </div>
 
-      {/* Boss Selection & Search Card */}
       <div className="filter-generator-card">
         <div className="filter-group-header">
           <Search size={16} style={{ color: 'var(--accent-purple, #a855f7)' }} />
-          <span>{lang === 'cs' ? 'Vyberte nebo zadejte libovolného Pokémona:' : 'Select or type any Pokémon:'}</span>
+          <span>{getText('select_prompt')}</span>
         </div>
         
         <div className="filter-search-input-wrapper">
@@ -130,14 +179,13 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
             className="filter-search-input"
             value={selectedBoss}
             onChange={e => setSelectedBoss(e.target.value)}
-            placeholder={lang === 'cs' ? 'Napište jméno Pokémona (např. Salamence, Rayquaza, Necrozma)...' : 'Type Pokémon name (e.g. Salamence, Rayquaza, Necrozma)...'}
+            placeholder={getText('placeholder')}
           />
         </div>
 
-        {/* Autocomplete suggestions */}
         {autocompleteSuggestions.length > 0 && selectedBoss.trim().length >= 2 && (
           <div className="filter-autocomplete-bar">
-            <span className="autocomplete-label">{lang === 'cs' ? 'Našeptávač:' : 'Suggestions:'}</span>
+            <span className="autocomplete-label">{getText('suggestions')}</span>
             <div className="autocomplete-chips">
               {autocompleteSuggestions.map(name => (
                 <button
@@ -159,10 +207,9 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
           </div>
         )}
 
-        {/* Boss Chips section */}
         <div className="filter-boss-section-header">
           <Sparkles size={14} style={{ color: 'var(--accent-purple, #a855f7)' }} />
-          <span>{lang === 'cs' ? 'Raid bossové v nadcházejících událostech & populární:' : 'Raid bosses in upcoming events & popular:'}</span>
+          <span>{getText('bosses_header')}</span>
         </div>
         
         <div className="filter-boss-chips-container">
@@ -185,7 +232,6 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
         </div>
       </div>
 
-      {/* Main Search Filter Output Box */}
       <div className="filter-output-card">
         <div className="filter-output-header">
           <div className="filter-output-title-wrapper">
@@ -200,7 +246,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
               <Zap size={18} style={{ color: 'var(--accent-purple, #a855f7)', filter: 'drop-shadow(0 0 6px rgba(168,85,247,0.5))' }} />
             )}
             <span className="filter-output-title">
-              {lang === 'cs' ? 'Vyhledávací filtr' : 'Search filter'}
+              {getText('filter_output')}
               {selectedBoss && selectedBoss.trim() ? ` (${getPokemonName(selectedBoss.trim(), lang)})` : ''}
             </span>
           </div>
@@ -210,7 +256,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
             onClick={handleCopy}
           >
             {copied ? <Check size={16} /> : <Copy size={16} />}
-            <span>{copied ? (lang === 'cs' ? 'Zkopírováno!' : 'Copied!') : (lang === 'cs' ? 'Kopírovat' : 'Copy')}</span>
+            <span>{copied ? getText('copied') : getText('copy')}</span>
           </button>
         </div>
         <div className="filter-code-display-box" onClick={handleCopy}>

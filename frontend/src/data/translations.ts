@@ -10,6 +10,7 @@ export const translations = {
     tabs_eggs: "Vejce",
     tabs_ranking: "Žebříčky",
     tabs_settings: "Nastavení",
+    tabs_filter: "Generátor filtrů",
     seo_events_desc: "Kompletní kalendář událostí v Pokémon GO. Sledujte aktuální a nadcházející Community Days, Spotlight Hours, Raid Hours, Rakeťáky a další herní akce přizpůsobené vašemu času.",
     seo_raid_desc: "Průvodce Pokémon GO raidy. Zde najdete aktuální sestavu 1-Star, 3-Star, 5-Star a Mega raid bossů, doporučené countery, slabosti a přehled 100% IV hodnot (CP).",
     seo_rocket_desc: "Průvodce boji s Team GO Rocket. Zjistěte, jak porazit řadové členy (Grunts), lídry Sierra, Cliffa, Arla a šéfa Giovanniho. Přehled aktuálních sestav a nejlepších counterů.",
@@ -170,6 +171,10 @@ export const translations = {
     settings_theme_title: "Režim vzhledu",
     settings_theme_light: "Světlý (Bílý) – Nativní",
     settings_theme_dark: "Tmavý (Původní)",
+    settings_overlay_title: "Plovoucí Overlay nad Pokémon GO",
+    settings_overlay_desc: "Zobrazí plovoucí tlačítko nad hrou s rychlým přehledem aktivních eventů, raid bossů a kopírováním IV filtrů.",
+    settings_overlay_active: "🟢 Overlay je aktivní (Klepnutím vypnete)",
+    settings_overlay_inactive: "⚡ Zapnout plovoucí overlay nad hrou",
     details_pokemongo_link: "Oficiální event",
 
     // Loading
@@ -209,6 +214,7 @@ export const translations = {
     tabs_eggs: "Eggs",
     tabs_ranking: "Rankings",
     tabs_settings: "Settings",
+    tabs_filter: "Filter Generator",
     seo_events_desc: "Complete event calendar for Pokémon GO. Keep track of active and upcoming Community Days, Spotlight Hours, Raid Hours, Rocket Takeovers, and other game events adjusted to your local timezone.",
     seo_raid_desc: "Pokémon GO Raid Guide. View the current 1-Star, 3-Star, 5-Star, and Mega Raid boss lineups, recommended counters, weaknesses, and 100% IV (CP) stats.",
     seo_rocket_desc: "Team GO Rocket counter guide. Learn how to defeat Grunts, Leaders (Sierra, Cliff, Arlo), and Boss Giovanni. Find the best matchup strategies and current shadow lineups.",
@@ -369,6 +375,10 @@ export const translations = {
     settings_theme_title: "Theme Mode",
     settings_theme_light: "Light (White) – Default",
     settings_theme_dark: "Dark (Original)",
+    settings_overlay_title: "Floating Overlay over Pokémon GO",
+    settings_overlay_desc: "Displays a floating bubble over Pokémon GO with quick view of active events, raid bosses, and IV search filters.",
+    settings_overlay_active: "🟢 Overlay Active (Tap to stop)",
+    settings_overlay_inactive: "⚡ Enable Floating Overlay",
     details_pokemongo_link: "Official event",
 
     // Loading
@@ -410,6 +420,7 @@ export const translations = {
     tabs_ranking: "ランキング",
     tabs_campfire: "オフ会",
     tabs_settings: "設定",
+    tabs_filter: "フィルタージェネレーター",
     seo_events_desc: "ポケモンGOのイベントカレンダー。コミュニティ・デイ、スポットライトアワー、レイドアワー、ロケット団占拠などの開催スケジュールをローカルタイムゾーンで確認できます。",
     seo_raid_desc: "ポケモンGO レイドボス対策ガイド。現在出現中の星1、星3、伝説（星5）、メガレイドボスの対策ポケモン、弱点、個体値100%（CP）の一覧を表示します。",
     seo_rocket_desc: "GOロケット団対策ガイド。したっぱ、リーダー（シエラ、クリフ、アルロ）、ボスのサカキの戦闘ラインナップとおすすめの対策ポケモンを紹介します。",
@@ -570,6 +581,10 @@ export const translations = {
     settings_theme_title: "テーマモード",
     settings_theme_light: "ライト（ホワイト）– デフォルト",
     settings_theme_dark: "ダーク（オリジナル）",
+    settings_overlay_title: "ポケモンGO オーバーレイ",
+    settings_overlay_desc: "ポケモンGOの上にフローティングボタンを表示し、イベント、レイドボス、IV検索フィルターを迅速に確認できます。",
+    settings_overlay_active: "🟢 オーバーレイ有効（タップで停止）",
+    settings_overlay_inactive: "⚡ フローティングオーバーレイを有効化",
     details_pokemongo_link: "公式イベント",
 
     // Loading
@@ -611,6 +626,7 @@ export const translations = {
     tabs_ranking: "Рейтинги",
     tabs_campfire: "Встречи",
     tabs_settings: "Настройки",
+    tabs_filter: "Генератор фильтров",
     seo_events_desc: "Полный календарь событий Pokémon GO. Отслеживайте активные и предстоящие Дни сообщества, Часы спавна, Часы рейдов и другие мероприятия с учетом вашего часового пояса.",
     seo_raid_desc: "Рейд-гайд Pokémon GO. Узнайте текущих боссов 1-Star, 3-Star, 5-Star и Мега-рейдов, лучшие контр-пики, уязвимости и характеристики 100% IV (CP).",
     seo_rocket_desc: "Гайд по сражениям с Командой R. Узнайте, как победить пехотинцев (Grunts), лидеров Сиерру, Клиффа, Арло и босса Джованни. Список составов и лучших покемонов против них.",
@@ -771,6 +787,10 @@ export const translations = {
     settings_theme_title: "Режим оформления",
     settings_theme_light: "Светлый (Белый) – По умолчанию",
     settings_theme_dark: "Темный (Оригинальный)",
+    settings_overlay_title: "Плавающий оверлей над Pokémon GO",
+    settings_overlay_desc: "Отображает плавающую кнопку поверх игры с быстрым просмотром событий, рейд-боссов и фильтров IV.",
+    settings_overlay_active: "🟢 Оверлей активен (Нажмите для отключения)",
+    settings_overlay_inactive: "⚡ Включить плавающий оверлей",
     details_pokemongo_link: "Официальное событие",
 
     // Loading

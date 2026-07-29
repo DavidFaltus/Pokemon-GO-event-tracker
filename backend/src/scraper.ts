@@ -2140,8 +2140,16 @@ export async function scrapePoGOHubRaidBosses(): Promise<ScrapedRaidBoss[]> {
       const $ = cheerio.load(response.data);
       const rawTiers: Record<string, string[]> = {};
 
+      let stopParsing = false;
       $('h2, h3').each((_, h) => {
+        if (stopParsing) return;
         const title = $(h).text().trim().toLowerCase();
+        
+        if (title.includes('schedule') || title.includes('what are') || title.includes('raid passes') || title.includes('july 2026') || title.includes('june 2026')) {
+          stopParsing = true;
+          return;
+        }
+
         let tierKey: ScrapedRaidBoss['tier'] | null = null;
 
         if (title === '1-star raids') tierKey = '1';
@@ -2156,26 +2164,13 @@ export async function scrapePoGOHubRaidBosses(): Promise<ScrapedRaidBoss[]> {
           const names: string[] = [];
           let curr = $(h).next();
           while (curr.length > 0 && !['h2', 'h3'].includes(curr[0].name)) {
-            curr.find('a').each((_, a) => {
-              const text = $(a).text().trim();
-              if (text && text.length < 40 && !text.includes('Guide') && !text.includes('Counter') && !text.includes('Raid')) {
+            curr.find('a, li, strong, b').each((_, sub) => {
+              const text = $(sub).text().trim();
+              if (text && text.length > 2 && text.length < 35 && 
+                  !text.includes('Guide') && !text.includes('Counter') && !text.includes('Raid') && !text.includes('Star') && !text.includes('Related')) {
                 names.push(text);
               }
             });
-            curr.find('li').each((_, li) => {
-              const text = $(li).text().trim();
-              if (text && text.length < 40 && !text.includes('Guide') && !text.includes('Counter') && !text.includes('Raid')) {
-                names.push(text);
-              }
-            });
-            if (curr[0].name === 'p' || curr[0].name === 'div') {
-              const lines = curr.text().split('\n').map(l => l.trim()).filter(l => l.length > 0 && l.length < 40);
-              lines.forEach(l => {
-                if (!l.includes('Guide') && !l.includes('Counter') && !l.includes('Raid') && !l.includes('One-Star')) {
-                  names.push(l);
-                }
-              });
-            }
             curr = curr.next();
           }
           rawTiers[tierKey] = Array.from(new Set(names));

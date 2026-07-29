@@ -41,9 +41,10 @@ Projekt je sloučen do jediné frontendové složky (`frontend`) spravující ja
 2.  **Backend (`backend`):** Obsahuje API a scraper pro Cloud Run.
 
 ### Způsob sestavení a nasazení:
-*   **Webová verze:** Build provádějte pomocí `npm run build` (který vytvoří kopii `dist/index.html` jako `dist/app.html` a zamezí přímému statickému načtení bota na Firebase CDN). Nasazení se provádí pomocí `firebase deploy`.
+*   **Webová verze (`pogoevents.app`):** Build provádějte pomocí `npm run build:deploy` ve složce `frontend/` (který vytvoří kopii `dist/index.html` jako `dist/app.html`, `dist/admin/index.html` a zamezí přímému statickému načtení bota na Firebase CDN). Soubor `firebase.json` musí vždy obsahovat `"cleanUrls": true`, `"trailingSlash": false` a rewrites na Cloud Run službu `pogo-tracker-backend`. Nasazení se provádí pomocí `firebase deploy`.
+*   **Backend a Cloud Run (`pogo-tracker-backend` v `europe-west3`):** Scraper v `scraper.ts` musí primárně používat rychlý HTTP GET přes Axios s `Bingbot` User-Agentem, aby fungoval bez závislosti na Puppeteeru/Chromium v kontejneru Cloud Run.
 *   **Mobilní aplikace (Android):** Synchronizaci s nativním projektem provádějte pomocí `npm run android:sync`. Následně sestavte aplikaci v Android Studiu ze složky `frontend/android/`.
-*   **Mobilní kompatibilita:** Při úpravách CSS/JS dbejte na to, aby kód fungoval v mobilním WebView (např. nepoužívejte nestandardní API prohlížeče bez fallbacku, dbejte na hardwarovou akceleraci animací a vyhněte se zbytečným re-renderům).
+*   **Mobilní kompatibilita & Overlay:** Plovoucí overlay běží přes `OverlayService.java` a `OverlayPlugin.java` vyžadující `SYSTEM_ALERT_WINDOW` oprávnění. Při úpravách CSS/JS dbejte na to, aby kód fungoval v mobilním WebView (nepoužívejte nestandardní API prohlížeče bez fallbacku).
 
 ---
 
