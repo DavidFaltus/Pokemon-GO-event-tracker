@@ -2126,6 +2126,90 @@ function getPokemonIconUrl(name: string): string {
 }
 
 export async function scrapePoGOHubRaidBosses(): Promise<ScrapedRaidBoss[]> {
+  // Method 1: Fast HTTP GET via Axios with Bingbot User-Agent (bypasses Cloudflare on Cloud Run without Puppeteer)
+  try {
+    const response = await axios.get('https://pokemongohub.net/post/guide/current-go-raids/', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+      },
+      timeout: 10000
+    });
+
+    if (response.data && response.status === 200) {
+      const $ = cheerio.load(response.data);
+      const rawTiers: Record<string, string[]> = {};
+
+      $('h2, h3').each((_, h) => {
+        const title = $(h).text().trim().toLowerCase();
+        let tierKey: ScrapedRaidBoss['tier'] | null = null;
+
+        if (title === '1-star raids') tierKey = '1';
+        else if (title === '3-star raids') tierKey = '3';
+        else if (title === '5-star raids') tierKey = '5';
+        else if (title === 'mega raids') tierKey = 'mega';
+        else if (title.includes('1-star shadow')) tierKey = 'shadow-1';
+        else if (title.includes('3-star shadow')) tierKey = 'shadow-3';
+        else if (title.includes('5-star shadow')) tierKey = 'shadow-5';
+
+        if (tierKey) {
+          const names: string[] = [];
+          let curr = $(h).next();
+          while (curr.length > 0 && !['h2', 'h3'].includes(curr[0].name)) {
+            curr.find('a').each((_, a) => {
+              const text = $(a).text().trim();
+              if (text && text.length < 40 && !text.includes('Guide') && !text.includes('Counter') && !text.includes('Raid')) {
+                names.push(text);
+              }
+            });
+            curr.find('li').each((_, li) => {
+              const text = $(li).text().trim();
+              if (text && text.length < 40 && !text.includes('Guide') && !text.includes('Counter') && !text.includes('Raid')) {
+                names.push(text);
+              }
+            });
+            if (curr[0].name === 'p' || curr[0].name === 'div') {
+              const lines = curr.text().split('\n').map(l => l.trim()).filter(l => l.length > 0 && l.length < 40);
+              lines.forEach(l => {
+                if (!l.includes('Guide') && !l.includes('Counter') && !l.includes('Raid') && !l.includes('One-Star')) {
+                  names.push(l);
+                }
+              });
+            }
+            curr = curr.next();
+          }
+          rawTiers[tierKey] = Array.from(new Set(names));
+        }
+      });
+
+      const bosses: ScrapedRaidBoss[] = [];
+      for (const [tier, names] of Object.entries(rawTiers)) {
+        for (const name of names) {
+          const matchedCounters = findRaidCounters(name);
+          bosses.push({
+            name,
+            tier: tier as ScrapedRaidBoss['tier'],
+            image: getPokemonIconUrl(name),
+            canBeShiny: true,
+            cpRange: matchedCounters ? `${matchedCounters.minCp} - ${matchedCounters.maxCp}` : undefined,
+            boostedCpRange: matchedCounters ? `${matchedCounters.minBoostedCp} - ${matchedCounters.maxBoostedCp}` : undefined,
+            weatherBoosts: matchedCounters?.weatherBoosts,
+            types: undefined,
+            counters: matchedCounters
+          });
+        }
+      }
+
+      if (bosses.length >= 5) {
+        console.log(`[scrapePoGOHubRaidBosses] Successfully scraped ${bosses.length} live raid bosses via HTTP (Bingbot Header)`);
+        return bosses;
+      }
+    }
+  } catch (err: any) {
+    console.warn(`[scrapePoGOHubRaidBosses] Fast HTTP GET failed: ${err.message}. Trying Puppeteer fallback...`);
+  }
+
+  // Method 2: Puppeteer Fallback
   let browser;
   try {
     const puppeteer = await import('puppeteer');
@@ -2203,11 +2287,11 @@ export async function scrapePoGOHubRaidBosses(): Promise<ScrapedRaidBoss[]> {
       }
     }
     if (bosses.length > 0) {
-      console.log(`[scrapePoGOHubRaidBosses] Successfully scraped ${bosses.length} live raid bosses from Pokémon GO Hub`);
+      console.log(`[scrapePoGOHubRaidBosses] Successfully scraped ${bosses.length} live raid bosses via Puppeteer`);
       return bosses;
     }
   } catch (err: any) {
-    console.warn(`[scrapePoGOHubRaidBosses] Failed to scrape PoGO Hub: ${err.message}`);
+    console.warn(`[scrapePoGOHubRaidBosses] Failed to scrape PoGO Hub via Puppeteer: ${err.message}`);
   } finally {
     if (browser) await browser.close().catch(() => {});
   }
