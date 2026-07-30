@@ -273,14 +273,12 @@ export function resolveImage(url: string | undefined, eventType?: string, name?:
   if (url.includes('cdn.leekduck.com/assets/img/events/')) {
     const lowerUrl = url.toLowerCase();
     
-    // Intercept default/placeholder images to use pokemon sprite if name has a known pokemon
-    if (lowerUrl.includes('default') || lowerUrl.includes('raidhour') || lowerUrl.includes('spotlight')) {
-      if (name) {
-        const baseName = getBasePokemonName(name);
-        const knownNames = getBasePokemonNames();
-        if (knownNames.some(kn => name.toLowerCase().includes(kn.toLowerCase()))) {
-          return getPokemonIconUrl(baseName);
-        }
+    // Intercept default/placeholder images or any event image to use pokemon sprite if name has a known pokemon
+    if (name) {
+      const baseName = getBasePokemonName(name);
+      const knownNames = getBasePokemonNames();
+      if (knownNames.some(kn => name.toLowerCase().includes(kn.toLowerCase()))) {
+        return getPokemonIconUrl(baseName);
       }
     }
     

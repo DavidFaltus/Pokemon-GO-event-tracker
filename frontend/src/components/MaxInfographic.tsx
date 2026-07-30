@@ -3,7 +3,7 @@ import { toPng } from 'html-to-image';
 import { Download, Sparkles, Clock, Calendar, Zap, Check, ShieldCheck, Shield, Flame, Activity } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
-import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError, getBasePokemonNames } from '../utils/imageResolver';
 import { getPokemonImage } from '../data/specialEvents';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { API_BASE_URL } from '../config';
@@ -78,12 +78,33 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, lang }) =
   const [downloadSuccess, setDownloadSuccess] = useState(false);
 
   // Extract Max Boss details
-  let bossName = "Dynamax Pokémon";
-  const match = event.name.match(/(?:max\s+monday|dynamax|gigantamax):\s*([^\.]+)/i) || event.name.match(/([A-Za-z-'\s]+?)\s+(?:max\s+battle|max\s+monday)/i);
-  if (match) {
-    bossName = match[1].trim();
-  } else {
-    bossName = event.name.replace(/max\s*monday/gi, "").replace(/max\s*battles?/gi, "").trim() || "Max Boss";
+  let bossName = "";
+
+  if (event.extraData?.raidbattles?.bosses?.[0]) {
+    const b = event.extraData.raidbattles.bosses[0];
+    bossName = typeof b === 'string' ? b : b.name;
+  }
+
+  if (!bossName) {
+    const knownNames = getBasePokemonNames();
+    const eventNameLower = event.name.toLowerCase();
+    for (const p of knownNames) {
+      if (eventNameLower.includes(p.toLowerCase())) {
+        bossName = p;
+        break;
+      }
+    }
+  }
+
+  if (!bossName) {
+    bossName = event.name
+      .replace(/during\s+max\s+monday/gi, '')
+      .replace(/during/gi, '')
+      .replace(/max\s*monday/gi, '')
+      .replace(/max\s*battles?/gi, '')
+      .replace(/dynamax/gi, '')
+      .replace(/gigantamax/gi, '')
+      .trim() || "Max Boss";
   }
 
   const pokemonImg = getPokemonImage(bossName);
