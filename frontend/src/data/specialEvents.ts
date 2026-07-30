@@ -427,7 +427,11 @@ const POKEMON_DEX_IDS: Record<string, string> = {
   blissey: "242"
 };
 
+import { getPokemonIconUrl } from '../utils/imageResolver';
+
 export function getPokemonImage(name: string): string {
+  if (!name) return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
+  
   const cleanName = name.toLowerCase().trim();
   const dexId = POKEMON_DEX_IDS[cleanName];
   if (dexId) {
@@ -438,5 +442,5 @@ export function getPokemonImage(name: string): string {
       return `https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/pokemon_icons/pokemon_icon_${val}_00.png`;
     }
   }
-  return "https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/pokemon_icons/pokemon_icon_000.png";
+  return getPokemonIconUrl(name);
 }

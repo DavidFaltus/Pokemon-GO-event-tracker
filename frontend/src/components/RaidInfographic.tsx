@@ -3,7 +3,7 @@ import { toPng } from 'html-to-image';
 import { Download, Sparkles, Clock, Calendar, Check, ShieldCheck, Swords, Shield, CloudRain } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
-import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError, getBasePokemonNames } from '../utils/imageResolver';
 import { getPokemonImage } from '../data/specialEvents';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { API_BASE_URL } from '../config';
@@ -40,22 +40,50 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
   const [downloading, setDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
 
-  // Extract Boss Name & details
+  // Extract Bosses List (handles single and multiple bosses like Uxie, Mesprit, Azelf)
   const raidData = event.extraData?.raidbattles;
-  const mainBoss = raidData?.bosses?.[0];
-  
-  let bossName = mainBoss?.name || "";
-  if (!bossName) {
-    const match = event.name.match(/([A-Za-z-'\s]+?)\s+(?:in\s+5-Star\s+Raids|in\s+Raid\s+Hours|Raid\s+Hour|Raid\s+Day)/i);
-    if (match) {
-      bossName = match[1].trim();
-    } else {
-      bossName = event.name.replace(/raid\s*(hour|battles|rotation|day)/gi, "").trim();
-    }
+  const bossesList: { name: string; image: string; canBeShiny?: boolean }[] = [];
+  const nameSet = new Set<string>();
+
+  if (raidData?.bosses && raidData.bosses.length > 0) {
+    raidData.bosses.forEach((b: any) => {
+      const bName = typeof b === 'string' ? b : b.name;
+      if (bName && !nameSet.has(bName.toLowerCase())) {
+        nameSet.add(bName.toLowerCase());
+        bossesList.push({
+          name: bName,
+          image: (typeof b === 'object' && b.image) ? b.image : getPokemonImage(bName),
+          canBeShiny: typeof b === 'object' ? b.canBeShiny : true
+        });
+      }
+    });
   }
 
-  const pokemonImg = mainBoss?.image || getPokemonImage(bossName);
-  const canBeShiny = mainBoss?.canBeShiny ?? true;
+  if (bossesList.length === 0) {
+    const knownNames = getBasePokemonNames();
+    const eventNameLower = event.name.toLowerCase();
+    knownNames.forEach(n => {
+      if (eventNameLower.includes(n.toLowerCase()) && !nameSet.has(n.toLowerCase())) {
+        nameSet.add(n.toLowerCase());
+        bossesList.push({
+          name: n,
+          image: getPokemonImage(n),
+          canBeShiny: true
+        });
+      }
+    });
+  }
+
+  if (bossesList.length === 0) {
+    let fallbackName = event.name.replace(/raid\s*(hour|battles|rotation|day)/gi, "").trim() || "Raid Boss";
+    bossesList.push({
+      name: fallbackName,
+      image: getPokemonImage(fallbackName),
+      canBeShiny: true
+    });
+  }
+
+  const primaryBossName = bossesList[0].name;
 
   // Format dates & times cleanly supporting multi-day raid rotations
   const { dateStr, timeStr, isMultiDay } = formatEventDateRange(event.start, event.end, lang);
@@ -93,7 +121,7 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
       });
 
       const link = document.createElement('a');
-      link.download = `pogo_raid_${bossName.toLowerCase()}.png`;
+      link.download = `pogo_raid_${primaryBossName.toLowerCase()}.png`;
       link.href = dataUrl;
       link.click();
 
@@ -145,7 +173,11 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
             <Swords size={14} className="raid-swords-icon" />
             <span>{event.eventType === 'raid-hour' ? 'RAID HOUR (5★)' : 'RAID BATTLES ROTATION'}</span>
           </div>
-          <h2 className="raid-poster-title">{getPokemonName(bossName, lang)}</h2>
+          <h2 className="raid-poster-title">
+            {bossesList.length > 1 
+              ? bossesList.map(b => getPokemonName(b.name, lang)).join(' • ')
+              : getPokemonName(primaryBossName, lang)}
+          </h2>
           
           <div className="raid-poster-time-bar">
             <div className="raid-time-item">
@@ -166,22 +198,42 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
 
         {/* Main Section */}
         <div className="raid-poster-main">
-          {/* Featured Raid Boss Showcase */}
-          <div className="raid-poke-card">
-            <div className="raid-image-halo"></div>
-            <img 
-              src={resolveImage(pokemonImg, event.eventType, bossName)} 
-              alt={bossName} 
-              className="raid-poke-img"
-              onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, bossName)}
-            />
-            <h3 className="raid-poke-name">{getPokemonName(bossName, lang)}</h3>
-            
-            {canBeShiny && (
-              <div className="raid-shiny-chip">
-                <Sparkles size={13} />
-                <span>✨ Shiny Rate ~1 : 20</span>
+          {/* Featured Raid Bosses Showcase (Supports 1 or Multiple Bosses like Uxie, Mesprit, Azelf) */}
+          <div className={`raid-poke-card ${bossesList.length > 1 ? 'multi-boss' : ''}`}>
+            {bossesList.length > 1 ? (
+              <div className="raid-multi-boss-grid">
+                {bossesList.map((boss, idx) => (
+                  <div key={idx} className="raid-multi-boss-item">
+                    <img 
+                      src={resolveImage(boss.image, event.eventType, boss.name)} 
+                      alt={boss.name} 
+                      className="raid-multi-boss-img"
+                      onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, boss.name)}
+                    />
+                    <span className="raid-multi-boss-name">{getPokemonName(boss.name, lang)}</span>
+                    {boss.canBeShiny && (
+                      <span className="raid-multi-shiny-tag">✨ Shiny</span>
+                    )}
+                  </div>
+                ))}
               </div>
+            ) : (
+              <>
+                <div className="raid-image-halo"></div>
+                <img 
+                  src={resolveImage(bossesList[0].image, event.eventType, primaryBossName)} 
+                  alt={primaryBossName} 
+                  className="raid-poke-img"
+                  onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, primaryBossName)}
+                />
+                <h3 className="raid-poke-name">{getPokemonName(primaryBossName, lang)}</h3>
+                {bossesList[0].canBeShiny && (
+                  <div className="raid-shiny-chip">
+                    <Sparkles size={13} />
+                    <span>✨ Shiny Rate ~1 : 20</span>
+                  </div>
+                )}
+              </>
             )}
           </div>
 

@@ -152,6 +152,50 @@
   text-align: center;
 }
 
+.raid-multi-boss-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+}
+
+.raid-multi-boss-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 12px;
+  padding: 10px 14px;
+  min-width: 85px;
+}
+
+.raid-multi-boss-img {
+  width: 75px;
+  height: 75px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+  margin-bottom: 6px;
+}
+
+.raid-multi-boss-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #f0f6fc;
+  margin-bottom: 4px;
+}
+
+.raid-multi-shiny-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #c084fc;
+  background: rgba(168, 85, 247, 0.15);
+  padding: 2px 6px;
+  border-radius: 8px;
+}
+
 .raid-image-halo {
   position: absolute;
   width: 120px;
