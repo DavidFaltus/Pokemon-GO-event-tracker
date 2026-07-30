@@ -335,13 +335,17 @@ const getUrlPathForTab = (tab: TabType, l: Language): string => {
 };
 
 function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?: TabType } = {}) {
-  const [activeTab, setActiveTab] = useState<TabType>(() => {
-    if (initialTab) return initialTab;
-    if (typeof window !== 'undefined') {
-      return getTabFromUrlPath(window.location.pathname);
+  const [activeTab, setActiveTab] = useState<TabType>(initialTab || 'events');
+
+  useEffect(() => {
+    if (!initialTab && typeof window !== 'undefined') {
+      const urlTab = getTabFromUrlPath(window.location.pathname);
+      if (urlTab !== activeTab) {
+        setActiveTab(urlTab);
+      }
     }
-    return 'events';
-  });
+  }, [initialTab]);
+
   const showAds = activeTab !== 'settings' && activeTab !== 'admin';
 
   // Reactively track tab changes in Google Analytics
@@ -353,10 +357,14 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
   const [filterType, setFilterType] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'active' | 'upcoming'>('active');
   
-  const [viewMode, setViewMode] = useState<'list' | 'timeline'>(() => {
+  const [viewMode, setViewMode] = useState<'list' | 'timeline'>('list');
+
+  useEffect(() => {
     const saved = safeLocalStorage.getItem('pogo_tracker_view_mode');
-    return (saved === 'list' || saved === 'timeline') ? saved : 'list';
-  });
+    if (saved === 'list' || saved === 'timeline') {
+      setViewMode(saved);
+    }
+  }, []);
 
   useEffect(() => {
     safeLocalStorage.setItem('pogo_tracker_view_mode', viewMode);
@@ -370,25 +378,27 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
     isRunning: boolean;
     totalEvents: number;
   }>({ lastScrapedAt: null, nextScrapeAt: null, isRunning: false, totalEvents: 0 });
-  const [lang, setLang] = useState<Language>(() => {
-    if (initialLang) return initialLang;
-    if (typeof window === 'undefined') return 'cs';
-    // 1. Zkusíme zjistit jazyk z URL path
-    const urlLang = getLangFromPath(window.location.pathname);
-    if (urlLang) {
-      safeLocalStorage.setItem('pogo_tracker_lang', urlLang);
-      return urlLang;
+  
+  const [lang, setLang] = useState<Language>(initialLang || 'cs');
+
+  useEffect(() => {
+    if (!initialLang && typeof window !== 'undefined') {
+      const urlLang = getLangFromPath(window.location.pathname);
+      if (urlLang) {
+        safeLocalStorage.setItem('pogo_tracker_lang', urlLang);
+        setLang(urlLang);
+        return;
+      }
+      const saved = safeLocalStorage.getItem('pogo_tracker_lang');
+      if (saved === 'en' || saved === 'cs' || saved === 'ja' || saved === 'ru') {
+        setLang(saved as Language);
+        return;
+      }
+      const detected = detectUserLanguage();
+      safeLocalStorage.setItem('pogo_tracker_lang', detected);
+      setLang(detected);
     }
-
-    // 2. Pokud není v URL, zkusíme safeLocalStorage
-    const saved = safeLocalStorage.getItem('pogo_tracker_lang');
-    if (saved === 'en' || saved === 'cs' || saved === 'ja' || saved === 'ru') return saved as Language;
-
-    // 3. Jinak automatická detekce lokace/jazyka
-    const detected = detectUserLanguage();
-    safeLocalStorage.setItem('pogo_tracker_lang', detected);
-    return detected;
-  });
+  }, [initialLang]);
 
   const changeTab = (newTab: TabType) => {
     setActiveTab(newTab);
@@ -422,10 +432,14 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
     return () => window.removeEventListener('popstate', handlePopState);
   }, [lang]);
   
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  useEffect(() => {
     const saved = safeLocalStorage.getItem('pogo_tracker_theme');
-    return (saved === 'light' || saved === 'dark') ? saved : 'light';
-  });
+    if (saved === 'light' || saved === 'dark') {
+      setTheme(saved);
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -434,12 +448,17 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
     }
   }, [theme]);
 
-  const [timezone, setTimezone] = useState<string>(() => {
+  const [timezone, setTimezone] = useState<string>('Europe/Prague');
+
+  useEffect(() => {
     const saved = safeLocalStorage.getItem('pogo_tracker_timezone');
-    if (saved) return saved;
-    if (typeof window === 'undefined') return 'Europe/Prague';
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Prague';
-  });
+    if (saved) {
+      setTimezone(saved);
+    } else if (typeof window !== 'undefined') {
+      const detectedTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (detectedTz) setTimezone(detectedTz);
+    }
+  }, []);
 
   const [filterModalInitialBoss, setFilterModalInitialBoss] = useState<string>('Palkia');
 

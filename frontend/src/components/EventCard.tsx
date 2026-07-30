@@ -9,11 +9,12 @@ import type { Language } from '../data/translations';
 import { getSpecialEventDetails, getPokemonImage } from '../data/specialEvents';
 import { findPokemonMeta } from '../data/pokemonMeta';
 import { useDynamicEventDetails } from '../hooks/useDynamicEventDetails';
-import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Flame, RefreshCw, Plus, Check } from 'lucide-react';
+import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Flame, RefreshCw, Plus, Check, Image as ImageIcon, LayoutList } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
 import { resolveImage, handlePokemonImageError, getBasePokemonName, getBasePokemonNames, getPokemonIconUrl } from '../utils/imageResolver';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { DirectRaidFilterBox } from './DirectRaidFilterBox';
+import { CommunityDayInfographic } from './CommunityDayInfographic';
 
 const EggIcon = ({ size = 16 }: { size?: number }) => (
   <svg viewBox="0 0 100 120" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
@@ -229,11 +230,18 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
   const specialDetails = staticDetails || dynamicDetails;
 
   // Spawns checklist tick tracker
-  const [tickedSpawns, setTickedSpawns] = useState<string[]>(() => {
-    if (typeof window === 'undefined') return [];
-    const saved = localStorage.getItem(`pogo_spawns_${event.eventID}`);
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [tickedSpawns, setTickedSpawns] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(`pogo_spawns_${event.eventID}`);
+      if (saved) {
+        try {
+          setTickedSpawns(JSON.parse(saved));
+        } catch (e) {}
+      }
+    }
+  }, [event.eventID]);
 
   const toggleSpawnTicked = (spawnName: string) => {
     let updated;
@@ -247,6 +255,8 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
       localStorage.setItem(`pogo_spawns_${event.eventID}`, JSON.stringify(updated));
     }
   };
+
+  const [cdViewMode, setCdViewMode] = useState<'infographic' | 'details'>('infographic');
 
 
   // Check raid bosses
@@ -744,154 +754,175 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
             {/* TEMPLATE 2: COMMUNITY DAY TEMPLATE */}
             {event.eventType === 'community-day' && (
               <div className="expanded-row community-day-details-box">
-                {(() => {
-                  const cd = event.extraData?.communityday;
-                  const featuredPokemon = cd?.spawns?.[0]?.name || event.name.replace(/community\s*day/gi, "").replace(/classic/gi, "").trim();
-                  const meta = findPokemonMeta(featuredPokemon);
-                  const dexImage = cd?.spawns?.[0]?.image || getPokemonImage(featuredPokemon);
-                  
-                  const liveBonuses = cd?.bonuses || [];
-                  let specialMove = "";
-                  let localBonuses = specialDetails?.bonuses || [];
-                  const moveBonus = localBonuses.find((b: any) => getBonusInfo(b, lang).icon === '⚔️');
-                  if (moveBonus) {
-                    specialMove = getBonusInfo(moveBonus, lang).text;
-                  }
+                <div className="cd-view-toggle-bar">
+                  <button 
+                    className={`cd-view-toggle-btn ${cdViewMode === 'infographic' ? 'active' : ''}`}
+                    onClick={() => setCdViewMode('infographic')}
+                  >
+                    <ImageIcon size={15} />
+                    {lang === 'cs' ? '🎨 Plakát / Infografika' : '🎨 Poster / Infographic'}
+                  </button>
+                  <button 
+                    className={`cd-view-toggle-btn ${cdViewMode === 'details' ? 'active' : ''}`}
+                    onClick={() => setCdViewMode('details')}
+                  >
+                    <LayoutList size={15} />
+                    {lang === 'cs' ? '📋 Podrobný přehled' : '📋 Detailed View'}
+                  </button>
+                </div>
 
-                  return (
-                    <>
-                      {/* Featured Spawns */}
-                      <div className="cd-spawns-section">
-                        <h5>{t.details_spawns}</h5>
-                        <div className="cd-spawns-flex">
-                          <div className="cd-spawn-card">
-                            <img 
-                              src={resolveImage(dexImage, event.eventType, featuredPokemon)} 
-                              alt={featuredPokemon} 
-                              className="cd-spawn-img" 
-                              onError={(e) => {
-                                handlePokemonImageError(e.target as HTMLImageElement, featuredPokemon);
-                              }}
-                            />
-                            <span className="cd-spawn-name">{featuredPokemon}</span>
-                            <span className="shiny-badge-mini">✨ Shiny Rate ~1:25</span>
+                {cdViewMode === 'infographic' ? (
+                  <CommunityDayInfographic event={event} lang={lang} timezone={timezone} />
+                ) : (
+                  (() => {
+                    const cd = event.extraData?.communityday;
+                    const featuredPokemon = cd?.spawns?.[0]?.name || event.name.replace(/community\s*day/gi, "").replace(/classic/gi, "").trim();
+                    const meta = findPokemonMeta(featuredPokemon);
+                    const dexImage = cd?.spawns?.[0]?.image || getPokemonImage(featuredPokemon);
+                    
+                    const liveBonuses = cd?.bonuses || [];
+                    let specialMove = "";
+                    let localBonuses = specialDetails?.bonuses || [];
+                    const moveBonus = localBonuses.find((b: any) => getBonusInfo(b, lang).icon === '⚔️');
+                    if (moveBonus) {
+                      specialMove = getBonusInfo(moveBonus, lang).text;
+                    }
+
+                    return (
+                      <>
+                        {/* Featured Spawns */}
+                        <div className="cd-spawns-section">
+                          <h5>{t.details_spawns}</h5>
+                          <div className="cd-spawns-flex">
+                            <div className="cd-spawn-card">
+                              <img 
+                                src={resolveImage(dexImage, event.eventType, featuredPokemon)} 
+                                alt={featuredPokemon} 
+                                className="cd-spawn-img" 
+                                onError={(e) => {
+                                  handlePokemonImageError(e.target as HTMLImageElement, featuredPokemon);
+                                }}
+                              />
+                              <span className="cd-spawn-name">{featuredPokemon}</span>
+                              <span className="shiny-badge-mini">✨ Shiny Rate ~1:25</span>
+                            </div>
+                            {cd?.shinies && cd.shinies.length > 0 && (
+                              <div className="cd-shiny-family">
+                                <h6>{lang === 'cs' ? 'Evoluce a Shiny formy:' : 'Shiny Family:'}</h6>
+                                <div className="shiny-family-flex">
+                                  {cd.shinies.map((s: any) => (
+                                    <div key={s.name} className="shiny-family-item">
+                                      <img 
+                                        src={resolveImage(s.image, event.eventType, s.name)} 
+                                        alt={getPokemonName(s.name, lang)} 
+                                        onError={(e) => {
+                                          handlePokemonImageError(e.target as HTMLImageElement, s.name);
+                                        }}
+                                      />
+                                      <span>{getPokemonName(s.name, lang)}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
-                          {cd?.shinies && cd.shinies.length > 0 && (
-                            <div className="cd-shiny-family">
-                              <h6>{lang === 'cs' ? 'Evoluce a Shiny formy:' : 'Shiny Family:'}</h6>
-                              <div className="shiny-family-flex">
-                                {cd.shinies.map((s: any) => (
-                                  <div key={s.name} className="shiny-family-item">
-                                    <img 
-                                      src={resolveImage(s.image, event.eventType, s.name)} 
-                                      alt={getPokemonName(s.name, lang)} 
-                                      onError={(e) => {
-                                        handlePokemonImageError(e.target as HTMLImageElement, s.name);
-                                      }}
-                                    />
-                                    <span>{getPokemonName(s.name, lang)}</span>
-                                  </div>
-                                ))}
+                        </div>
+
+                        {/* CD Bonuses */}
+                        <div className="cd-bonuses-section">
+                          <h5>{t.details_bonuses}</h5>
+                          
+                          {specialMove && (
+                            <div className="cd-special-move-box">
+                              <span className="move-icon">⚔️</span>
+                              <div className="move-text">
+                                <strong>{lang === 'cs' ? 'Exkluzivní útok:' : 'Exclusive Move:'}</strong>
+                                <p>{specialMove}</p>
                               </div>
                             </div>
                           )}
-                        </div>
-                      </div>
 
-                      {/* CD Bonuses */}
-                      <div className="cd-bonuses-section">
-                        <h5>{t.details_bonuses}</h5>
-                        
-                        {specialMove && (
-                          <div className="cd-special-move-box">
-                            <span className="move-icon">⚔️</span>
-                            <div className="move-text">
-                              <strong>{lang === 'cs' ? 'Exkluzivní útok:' : 'Exclusive Move:'}</strong>
-                              <p>{specialMove}</p>
-                            </div>
+                          <div className="cd-bonuses-grid">
+                            {liveBonuses.map((b: any, idx: number) => {
+                              const { text: bText, image: bImg } = getBonusInfo(b, lang);
+                              return (
+                                <div key={idx} className="cd-bonus-item">
+                                  {bImg ? <img src={bImg} alt="bonus" className="cd-bonus-icon-img" /> : <span className="cd-bonus-emoji">🎁</span>}
+                                  <span>{bText}</span>
+                                </div>
+                              );
+                            })}
+                            {liveBonuses.length === 0 && localBonuses.filter((b: any) => getBonusInfo(b, lang).icon !== '⚔️').map((b: any, idx: number) => {
+                              const { text: bText, icon: bIcon } = getBonusInfo(b, lang);
+                              return (
+                                <div key={idx} className="cd-bonus-item">
+                                  <span className="cd-bonus-emoji">{bIcon}</span>
+                                  <span>{bText}</span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Special Research Steps */}
+                        {cd?.specialresearch && cd.specialresearch.length > 0 && (
+                          <div className="cd-research-section">
+                            <h5>🏆 {lang === 'ja' ? 'スペシャルリサーチ:' : lang === 'cs' ? 'Úkoly speciálního výzkumu:' : 'Special Research:'}</h5>
+                            {cd.specialresearch.map((step: any, sIdx: number) => {
+                              const getStepName = (name: string) => {
+                                if (lang === 'ja') {
+                                  let jaName = name;
+                                  jaName = jaName.replace(/Community Day/gi, 'コミュニティデイ');
+                                  const basePoke = getBasePokemonNames().find(p => jaName.toLowerCase().includes(p.toLowerCase()));
+                                  if (basePoke) {
+                                    jaName = jaName.replace(new RegExp(basePoke, 'gi'), getPokemonName(basePoke, 'ja'));
+                                  }
+                                  return jaName;
+                                }
+                                return name;
+                              };
+                              const stepLabel = step.name ? getStepName(step.name) : `${lang === 'cs' ? 'Krok' : 'Step'} ${step.step}`;
+                              return (
+                                <div key={sIdx} className="cd-research-step-box">
+                                  <h6>{stepLabel}</h6>
+                                <ul className="cd-tasks-list">
+                                  {step.tasks?.map((task: any, tIdx: number) => (
+                                    <li key={tIdx} className="cd-task-item-li">
+                                      <span>{getLocalizedText(task.text, lang)}</span>
+                                      {task.reward && (
+                                        <span className="cd-task-reward">
+                                          🎁 {getLocalizedText(task.reward.text || task.reward, lang)}
+                                        </span>
+                                      )}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )})}
                           </div>
                         )}
 
-                        <div className="cd-bonuses-grid">
-                          {liveBonuses.map((b: any, idx: number) => {
-                            const { text: bText, image: bImg } = getBonusInfo(b, lang);
-                            return (
-                              <div key={idx} className="cd-bonus-item">
-                                {bImg ? <img src={bImg} alt="bonus" className="cd-bonus-icon-img" /> : <span className="cd-bonus-emoji">🎁</span>}
-                                <span>{bText}</span>
-                              </div>
-                            );
-                          })}
-                          {liveBonuses.length === 0 && localBonuses.filter((b: any) => getBonusInfo(b, lang).icon !== '⚔️').map((b: any, idx: number) => {
-                            const { text: bText, icon: bIcon } = getBonusInfo(b, lang);
-                            return (
-                              <div key={idx} className="cd-bonus-item">
-                                <span className="cd-bonus-emoji">{bIcon}</span>
-                                <span>{bText}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-
-                      {/* Special Research Steps */}
-                      {cd?.specialresearch && cd.specialresearch.length > 0 && (
-                        <div className="cd-research-section">
-                          <h5>🏆 {lang === 'ja' ? 'スペシャルリサーチ:' : lang === 'cs' ? 'Úkoly speciálního výzkumu:' : 'Special Research:'}</h5>
-                          {cd.specialresearch.map((step: any, sIdx: number) => {
-                            const getStepName = (name: string) => {
-                              if (lang === 'ja') {
-                                let jaName = name;
-                                jaName = jaName.replace(/Community Day/gi, 'コミュニティデイ');
-                                const basePoke = getBasePokemonNames().find(p => jaName.toLowerCase().includes(p.toLowerCase()));
-                                if (basePoke) {
-                                  jaName = jaName.replace(new RegExp(basePoke, 'gi'), getPokemonName(basePoke, 'ja'));
-                                }
-                                return jaName;
-                              }
-                              return name;
-                            };
-                            const stepLabel = step.name ? getStepName(step.name) : `${lang === 'cs' ? 'Krok' : 'Step'} ${step.step}`;
-                            return (
-                              <div key={sIdx} className="cd-research-step-box">
-                                <h6>{stepLabel}</h6>
-                              <ul className="cd-tasks-list">
-                                {step.tasks?.map((task: any, tIdx: number) => (
-                                  <li key={tIdx} className="cd-task-item-li">
-                                    <span>{getLocalizedText(task.text, lang)}</span>
-                                    {task.reward && (
-                                      <span className="cd-task-reward">
-                                        🎁 {getLocalizedText(task.reward.text || task.reward, lang)}
-                                      </span>
-                                    )}
-                                  </li>
-                                ))}
-                              </ul>
+                        {/* Meta Analysis */}
+                        {meta && (
+                          <div className="cd-meta-section">
+                            <h5>📊 {lang === 'ja' ? 'メタ分析（対戦＆レイド）' : 'PvE & PvP Meta Analysis'}</h5>
+                            <div className="meta-ratings-row">
+                              <div className="rating-badge">PvE: <strong className={`rating-val val-${meta.pveRating}`}>{meta.pveRating}</strong></div>
+                              <div className="rating-badge">PvP: <strong className={`rating-val val-${meta.pvpRating}`}>{meta.pvpRating}</strong></div>
                             </div>
-                          )})}
-                        </div>
-                      )}
-
-                      {/* Meta Analysis */}
-                      {meta && (
-                        <div className="cd-meta-section">
-                          <h5>📊 {lang === 'ja' ? 'メタ分析（対戦＆レイド）' : 'PvE & PvP Meta Analysis'}</h5>
-                          <div className="meta-ratings-row">
-                            <div className="rating-badge">PvE: <strong className={`rating-val val-${meta.pveRating}`}>{meta.pveRating}</strong></div>
-                            <div className="rating-badge">PvP: <strong className={`rating-val val-${meta.pvpRating}`}>{meta.pvpRating}</strong></div>
+                            <p className="meta-rank-desc"><strong>PvE:</strong> {lang === 'cs' ? meta.pveRankText.cs : meta.pveRankText.en}</p>
+                            <p className="meta-rank-desc"><strong>PvP:</strong> {lang === 'cs' ? meta.pvpRankText.cs : meta.pvpRankText.en}</p>
+                            <div className="meta-moves">
+                              <strong>{lang === 'cs' ? 'Doporučené útoky:' : 'Best Moveset:'}</strong> 
+                              <code>{meta.bestFastMove} + {meta.bestChargedMove}</code>
+                            </div>
+                            <p className="meta-notes-text">💡 <em>{lang === 'cs' ? meta.notes.cs : meta.notes.en}</em></p>
                           </div>
-                          <p className="meta-rank-desc"><strong>PvE:</strong> {lang === 'cs' ? meta.pveRankText.cs : meta.pveRankText.en}</p>
-                          <p className="meta-rank-desc"><strong>PvP:</strong> {lang === 'cs' ? meta.pvpRankText.cs : meta.pvpRankText.en}</p>
-                          <div className="meta-moves">
-                            <strong>{lang === 'cs' ? 'Doporučené útoky:' : 'Best Moveset:'}</strong> 
-                            <code>{meta.bestFastMove} + {meta.bestChargedMove}</code>
-                          </div>
-                          <p className="meta-notes-text">💡 <em>{lang === 'cs' ? meta.notes.cs : meta.notes.en}</em></p>
-                        </div>
-                      )}
-                    </>
-                  );
-                })()}
+                        )}
+                      </>
+                    );
+                  })()
+                )}
               </div>
             )}
 

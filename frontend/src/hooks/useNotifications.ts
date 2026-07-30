@@ -45,40 +45,39 @@ function makeNotifId(eventId: string, suffix: number = 0): number {
 export function useNotifications() {
   const [permission, setPermission] = useState<NotificationPermission>('default');
 
-  const [preferences, setPreferences] = useState<NotificationPreference>(() => {
-    const defaults: NotificationPreference = {
-      all: true,
-      communityDays: true,
-      spotlightHours: true,
-      raidHours: true,
-      majorEvents: true,
-      rocketTakeovers: true,
-      goBattleLeague: true,
-      maxMondays: true,
-      newEvents: true,
-    };
-    if (typeof window === 'undefined') return defaults;
-    const saved = localStorage.getItem('pogo_tracker_notif_prefs');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        return { ...defaults, ...parsed };
-      } catch (e) { /* ignore */ }
-    }
-    return defaults;
+  const [preferences, setPreferences] = useState<NotificationPreference>({
+    all: true,
+    communityDays: true,
+    spotlightHours: true,
+    raidHours: true,
+    majorEvents: true,
+    rocketTakeovers: true,
+    goBattleLeague: true,
+    maxMondays: true,
+    newEvents: true,
   });
 
-  const [inAppNotifications, setInAppNotifications] = useState<InAppNotification[]>(() => {
-    if (typeof window === 'undefined') return [];
-    const saved = localStorage.getItem('pogo_tracker_in_app_notifs');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        return parsed.map((n: any) => ({ ...n, timestamp: new Date(n.timestamp) }));
-      } catch (e) { /* ignore */ }
+  const [inAppNotifications, setInAppNotifications] = useState<InAppNotification[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedPrefs = localStorage.getItem('pogo_tracker_notif_prefs');
+      if (savedPrefs) {
+        try {
+          const parsed = JSON.parse(savedPrefs);
+          setPreferences(prev => ({ ...prev, ...parsed }));
+        } catch (e) {}
+      }
+
+      const savedNotifs = localStorage.getItem('pogo_tracker_in_app_notifs');
+      if (savedNotifs) {
+        try {
+          const parsed = JSON.parse(savedNotifs);
+          setInAppNotifications(parsed.map((n: any) => ({ ...n, timestamp: new Date(n.timestamp) })));
+        } catch (e) {}
+      }
     }
-    return [];
-  });
+  }, []);
 
   // Check notification permission on load
   useEffect(() => {

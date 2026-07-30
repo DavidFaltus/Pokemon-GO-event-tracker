@@ -1245,3 +1245,43 @@ body.light-mode .checklist-input {
   border: 1px solid rgba(15, 23, 42, 0.18) !important;
   color: #0f172a !important;
 }
+
+/* Community Day Toggle Bar */
+.cd-view-toggle-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  background: rgba(13, 17, 23, 0.6);
+  padding: 4px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+}
+
+.cd-view-toggle-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cd-view-toggle-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.cd-view-toggle-btn.active {
+  background: linear-gradient(135deg, rgba(0, 242, 254, 0.2) 0%, rgba(79, 172, 254, 0.2) 100%);
+  color: #4facfe;
+  border: 1px solid rgba(79, 172, 254, 0.4);
+}
+
