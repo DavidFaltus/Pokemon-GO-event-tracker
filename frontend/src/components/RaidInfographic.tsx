@@ -1,13 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
-import { Download, Sparkles, Clock, Calendar, Zap, Check, ShieldCheck, Swords, Shield, CloudRain } from 'lucide-react';
+import { Download, Sparkles, Clock, Calendar, Check, ShieldCheck, Swords, Shield, CloudRain } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
 import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { getPokemonImage } from '../data/specialEvents';
-import { findPokemonMeta } from '../data/pokemonMeta';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { API_BASE_URL } from '../config';
+import { formatEventDateRange } from './MaxInfographic';
 import './RaidInfographic.css';
 
 interface RaidInfographicProps {
@@ -57,20 +57,8 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
   const pokemonImg = mainBoss?.image || getPokemonImage(bossName);
   const canBeShiny = mainBoss?.canBeShiny ?? true;
 
-  const meta = findPokemonMeta(bossName);
-
-  // Format dates & times
-  const startDate = new Date(event.start);
-  const endDate = new Date(event.end);
-
-  const dateStr = startDate.toLocaleDateString(lang === 'cs' ? 'cs-CZ' : lang === 'ja' ? 'ja-JP' : 'en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-
-  const timeStr = `${startDate.toLocaleTimeString(lang === 'cs' ? 'cs-CZ' : 'en-US', { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString(lang === 'cs' ? 'cs-CZ' : 'en-US', { hour: '2-digit', minute: '2-digit' })}`;
+  // Format dates & times cleanly supporting multi-day raid rotations
+  const { dateStr, timeStr, isMultiDay } = formatEventDateRange(event.start, event.end, lang);
 
   // Download handler
   const handleDownload = async () => {
@@ -155,7 +143,7 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
         <div className="raid-poster-header">
           <div className="raid-poster-badge">
             <Swords size={14} className="raid-swords-icon" />
-            <span>{event.eventType === 'raid-hour' ? 'RAID HOUR (5★)' : 'RAID BATTLES'}</span>
+            <span>{event.eventType === 'raid-hour' ? 'RAID HOUR (5★)' : 'RAID BATTLES ROTATION'}</span>
           </div>
           <h2 className="raid-poster-title">{getPokemonName(bossName, lang)}</h2>
           
@@ -164,11 +152,15 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
               <Calendar size={15} />
               <span>{dateStr}</span>
             </div>
-            <div className="raid-time-divider">•</div>
-            <div className="raid-time-item">
-              <Clock size={15} />
-              <span>{timeStr}</span>
-            </div>
+            {!isMultiDay && timeStr && (
+              <>
+                <div className="raid-time-divider">•</div>
+                <div className="raid-time-item">
+                  <Clock size={15} />
+                  <span>{timeStr}</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -213,13 +205,6 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
                 <span className="raid-cp-val boost">CP 2,812 - 2,937</span>
               </div>
             </div>
-
-            {meta && (
-              <div className="raid-moves-box">
-                <span className="raid-moves-title">{lang === 'cs' ? 'Nejlepší PvP/PvE útoky:' : 'Best Moveset:'}</span>
-                <span className="raid-moves-code">{meta.bestFastMove} + {meta.bestChargedMove}</span>
-              </div>
-            )}
           </div>
         </div>
 

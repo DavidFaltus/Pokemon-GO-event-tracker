@@ -18,6 +18,7 @@ import { CommunityDayInfographic } from './CommunityDayInfographic';
 import { SpotlightInfographic } from './SpotlightInfographic';
 import { RaidInfographic } from './RaidInfographic';
 import { RocketInfographic } from './RocketInfographic';
+import { MaxInfographic } from './MaxInfographic';
 
 const EggIcon = ({ size = 16 }: { size?: number }) => (
   <svg viewBox="0 0 100 120" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
@@ -1002,8 +1003,33 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
               </div>
             )}
 
-            {/* TEMPLATE 5: GENERAL SPECIAL EVENT GUIDE (if loaded locally and not CD/Spotlight and not in infographic mode) */}
-            {event.eventType !== 'pokemon-spotlight-hour' && event.eventType !== 'community-day' && specialDetails && (cdViewMode === 'details' || (!event.eventType.includes('raid') && !event.eventType.includes('rocket'))) && (
+            {/* TEMPLATE 5: MAX BATTLES & MAX MONDAYS INFOGRAPHIC TEMPLATE */}
+            {(event.eventType.includes('max') || event.name.toLowerCase().includes('max')) && (
+              <div className="expanded-row max-infographic-toggle-box">
+                <div className="cd-view-toggle-bar">
+                  <button 
+                    className={`cd-view-toggle-btn ${cdViewMode === 'infographic' ? 'active' : ''}`}
+                    onClick={() => setCdViewMode('infographic')}
+                  >
+                    <ImageIcon size={15} />
+                    {lang === 'cs' ? '🎨 Plakát / Infografika' : '🎨 Poster / Infographic'}
+                  </button>
+                  <button 
+                    className={`cd-view-toggle-btn ${cdViewMode === 'details' ? 'active' : ''}`}
+                    onClick={() => setCdViewMode('details')}
+                  >
+                    <LayoutList size={15} />
+                    {lang === 'cs' ? '📋 Podrobný přehled' : '📋 Detailed View'}
+                  </button>
+                </div>
+                {cdViewMode === 'infographic' && (
+                  <MaxInfographic event={event} lang={lang} timezone={timezone} />
+                )}
+              </div>
+            )}
+
+            {/* TEMPLATE 6: GENERAL SPECIAL EVENT GUIDE (if loaded locally and not CD/Spotlight and not in infographic mode) */}
+            {event.eventType !== 'pokemon-spotlight-hour' && event.eventType !== 'community-day' && specialDetails && (cdViewMode === 'details' || (!event.eventType.includes('raid') && !event.eventType.includes('rocket') && !event.eventType.includes('max'))) && (
               <div className="expanded-row special-event-guide-box">
                 <div className="special-guide-header">
                   <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>

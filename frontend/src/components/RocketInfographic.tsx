@@ -1,12 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
-import { Download, Sparkles, Clock, Calendar, Zap, Check, ShieldCheck, Flame, Skull, AlertTriangle } from 'lucide-react';
+import { Download, Clock, Calendar, Check, ShieldCheck, Flame, Skull, AlertTriangle } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
 import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { getPokemonImage } from '../data/specialEvents';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { API_BASE_URL } from '../config';
+import { formatEventDateRange } from './MaxInfographic';
 import './RocketInfographic.css';
 
 interface RocketInfographicProps {
@@ -50,18 +51,8 @@ export const RocketInfographic: React.FC<RocketInfographicProps> = ({ event, lan
 
   const pokemonImg = getPokemonImage(mainBoss);
 
-  // Format dates & times
-  const startDate = new Date(event.start);
-  const endDate = new Date(event.end);
-
-  const dateStr = startDate.toLocaleDateString(lang === 'cs' ? 'cs-CZ' : lang === 'ja' ? 'ja-JP' : 'en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-
-  const timeStr = `${startDate.toLocaleTimeString(lang === 'cs' ? 'cs-CZ' : 'en-US', { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString(lang === 'cs' ? 'cs-CZ' : 'en-US', { hour: '2-digit', minute: '2-digit' })}`;
+  // Format dates & times cleanly supporting multi-day range
+  const { dateStr, timeStr, isMultiDay } = formatEventDateRange(event.start, event.end, lang);
 
   // Download handler
   const handleDownload = async () => {
@@ -155,11 +146,15 @@ export const RocketInfographic: React.FC<RocketInfographicProps> = ({ event, lan
               <Calendar size={15} />
               <span>{dateStr}</span>
             </div>
-            <div className="rocket-time-divider">•</div>
-            <div className="rocket-time-item">
-              <Clock size={15} />
-              <span>{timeStr}</span>
-            </div>
+            {!isMultiDay && timeStr && (
+              <>
+                <div className="rocket-time-divider">•</div>
+                <div className="rocket-time-item">
+                  <Clock size={15} />
+                  <span>{timeStr}</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
 

@@ -1,13 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
-import { Download, Sparkles, Clock, Calendar, Zap, Check, ShieldCheck, Flame, Star, Award } from 'lucide-react';
+import { Download, Sparkles, Clock, Calendar, Zap, Check, ShieldCheck, Star } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
 import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { getPokemonImage } from '../data/specialEvents';
-import { findPokemonMeta } from '../data/pokemonMeta';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { API_BASE_URL } from '../config';
+import { formatEventDateRange } from './MaxInfographic';
 import './SpotlightInfographic.css';
 
 interface SpotlightInfographicProps {
@@ -46,20 +46,8 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
   const canBeShiny = spotlightData?.canBeShiny ?? true;
   const rawBonus = spotlightData?.bonus || '';
 
-  const meta = findPokemonMeta(pokeName);
-
-  // Format dates & times
-  const startDate = new Date(event.start);
-  const endDate = new Date(event.end);
-
-  const dateStr = startDate.toLocaleDateString(lang === 'cs' ? 'cs-CZ' : lang === 'ja' ? 'ja-JP' : 'en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-
-  const timeStr = `${startDate.toLocaleTimeString(lang === 'cs' ? 'cs-CZ' : 'en-US', { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString(lang === 'cs' ? 'cs-CZ' : 'en-US', { hour: '2-digit', minute: '2-digit' })}`;
+  // Format dates & times cleanly supporting multi-day range if needed
+  const { dateStr, timeStr, isMultiDay } = formatEventDateRange(event.start, event.end, lang);
 
   // Translate bonus
   const getBonusText = (b: string) => {
@@ -166,11 +154,15 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
               <Calendar size={15} />
               <span>{dateStr}</span>
             </div>
-            <div className="spotlight-time-divider">•</div>
-            <div className="spotlight-time-item">
-              <Clock size={15} />
-              <span>{timeStr}</span>
-            </div>
+            {!isMultiDay && timeStr && (
+              <>
+                <div className="spotlight-time-divider">•</div>
+                <div className="spotlight-time-item">
+                  <Clock size={15} />
+                  <span>{timeStr}</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -209,29 +201,6 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
             </div>
           </div>
         </div>
-
-        {/* Meta Analysis if available */}
-        {meta && (
-          <div className="spotlight-meta-card">
-            <div className="spotlight-card-section-title">
-              <Award size={15} />
-              <span>{lang === 'cs' ? 'PVE & PVP META HODNOCENÍ' : 'PVE & PVP META RATINGS'}</span>
-            </div>
-            <div className="spotlight-meta-grid">
-              <div className="spotlight-meta-rating-item">
-                <span className="spotlight-meta-label">PvE Raids:</span>
-                <span className={`spotlight-meta-badge val-${meta.pveRating}`}>{meta.pveRating}</span>
-              </div>
-              <div className="spotlight-meta-rating-item">
-                <span className="spotlight-meta-label">PvP League:</span>
-                <span className={`spotlight-meta-badge val-${meta.pvpRating}`}>{meta.pvpRating}</span>
-              </div>
-            </div>
-            <div className="spotlight-best-moves">
-              <strong>{lang === 'cs' ? 'Doporučené útoky:' : 'Best Moveset:'}</strong> {meta.bestFastMove} + {meta.bestChargedMove}
-            </div>
-          </div>
-        )}
 
         {/* Footer */}
         <div className="spotlight-poster-footer">
