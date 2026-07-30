@@ -86,10 +86,12 @@ const BonusIcon: React.FC<{ type: string; color: string }> = ({ type, color }) =
   }
 };
 
-// Converts image URL to Base64 Data URL to avoid CORS or load failures on canvas render
+// Converts image URL to Base64 Data URL via Next.js API proxy to bypass browser CORS restrictions
 const fetchImageAsBase64 = async (url: string): Promise<string> => {
+  if (!url || url.startsWith('data:')) return url;
   try {
-    const res = await fetch(url);
+    const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
+    const res = await fetch(proxyUrl);
     if (!res.ok) return url;
     const blob = await res.blob();
     return new Promise((resolve) => {
