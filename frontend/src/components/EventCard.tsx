@@ -15,6 +15,9 @@ import { resolveImage, handlePokemonImageError, getBasePokemonName, getBasePokem
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { DirectRaidFilterBox } from './DirectRaidFilterBox';
 import { CommunityDayInfographic } from './CommunityDayInfographic';
+import { SpotlightInfographic } from './SpotlightInfographic';
+import { RaidInfographic } from './RaidInfographic';
+import { RocketInfographic } from './RocketInfographic';
 
 const EggIcon = ({ size = 16 }: { size?: number }) => (
   <svg viewBox="0 0 100 120" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
@@ -696,58 +699,81 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
             {/* TEMPLATE 1: SPOTLIGHT HOUR TEMPLATE */}
             {event.eventType === 'pokemon-spotlight-hour' && event.extraData?.spotlight && (
               <div className="expanded-row spotlight-hour-details-box">
-                <div className="spotlight-content-grid">
-                  <div className="spotlight-pokemon-info">
-                    <img 
-                      src={resolveImage(event.extraData?.spotlight?.image || getPokemonImage(event.extraData?.spotlight?.name || ''), event.eventType, event.extraData?.spotlight?.name)} 
-                      alt={event.extraData?.spotlight?.name || ''} 
-                      className="spotlight-pokemon-img"
-                      onError={(e) => {
-                        handlePokemonImageError(e.target as HTMLImageElement, event.extraData?.spotlight?.name || '');
-                      }}
-                    />
-                    <div className="spotlight-poke-meta">
-                      <strong>{event.extraData.spotlight.name}</strong>
-                      {event.extraData.spotlight.canBeShiny && (
-                        <span className="shiny-indicator-badge">✨ Shiny</span>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="spotlight-bonus-info">
-                    <div className="bonus-pill-large">
-                      <span className="bonus-icon">🍬</span>
-                      <div className="bonus-text-wrapper">
-                        <span className="bonus-label">{lang === 'cs' ? 'Aktivní Bonus:' : 'Active Bonus:'}</span>
-                        <strong className="bonus-val">
-                          {translateSpotlightBonus(event.extraData.spotlight.bonus || '')}
-                        </strong>
-                      </div>
-                    </div>
-                  </div>
+                <div className="cd-view-toggle-bar">
+                  <button 
+                    className={`cd-view-toggle-btn ${cdViewMode === 'infographic' ? 'active' : ''}`}
+                    onClick={() => setCdViewMode('infographic')}
+                  >
+                    <ImageIcon size={15} />
+                    {lang === 'cs' ? '🎨 Plakát / Infografika' : '🎨 Poster / Infographic'}
+                  </button>
+                  <button 
+                    className={`cd-view-toggle-btn ${cdViewMode === 'details' ? 'active' : ''}`}
+                    onClick={() => setCdViewMode('details')}
+                  >
+                    <LayoutList size={15} />
+                    {lang === 'cs' ? '📋 Podrobný přehled' : '📋 Detailed View'}
+                  </button>
                 </div>
 
-                {/* Meta recommendations */}
-                {(() => {
-                  const meta = findPokemonMeta(event.extraData?.spotlight?.name || '');
-                  if (!meta) return null;
-                  return (
-                    <div className="spotlight-meta-recommendations">
-                      <h5>📊 PvE & PvP Meta Analysis</h5>
-                      <div className="meta-ratings-row">
-                        <div className="rating-badge">PvE: <strong className={`rating-val val-${meta.pveRating}`}>{meta.pveRating}</strong></div>
-                        <div className="rating-badge">PvP: <strong className={`rating-val val-${meta.pvpRating}`}>{meta.pvpRating}</strong></div>
+                {cdViewMode === 'infographic' ? (
+                  <SpotlightInfographic event={event} lang={lang} timezone={timezone} />
+                ) : (
+                  <>
+                    <div className="spotlight-content-grid">
+                      <div className="spotlight-pokemon-info">
+                        <img 
+                          src={resolveImage(event.extraData?.spotlight?.image || getPokemonImage(event.extraData?.spotlight?.name || ''), event.eventType, event.extraData?.spotlight?.name)} 
+                          alt={event.extraData?.spotlight?.name || ''} 
+                          className="spotlight-pokemon-img"
+                          onError={(e) => {
+                            handlePokemonImageError(e.target as HTMLImageElement, event.extraData?.spotlight?.name || '');
+                          }}
+                        />
+                        <div className="spotlight-poke-meta">
+                          <strong>{event.extraData.spotlight.name}</strong>
+                          {event.extraData.spotlight.canBeShiny && (
+                            <span className="shiny-indicator-badge">✨ Shiny</span>
+                          )}
+                        </div>
                       </div>
-                      <p className="meta-rank-desc"><strong>PvE:</strong> {lang === 'cs' ? meta.pveRankText.cs : meta.pveRankText.en}</p>
-                      <p className="meta-rank-desc"><strong>PvP:</strong> {lang === 'cs' ? meta.pvpRankText.cs : meta.pvpRankText.en}</p>
-                      <div className="meta-moves">
-                        <strong>{lang === 'cs' ? 'Doporučené útoky:' : 'Best Moves:'}</strong> 
-                        <code>{meta.bestFastMove} + {meta.bestChargedMove}</code>
+                      
+                      <div className="spotlight-bonus-info">
+                        <div className="bonus-pill-large">
+                          <span className="bonus-icon">🍬</span>
+                          <div className="bonus-text-wrapper">
+                            <span className="bonus-label">{lang === 'cs' ? 'Aktivní Bonus:' : 'Active Bonus:'}</span>
+                            <strong className="bonus-val">
+                              {translateSpotlightBonus(event.extraData.spotlight.bonus || '')}
+                            </strong>
+                          </div>
+                        </div>
                       </div>
-                      <p className="meta-notes-text">💡 <em>{lang === 'cs' ? meta.notes.cs : meta.notes.en}</em></p>
                     </div>
-                  );
-                })()}
+
+                    {/* Meta recommendations */}
+                    {(() => {
+                      const meta = findPokemonMeta(event.extraData?.spotlight?.name || '');
+                      if (!meta) return null;
+                      return (
+                        <div className="spotlight-meta-recommendations">
+                          <h5>📊 PvE & PvP Meta Analysis</h5>
+                          <div className="meta-ratings-row">
+                            <div className="rating-badge">PvE: <strong className={`rating-val val-${meta.pveRating}`}>{meta.pveRating}</strong></div>
+                            <div className="rating-badge">PvP: <strong className={`rating-val val-${meta.pvpRating}`}>{meta.pvpRating}</strong></div>
+                          </div>
+                          <p className="meta-rank-desc"><strong>PvE:</strong> {lang === 'cs' ? meta.pveRankText.cs : meta.pveRankText.en}</p>
+                          <p className="meta-rank-desc"><strong>PvP:</strong> {lang === 'cs' ? meta.pvpRankText.cs : meta.pvpRankText.en}</p>
+                          <div className="meta-moves">
+                            <strong>{lang === 'cs' ? 'Doporučené útoky:' : 'Best Moves:'}</strong> 
+                            <code>{meta.bestFastMove} + {meta.bestChargedMove}</code>
+                          </div>
+                          <p className="meta-notes-text">💡 <em>{lang === 'cs' ? meta.notes.cs : meta.notes.en}</em></p>
+                        </div>
+                      );
+                    })()}
+                  </>
+                )}
               </div>
             )}
 
@@ -926,8 +952,58 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
               </div>
             )}
 
-            {/* TEMPLATE 3: GENERAL SPECIAL EVENT GUIDE (if loaded locally and not CD/Spotlight) */}
-            {event.eventType !== 'pokemon-spotlight-hour' && event.eventType !== 'community-day' && specialDetails && (
+            {/* TEMPLATE 3: RAID EVENT INFOGRAPHIC TEMPLATE */}
+            {(event.eventType === 'raid-hour' || event.eventType === 'raid-battles') && (
+              <div className="expanded-row raid-infographic-toggle-box">
+                <div className="cd-view-toggle-bar">
+                  <button 
+                    className={`cd-view-toggle-btn ${cdViewMode === 'infographic' ? 'active' : ''}`}
+                    onClick={() => setCdViewMode('infographic')}
+                  >
+                    <ImageIcon size={15} />
+                    {lang === 'cs' ? '🎨 Plakát / Infografika' : '🎨 Poster / Infographic'}
+                  </button>
+                  <button 
+                    className={`cd-view-toggle-btn ${cdViewMode === 'details' ? 'active' : ''}`}
+                    onClick={() => setCdViewMode('details')}
+                  >
+                    <LayoutList size={15} />
+                    {lang === 'cs' ? '📋 Podrobný přehled' : '📋 Detailed View'}
+                  </button>
+                </div>
+                {cdViewMode === 'infographic' && (
+                  <RaidInfographic event={event} lang={lang} timezone={timezone} />
+                )}
+              </div>
+            )}
+
+            {/* TEMPLATE 4: ROCKET TAKEOVER INFOGRAPHIC TEMPLATE */}
+            {(event.eventType.includes('rocket') || event.name.toLowerCase().includes('rocket')) && (
+              <div className="expanded-row rocket-infographic-toggle-box">
+                <div className="cd-view-toggle-bar">
+                  <button 
+                    className={`cd-view-toggle-btn ${cdViewMode === 'infographic' ? 'active' : ''}`}
+                    onClick={() => setCdViewMode('infographic')}
+                  >
+                    <ImageIcon size={15} />
+                    {lang === 'cs' ? '🎨 Plakát / Infografika' : '🎨 Poster / Infographic'}
+                  </button>
+                  <button 
+                    className={`cd-view-toggle-btn ${cdViewMode === 'details' ? 'active' : ''}`}
+                    onClick={() => setCdViewMode('details')}
+                  >
+                    <LayoutList size={15} />
+                    {lang === 'cs' ? '📋 Podrobný přehled' : '📋 Detailed View'}
+                  </button>
+                </div>
+                {cdViewMode === 'infographic' && (
+                  <RocketInfographic event={event} lang={lang} timezone={timezone} />
+                )}
+              </div>
+            )}
+
+            {/* TEMPLATE 5: GENERAL SPECIAL EVENT GUIDE (if loaded locally and not CD/Spotlight and not in infographic mode) */}
+            {event.eventType !== 'pokemon-spotlight-hour' && event.eventType !== 'community-day' && specialDetails && (cdViewMode === 'details' || (!event.eventType.includes('raid') && !event.eventType.includes('rocket'))) && (
               <div className="expanded-row special-event-guide-box">
                 <div className="special-guide-header">
                   <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>
