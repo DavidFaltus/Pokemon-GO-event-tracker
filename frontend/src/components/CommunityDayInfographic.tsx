@@ -7,6 +7,7 @@ import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { getSpecialEventDetails, getPokemonImage } from '../data/specialEvents';
 import { findPokemonMeta } from '../data/pokemonMeta';
 import { getPokemonName } from '../utils/pokemonTranslator';
+import { API_BASE_URL } from '../config';
 import './CommunityDayInfographic.css';
 
 interface CommunityDayInfographicProps {
@@ -86,11 +87,11 @@ const BonusIcon: React.FC<{ type: string; color: string }> = ({ type, color }) =
   }
 };
 
-// Converts image URL to Base64 Data URL via Next.js API proxy to bypass browser CORS restrictions
+// Converts image URL to Base64 Data URL via Express backend proxy to bypass browser CORS restrictions
 const fetchImageAsBase64 = async (url: string): Promise<string> => {
   if (!url || url.startsWith('data:')) return url;
   try {
-    const proxyUrl = `/api/proxy-image?url=${encodeURIComponent(url)}`;
+    const proxyUrl = `${API_BASE_URL}/api/proxy-image?url=${encodeURIComponent(url)}`;
     const res = await fetch(proxyUrl);
     if (!res.ok) return url;
     const blob = await res.blob();

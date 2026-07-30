@@ -247,6 +247,29 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Proxy Image Endpoint (bypasses browser CORS restrictions for infographic export)
+app.get('/api/proxy-image', async (req, res) => {
+  const targetUrl = req.query.url as string;
+  if (!targetUrl) {
+    return res.status(400).send('Missing url parameter');
+  }
+  try {
+    const response = await axios.get(targetUrl, {
+      responseType: 'arraybuffer',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      }
+    });
+    const contentType = response.headers['content-type'] || 'image/png';
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=86400');
+    return res.send(Buffer.from(response.data));
+  } catch (err: any) {
+    return res.status(500).send(`Error proxying image: ${err?.message || err}`);
+  }
+});
+
 // Scraper Status (public — frontend uses this to detect new events)
 app.get('/api/scraper/status', (req, res) => {
   const meta = loadScraperMeta();
