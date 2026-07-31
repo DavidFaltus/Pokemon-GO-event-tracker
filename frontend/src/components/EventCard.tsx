@@ -19,6 +19,7 @@ import { SpotlightInfographic } from './SpotlightInfographic';
 import { RaidInfographic } from './RaidInfographic';
 import { RocketInfographic } from './RocketInfographic';
 import { MaxInfographic } from './MaxInfographic';
+import { EventInfographic } from './EventInfographic';
 
 const EggIcon = ({ size = 16 }: { size?: number }) => (
   <svg viewBox="0 0 100 120" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
@@ -215,12 +216,27 @@ interface EventCardProps {
   defaultExpanded?: boolean;
   useInline?: boolean;
   onOpenFilterGenerator?: (bossName?: string) => void;
+  onToggleExpand?: (eventID: string, expanded: boolean) => void;
 }
 
-export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, defaultExpanded, useInline: propsUseInline, onOpenFilterGenerator }) => {
+export const EventCard: React.FC<EventCardProps> = ({
+  event,
+  lang,
+  timezone,
+  defaultExpanded,
+  useInline: propsUseInline,
+  onOpenFilterGenerator,
+  onToggleExpand
+}) => {
   const [timeLeftStr, setTimeLeftStr] = useState<string>('');
   const [status, setStatus] = useState<'upcoming' | 'active' | 'ended'>('upcoming');
   const [isExpanded, setIsExpanded] = useState<boolean>(defaultExpanded || false);
+
+  useEffect(() => {
+    if (defaultExpanded !== undefined) {
+      setIsExpanded(defaultExpanded);
+    }
+  }, [defaultExpanded]);
   const [useInline, setUseInline] = useState<boolean>(propsUseInline ?? false);
   const [officialUrl, setOfficialUrl] = useState<string>('');
   const [showOfficial, setShowOfficial] = useState<boolean>(false);
@@ -591,6 +607,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
   const handleCardClick = () => {
     if (isExpanded) {
       setIsExpanded(false);
+      onToggleExpand?.(event.eventID, false);
       return;
     }
 
@@ -606,6 +623,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
       if (cardSiblings.length === 0) {
         setUseInline(true);
         setIsExpanded(true);
+        onToggleExpand?.(event.eventID, true);
         return;
       }
 
@@ -620,6 +638,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
     }
 
     setIsExpanded(true);
+    onToggleExpand?.(event.eventID, true);
   };
 
   useEffect(() => {
@@ -638,49 +657,55 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
     }
   }, [isExpanded, useInline]);
 
-  const renderExpandedDetails = () => (
-    <CardErrorBoundary fallbackMessage={lang === 'cs' ? 'Chyba při zobrazení detailu události' : 'Error rendering event details'}>
-      <div className="card-expanded-content">
-        <div className="divider"></div>
-        
-        {/* Add to Calendar & Official Link Row */}
-            <div className="expanded-row link-row">
-              {(event.officialLink || (showOfficial && officialUrl !== event.link)) && (
+  const renderExpandedDetails = () => {
+    const officialTarget = event.officialLink || (showOfficial && officialUrl !== event.link ? officialUrl : '');
+    const hasOfficial = Boolean(officialTarget);
+    const secondaryTarget = event.secondaryLink || (!hasOfficial ? event.link : '');
+    const hasSecondary = Boolean(secondaryTarget && secondaryTarget !== officialTarget);
+
+    return (
+      <CardErrorBoundary fallbackMessage={lang === 'cs' ? 'Chyba při zobrazení detailu události' : 'Error rendering event details'}>
+        <div className="card-expanded-content">
+          <div className="divider"></div>
+          
+          {/* Add to Calendar & Official Link Row */}
+              <div className="expanded-row link-row">
+                {hasOfficial && (
+                  <a 
+                    href={officialTarget} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="pogo-official-btn"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    <ExternalLink size={14} />
+                    {t.details_pokemongo_link}
+                  </a>
+                )}
+                {hasSecondary && (
+                  <a 
+                    href={secondaryTarget} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="details-link-btn" 
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    <ExternalLink size={14} />
+                    {secondaryTarget.includes('leekduck.com') 
+                      ? t.details_official_link 
+                      : (lang === 'cs' ? 'Průvodce / Odkaz' : 'Guide / Link')}
+                  </a>
+                )}
                 <a 
-                  href={event.officialLink || officialUrl} 
+                  href={getGoogleCalendarUrl()} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="pogo-official-btn"
+                  className="google-calendar-btn"
                   style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                 >
-                  <ExternalLink size={14} />
-                  {t.details_pokemongo_link}
+                  <Calendar size={14} />
+                  {t.details_add_to_calendar}
                 </a>
-              )}
-              {(event.secondaryLink || event.link) && (
-                <a 
-                  href={event.secondaryLink || event.link} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="details-link-btn" 
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-                >
-                  <ExternalLink size={14} />
-                  {(event.secondaryLink || event.link).includes('leekduck.com') 
-                    ? t.details_official_link 
-                    : (lang === 'cs' ? 'Průvodce / Odkaz' : 'Guide / Link')}
-                </a>
-              )}
-              <a 
-                href={getGoogleCalendarUrl()} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="google-calendar-btn"
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-              >
-                <Calendar size={14} />
-                {t.details_add_to_calendar}
-              </a>
               {(event.eventType === 'raid-hour' || event.eventType === 'raid-battles' || bosses.length > 0) && (
                 <DirectRaidFilterBox
                   bossName={(typeof bosses[0] === 'object' ? bosses[0]?.name : bosses[0]) || event.name.replace(/raid\s*(hour|battles|rotation|day)/gi, '').trim()}
@@ -1028,8 +1053,46 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
               </div>
             )}
 
-            {/* TEMPLATE 6: GENERAL SPECIAL EVENT GUIDE (if loaded locally and not CD/Spotlight and not in infographic mode) */}
-            {event.eventType !== 'pokemon-spotlight-hour' && event.eventType !== 'community-day' && specialDetails && (cdViewMode === 'details' || (!event.eventType.includes('raid') && !event.eventType.includes('rocket') && !event.eventType.includes('max'))) && (
+            {/* TEMPLATE 6: GENERAL EVENT INFOGRAPHIC (other / event / hatch-day / limited-research / showcase / raid-day) */}
+            {(event.eventType === 'other' || event.eventType === 'event' || event.eventType === 'hatch-day' || event.eventType === 'limited-research' || event.eventType === 'showcase' || event.eventType === 'raid-day') && (
+              <div className="expanded-row event-infographic-toggle-box">
+                <div className="cd-view-toggle-bar">
+                  <button
+                    className={`cd-view-toggle-btn ${cdViewMode === 'infographic' ? 'active' : ''}`}
+                    onClick={() => setCdViewMode('infographic')}
+                  >
+                    <ImageIcon size={15} />
+                    {lang === 'cs' ? '🎨 Plakát / Infografika' : '🎨 Poster / Infographic'}
+                  </button>
+                  <button
+                    className={`cd-view-toggle-btn ${cdViewMode === 'details' ? 'active' : ''}`}
+                    onClick={() => setCdViewMode('details')}
+                  >
+                    <LayoutList size={15} />
+                    {lang === 'cs' ? '📋 Podrobný přehled' : '📋 Detailed View'}
+                  </button>
+                </div>
+                {cdViewMode === 'infographic' && (
+                  <EventInfographic
+                    event={event}
+                    lang={lang}
+                    timezone={timezone}
+                    specialDetails={specialDetails}
+                  />
+                )}
+              </div>
+            )}
+
+            {/* TEMPLATE 7: GENERAL SPECIAL EVENT GUIDE (details view, not CD/Spotlight, not handled by TEMPLATE 6 in infographic mode) */}
+            {(() => {
+              const isGenericInfographicType = event.eventType === 'other' || event.eventType === 'event' || event.eventType === 'hatch-day' || event.eventType === 'limited-research' || event.eventType === 'showcase' || event.eventType === 'raid-day';
+              if (event.eventType === 'pokemon-spotlight-hour' || event.eventType === 'community-day') return false;
+              if (!specialDetails) return false;
+              // For types covered by T6: only show details when in details mode
+              if (isGenericInfographicType) return cdViewMode === 'details';
+              // For remaining types (raids, rocket, max) with localSpecialDetails — show only in details mode too
+              return cdViewMode === 'details' || (!event.eventType.includes('raid') && !event.eventType.includes('rocket') && !event.eventType.includes('max'));
+            })() && (
               <div className="expanded-row special-event-guide-box">
                 <div className="special-guide-header">
                   <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>
@@ -1339,7 +1402,8 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
             )}
           </div>
         </CardErrorBoundary>
-  );
+    );
+  };
 
   return (
     <>
@@ -1405,9 +1469,9 @@ export const EventCard: React.FC<EventCardProps> = ({ event, lang, timezone, def
 
       {/* Glassmorphic Modal Overlay (multiple items in row) */}
       {isExpanded && !useInline && (
-        <div className="event-modal-overlay" onClick={() => setIsExpanded(false)}>
+        <div className="event-modal-overlay" onClick={() => { setIsExpanded(false); onToggleExpand?.(event.eventID, false); }}>
           <div className="event-modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-btn" onClick={() => setIsExpanded(false)} aria-label="Close">
+            <button className="modal-close-btn" onClick={() => { setIsExpanded(false); onToggleExpand?.(event.eventID, false); }} aria-label="Close">
               ✕
             </button>
 

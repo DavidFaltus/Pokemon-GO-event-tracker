@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function AdminPage() {
-  return <App initialLang="cs" initialTab="admin" />;
+  return <App initialLang="en" initialTab="admin" />;
 }

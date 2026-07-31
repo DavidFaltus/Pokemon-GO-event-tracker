@@ -248,19 +248,20 @@ const trackGAEvent = (action: string, category: string, label?: string) => {
 };
 
 const getLangFromPath = (path: string): Language | null => {
-  const cleanPath = path.toLowerCase().replace(/\/$/, '');
-  if (cleanPath === '/cs' || cleanPath === '/sk') return 'cs';
-  if (cleanPath === '/jp' || cleanPath === '/ja') return 'ja';
-  if (cleanPath === '/ru') return 'ru';
-  if (cleanPath === '/us' || cleanPath === '/en') return 'en';
+  const cleanPath = path.toLowerCase();
+  const parts = cleanPath.split('/').filter(Boolean);
+  if (parts.length > 0) {
+    const first = parts[0];
+    if (first === 'cs' || first === 'sk') return 'cs';
+    if (first === 'ja' || first === 'jp') return 'ja';
+    if (first === 'ru') return 'ru';
+    if (first === 'en' || first === 'us') return 'en';
+  }
   return null;
 };
 
 const getPathForLang = (l: Language): string => {
-  if (l === 'cs') return '/cs';
-  if (l === 'ja') return '/jp';
-  if (l === 'ru') return '/ru';
-  return '/us';
+  return `/${l}`;
 };
 
 const detectUserLanguage = (): Language => {
@@ -310,54 +311,62 @@ const safeLocalStorage = {
 const getTabFromUrlPath = (pathname: string): TabType => {
   const p = pathname.toLowerCase();
   if (p === '/admin' || p.startsWith('/admin/')) return 'admin';
-  if (p.includes('/raids')) return 'raid';
+  if (p.includes('/raids') || p.includes('/raid')) return 'raid';
   if (p.includes('/rocket')) return 'rocket';
   if (p.includes('/rankings') || p.includes('/ranking')) return 'ranking';
   if (p.includes('/ditto')) return 'ditto';
   if (p.includes('/eggs')) return 'eggs';
+  if (p.includes('/filter')) return 'filter';
   if (p.includes('/settings')) return 'settings';
   return 'events';
 };
 
-const getUrlPathForTab = (tab: TabType, l: Language): string => {
+const getEventIdFromUrlPath = (pathname: string): string | null => {
+  const match = pathname.toLowerCase().match(/\/events\/([^/]+)/);
+  return match && match[1] ? match[1] : null;
+};
+
+const getUrlPathForTab = (tab: TabType, l: Language, eventID?: string | null): string => {
   if (tab === 'admin') return '/admin';
   const prefix = `/${l}`;
+  if (tab === 'events' && eventID) {
+    return `${prefix}/events/${eventID}`;
+  }
   switch (tab) {
     case 'raid': return `${prefix}/raids`;
     case 'rocket': return `${prefix}/rocket`;
     case 'ranking': return `${prefix}/rankings`;
     case 'ditto': return `${prefix}/ditto`;
     case 'eggs': return `${prefix}/eggs`;
+    case 'filter': return `${prefix}/filter`;
     case 'settings': return `${prefix}/settings`;
     case 'events':
-    default: return prefix;
+    default: return `${prefix}/events`;
   }
 };
 
 function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?: TabType } = {}) {
   const [activeTab, setActiveTab] = useState<TabType>(initialTab || 'events');
-
-  useEffect(() => {
-    if (!initialTab && typeof window !== 'undefined') {
-      const urlTab = getTabFromUrlPath(window.location.pathname);
-      if (urlTab !== activeTab) {
-        setActiveTab(urlTab);
-      }
-    }
-  }, [initialTab]);
-
+  const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
+  const [lang, setLang] = useState<Language>(initialLang || 'en');
   const showAds = activeTab !== 'settings' && activeTab !== 'admin';
-
-  // Reactively track tab changes in Google Analytics
-  useEffect(() => {
-    trackGAEvent('switch_tab', 'Navigation', activeTab);
-  }, [activeTab]);
 
   const [events, setEvents] = useState<EventData[]>(() => sanitizeEvents(MOCK_EVENTS));
   const [filterType, setFilterType] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'active' | 'upcoming'>('active');
-  
   const [viewMode, setViewMode] = useState<'list' | 'timeline'>('list');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [_apiStatus, setApiStatus] = useState<'success' | 'fallback'>('fallback');
+  const [scraperStatus, setScraperStatus] = useState<{
+    lastScrapedAt: string | null;
+    nextScrapeAt: string | null;
+    isRunning: boolean;
+    totalEvents: number;
+  }>({ lastScrapedAt: null, nextScrapeAt: null, isRunning: false, totalEvents: 0 });
+
+  useEffect(() => {
+    trackGAEvent('switch_tab', 'Navigation', activeTab);
+  }, [activeTab]);
 
   useEffect(() => {
     const saved = safeLocalStorage.getItem('pogo_tracker_view_mode');
@@ -370,44 +379,49 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
     safeLocalStorage.setItem('pogo_tracker_view_mode', viewMode);
   }, [viewMode]);
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [_apiStatus, setApiStatus] = useState<'success' | 'fallback'>('fallback');
-  const [scraperStatus, setScraperStatus] = useState<{
-    lastScrapedAt: string | null;
-    nextScrapeAt: string | null;
-    isRunning: boolean;
-    totalEvents: number;
-  }>({ lastScrapedAt: null, nextScrapeAt: null, isRunning: false, totalEvents: 0 });
-  
-  const [lang, setLang] = useState<Language>(initialLang || 'cs');
-
+  // Synchronize language, tab and event ID from URL on mount & popstate
   useEffect(() => {
-    if (!initialLang && typeof window !== 'undefined') {
-      const urlLang = getLangFromPath(window.location.pathname);
-      if (urlLang) {
-        safeLocalStorage.setItem('pogo_tracker_lang', urlLang);
-        setLang(urlLang);
-        return;
-      }
-      const saved = safeLocalStorage.getItem('pogo_tracker_lang');
-      if (saved === 'en' || saved === 'cs' || saved === 'ja' || saved === 'ru') {
-        setLang(saved as Language);
-        return;
-      }
-      const detected = detectUserLanguage();
-      safeLocalStorage.setItem('pogo_tracker_lang', detected);
-      setLang(detected);
+    if (typeof window === 'undefined') return;
+
+    const path = window.location.pathname;
+    const urlLang = getLangFromPath(path);
+    const resolvedLang = urlLang || initialLang || (safeLocalStorage.getItem('pogo_tracker_lang') as Language) || detectUserLanguage();
+    setLang(resolvedLang);
+    safeLocalStorage.setItem('pogo_tracker_lang', resolvedLang);
+
+    const urlTab = getTabFromUrlPath(path);
+    if (urlTab) {
+      setActiveTab(urlTab);
     }
-  }, [initialLang]);
+
+    const urlEventId = getEventIdFromUrlPath(path);
+    if (urlEventId) {
+      setExpandedEventId(urlEventId);
+    }
+
+    const isCapacitor = !!(window as any).Capacitor || 
+                        window.location.protocol === 'capacitor:' || 
+                        window.location.protocol === 'file:';
+
+    if (!isCapacitor && (path === '/' || path === '' || path === '/cs' || path === '/en' || path === '/ja' || path === '/ru')) {
+      const canonicalPath = getUrlPathForTab(urlTab || activeTab, resolvedLang, urlEventId);
+      if (window.location.pathname !== canonicalPath) {
+        window.history.replaceState(null, '', canonicalPath);
+      }
+    }
+  }, []);
 
   const changeTab = (newTab: TabType) => {
     setActiveTab(newTab);
+    if (newTab !== 'events') {
+      setExpandedEventId(null);
+    }
     if (typeof window !== 'undefined') {
       const isCapacitor = !!(window as any).Capacitor || 
                           window.location.protocol === 'capacitor:' || 
                           window.location.protocol === 'file:';
       if (!isCapacitor) {
-        const targetPath = getUrlPathForTab(newTab, lang);
+        const targetPath = getUrlPathForTab(newTab, lang, newTab === 'events' ? expandedEventId : null);
         if (window.location.pathname !== targetPath) {
           window.history.pushState(null, '', targetPath);
         }
@@ -415,7 +429,23 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
     }
   };
 
-  // Naslouchání na tlačítka zpět/vpřed v prohlížeči (popstate)
+  const handleEventToggleExpand = (eventID: string, expanded: boolean) => {
+    const newExpandedId = expanded ? eventID : null;
+    setExpandedEventId(newExpandedId);
+    if (typeof window !== 'undefined') {
+      const isCapacitor = !!(window as any).Capacitor || 
+                          window.location.protocol === 'capacitor:' || 
+                          window.location.protocol === 'file:';
+      if (!isCapacitor) {
+        const targetPath = getUrlPathForTab('events', lang, newExpandedId);
+        if (window.location.pathname !== targetPath) {
+          window.history.pushState(null, '', targetPath);
+        }
+      }
+    }
+  };
+
+  // Listen to browser Back/Forward (popstate)
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const handlePopState = () => {
@@ -426,6 +456,8 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
         setLang(urlLang);
         safeLocalStorage.setItem('pogo_tracker_lang', urlLang);
       }
+      const urlEventId = getEventIdFromUrlPath(window.location.pathname);
+      setExpandedEventId(urlEventId);
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -577,15 +609,15 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
 
   const handleSetLang = (newLang: Language) => {
     setLang(newLang);
-    localStorage.setItem('pogo_tracker_lang', newLang);
+    safeLocalStorage.setItem('pogo_tracker_lang', newLang);
 
     const isCapacitor = !!(window as any).Capacitor || 
                         window.location.protocol === 'capacitor:' || 
                         window.location.protocol === 'file:';
-    if (!isCapacitor) {
-      const newPath = getPathForLang(newLang);
-      if (window.location.pathname !== newPath) {
-        window.history.pushState(null, '', newPath + window.location.search + window.location.hash);
+    if (!isCapacitor && typeof window !== 'undefined') {
+      const targetPath = getUrlPathForTab(activeTab, newLang, activeTab === 'events' ? expandedEventId : null);
+      if (window.location.pathname !== targetPath) {
+        window.history.pushState(null, '', targetPath);
       }
     }
   };
@@ -1134,7 +1166,9 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
                               event={event} 
                               lang={lang} 
                               timezone={timezone} 
+                              defaultExpanded={event.eventID === expandedEventId}
                               onOpenFilterGenerator={handleOpenFilterGenerator}
+                              onToggleExpand={handleEventToggleExpand}
                             />
                           ))
                         )}

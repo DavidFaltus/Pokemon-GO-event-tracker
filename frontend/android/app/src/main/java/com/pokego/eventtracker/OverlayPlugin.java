@@ -51,7 +51,10 @@ public class OverlayPlugin extends Plugin {
             return;
         }
 
+        String lang = call.getString("lang", "en");
         Intent intent = new Intent(context, OverlayService.class);
+        intent.putExtra("lang", lang);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent);
         } else {
@@ -60,6 +63,24 @@ public class OverlayPlugin extends Plugin {
 
         JSObject ret = new JSObject();
         ret.put("started", true);
+        call.resolve(ret);
+    }
+
+    @PluginMethod
+    public void updateLanguage(PluginCall call) {
+        Context context = getContext();
+        String lang = call.getString("lang", "en");
+        Intent intent = new Intent(context, OverlayService.class);
+        intent.putExtra("lang", lang);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
+
+        JSObject ret = new JSObject();
+        ret.put("success", true);
         call.resolve(ret);
     }
 

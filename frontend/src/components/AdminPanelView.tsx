@@ -422,6 +422,11 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   const [importLoading, setImportLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Rescrape state
+  const [rescrapeUrl, setRescrapeUrl] = useState<string>('');
+  const [rescrapeLoading, setRescrapeLoading] = useState(false);
+  const [rescrapeMsg, setRescrapeMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
   useEffect(() => {
     const savedToken = localStorage.getItem('pogo_admin_token');
     if (savedToken) {
@@ -511,6 +516,8 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   const selectEventForEditing = async (event: EventData | CustomEventOverride) => {
     setError('');
     setSuccessMsg('');
+    setRescrapeUrl('');
+    setRescrapeMsg(null);
     const override = customOverrides.find(o => o.eventID === event.eventID);
     const activeEvent = override || {
       eventID: event.eventID,
@@ -759,6 +766,56 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     finally { setScraperRunning(false); }
   };
 
+  const handleRescrapeEvent = async () => {
+    if (!selectedEvent || !rescrapeUrl.trim()) return;
+    const url = rescrapeUrl.trim();
+    if (!url.startsWith('http')) {
+      setRescrapeMsg({ type: 'error', text: lang === 'cs' ? 'URL musí začínat http(s)://' : 'URL must start with http(s)://' });
+      return;
+    }
+    setRescrapeLoading(true);
+    setRescrapeMsg(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/events/${selectedEvent.eventID}/rescrape`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify({ url })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        // Update form with freshly scraped extra data
+        setFormExtraData(data.details);
+        setFormExtraDataJson(JSON.stringify(data.details, null, 2));
+        if (data.details.rawDescription || data.details.scrapedText) {
+          const rawVal = data.details.rawDescription || data.details.scrapedText;
+          setFormScrapedText(typeof rawVal === 'object' ? formatLocalizedString(rawVal, 'cs') : String(rawVal));
+        }
+        setSelectedEvent(prev => prev ? { ...prev, extraData: data.details } : prev);
+        // Also update official link if scraper found one
+        if (data.details.officialLink && !formOfficialLink) {
+          setFormOfficialLink(data.details.officialLink);
+        }
+        setRescrapeMsg({
+          type: 'success',
+          text: lang === 'cs'
+            ? `✅ Znovuscrapování dokončeno! Data načtena ze: ${url}`
+            : `✅ Re-scrape complete! Data loaded from: ${url}`
+        });
+        // Invalidate local cache
+        localStorage.removeItem(`pogo_scraped_details_${selectedEvent.eventID}`);
+      } else {
+        setRescrapeMsg({
+          type: 'error',
+          text: (lang === 'cs' ? '❌ Chyba: ' : '❌ Error: ') + (data.error || 'Unknown error')
+        });
+      }
+    } catch {
+      setRescrapeMsg({ type: 'error', text: lang === 'cs' ? '❌ Chyba sítě' : '❌ Network error' });
+    } finally {
+      setRescrapeLoading(false);
+    }
+  };
+
   const handleFileImport = async () => {
     if (!importFile) return;
     setImportLoading(true);
@@ -805,10 +862,12 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
       case 'pokemon-spotlight-hour': return 'Spotlight Hour';
       case 'raid-hour': return 'Raid Hour';
       case 'raid-battles': return 'Raid Battles';
+      case 'raid-day': return 'Raid Day';
       case 'rocket-takeover': return 'Rocket Takeover';
       case 'hatch-day': return 'Hatch Day';
       case 'limited-research': return 'Limited Research';
       case 'showcase': return 'PokéStop Showcase';
+      case 'event': return 'Event';
       default: return 'Event';
     }
   };
@@ -993,10 +1052,12 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
                       <option value="pokemon-spotlight-hour">Spotlight Hour</option>
                       <option value="raid-hour">Raid Hour</option>
                       <option value="raid-battles">Raid Battles</option>
+                      <option value="raid-day">Raid Day</option>
                       <option value="rocket-takeover">Rocket Takeover</option>
                       <option value="hatch-day">Hatch Day</option>
                       <option value="limited-research">Limited Research</option>
                       <option value="showcase">PokéStop Showcase</option>
+                      <option value="event">Event (velká událost)</option>
                       <option value="other">Ostatní (Major Event)</option>
                     </select>
                   </div>
@@ -1035,6 +1096,65 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
                       onChange={(e) => setFormSecondaryLink(e.target.value)}
                       placeholder="https://leekduck.com/events/..."
                     />
+                  </div>
+
+                  {/* Re-scrape from URL */}
+                  <div className="form-field full-width-field" style={{ marginTop: '4px' }}>
+                    <div style={{
+                      background: 'rgba(99, 102, 241, 0.08)',
+                      border: '1px solid rgba(99, 102, 241, 0.3)',
+                      borderRadius: '12px',
+                      padding: '14px 16px',
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+                        <RefreshCw size={15} style={{ color: '#818cf8' }} />
+                        <span style={{ fontWeight: 600, fontSize: '0.88rem', color: '#e2e8f0' }}>
+                          {lang === 'cs' ? 'Znovuscrapovat z nové URL' : 'Re-scrape from New URL'}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: '0.78rem', color: '#94a3b8', margin: '0 0 10px 0', lineHeight: 1.5 }}>
+                        {lang === 'cs'
+                          ? 'Zadejte novou URL (pokemongolive.com, leekduck.com apod.) a klikněte na Scrapovat. Stávající cache bude vymazána a formulář se aktualizuje.'
+                          : 'Enter a new URL (pokemongolive.com, leekduck.com, etc.) and click Scrape. Existing cache will be cleared and the form will be updated.'}
+                      </p>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
+                        <input
+                          id={`rescrape-url-${selectedEvent?.eventID}`}
+                          type="url"
+                          value={rescrapeUrl}
+                          onChange={(e) => { setRescrapeUrl(e.target.value); setRescrapeMsg(null); }}
+                          placeholder={formOfficialLink || formSecondaryLink || formLink || 'https://pokemongolive.com/post/...'}
+                          style={{ flex: 1, background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', color: '#e2e8f0', padding: '8px 12px', fontSize: '0.85rem' }}
+                          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleRescrapeEvent(); } }}
+                        />
+                        <button
+                          type="button"
+                          onClick={handleRescrapeEvent}
+                          disabled={rescrapeLoading || !rescrapeUrl.trim()}
+                          className="admin-btn btn-primary"
+                          style={{ whiteSpace: 'nowrap', opacity: rescrapeLoading || !rescrapeUrl.trim() ? 0.6 : 1 }}
+                        >
+                          {rescrapeLoading
+                            ? <><RefreshCw size={14} className="spin-icon" /> {lang === 'cs' ? 'Scrapuji...' : 'Scraping...'}</>
+                            : <><RefreshCw size={14} /> {lang === 'cs' ? 'Scrapovat' : 'Scrape'}</>
+                          }
+                        </button>
+                      </div>
+                      {rescrapeMsg && (
+                        <div style={{
+                          marginTop: '10px',
+                          padding: '8px 12px',
+                          borderRadius: '8px',
+                          fontSize: '0.8rem',
+                          lineHeight: 1.5,
+                          background: rescrapeMsg.type === 'success' ? 'rgba(34, 197, 94, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+                          border: `1px solid ${rescrapeMsg.type === 'success' ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`,
+                          color: rescrapeMsg.type === 'success' ? '#4ade80' : '#f87171',
+                        }}>
+                          {rescrapeMsg.text}
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Scraped Raw Text Section */}

@@ -1,0 +1,406 @@
+/* ── EventInfographic.css ─────────────────────────────────────────────────── */
+
+.ei-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  margin: 12px 0;
+}
+
+/* ── Actions bar ──────────────────────────────────────────────────────────── */
+.ei-actions {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  max-width: 720px;
+}
+
+.ei-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.ei-download-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.ei-download-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.ei-download-btn.success {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4) !important;
+}
+
+.ei-btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: ei-spin 0.7s linear infinite;
+}
+
+@keyframes ei-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Poster Canvas ───────────────────────────────────────────────────────── */
+.ei-poster {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  background: #0d1117;
+  border: 1px solid;
+  border-radius: 20px;
+  padding: 28px 28px 22px;
+  color: #f0f6fc;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.65);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.ei-glow-top {
+  position: absolute;
+  top: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 220px;
+  pointer-events: none;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.ei-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.ei-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border: 1px solid;
+  margin-bottom: 10px;
+}
+
+.ei-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin: 2px 0 12px 0;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+  max-width: 600px;
+}
+
+.ei-time-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 6px 18px;
+  border-radius: 12px;
+  font-size: 0.83rem;
+  color: #8b949e;
+}
+
+.ei-time-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ei-time-sep {
+  color: #484f58;
+}
+
+/* ── Body layout ─────────────────────────────────────────────────────────── */
+.ei-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ei-body.has-featured {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 580px) {
+  .ei-body.has-featured {
+    grid-template-columns: 1fr;
+  }
+  .ei-title {
+    font-size: 1.3rem;
+  }
+}
+
+/* ── Featured Pokémon card ───────────────────────────────────────────────── */
+.ei-featured-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 22px 14px 16px;
+  border: 1px solid;
+  border-radius: 16px;
+  text-align: center;
+  overflow: hidden;
+  min-height: 180px;
+}
+
+.ei-featured-halo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 16px;
+}
+
+.ei-featured-img {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 18px rgba(0,0,0,0.6));
+  margin-bottom: 8px;
+  z-index: 1;
+}
+
+.ei-featured-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f0f6fc;
+  margin-bottom: 6px;
+  z-index: 1;
+}
+
+.ei-shiny-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border: 1px solid;
+  z-index: 1;
+}
+
+/* ── Sections column ─────────────────────────────────────────────────────── */
+.ei-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Individual section ──────────────────────────────────────────────────── */
+.ei-section {
+  background: rgba(22, 27, 34, 0.7);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.ei-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  opacity: 0.9;
+}
+
+/* ── Spawns / Pokémon grid ───────────────────────────────────────────────── */
+.ei-spawns-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ei-spawn-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+}
+
+.ei-spawn-img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5));
+}
+
+.ei-spawn-name {
+  font-size: 0.65rem;
+  color: #c9d1d9;
+  text-align: center;
+  max-width: 58px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ei-shiny-dot {
+  font-size: 0.6rem;
+  line-height: 1;
+}
+
+.ei-new-badge {
+  font-size: 0.58rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 5px;
+  letter-spacing: 0.5px;
+}
+
+/* ── Egg pool ────────────────────────────────────────────────────────────── */
+.ei-egg-group {
+  margin-bottom: 10px;
+}
+
+.ei-egg-group:last-child {
+  margin-bottom: 0;
+}
+
+.ei-egg-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+/* ── Bonuses list ────────────────────────────────────────────────────────── */
+.ei-bonuses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ei-bonus-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid;
+  border-radius: 8px;
+  padding: 7px 12px;
+}
+
+.ei-bonus-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.ei-bonus-text {
+  font-size: 0.82rem;
+  color: #c9d1d9;
+  line-height: 1.3;
+}
+
+/* ── Research list ───────────────────────────────────────────────────────── */
+.ei-research-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ei-research-row {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid;
+  border-radius: 8px;
+  padding: 7px 12px;
+}
+
+.ei-research-task {
+  font-size: 0.82rem;
+  color: #c9d1d9;
+  display: block;
+}
+
+.ei-research-reward {
+  font-size: 0.75rem;
+  color: #8b949e;
+  margin-top: 2px;
+  display: block;
+}
+
+/* ── No-data placeholder ─────────────────────────────────────────────────── */
+.ei-no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 28px;
+  background: rgba(22, 27, 34, 0.6);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  color: #8b949e;
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+.ei-no-data p {
+  margin: 0;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+.ei-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  font-size: 0.78rem;
+  color: #8b949e;
+  margin-top: 14px;
+}
+
+.ei-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+.ei-footer-tip {
+  color: #484f58;
+  font-size: 0.73rem;
+}

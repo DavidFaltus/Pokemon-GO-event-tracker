@@ -144,7 +144,8 @@ export async function generateBotHtml(
   events: any[],
   raids: any[],
   rocket: any,
-  getDetails: (eventId: string) => SpecialEventDetails | null
+  getDetails: (eventId: string) => SpecialEventDetails | null,
+  targetEventId?: string
 ): Promise<string> {
   const t = botTranslations[lang] || botTranslations.en;
   
@@ -153,10 +154,24 @@ export async function generateBotHtml(
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
 
+  // Target event for event-level SEO page
+  const targetEvent = targetEventId ? events.find(e => e.eventID === targetEventId) : null;
+  const pageTitle = targetEvent ? `${targetEvent.name} | Pokémon GO Event Tracker` : t.title;
+  const pageDesc = targetEvent
+    ? `${targetEvent.name} (${new Date(targetEvent.start).toLocaleDateString()} – ${new Date(targetEvent.end).toLocaleDateString()}) — Spawns, bonuses, raids, and research details.`
+    : t.description;
+  const canonicalPath = targetEventId ? `/${lang}/events/${targetEventId}` : `/${lang}`;
+  const canonicalUrl = `https://pogoevents.app${canonicalPath}`;
+
   // 1. Process Events
   const now = Date.now();
-  const sortedEvents = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
+  let sortedEvents = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
   
+  // Put target event at top if requested
+  if (targetEvent) {
+    sortedEvents = [targetEvent, ...sortedEvents.filter(e => e.eventID !== targetEventId)];
+  }
+
   let eventsHtml = '';
   if (sortedEvents.length === 0) {
     eventsHtml = `<p>${t.noEvents}</p>`;
@@ -167,10 +182,10 @@ export async function generateBotHtml(
       const isActive = now >= startMs && now <= endMs;
       const isUpcoming = now < startMs;
       
-      // Skip ended events for bots
-      if (now > endMs) return;
+      // Skip ended events for bots unless it's the explicitly targeted event
+      if (now > endMs && event.eventID !== targetEventId) return;
 
-      const statusLabel = isActive ? t.active : t.upcoming;
+      const statusLabel = isActive ? t.active : isUpcoming ? t.upcoming : (lang === 'cs' ? 'Ukončeno' : 'Ended');
       const timeLabel = isActive 
         ? `${t.ends}: ${new Date(event.end).toLocaleString(lang === 'cs' ? 'cs-CZ' : 'en-US')}`
         : `${t.starts}: ${new Date(event.start).toLocaleString(lang === 'cs' ? 'cs-CZ' : 'en-US')}`;
@@ -258,15 +273,13 @@ export async function generateBotHtml(
                 ${details.research.map(r => `
                   <li>
                     <strong>${lang === 'cs' ? r.task.cs : r.task.en}</strong> &rarr; 
-                    Odměna: ${r.reward}${r.isShinyAvailable ? ' ✨' : ''}
+                    ${t.reward}: ${r.reward}${r.isShinyAvailable ? ' ✨' : ''}
                   </li>
                 `).join('')}
               </ul>
             </div>
           `;
         }
-
-        eventsHtml += `</div>`;
       }
 
       eventsHtml += `</div>`;
@@ -424,10 +437,20 @@ export async function generateBotHtml(
 <html lang="${lang}">
 <head>
   <meta charset="utf-8">
-  <title>${t.title}</title>
-  <meta name="description" content="${t.description}">
+  <title>${pageTitle}</title>
+  <meta name="description" content="${pageDesc}">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
+  <link rel="canonical" href="${canonicalUrl}">
+  <link rel="alternate" hreflang="en" href="https://pogoevents.app/en${targetEventId ? `/events/${targetEventId}` : ''}">
+  <link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs${targetEventId ? `/events/${targetEventId}` : ''}">
+  <link rel="alternate" hreflang="ja" href="https://pogoevents.app/ja${targetEventId ? `/events/${targetEventId}` : ''}">
+  <link rel="alternate" hreflang="ru" href="https://pogoevents.app/ru${targetEventId ? `/events/${targetEventId}` : ''}">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${pageTitle}">
+  <meta property="og:description" content="${pageDesc}">
+  <meta property="og:url" content="${canonicalUrl}">
+  ${targetEvent?.image ? `<meta property="og:image" content="${targetEvent.image}">` : `<meta property="og:image" content="https://pogoevents.app/logo-banner.jpg">`}
   <style>
     :root {
       --bg-color: #0b0c10;

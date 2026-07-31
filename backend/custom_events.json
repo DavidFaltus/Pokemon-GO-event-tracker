@@ -43,18 +43,49 @@
     "name": "Fire and Ice Hatch Day",
     "eventType": "event",
     "heading": "Event",
-    "link": "https://pokemongo.com/en/news/fire-and-ice-hatch-day-2026",
+    "link": "https://pokemongo.com/news/fire-and-ice-hatch-day-2026",
     "image": "https://cdn.leekduck.com/assets/img/events/article-images/2026/2026-08-08-fire-and-ice-hatch-day-2026/fire-and-ice-hatch-day-2026.jpg",
-    "start": "2026-08-08T10:00:00.000Z",
-    "end": "2026-08-08T16:00:00.000Z",
+    "start": "2026-08-08T08:00:00.000Z",
+    "end": "2026-08-08T14:00:00.000Z",
     "extraData": {
-      "generic": {
-        "hasSpawns": false,
-        "hasFieldResearchTasks": false
-      }
+      "eventID": "fire-and-ice-hatch-day-2026",
+      "officialLink": "https://pokemongolive.com/en/news/fire-and-ice-hatch-day-2026",
+      "bonuses": [
+        {
+          "text": {
+            "cs": "2× Candy from hatching Eggs*",
+            "en": "2× Candy from hatching Eggs*"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "1/2 Egg Hatch Distance*",
+            "en": "1/2 Egg Hatch Distance*"
+          },
+          "icon": "🥚"
+        },
+        {
+          "text": {
+            "cs": "Increased chance of hatching Shiny Smoochum and Shiny Magby",
+            "en": "Increased chance of hatching Shiny Smoochum and Shiny Magby"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Increased chance of receiving 2 km Eggs from spinning PokéStops",
+            "en": "Increased chance of receiving 2 km Eggs from spinning PokéStops"
+          },
+          "icon": "🥚"
+        }
+      ],
+      "rawDescription": "Event"
     },
     "isDeleted": false,
-    "isCustom": false
+    "isCustom": false,
+    "officialLink": "https://pokemongo.com/news/fire-and-ice-hatch-day-2026",
+    "secondaryLink": ""
   },
   {
     "eventID": "pokemon-go-fest-2026-global-sunday-raid-makeup",
@@ -119,6 +150,184 @@
           "icon": "🍬"
         }
       ]
+    },
+    "isDeleted": false,
+    "isCustom": false
+  },
+  {
+    "eventID": "summer-marathon-2026",
+    "name": "Summer Marathon: Arctic Embers",
+    "eventType": "event",
+    "heading": "Event",
+    "link": "https://pokemongo.com/news/summer-marathon-2026",
+    "officialLink": "https://pokemongo.com/news/summer-marathon-2026",
+    "secondaryLink": "",
+    "image": "https://cdn.leekduck.com/assets/img/events/article-images/2026/2026-08-04-summer-marathon-2026/summer-marathon-2026.jpg",
+    "start": "2026-08-04T06:00:00.000Z",
+    "end": "2026-08-10T16:00:00.000Z",
+    "extraData": {
+      "eventID": "summer-marathon-2026",
+      "officialLink": "https://pokemongolive.com/en/news/summer-marathon-2026",
+      "bonuses": [
+        {
+          "text": {
+            "cs": "2× XP for spinning a PokéStop",
+            "en": "2× XP for spinning a PokéStop"
+          },
+          "icon": "⚡"
+        },
+        {
+          "text": {
+            "cs": "GO Pass Deluxe: 3× XP for spinning a PokéStop",
+            "en": "GO Pass Deluxe: 3× XP for spinning a PokéStop"
+          },
+          "icon": "⚡"
+        },
+        {
+          "text": {
+            "cs": "1/2 Egg Hatch Distance when Eggs are placed in an Incubator during the event period",
+            "en": "1/2 Egg Hatch Distance when Eggs are placed in an Incubator during the event period"
+          },
+          "icon": "🥚"
+        },
+        {
+          "text": {
+            "cs": "GO Pass Deluxe: 1/4 Egg Hatch Distance when Eggs are placed in an Incubator during the event period",
+            "en": "GO Pass Deluxe: 1/4 Egg Hatch Distance when Eggs are placed in an Incubator during the event period"
+          },
+          "icon": "🥚"
+        }
+      ],
+      "research": [
+        {
+          "task": {
+            "cs": "???",
+            "en": "???"
+          },
+          "reward": "Ponyta",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons_crop/pokemon_icon_077_00.png",
+          "isShinyAvailable": true
+        },
+        {
+          "task": {
+            "cs": "???",
+            "en": "???"
+          },
+          "reward": "Slugma",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons_crop/pokemon_icon_218_00.png",
+          "isShinyAvailable": true
+        },
+        {
+          "task": {
+            "cs": "???",
+            "en": "???"
+          },
+          "reward": "Snover",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons_crop/pokemon_icon_459_00.png",
+          "isShinyAvailable": true
+        },
+        {
+          "task": {
+            "cs": "???",
+            "en": "???"
+          },
+          "reward": "Vanillite",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons_crop/pokemon_icon_582_00.png",
+          "isShinyAvailable": true
+        }
+      ],
+      "rawDescription": "Event"
+    },
+    "isDeleted": false,
+    "isCustom": false
+  },
+  {
+    "eventID": "starmie-super-mega-raid-day-2026",
+    "name": "Starmie Super Mega Raid Day",
+    "eventType": "raid-day",
+    "heading": "Raid Day",
+    "link": "https://pokemongo.com/news/starmie-super-mega-raid-day-2026",
+    "officialLink": "https://pokemongo.com/news/starmie-super-mega-raid-day-2026",
+    "secondaryLink": "",
+    "image": "https://cdn.leekduck.com/assets/img/events/article-images/2026/2026-08-22-starmie-super-mega-raid-day-2026/starmie-super-mega-raid-day-2026.jpg",
+    "start": "2026-08-22T07:00:00.000Z",
+    "end": "2026-08-22T13:00:00.000Z",
+    "extraData": {
+      "eventID": "starmie-super-mega-raid-day-2026",
+      "officialLink": "https://pokemongolive.com/en/news/starmie-super-mega-raid-day-2026",
+      "bonuses": [
+        {
+          "text": {
+            "cs": "An additional 5,000 XP from all raids",
+            "en": "An additional 5,000 XP from all raids"
+          },
+          "icon": "⚡"
+        },
+        {
+          "text": {
+            "cs": "Increased chance to get Rare Candy XL from Raidové souboje",
+            "en": "Increased chance to get Rare Candy XL from Raid Battles"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "Limit na Remote Raidy navýšen na 20 from Friday, August 21, at 2:00 p.m. to Saturday, August 22, 2026, at 8:00 p.m. PDT",
+            "en": "Remote Raid Pass limit increased to 20 from Friday, August 21, at 2:00 p.m. to Saturday, August 22, 2026, at 8:00 p.m. PDT"
+          },
+          "icon": "🎟️"
+        },
+        {
+          "text": {
+            "cs": "Receive up to six free Raid Passes from spinning Gym Photo Discs",
+            "en": "Receive up to six free Raid Passes from spinning Gym Photo Discs"
+          },
+          "icon": "🎟️"
+        },
+        {
+          "text": {
+            "cs": "Zvýšená šance na setkání se Shiny Starmie from Super Mega Raids",
+            "en": "Increased chance of encountering Shiny Starmie from Super Mega Raids"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Starmie caught from Super Mega Raids will have Mega Level 1 unlocked",
+            "en": "Starmie caught from Super Mega Raids will have Mega Level 1 unlocked"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "An additional 5,000 XP from all raids",
+            "en": "An additional 5,000 XP from all raids"
+          },
+          "icon": "⚡"
+        },
+        {
+          "text": {
+            "cs": "Receive up to 14 Raid Passes from spinning Gym Photo Discs",
+            "en": "Receive up to 14 Raid Passes from spinning Gym Photo Discs"
+          },
+          "icon": "🎟️"
+        },
+        {
+          "text": {
+            "cs": "An even greater chance to get Rare Candy XL from Raidové souboje",
+            "en": "An even greater chance to get Rare Candy XL from Raid Battles"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "Guaranteed Rare Candy XL for successfully catching Starmie from raids",
+            "en": "Guaranteed Rare Candy XL for successfully catching Starmie from raids"
+          },
+          "icon": "🍬"
+        }
+      ],
+      "rawDescription": "Raid Day"
     },
     "isDeleted": false,
     "isCustom": false

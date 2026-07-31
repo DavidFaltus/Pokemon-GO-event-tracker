@@ -1,17 +1,7 @@
-Fix:
-1: nenačítá se admin menu na pogoevents.app/admin
+1: [DONE] Možnost v admin sekci u jednotlivých eventů přidat funkci znovuscrapování z nově zadané URL.
+2: [DONE] Vylepšit SEO například i přidáním měnící se url pomocí jazyků a jednotlivých sekcí/eventů, také dát jako hlavní jazyk angličtinu
+3: [DONE] přidat Možnost vypnutí overlaye, zároveň synchronizovat jazyk podle aplikace. pokud by bylo možné vytvořit funkci kde by aplikace četla data z obrazovky a pokud by se uživatel připojil do nějakého raidu aplikace by to poznala a poslala uživateli notifikaci s filtrem na doporučené countery.
 
-Vylepšení:
-1: Aktualizace raidů častěji a podle časové zóny 
-2: vytvoř si skill na konkrétní proces nasazení aplikace abys na nic příště nezapoměl včetně chyb které se objevují znovu a znovu například špatné nasazení na git, google cloud,...
-tady je git chyba:Run actions/upload-pages-artifact@v3
-Run echo ::group::Archive artifact
-Archive artifact
-  tar: frontend/dist: Cannot open: No such file or directory
-  tar: Error is not recoverable: exiting now
-  Error: Process completed with exit code 2.
-
-Teoretické vylepšení: generace nebo skládání grafiky do jednoduchých souhrnů jako dělá například Leekduck
 
 Zaměření na mobilní aplikaci:
 Overlay:

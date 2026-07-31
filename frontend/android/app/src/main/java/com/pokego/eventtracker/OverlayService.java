@@ -50,13 +50,23 @@ public class OverlayService extends Service {
     private WindowManager.LayoutParams bubbleParams;
     private WindowManager.LayoutParams expandedParams;
 
-    private boolean isExpanded = false;
+    private String currentLang = "en";
+    private String selectedBossName = "";
+
+    private TextView eventsHeaderView;
+    private TextView bossHeaderView;
+    private TextView megaHeaderView;
+    private TextView copyRaidCountersBtn;
+    private TextView copyMegaFilterBtn;
+
 
     private TextView eventsTextView;
     private TextView raidsTextView;
     private TextView megaTextView;
     private LinearLayout bossChipsLayout;
     private ProgressBar progressBar;
+
+    private boolean isExpanded = false;
 
     private final List<String> activeBossNames = new ArrayList<>();
     private String lastRaidCounterFilter = "@fighting,@rock,@steel,@dragon,@fairy";
@@ -69,17 +79,7 @@ public class OverlayService extends Service {
     public void onCreate() {
         super.onCreate();
         createNotificationChannel();
-        try {
-            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setContentTitle("PoGo Events Overlay")
-                    .setContentText("Plovoucí overlay nad Pokémon GO je aktivní")
-                    .setSmallIcon(R.mipmap.ic_launcher)
-                    .setPriority(NotificationCompat.PRIORITY_LOW)
-                    .build();
-            startForeground(NOTIFICATION_ID, notification);
-        } catch (Exception e) {
-            Log.e(TAG, "Failed starting foreground notification", e);
-        }
+        startForegroundNotification();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
             Log.e(TAG, "Overlay permission not granted. Stopping OverlayService.");
@@ -99,7 +99,34 @@ public class OverlayService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null && intent.hasExtra("lang")) {
+            String lang = intent.getStringExtra("lang");
+            if (lang != null && !lang.isEmpty()) {
+                this.currentLang = lang;
+                updateLanguageUI();
+                startForegroundNotification();
+            }
+        }
         return START_STICKY;
+    }
+
+    private void startForegroundNotification() {
+        try {
+            String text = "cs".equals(currentLang) ? "Plovoucí overlay nad Pokémon GO je aktivní" :
+                         "ja".equals(currentLang) ? "Pokémon GO浮遊ヘルパーが有効です" :
+                         "ru".equals(currentLang) ? "Плавающий помощник Pokémon GO активен" :
+                         "Floating helper for Pokémon GO is active";
+
+            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle("PoGo Events Overlay")
+                    .setContentText(text)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
+                    .build();
+            startForeground(NOTIFICATION_ID, notification);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed starting foreground notification", e);
+        }
     }
 
     private void createNotificationChannel() {
@@ -197,25 +224,159 @@ public class OverlayService extends Service {
             closeBtn.setOnClickListener(v -> toggleExpandedView());
         }
 
-        View copyRaidCountersBtn = expandedView.findViewById(R.id.overlay_copy_raid_counters_btn);
-        if (copyRaidCountersBtn != null) {
-            copyRaidCountersBtn.setOnClickListener(v -> copyToClipboard(lastRaidCounterFilter, "Filtr Raid Counterů zkopírován do schránky!"));
+        View copyRaidBtn = expandedView.findViewById(R.id.overlay_copy_raid_counters_btn);
+        if (copyRaidBtn != null) {
+            copyRaidBtn.setOnClickListener(v -> copyToClipboard(lastRaidCounterFilter, false));
         }
 
-        View copyMegaFilterBtn = expandedView.findViewById(R.id.overlay_copy_mega_filter_btn);
-        if (copyMegaFilterBtn != null) {
-            copyMegaFilterBtn.setOnClickListener(v -> copyToClipboard(lastMegaFilter, "Filtr Mega Evoluce zkopírován do schránky!"));
+        View copyMegaBtn = expandedView.findViewById(R.id.overlay_copy_mega_filter_btn);
+        if (copyMegaBtn != null) {
+            copyMegaBtn.setOnClickListener(v -> copyToClipboard(lastMegaFilter, true));
         }
 
         // Add bubble to window manager
         windowManager.addView(bubbleView, bubbleParams);
+        updateLanguageUI();
     }
 
-    private void copyToClipboard(String text, String message) {
+    private TextView scanScreenBtn;
+
+    private void updateLanguageUI() {
+        if (expandedView == null) return;
+
+        scanScreenBtn = expandedView.findViewById(R.id.overlay_scan_screen_btn);
+        if (scanScreenBtn != null) {
+            scanScreenBtn.setText("cs".equals(currentLang) ? "📷 Skenovat bosse na obrazovce (1-Tap OCR)" :
+                                 "ja".equals(currentLang) ? "📷 画面のレイドボスをスキャン (1-Tap OCR)" :
+                                 "ru".equals(currentLang) ? "📷 Сканировать босса на экране (1-Tap OCR)" :
+                                 "📷 Scan boss on screen (1-Tap OCR)");
+            scanScreenBtn.setOnClickListener(v -> scanScreenForRaidBoss());
+        }
+
+        bossHeaderView = expandedView.findViewById(R.id.overlay_boss_header);
+        if (bossHeaderView != null) {
+            bossHeaderView.setText("cs".equals(currentLang) ? "⚔️ 5★ & MEGA RAID BOSSOVÉ" :
+                                 "ja".equals(currentLang) ? "⚔️ 5★ & メガレイドボス" :
+                                 "ru".equals(currentLang) ? "⚔️ 5★ И МЕГА РЕЙД-БОССЫ" :
+                                 "⚔️ 5★ & MEGA RAID BOSSES");
+        }
+
+        megaHeaderView = expandedView.findViewById(R.id.overlay_mega_header);
+        if (megaHeaderView != null) {
+            megaHeaderView.setText("cs".equals(currentLang) ? "🧬 DOPORUČENÁ MEGA EVOLUCE (BONUS CANDY)" :
+                                 "ja".equals(currentLang) ? "🧬 おすすめのメガシンカ (アメボーナス)" :
+                                 "ru".equals(currentLang) ? "🧬 РЕКОМЕНДУЕМАЯ МЕГА-ЭВОЛЮЦИЯ" :
+                                 "🧬 RECOMMENDED MEGA EVOLUTION (CANDY BONUS)");
+        }
+
+        eventsHeaderView = expandedView.findViewById(R.id.overlay_events_header);
+        if (eventsHeaderView != null) {
+            eventsHeaderView.setText("cs".equals(currentLang) ? "🔥 AKTIVNÍ UDÁLOSTI" :
+                                    "ja".equals(currentLang) ? "🔥 開催中イベント" :
+                                    "ru".equals(currentLang) ? "🔥 ТЕКУЩИЕ СОБЫТИЯ" :
+                                    "🔥 ACTIVE EVENTS");
+        }
+
+        copyRaidCountersBtn = expandedView.findViewById(R.id.overlay_copy_raid_counters_btn);
+        if (copyRaidCountersBtn != null) {
+            copyRaidCountersBtn.setText("cs".equals(currentLang) ? "📋 Kopírovat filtr Raid Counterů" :
+                                      "ja".equals(currentLang) ? "📋 レイド対策フィルターをコピー" :
+                                      "ru".equals(currentLang) ? "📋 Копировать фильтр контр-покемонов" :
+                                      "📋 Copy Raid Counter Filter");
+        }
+
+        copyMegaFilterBtn = expandedView.findViewById(R.id.overlay_copy_mega_filter_btn);
+        if (copyMegaFilterBtn != null) {
+            copyMegaFilterBtn.setText("cs".equals(currentLang) ? "📋 Kopírovat Mega filtr do Pokémon GO" :
+                                     "ja".equals(currentLang) ? "📋 メガフィルターをコピー" :
+                                     "ru".equals(currentLang) ? "📋 Копировать Мега-фильтр" :
+                                     "📋 Copy Mega Filter to Pokémon GO");
+        }
+
+        if (!selectedBossName.isEmpty()) {
+            renderBossCounters(selectedBossName);
+        }
+    }
+
+    private void scanScreenForRaidBoss() {
+        if (scanScreenBtn != null) {
+            scanScreenBtn.setText("cs".equals(currentLang) ? "⏳ Skenuji obrazovku..." : "⏳ Scanning screen...");
+        }
+
+        try {
+            com.google.mlkit.vision.text.TextRecognizer recognizer = 
+                com.google.mlkit.vision.text.TextRecognition.getClient(com.google.mlkit.vision.text.latin.TextRecognizerOptions.DEFAULT_OPTIONS);
+
+            View root = expandedView.getRootView();
+            root.setDrawingCacheEnabled(true);
+            android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(root.getDrawingCache());
+            root.setDrawingCacheEnabled(false);
+
+            com.google.mlkit.vision.common.InputImage image = com.google.mlkit.vision.common.InputImage.fromBitmap(bitmap, 0);
+
+            recognizer.process(image)
+                .addOnSuccessListener(visionText -> {
+                    String recognizedText = visionText.getText().toLowerCase();
+                    Log.d(TAG, "OCR Recognized text: " + recognizedText);
+                    
+                    String detectedBoss = null;
+                    for (String boss : activeBossNames) {
+                        String cleanBoss = boss.replaceAll("(?i)(mega|super|shadow|hisuian|primal|origin|form|forme)", "").trim().toLowerCase();
+                        if (!cleanBoss.isEmpty() && recognizedText.contains(cleanBoss)) {
+                            detectedBoss = boss;
+                            break;
+                        }
+                    }
+
+                    if (detectedBoss == null) {
+                        String[] known5Star = {"starmie", "kyurem", "palkia", "dialga", "rayquaza", "aggron", "groudon", "kyogre", "lucario", "charizard", "tyranitar", "metagross"};
+                        for (String k : known5Star) {
+                            if (recognizedText.contains(k)) {
+                                detectedBoss = k.substring(0, 1).toUpperCase() + k.substring(1);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (detectedBoss != null) {
+                        renderBossCounters(detectedBoss);
+                        copyToClipboard(lastRaidCounterFilter, false);
+                        String msg = "cs".equals(currentLang) ? "🎯 Detekován boss: " + detectedBoss + "! Countery zkopírovány." :
+                                     "🎯 Detected boss: " + detectedBoss + "! Counters copied.";
+                        android.widget.Toast.makeText(OverlayService.this, msg, android.widget.Toast.LENGTH_LONG).show();
+                    } else {
+                        String msg = "cs".equals(currentLang) ? "Nenalezen žádný známý 5★/Mega boss na obrazovce. Vyberte ručně ze seznamu." :
+                                     "No 5★/Mega boss detected on screen. Please select manually.";
+                        android.widget.Toast.makeText(OverlayService.this, msg, android.widget.Toast.LENGTH_SHORT).show();
+                    }
+
+                    updateLanguageUI();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "OCR recognition failed", e);
+                    updateLanguageUI();
+                });
+
+        } catch (Exception e) {
+            Log.e(TAG, "Screen scan error", e);
+            updateLanguageUI();
+        }
+    }
+
+    private void copyToClipboard(String text, boolean isMega) {
         android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboard != null) {
             android.content.ClipData clip = android.content.ClipData.newPlainText("PoGo Filter", text);
             clipboard.setPrimaryClip(clip);
+            String message = isMega
+                ? ("cs".equals(currentLang) ? "Filtr Mega Evoluce zkopírován do schránky!" :
+                   "ja".equals(currentLang) ? "メガフィルターをクリップボードにコピーしました！" :
+                   "ru".equals(currentLang) ? "Мега-фильтр скопирован в буфер обмена!" :
+                   "Mega Evolution filter copied to clipboard!")
+                : ("cs".equals(currentLang) ? "Filtr Raid Counterů zkopírován do schránky!" :
+                   "ja".equals(currentLang) ? "レイド対策フィルターをクリップボードにコピーしました！" :
+                   "ru".equals(currentLang) ? "Фильтр контр-покемонов скопирован в буфер обмена!" :
+                   "Raid Counter filter copied to clipboard!");
             android.widget.Toast.makeText(this, message, android.widget.Toast.LENGTH_SHORT).show();
         }
     }
@@ -307,7 +468,7 @@ public class OverlayService extends Service {
             }
         }
 
-        // 3. Process Active Raid Bosses & Populate Selector Chips
+        // 3. Process Active 5★ & Mega Raid Bosses & Populate Selector Chips
         activeBossNames.clear();
         if (raidsJson != null) {
             try {
@@ -315,7 +476,18 @@ public class OverlayService extends Service {
                 for (int i = 0; i < bosses.length(); i++) {
                     JSONObject b = bosses.getJSONObject(i);
                     String name = b.optString("name", "");
-                    if (!name.isEmpty() && !activeBossNames.contains(name)) {
+                    String tier = b.optString("tier", "").toLowerCase();
+                    String lowerName = name.toLowerCase();
+
+                    boolean is5StarOrMega = tier.contains("5") || tier.contains("mega") || tier.contains("primal") || tier.contains("gigantamax") || tier.contains("ultra") ||
+                                            lowerName.contains("mega") || lowerName.contains("primal") || lowerName.contains("super") ||
+                                            lowerName.contains("starmie") || lowerName.contains("kyurem") || lowerName.contains("palkia") ||
+                                            lowerName.contains("dialga") || lowerName.contains("rayquaza") || lowerName.contains("groudon") ||
+                                            lowerName.contains("kyogre") || lowerName.contains("necrozma") || lowerName.contains("reshiram") ||
+                                            lowerName.contains("zekrom") || lowerName.contains("giratina") || lowerName.contains("landorus") ||
+                                            lowerName.contains("tornadus") || lowerName.contains("thundurus");
+
+                    if (is5StarOrMega && !name.isEmpty() && !activeBossNames.contains(name)) {
                         activeBossNames.add(name);
                     }
                 }
@@ -324,14 +496,13 @@ public class OverlayService extends Service {
             }
         }
 
-        // Fallback popular bosses if network empty
+        // Fallback popular 5★ & Mega bosses if empty
         if (activeBossNames.isEmpty()) {
+            activeBossNames.add("Starmie (Super Mega)");
             activeBossNames.add("Kyurem");
             activeBossNames.add("Mega Aggron");
             activeBossNames.add("Shadow Palkia");
             activeBossNames.add("Hisuian Samurott");
-            activeBossNames.add("Excadrill");
-            activeBossNames.add("Drampa");
         }
 
         buildBossSelectorChips();
@@ -345,10 +516,14 @@ public class OverlayService extends Service {
         for (int i = 0; i < activeBossNames.size(); i++) {
             final String bossName = activeBossNames.get(i);
             TextView chip = new TextView(this);
-            chip.setText(bossName);
+
+            boolean isMega = bossName.toLowerCase().contains("mega") || bossName.toLowerCase().contains("super") || bossName.toLowerCase().contains("primal");
+            String prefix = isMega ? "🧬 " : "⭐ 5★ ";
+
+            chip.setText(prefix + bossName);
             chip.setTextSize(10);
             chip.setTextColor(Color.WHITE);
-            chip.setPadding(16, 10, 16, 10);
+            chip.setPadding(18, 10, 18, 10);
             chip.setClickable(true);
             chip.setFocusable(true);
 
@@ -356,9 +531,14 @@ public class OverlayService extends Service {
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            params.setMargins(0, 0, 12, 0);
+            params.setMargins(0, 0, 10, 0);
             chip.setLayoutParams(params);
-            chip.setBackgroundColor(Color.parseColor("#33A855F7"));
+
+            if (isMega) {
+                chip.setBackgroundColor(Color.parseColor("#4410B981"));
+            } else {
+                chip.setBackgroundColor(Color.parseColor("#44A855F7"));
+            }
 
             chip.setOnClickListener(v -> renderBossCounters(bossName));
             bossChipsLayout.addView(chip);

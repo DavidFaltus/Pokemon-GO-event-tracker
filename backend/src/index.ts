@@ -396,9 +396,13 @@ async function getEnrichedEventsList(forceNoCache: boolean = false): Promise<any
   });
 
   customEvents.forEach((event) => {
-    if (event.isCustom && !event.isDeleted) {
-      const existsInScraped = scrapedData!.some((e: any) => e.eventID === event.eventID);
-      if (!existsInScraped) mergedEvents.push(event);
+    if (!event.isDeleted) {
+      const existsInMerged = mergedEvents.some((e: any) => e.eventID === event.eventID);
+      // Include if:
+      // - it's a custom (manually created) event not yet in scraped list, OR
+      // - it's a scraped event saved as an override that is no longer in the scraped list
+      //   (e.g. future events or events whose scrape ID changed)
+      if (!existsInMerged) mergedEvents.push(event);
     }
   });
 
@@ -454,6 +458,21 @@ app.get('/api/events', async (req, res) => {
   } catch (error: any) {
     console.error('Error fetching events:', error.message);
     res.status(500).json({ error: 'Failed to process events list' });
+  }
+});
+
+// Get Single Event by ID
+app.get('/api/events/:id', async (req, res) => {
+  try {
+    const data = await getEnrichedEventsList(false);
+    const event = data.find((e: any) => e.eventID === req.params.id);
+    if (event) {
+      return res.json(event);
+    }
+    return res.status(404).json({ error: 'Event not found' });
+  } catch (error: any) {
+    console.error('Error fetching event by ID:', error.message);
+    res.status(500).json({ error: 'Failed to fetch event' });
   }
 });
 
@@ -684,6 +703,49 @@ app.post('/api/admin/events', requireAuth, async (req, res) => {
   }
 });
 
+// Re-scrape a specific event from a new URL (admin only)
+app.post('/api/admin/events/:id/rescrape', requireAuth, async (req, res) => {
+  const eventId = req.params.id;
+  const { url } = req.body;
+
+  if (!url || typeof url !== 'string' || !url.startsWith('http')) {
+    return res.status(400).json({ error: 'Missing or invalid URL. Must start with http(s).' });
+  }
+
+  try {
+    // Clear existing detail cache for this event
+    deleteFromCache(`details_${eventId}`);
+    console.log(`[Admin Rescrape] Cache cleared for ${eventId}, scraping from: ${url}`);
+
+    // Find event name from scraped or custom events for better scraping context
+    let eventName: string | undefined;
+    try {
+      const customEvents = await loadCustomEvents();
+      const customMatch = customEvents.find(e => e.eventID === eventId);
+      if (customMatch && customMatch.name) {
+        eventName = typeof customMatch.name === 'string' ? customMatch.name : (customMatch.name as any).en || (customMatch.name as any).cs;
+      }
+    } catch { /* ignore */ }
+
+    // Run scraper with the new URL
+    const details = await scrapeEventDetails(eventId, url, eventName);
+
+    if (!details) {
+      return res.status(404).json({ error: 'Scraper returned no data for the provided URL' });
+    }
+
+    // Save to cache
+    const DETAIL_CACHE_TTL = 24 * 60 * 60 * 1000;
+    setToCache(`details_${eventId}`, details, DETAIL_CACHE_TTL);
+    console.log(`[Admin Rescrape] ✅ Successfully scraped ${eventId} from ${url}`);
+
+    res.json({ success: true, details });
+  } catch (err: any) {
+    console.error(`[Admin Rescrape] ❌ Failed for ${eventId}:`, err.message);
+    res.status(500).json({ error: `Scraping failed: ${err.message}` });
+  }
+});
+
 // Delete custom event or hide scraped event
 app.delete('/api/admin/events/:id', requireAuth, async (req, res) => {
   const eventId = req.params.id;
@@ -800,6 +862,13 @@ app.get('*', async (req, res, next) => {
         lang = match[1].toLowerCase() as any;
       }
 
+      // Check for target event ID in path (e.g. /en/events/starmie-super-mega-raid-day-2026)
+      let targetEventId: string | undefined;
+      const eventMatch = req.path.match(/\/events\/([^/]+)/i);
+      if (eventMatch && eventMatch[1]) {
+        targetEventId = eventMatch[1];
+      }
+
       // Fetch dynamic content
       const [events, raids, rocket] = await Promise.all([
         getEnrichedEventsList(false).catch(() => []),
@@ -813,7 +882,7 @@ app.get('*', async (req, res, next) => {
       };
 
       // Generate HTML
-      const html = await generateBotHtml(lang, events, raids, rocket, getDetails);
+      const html = await generateBotHtml(lang, events, raids, rocket, getDetails, targetEventId);
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       return res.status(200).send(html);
     } catch (err: any) {

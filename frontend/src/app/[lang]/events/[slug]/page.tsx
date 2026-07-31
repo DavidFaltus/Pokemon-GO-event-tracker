@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import App from '@/App';
 import { resolveImage } from '@/utils/imageResolver';
 import { EventCard } from '@/components/EventCard';
 import type { EventData } from '@/components/EventCard';
@@ -45,28 +46,33 @@ async function fetchEventDetails(slug: string): Promise<EventData | null> {
     const res = await fetch(`${API_BASE_URL}/api/events/${slug}`, {
       next: { revalidate: 300 },
     });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.event || data;
-  } catch (err) {
-    console.error('Failed to fetch event details for ISR page:', err);
-    return null;
-  }
+    if (res.ok) {
+      const data = await res.json();
+      return data.event || data;
+    }
+  } catch (err) {}
+
+  try {
+    const resAll = await fetch(`${API_BASE_URL}/api/events`, {
+      next: { revalidate: 300 },
+    });
+    if (resAll.ok) {
+      const data = await resAll.json();
+      const events: EventData[] = data.events || data || [];
+      return events.find((e) => e.eventID === slug) || null;
+    }
+  } catch (err) {}
+
+  return null;
 }
 
 export async function generateMetadata({ params }: EventPageProps): Promise<Metadata> {
   const { lang, slug } = await params;
   const event = await fetchEventDetails(slug);
 
-  if (!event) {
-    return {
-      title: 'Událost nenalezena | Pokémon GO Event Tracker',
-    };
-  }
-
-  const title = event.name;
+  const title = event ? event.name : slug.replace(/-/g, ' ');
   const canonicalUrl = `https://pogoevents.app/${lang}/events/${slug}`;
-  const bannerImage = resolveImage(event.image, event.eventType, event.name);
+  const bannerImage = event ? resolveImage(event.image, event.eventType, event.name) : 'https://pogoevents.app/logo-banner.jpg';
 
   return {
     title: `${title} | Pokémon GO Event Tracker`,
@@ -81,7 +87,7 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
       },
     },
     openGraph: {
-      title,
+      title: `${title} | Pokémon GO Event Tracker`,
       description: `Detail události ${title} v Pokémon GO.`,
       url: canonicalUrl,
       images: [
@@ -98,10 +104,13 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
 
 export default async function EventPage({ params }: EventPageProps) {
   const { lang, slug } = await params;
+  const validLanguages: ('cs' | 'en' | 'ja' | 'ru')[] = ['cs', 'en', 'ja', 'ru'];
+  const validLang = validLanguages.includes(lang as any) ? (lang as any) : 'en';
+
   const event = await fetchEventDetails(slug);
 
   if (!event) {
-    notFound();
+    return <App initialLang={validLang} />;
   }
 
   const title = event.name;
@@ -135,9 +144,7 @@ export default async function EventPage({ params }: EventPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="event-detail-page-container" style={{ padding: '16px', maxWidth: '800px', margin: '0 auto' }}>
-        <EventCard event={event} lang={lang as any} />
-      </div>
+      <App initialLang={validLang} />
     </>
   );
 }

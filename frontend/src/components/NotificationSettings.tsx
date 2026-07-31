@@ -53,18 +53,37 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
   const [syncStatus, setSyncStatus] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [overlayActive, setOverlayActive] = React.useState(false);
 
+  React.useEffect(() => {
+    if (isNative) {
+      OverlayPlugin.isPermissionGranted().then(res => {
+        const saved = localStorage.getItem('pogo_tracker_overlay_enabled');
+        if (saved === 'true' && res.granted) {
+          setOverlayActive(true);
+        }
+      }).catch(() => {});
+    }
+  }, [isNative]);
+
+  React.useEffect(() => {
+    if (isNative && overlayActive) {
+      OverlayPlugin.updateLanguage({ lang }).catch(() => {});
+    }
+  }, [lang, overlayActive, isNative]);
+
   const toggleOverlay = async () => {
     try {
       if (overlayActive) {
         await OverlayPlugin.stopOverlay();
         setOverlayActive(false);
+        localStorage.setItem('pogo_tracker_overlay_enabled', 'false');
       } else {
         const perm = await OverlayPlugin.isPermissionGranted();
         if (!perm.granted) {
           await OverlayPlugin.requestPermission();
         }
-        await OverlayPlugin.startOverlay();
+        await OverlayPlugin.startOverlay({ lang });
         setOverlayActive(true);
+        localStorage.setItem('pogo_tracker_overlay_enabled', 'true');
       }
     } catch (err: any) {
       console.warn('Overlay toggle failed:', err);

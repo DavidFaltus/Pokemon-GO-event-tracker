@@ -18,9 +18,9 @@ interface PageProps {
 
 export default async function HomePage({ params }: PageProps) {
   const unwrappedParams = await params;
-  const rawLang = unwrappedParams.lang || 'cs';
+  const rawLang = unwrappedParams.lang || 'en';
   const validLanguages: Language[] = ['cs', 'en', 'ja', 'ru'];
-  const lang: Language = validLanguages.includes(rawLang as Language) ? (rawLang as Language) : 'cs';
+  const lang: Language = validLanguages.includes(rawLang as Language) ? (rawLang as Language) : 'en';
 
-  return <App initialLang={lang} initialTab="events" />;
+  return <App initialLang={lang} />;
 }

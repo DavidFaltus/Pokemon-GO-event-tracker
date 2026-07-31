@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/overlay_expanded_root"
     android:layout_width="340dp"
-    android:layout_height="460dp"
+    android:layout_height="490dp"
     android:background="@drawable/widget_background"
     android:orientation="vertical"
     android:padding="14dp">
@@ -30,7 +30,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PoGo Overlay Helper"
+                android:text="PoGo Helper Overlay"
                 android:textColor="#FFFFFF"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -56,8 +56,24 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="8dp"
         android:background="#2AFFFFFF" />
+
+    <!-- 1-Tap Screen Boss Scanner Button -->
+    <TextView
+        android:id="@+id/overlay_scan_screen_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:background="#3338BDF8"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:padding="9dp"
+        android:text="📷 Skenovat bosse na obrazovce (1-Tap OCR)"
+        android:textColor="#38BDF8"
+        android:textSize="11sp"
+        android:textStyle="bold" />
 
     <!-- Progress / Loading -->
     <ProgressBar
@@ -81,37 +97,18 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Section 1: Active Events -->
+            <!-- Section 1: Active 5★ & Mega Raid Bosses Selector -->
             <TextView
+                android:id="@+id/overlay_boss_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
-                android:text="🔥 AKTIVNÍ UDÁLOSTI"
-                android:textColor="#FACC15"
+                android:text="⚔️ 5★ &amp; MEGA RAID BOSSOVÉ"
+                android:textColor="#C084FC"
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/overlay_events_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:lineSpacingExtra="2dp"
-                android:text="Načítání událostí..."
-                android:textColor="#E2E8F0"
-                android:textSize="11sp" />
-
-            <!-- Section 2: Raid Lobby Boss Counter Guide -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:text="⚔️ VYBRAT RAID BOSSA (COUNTERY NA LOBBY)"
-                android:textColor="#A855F7"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-
-            <!-- Horizontal Scroll Selector for Active Bosses -->
+            <!-- Horizontal Scroll Selector for Active 5* & Mega Bosses -->
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -153,13 +150,14 @@
                 android:textSize="10sp"
                 android:textStyle="bold" />
 
-            <!-- Section 3: Recommended Mega Evolution for Active Events -->
+            <!-- Section 2: Recommended Mega Evolution for Active Events -->
             <TextView
+                android:id="@+id/overlay_mega_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dp"
                 android:text="🧬 DOPORUČENÁ MEGA EVOLUCE (BONUS CANDY)"
-                android:textColor="#10B981"
+                android:textColor="#34D399"
                 android:textSize="11sp"
                 android:textStyle="bold" />
 
@@ -189,6 +187,27 @@
                 android:textColor="#FFFFFF"
                 android:textSize="10sp"
                 android:textStyle="bold" />
+
+            <!-- Section 3: Active Events -->
+            <TextView
+                android:id="@+id/overlay_events_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="🔥 AKTIVNÍ UDÁLOSTI"
+                android:textColor="#FACC15"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/overlay_events_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:lineSpacingExtra="2dp"
+                android:text="Načítání událostí..."
+                android:textColor="#E2E8F0"
+                android:textSize="11sp" />
 
         </LinearLayout>
     </ScrollView>
