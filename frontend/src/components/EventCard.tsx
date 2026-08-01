@@ -1417,7 +1417,11 @@ export const EventCard: React.FC<EventCardProps> = ({
           <div className="event-img-wrapper">
             <img 
               src={resolveImage(event.image, event.eventType, event.name)} 
-              alt={event.name} 
+              alt={event.name}
+              width={100}
+              height={100}
+              loading="lazy"
+              decoding="async"
               onError={(e) => {
                 const img = e.target as HTMLImageElement;
                 img.onerror = null;
@@ -1448,7 +1452,15 @@ export const EventCard: React.FC<EventCardProps> = ({
             <span className={`event-type-badge ${event.eventType}`}>
               {getEventTypeLabel(event.eventType)}
             </span>
-            <h3 className="event-title">{event.name}</h3>
+            <h3 className="event-title">
+              <a 
+                href={`/${lang}/events/${event.eventID}`} 
+                onClick={(e) => { e.preventDefault(); handleCardClick(); }}
+                style={{ color: 'inherit', textDecoration: 'none' }}
+              >
+                {event.name}
+              </a>
+            </h3>
             <div className="event-time-info">
               <span className="time-date" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                 <Calendar size={12} />
@@ -1479,7 +1491,11 @@ export const EventCard: React.FC<EventCardProps> = ({
               <div className="event-img-wrapper large">
                 <img 
                   src={resolveImage(event.image, event.eventType, event.name)} 
-                  alt={event.name} 
+                  alt={event.name}
+                  width={320}
+                  height={180}
+                  loading="lazy"
+                  decoding="async"
                   onError={(e) => {
                     handlePokemonImageError(e.target as HTMLImageElement, getBasePokemonName(event.name) || '');
                   }}
@@ -1493,7 +1509,14 @@ export const EventCard: React.FC<EventCardProps> = ({
                 <span className={`event-type-badge ${event.eventType}`}>
                   {getEventTypeLabel(event.eventType)}
                 </span>
-                <h3 className="event-title">{event.name}</h3>
+                <h3 className="event-title">
+                  <a 
+                    href={`/${lang}/events/${event.eventID}`} 
+                    style={{ color: 'inherit', textDecoration: 'none' }}
+                  >
+                    {event.name}
+                  </a>
+                </h3>
                 <div className="event-time-info">
                   <span className="time-date" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                     <Calendar size={12} />

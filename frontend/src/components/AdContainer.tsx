@@ -7,12 +7,16 @@ interface AdContainerProps {
   lang?: 'cs' | 'en' | 'ja' | 'ru';
 }
 
+const ENABLE_ADS = false; // Set to true when AdSense is approved and ready
+
 export const AdContainer: React.FC<AdContainerProps> = ({ 
   type, 
   slot, 
   client = "ca-pub-8800056915088711", // User AdSense Client ID
   lang = 'cs' 
 }) => {
+  if (!ENABLE_ADS) return null;
+
   const adRef = React.useRef<HTMLModElement>(null);
 
   useEffect(() => {
@@ -122,74 +126,7 @@ export const AdContainer: React.FC<AdContainerProps> = ({
     );
   }
 
-  // Otherwise, render a beautifully styled mock placeholder ad
-  return (
-    <div 
-      className={`ad-wrapper ad-mock ad-${type}`} 
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'rgba(23, 25, 33, 0.4)',
-        border: '1px dashed var(--border-color)',
-        borderRadius: '12px',
-        padding: '16px',
-        textAlign: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-        ...getAdStyles()
-      }}
-    >
-      <div 
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'radial-gradient(circle at center, rgba(170, 59, 255, 0.05) 0%, transparent 70%)',
-          pointerEvents: 'none'
-        }}
-      />
-      
-      <span style={{
-        fontSize: '10px',
-        fontWeight: 'bold',
-        color: 'var(--accent-color)',
-        border: '1px solid rgba(170, 59, 255, 0.3)',
-        borderRadius: '4px',
-        padding: '2px 6px',
-        textTransform: 'uppercase',
-        letterSpacing: '0.05em',
-        marginBottom: '12px'
-      }}>
-        {isJapanese ? '広告枠' : isCzech ? 'Reklamní Prostor' : 'Ad Space'}
-      </span>
-      
-      <p style={{
-        fontSize: '13px',
-        fontWeight: '600',
-        color: 'var(--text-secondary)',
-        marginBottom: '4px'
-      }}>
-        {getAdLabel()}
-      </p>
-      
-      <p style={{
-        fontSize: '11px',
-        color: 'var(--text-muted)',
-        maxWidth: '240px',
-        lineHeight: '1.4'
-      }}>
-        {isJapanese 
-          ? 'AdSenseを導入するには、コンポーネントに `slot="YOUR_SLOT_ID"` パラメータを渡し、クライアントIDを更新してください。'
-          : isCzech 
-          ? 'Pro nasazení AdSense vložte do komponenty parametr `slot="VASE_SLOT_ID"` a upravte client ID.'
-          : 'To use AdSense, pass `slot="YOUR_SLOT_ID"` and update the client ID.'
-        }
-      </p>
-    </div>
-  );
+  // If no slot is provided, return null to avoid showing 'under construction' developer messages to bots or users
+  return null;
 };
 

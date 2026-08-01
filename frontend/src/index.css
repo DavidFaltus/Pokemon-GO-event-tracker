@@ -19,8 +19,8 @@ html {
   --bg-card-hover: #1e212b;
   --border-color: #242836;
   --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
+  --text-secondary: #e2e8f0;
+  --text-muted: #cbd5e1; /* Enhanced contrast ratio (4.5:1+) for PageSpeed Accessibility */
   --bg-body: #060709;
   --bg-nav: rgba(23, 25, 33, 0.85);
 
@@ -66,6 +66,17 @@ html {
   margin: 0;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
+}
+
+a, a:hover, a:focus, a:active {
+  text-decoration: none;
+}
+
+.sidebar-nav-item,
+.nav-item,
+.event-title a,
+.btn-event-detail {
+  text-decoration: none !important;
 }
 
 body {
@@ -169,8 +180,10 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   border-radius: 10px;
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);

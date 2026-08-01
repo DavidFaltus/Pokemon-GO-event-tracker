@@ -378,7 +378,11 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator 
                       )}
                       <img 
                         src={resolveImage(boss.image, 'raid', boss.name)} 
-                        alt={getPokemonName(boss.name, lang)} 
+                        alt={getPokemonName(boss.name, lang)}
+                        width={64}
+                        height={64}
+                        loading="lazy"
+                        decoding="async"
                         onError={(e) => {
                           handlePokemonImageError(e.target as HTMLImageElement, boss.name);
                         }}
@@ -500,7 +504,11 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator 
                         <div className="boss-img-wrapper" style={{ width: '80px', height: '80px' }}>
                           <img 
                             src={resolveImage(boss.image, 'raid', boss.name)} 
-                            alt={getPokemonName(boss.name, lang)} 
+                            alt={getPokemonName(boss.name, lang)}
+                            width={80}
+                            height={80}
+                            loading="lazy"
+                            decoding="async"
                             onError={(e) => {
                               handlePokemonImageError(e.target as HTMLImageElement, boss.name);
                             }}

@@ -846,58 +846,65 @@ function isBot(userAgent: string | undefined): boolean {
 }
 
 app.get('*', async (req, res, next) => {
-  // Skip API routes and file extensions
+  // Skip API routes and static files with extensions
   if (req.path.startsWith('/api/') || (req.path.includes('.') && !req.path.endsWith('.html'))) {
     return next();
   }
 
   const userAgent = req.headers['user-agent'];
-  if (isBot(userAgent)) {
-    console.log(`[Bot Detected] Serving pre-rendered HTML for ${req.path} (UA: ${userAgent})`);
-    try {
-      // Determine language from path
-      let lang: 'cs' | 'en' | 'ja' | 'ru' = 'en';
-      const match = req.path.match(/^\/(cs|en|ja|ru)\b/i);
-      if (match) {
-        lang = match[1].toLowerCase() as any;
-      }
+  console.log(`[Request] Serving route: ${req.path} (UA: ${userAgent || 'Unknown'})`);
 
-      // Check for target event ID in path (e.g. /en/events/starmie-super-mega-raid-day-2026)
-      let targetEventId: string | undefined;
-      const eventMatch = req.path.match(/\/events\/([^/]+)/i);
-      if (eventMatch && eventMatch[1]) {
-        targetEventId = eventMatch[1];
-      }
-
-      // Fetch dynamic content
-      const [events, raids, rocket] = await Promise.all([
-        getEnrichedEventsList(false).catch(() => []),
-        getRaidBossesList(false).catch(() => []),
-        getRocketLineupsList(false).catch(() => [])
-      ]);
-
-      // Helper to fetch details from cache
-      const getDetails = (eventId: string) => {
-        return getFromCache<any>(`details_${eventId}`, 24 * 60 * 60 * 1000);
-      };
-
-      // Generate HTML
-      const html = await generateBotHtml(lang, events, raids, rocket, getDetails, targetEventId);
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      return res.status(200).send(html);
-    } catch (err: any) {
-      console.error('[SSR Bot Error] Failed to generate pre-rendered HTML:', err.message);
-      // Fallback to serving the normal SPA shell
-    }
-  }
-
-  // Serve normal React SPA
   try {
-    const html = await getSpaShell();
+    // Determine language from path
+    let lang: 'cs' | 'en' | 'ja' | 'ru' = 'cs';
+    const match = req.path.match(/^\/(cs|en|ja|ru)\b/i);
+    if (match) {
+      lang = match[1].toLowerCase() as any;
+    }
+
+    // Check for target event ID in path (e.g. /en/events/starmie-super-mega-raid-day-2026)
+    let targetEventId: string | undefined;
+    const eventMatch = req.path.match(/\/events\/([^/]+)/i);
+    if (eventMatch && eventMatch[1]) {
+      targetEventId = eventMatch[1];
+    }
+
+    // Fetch dynamic content
+    const [events, raids, rocket] = await Promise.all([
+      getEnrichedEventsList(false).catch(() => []),
+      getRaidBossesList(false).catch(() => []),
+      getRocketLineupsList(false).catch(() => [])
+    ]);
+
+    // Helper to fetch details from cache
+    const getDetails = (eventId: string) => {
+      return getFromCache<any>(`details_${eventId}`, 24 * 60 * 60 * 1000);
+    };
+
+    // Generate pre-rendered HTML
+    let html = await generateBotHtml(lang, events, raids, rocket, getDetails, targetEventId);
+
+    // If client is a standard browser, attempt to inject the client JS bundle from SPA shell
+    try {
+      const spaShell = await getSpaShell();
+      const scriptMatches = spaShell.match(/<script[^>]*src="[^"]*"[^>]*><\/script>/gi);
+      if (scriptMatches && scriptMatches.length > 0) {
+        const scriptsHtml = scriptMatches.join('\n');
+        html = html.replace('</body>', `<div id="root"></div>\n${scriptsHtml}\n</body>`);
+      }
+    } catch { /* ignore script injection if shell missing */ }
+
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     return res.status(200).send(html);
   } catch (err: any) {
-    return res.status(500).send('Internal Server Error');
+    console.error('[SSR Route Error] Failed to generate pre-rendered HTML:', err.message);
+    try {
+      const html = await getSpaShell();
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.status(200).send(html);
+    } catch (fallbackErr) {
+      return res.status(500).send('Internal Server Error');
+    }
   }
 });
 

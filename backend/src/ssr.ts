@@ -8,6 +8,10 @@ interface BotTranslations {
   events: string;
   raids: string;
   rocket: string;
+  ditto: string;
+  eggs: string;
+  rankings: string;
+  filter: string;
   active: string;
   upcoming: string;
   ends: string;
@@ -18,7 +22,7 @@ interface BotTranslations {
   bonuses: string;
   debuts: string;
   spawns: string;
-  eggs: string;
+  eggTitle: string;
   research: string;
   counters: string;
   weaknesses: string;
@@ -26,98 +30,138 @@ interface BotTranslations {
   reward: string;
   worthGrinding: string;
   lineup: string;
+  viewDetails: string;
+  privacyPolicy: string;
+  rightsReserved: string;
+  guidesHeading: string;
+  raidsGuideText: string;
+  rocketGuideText: string;
 }
 
 const botTranslations: Record<'cs' | 'en' | 'ja' | 'ru', BotTranslations> = {
   en: {
-    title: "Pokémon GO Event Tracker - Active & Upcoming Events",
-    description: "Track active and upcoming Pokémon GO events, raid bosses, Team GO Rocket lineups, eggs, and more in real time.",
+    title: "Pokémon GO Event Tracker - Active Events, Raids, Rocket & Guides",
+    description: "Track live and upcoming Pokémon GO events, raid bosses, Team GO Rocket lineups, egg hatches, Ditto disguises, and PvP rankings in real time.",
     h1: "Pokémon GO Event Tracker",
-    intro: "Welcome to the ultimate Pokémon GO Event Tracker. Here you will find live information about current and upcoming in-game events, raid bosses, and Team GO Rocket battles.",
-    events: "Active & Upcoming Events",
-    raids: "Current Raid Bosses",
+    intro: "Welcome to the ultimate Pokémon GO Event Tracker. Access live event schedules, countdowns, raid boss counters, Team GO Rocket guides, egg hatch pools, and search filters.",
+    events: "Events & Timers",
+    raids: "Raid Bosses & Counters",
     rocket: "Team GO Rocket Lineups",
-    active: "Active",
+    ditto: "Ditto Disguises",
+    eggs: "Egg Hatch Pools",
+    rankings: "PvP & Raid Rankings",
+    filter: "Search Filter Generator",
+    active: "Active Now",
     upcoming: "Upcoming",
     ends: "Ends",
     starts: "Starts",
     noEvents: "No events active or upcoming.",
-    noRaids: "No raid boss information available.",
-    noRocket: "No Rocket lineup information available.",
+    noRaids: "No raid boss information available right now.",
+    noRocket: "No Rocket lineup information available right now.",
     bonuses: "Event Bonuses",
     debuts: "Debuts & New Releases",
     spawns: "Wild Spawns",
-    eggs: "Egg Hatches",
+    eggTitle: "Egg Hatches",
     research: "Field Research Tasks",
-    counters: "Counters",
-    weaknesses: "Weaknesses",
+    counters: "Best Counters",
+    weaknesses: "Type Weaknesses",
     shinyAvailable: "Shiny Available",
     reward: "Reward",
-    worthGrinding: "Worth Grinding",
-    lineup: "Lineup"
+    worthGrinding: "High Priority",
+    lineup: "Battle Lineup",
+    viewDetails: "View Full Event Details",
+    privacyPolicy: "Privacy Policy & Terms",
+    rightsReserved: "All rights reserved. Not affiliated with Niantic, Inc. or Nintendo.",
+    guidesHeading: "Pokémon GO Guides & Tips",
+    raidsGuideText: "Defeating Raid Bosses efficiently requires utilizing Super Effective type matchups and Mega Evolutions. Coordinate with local communities or remote raid apps during Raid Hours to secure Legendary and Mythical Pokémon with exclusive moves.",
+    rocketGuideText: "Team GO Rocket Leaders Arlo, Cliff, and Sierra use rotated Shadow lineups. Defeat them to receive Rocket Radar components, encounter high-IV Shadow Pokémon, and face Boss Giovanni for Legendary Shadow encounters."
   },
   cs: {
-    title: "Pokémon GO Event Tracker - Aktivní a nadcházející události",
-    description: "Sledujte aktivní a nadcházející Pokémon GO události, raid bossy, sestavy Team GO Rocket, vejce a další v reálném čase.",
+    title: "Pokémon GO Event Tracker - Živé události, Raidy, Rakeťáci & Průvodce",
+    description: "Sledujte aktuální a nadcházející události v Pokémon GO, raid bossy, sestavy Team GO Rocket, líhnutí z vajec, maskování Ditto a PvP žebříčky v reálném čase.",
     h1: "Pokémon GO Event Tracker",
-    intro: "Vítejte v přehledném sledovači událostí Pokémon GO. Najdete zde aktuální informace o probíhajících a nadcházejících herních událostech, raid bossech a soubojích s Rakeťáky.",
-    events: "Aktivní a nadcházející události",
-    raids: "Aktuální Raid Bossi",
+    intro: "Vítejte v přehledném sledovači událostí Pokémon GO. Získejte přehled o živých a nadcházejících událostech, doporučených protihráčích na raid bossy, sestavách Rakeťáků a herních bonusech.",
+    events: "Události & Odpočty",
+    raids: "Raid Bossi & Counters",
     rocket: "Sestavy Team GO Rocket",
-    active: "Aktivní",
+    ditto: "Ditto Maskování",
+    eggs: "Líhnutí z vajec",
+    rankings: "PvP & Raid Žebříčky",
+    filter: "Generátor vyhledávacích filtrů",
+    active: "Právě probíhá",
     upcoming: "Nadcházející",
     ends: "Končí",
     starts: "Začíná",
-    noEvents: "Žádné aktivní ani nadcházející události.",
+    noEvents: "Momentálně nejsou žádné aktivní ani nadcházející události.",
     noRaids: "Žádné informace o raid bossech.",
     noRocket: "Žádné informace o sestavách Rakeťáků.",
     bonuses: "Eventové bonusy",
-    debuts: "Debuty & Novinky",
-    spawns: "Výskyt v divočině (Wild Spawns)",
-    eggs: "Líhnutí z vajec (Eggs)",
+    debuts: "Debuty a noví Pokémoni",
+    spawns: "Divocí Pokémoni (Wild Spawns)",
+    eggTitle: "Líhnutí z vajec (Eggs)",
     research: "Terénní výzkum (Field Research)",
-    counters: "Doporučené protihráče (Counters)",
-    weaknesses: "Slabosti",
-    shinyAvailable: "Shiny možný",
+    counters: "Doporučení protihráči (Counters)",
+    weaknesses: "Slabosti Pokémona",
+    shinyAvailable: "Možnost Shiny verze",
     reward: "Odměna",
-    worthGrinding: "Vyplatí se farmit",
-    lineup: "Sestava"
+    worthGrinding: "Vysoká priorita",
+    lineup: "Sestava pro souboj",
+    viewDetails: "Zobrazit detail události",
+    privacyPolicy: "Ochrana soukromí a podmínky",
+    rightsReserved: "Všechna práva vyhrazena. Aplikace není spjata s Niantic, Inc. ani Nintendo.",
+    guidesHeading: "Návody a strategie pro Pokémon GO",
+    raidsGuideText: "Pro rychlé poražení Raid Bossů používejte správné typové slabosti a Mega evoluce. Během Raid Hours (Raidových hodin) využívejte koordinaci s komunitou pro získání Legendárních Pokémonů s exkluzivními útoky.",
+    rocketGuideText: "Lídři Team GO Rocket (Arlo, Cliff, Sierra) obměňují své Shadow Pokémony. Jejich poražením získáte přístup k Bossi Giovannimu a šanci chytit vzácné Shadow Pokémony."
   },
   ja: {
-    title: "Pokémon GO イベントトラッカー - 開催中および予定されているイベント",
-    description: "開催中および予定されているPokémon GOのイベント、レイドボス、GOロケット団の編成、タマゴなどをリアルタイムで追跡します。",
+    title: "Pokémon GO イベントトラッカー - イベント、レイド、ロケット団 & ガイド",
+    description: "Pokémon GOのイベント、レイドボス、GOロケット団の編成、タマゴ孵化、メタモン、PvPランキングをリアルタイムで確認できます。",
     h1: "Pokémon GO イベントトラッカー",
-    intro: "究極のPokémon GOイベントトラッカーへようこそ。ここでは、現在開催中および今後のゲーム内イベント、レイドボス、ロケット団のバトルに関するライブ情報をご覧いただけます。",
-    events: "開催中および予定されているイベント",
-    raids: "現在のレイドボス",
-    rocket: "GOロケット団 of メンバー",
+    intro: "Pokémon GOのイベントトラッカーへようこそ。開催中および今後のイベント、レイドボスの対策、ロケット団の対策ガイド、ボーナス情報を一 me で確認できます。",
+    events: "イベント & タイマー",
+    raids: "レイドボス & 対策",
+    rocket: "GOロケット団編成",
+    ditto: "メタモンのへんしん姿",
+    eggs: "タマゴ孵化一覧",
+    rankings: "PvP & レイドランキング",
+    filter: "検索フィルター作成",
     active: "開催中",
     upcoming: "まもなく開始",
     ends: "終了:",
     starts: "開始:",
-    noEvents: "現在および今後のイベントはありません。",
+    noEvents: "現在開催中または予定されているイベントはありません。",
     noRaids: "レイドボスの情報はありません。",
     noRocket: "ロケット団の情報はありません。",
     bonuses: "イベントボーナス",
-    debuts: "新登場のポケモン",
+    debuts: "新登場ポケモン",
     spawns: "野生での出現",
-    eggs: "タマゴ孵化",
+    eggTitle: "タマゴ孵化",
     research: "フィールドリサーチタスク",
     counters: "対策ポケモン",
-    weaknesses: "弱点",
-    shinyAvailable: "色違い出現の可能性あり",
+    weaknesses: "タイプ弱点",
+    shinyAvailable: "色違い出現可能性あり",
     reward: "報酬",
-    worthGrinding: "周回価値あり",
-    lineup: "手持ちポケモン"
+    worthGrinding: "おすすめ",
+    lineup: "手持ちポケモン",
+    viewDetails: "イベントの詳細を見る",
+    privacyPolicy: "プライバシーポリシー & 利用規約",
+    rightsReserved: "All rights reserved. Niantic, Inc. または 任天堂 との提携はありません。",
+    guidesHeading: "Pokémon GO ガイド & 攻略情報",
+    raidsGuideText: "レイドボスを効率よく倒すには、弱点タイプやメガシンカの活用が重要です。レイドアワーを活用して伝説のポケモンをゲットしましょう。",
+    rocketGuideText: "GOロケット団のリーダー（アルロ、クリフ、シエラ）の手持ちポケモンを対策し、サカキとのバトルに備えましょう。"
   },
   ru: {
-    title: "Трекер событий Pokémon GO - Текущие и предстоящие события",
-    description: "Отслеживайте текущие и предстоящие события Pokémon GO, боссов рейдов, составы Команды R, яйца и многое другое в реальном времени.",
+    title: "Трекер событий Pokémon GO - События, Рейды, Команда R и Руководства",
+    description: "Отслеживайте текущие и предстоящие события Pokémon GO, боссов рейдов, составы Команды R, вылупление яиц и маскировки Дитто в реальном времени.",
     h1: "Трекер событий Pokémon GO",
-    intro: "Добро пожаловать в трекер событий Pokémon GO. Здесь вы найдете актуальную информацию о текущих и предстоящих внутриигровых событиях, боссах рейдов и битвах с Командой R.",
-    events: "Текущие и предстоящие события",
-    raids: "Текущие боссы рейдов",
+    intro: "Добро пожаловать в трекер событий Pokémon GO. Здесь вы найдете актуальную информацию о внутриигровых событиях, контр-покемонах для рейдов и битвах с Командой R.",
+    events: "События и таймеры",
+    raids: "Боссы рейдов и контр-покемоны",
     rocket: "Составы Команды GO Rocket",
+    ditto: "Маскировки Дитто",
+    eggs: "Вылупление яиц",
+    rankings: "Рейтинги PvP и рейдов",
+    filter: "Генератор фильтров",
     active: "Активно",
     upcoming: "Предстоит",
     ends: "Заканчивается",
@@ -128,14 +172,20 @@ const botTranslations: Record<'cs' | 'en' | 'ja' | 'ru', BotTranslations> = {
     bonuses: "Бонусы события",
     debuts: "Дебюты и новые покемоны",
     spawns: "Покемоны в дикой природе",
-    eggs: "Яйца",
+    eggTitle: "Яйца",
     research: "Полевые исследования",
     counters: "Контр-покемоны",
     weaknesses: "Уязвимости",
     shinyAvailable: "Может быть сияющим",
     reward: "Награда",
-    worthGrinding: "Стоит ловить",
-    lineup: "Состав"
+    worthGrinding: "Высокий приоритет",
+    lineup: "Состав битвы",
+    viewDetails: "Подробности события",
+    privacyPolicy: "Политика конфиденциальности",
+    rightsReserved: "Все права защищены. Не связано с Niantic, Inc. или Nintendo.",
+    guidesHeading: "Руководства и советы Pokémon GO",
+    raidsGuideText: "Эффективная победа над боссами рейдов требует использования суперэффективных атак и Мега-эволюций. Координируйтесь во время Часа Рейдов.",
+    rocketGuideText: "Лидеры Команды R (Арло, Клифф, Сиерра) меняют своих Shadow покемонов. Победите их, чтобы сразиться с Боссом Джованни."
   }
 };
 
@@ -160,21 +210,20 @@ export async function generateBotHtml(
   const pageDesc = targetEvent
     ? `${targetEvent.name} (${new Date(targetEvent.start).toLocaleDateString()} – ${new Date(targetEvent.end).toLocaleDateString()}) — Spawns, bonuses, raids, and research details.`
     : t.description;
-  const canonicalPath = targetEventId ? `/${lang}/events/${targetEventId}` : `/${lang}`;
+  const canonicalPath = targetEventId ? `/${lang}/events/${targetEventId}` : `/${lang}/events`;
   const canonicalUrl = `https://pogoevents.app${canonicalPath}`;
 
-  // 1. Process Events
+  // Process Events
   const now = Date.now();
   let sortedEvents = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
   
-  // Put target event at top if requested
   if (targetEvent) {
     sortedEvents = [targetEvent, ...sortedEvents.filter(e => e.eventID !== targetEventId)];
   }
 
   let eventsHtml = '';
   if (sortedEvents.length === 0) {
-    eventsHtml = `<p>${t.noEvents}</p>`;
+    eventsHtml = `<p class="empty-state">${t.noEvents}</p>`;
   } else {
     sortedEvents.forEach(event => {
       const startMs = new Date(event.start).getTime();
@@ -182,7 +231,6 @@ export async function generateBotHtml(
       const isActive = now >= startMs && now <= endMs;
       const isUpcoming = now < startMs;
       
-      // Skip ended events for bots unless it's the explicitly targeted event
       if (now > endMs && event.eventID !== targetEventId) return;
 
       const statusLabel = isActive ? t.active : isUpcoming ? t.upcoming : (lang === 'cs' ? 'Ukončeno' : 'Ended');
@@ -190,55 +238,51 @@ export async function generateBotHtml(
         ? `${t.ends}: ${new Date(event.end).toLocaleString(lang === 'cs' ? 'cs-CZ' : 'en-US')}`
         : `${t.starts}: ${new Date(event.start).toLocaleString(lang === 'cs' ? 'cs-CZ' : 'en-US')}`;
 
+      const eventUrl = `/${lang}/events/${event.eventID}`;
+
       eventsHtml += `
-        <div class="event-card ${isActive ? 'active-card' : 'upcoming-card'}">
+        <article class="event-card ${isActive ? 'active-card' : 'upcoming-card'}" id="event-${event.eventID}">
           <div class="event-header">
             <span class="event-status-badge">${statusLabel}</span>
             <span class="event-type">${event.eventType}</span>
           </div>
-          <h3 class="event-title">${event.name}</h3>
+          <h3 class="event-title">
+            <a href="${eventUrl}" title="${event.name}">${event.name}</a>
+          </h3>
           <p class="event-time">${timeLabel}</p>
-          ${event.heading ? `<p class="event-summary"><em>${event.heading}</em></p>` : ''}
+          ${event.heading ? `<p class="event-summary">${event.heading}</p>` : ''}
       `;
 
-      // Embed special event details if available
       const details = getDetails(event.eventID);
       if (details) {
         eventsHtml += `<div class="event-details-section">`;
 
-        // Debuts
         if (details.debuts && details.debuts.length > 0) {
           eventsHtml += `
             <div class="detail-block">
               <h4>${t.debuts}</h4>
               <ul>
                 ${details.debuts.map(d => `
-                  <li>
-                    <strong>${d.name}</strong>: ${lang === 'cs' ? d.description.cs : d.description.en}
-                  </li>
+                  <li><strong>${d.name}</strong>: ${lang === 'cs' ? d.description.cs : d.description.en}</li>
                 `).join('')}
               </ul>
             </div>
           `;
         }
 
-        // Bonuses
         if (details.bonuses && details.bonuses.length > 0) {
           eventsHtml += `
             <div class="detail-block">
               <h4>${t.bonuses}</h4>
               <ul>
                 ${details.bonuses.map(b => `
-                  <li>
-                    <span class="bonus-icon">${b.icon}</span> ${lang === 'cs' ? b.text.cs : b.text.en}
-                  </li>
+                  <li><span class="bonus-icon">${b.icon || '🎁'}</span> ${lang === 'cs' ? b.text.cs : b.text.en}</li>
                 `).join('')}
               </ul>
             </div>
           `;
         }
 
-        // Spawns
         if (details.spawns && details.spawns.length > 0) {
           eventsHtml += `
             <div class="detail-block">
@@ -248,50 +292,47 @@ export async function generateBotHtml(
           `;
         }
 
-        // Eggs
         if (details.eggs && details.eggs.length > 0) {
           eventsHtml += `
             <div class="detail-block">
-              <h4>${t.eggs}</h4>
+              <h4>${t.eggTitle}</h4>
               <ul>
                 ${details.eggs.map(e => `
-                  <li>
-                    <strong>${e.distance}:</strong> ${e.contents.map(c => `${c.name}${c.isShinyAvailable ? ' ✨' : ''}`).join(', ')}
-                  </li>
+                  <li><strong>${e.distance}:</strong> ${e.contents.map(c => `${c.name}${c.isShinyAvailable ? ' ✨' : ''}`).join(', ')}</li>
                 `).join('')}
               </ul>
             </div>
           `;
         }
 
-        // Research
         if (details.research && details.research.length > 0) {
           eventsHtml += `
             <div class="detail-block">
               <h4>${t.research}</h4>
               <ul>
                 ${details.research.map(r => `
-                  <li>
-                    <strong>${lang === 'cs' ? r.task.cs : r.task.en}</strong> &rarr; 
-                    ${t.reward}: ${r.reward}${r.isShinyAvailable ? ' ✨' : ''}
-                  </li>
+                  <li><strong>${lang === 'cs' ? r.task.cs : r.task.en}</strong> &rarr; ${t.reward}: ${r.reward}${r.isShinyAvailable ? ' ✨' : ''}</li>
                 `).join('')}
               </ul>
             </div>
           `;
         }
+        eventsHtml += `</div>`;
       }
 
-      eventsHtml += `</div>`;
+      eventsHtml += `
+        <div class="event-card-actions">
+          <a href="${eventUrl}" class="btn-event-detail">${t.viewDetails} &rarr;</a>
+        </div>
+      </article>`;
     });
   }
 
-  // 2. Process Raids
+  // Process Raids
   let raidsHtml = '';
   if (!raids || raids.length === 0) {
-    raidsHtml = `<p>${t.noRaids}</p>`;
+    raidsHtml = `<p class="empty-state">${t.noRaids}</p>`;
   } else {
-    // Group bosses by tier
     const bossesByTier: Record<string, ScrapedRaidBoss[]> = {};
     raids.forEach((boss: ScrapedRaidBoss) => {
       const tier = boss.tier || 'Other';
@@ -315,47 +356,41 @@ export async function generateBotHtml(
       const bosses = bossesByTier[tier];
       if (!bosses || bosses.length === 0) return;
 
-      raidsHtml += `<h3>${tierNames[tier] || `${tier}-Star Raids`}</h3><div class="raid-grid">`;
+      raidsHtml += `<section class="raid-tier-section"><h3>${tierNames[tier] || `${tier}-Star Raids`}</h3><div class="raid-grid">`;
       
       bosses.forEach(boss => {
         raidsHtml += `
           <div class="raid-card">
             <h4 class="boss-name">${boss.name} ${boss.canBeShiny ? '✨' : ''}</h4>
             ${boss.cpRange ? `<p class="cp-range">CP: <strong>${boss.cpRange}</strong> ${boss.boostedCpRange ? `(Weather: <strong>${boss.boostedCpRange}</strong>)` : ''}</p>` : ''}
+            ${boss.counters ? `
+              <div class="boss-counters">
+                <p><strong>${t.weaknesses}:</strong> ${boss.counters.weaknesses?.join(', ') || 'N/A'}</p>
+                ${boss.counters.megaCounters?.length ? `<p><strong>Mega ${t.counters}:</strong> ${boss.counters.megaCounters.join(', ')}</p>` : ''}
+                ${boss.counters.advancedCounters?.length ? `<p><strong>Best ${t.counters}:</strong> ${boss.counters.advancedCounters.join(', ')}</p>` : ''}
+              </div>
+            ` : ''}
+          </div>
         `;
-
-        if (boss.counters) {
-          raidsHtml += `
-            <div class="boss-counters">
-              <p><strong>${t.weaknesses}:</strong> ${boss.counters.weaknesses?.join(', ') || 'N/A'}</p>
-              ${boss.counters.megaCounters?.length ? `<p><strong>Mega ${t.counters}:</strong> ${boss.counters.megaCounters.join(', ')}</p>` : ''}
-              ${boss.counters.advancedCounters?.length ? `<p><strong>Best ${t.counters}:</strong> ${boss.counters.advancedCounters.join(', ')}</p>` : ''}
-              ${boss.counters.budgetCounters?.length ? `<p><strong>Budget ${t.counters}:</strong> ${boss.counters.budgetCounters.join(', ')}</p>` : ''}
-            </div>
-          `;
-        }
-        raidsHtml += `</div>`;
       });
       
-      raidsHtml += `</div>`;
+      raidsHtml += `</div></section>`;
     });
   }
 
-  // 3. Process Rocket Sestavy
+  // Process Rocket Sestavy
   let rocketHtml = '';
   if (!rocket || (!rocket.giovanni && (!rocket.leaders || rocket.leaders.length === 0) && (!rocket.grunts || rocket.grunts.length === 0))) {
-    rocketHtml = `<p>${t.noRocket}</p>`;
+    rocketHtml = `<p class="empty-state">${t.noRocket}</p>`;
   } else {
-    // Render Boss Giovanni
     if (rocket.giovanni) {
       const boss = rocket.giovanni;
       rocketHtml += `
         <div class="rocket-card shadow-boss">
-          <h3 class="rocket-name">${boss.name} <span class="badge-boss">${lang === 'cs' ? 'Boss Rakeťáků' : 'Team GO Rocket Boss'}</span></h3>
+          <h3 class="rocket-name">${boss.name} <span class="badge-boss">Boss</span></h3>
           ${boss.reward ? `
             <div class="rocket-reward">
               <p><strong>${t.reward}:</strong> ${boss.reward.name} ${boss.reward.worthGrinding ? `🎉 (${t.worthGrinding})` : ''}</p>
-              ${boss.reward.reason ? `<p><em>Reason: ${boss.reward.reason}</em></p>` : ''}
             </div>
           ` : ''}
           <div class="rocket-lineup">
@@ -366,32 +401,16 @@ export async function generateBotHtml(
               <li>Slot 3: ${boss.lineup.slot3.map((p: any) => p.name).join(', ')}</li>
             </ol>
           </div>
+        </div>
       `;
-      if (boss.counters) {
-        rocketHtml += `
-          <div class="rocket-counters">
-            <h4>${t.counters}:</h4>
-            ${boss.counters.megaCounters?.length ? `<p><strong>Mega:</strong> ${boss.counters.megaCounters.join(', ')}</p>` : ''}
-            ${boss.counters.advancedCounters?.length ? `<p><strong>Best:</strong> ${boss.counters.advancedCounters.join(', ')}</p>` : ''}
-            ${boss.counters.budgetCounters?.length ? `<p><strong>Budget:</strong> ${boss.counters.budgetCounters.join(', ')}</p>` : ''}
-          </div>
-        `;
-      }
-      rocketHtml += `</div>`;
     }
 
-    // Render Leaders (Arlo, Cliff, Sierra)
     if (rocket.leaders && rocket.leaders.length > 0) {
       rocket.leaders.forEach((leader: any) => {
         rocketHtml += `
           <div class="rocket-card">
-            <h3 class="rocket-name">${leader.name} <span class="badge-leader">${lang === 'cs' ? 'Lídr Rakeťáků' : 'Team GO Rocket Leader'}</span></h3>
-            ${leader.reward ? `
-              <div class="rocket-reward">
-                <p><strong>${t.reward}:</strong> ${leader.reward.name} ${leader.reward.worthGrinding ? `🎉 (${t.worthGrinding})` : ''}</p>
-                ${leader.reward.reason ? `<p><em>Reason: ${leader.reward.reason}</em></p>` : ''}
-              </div>
-            ` : ''}
+            <h3 class="rocket-name">${leader.name} <span class="badge-leader">Leader</span></h3>
+            ${leader.reward ? `<p class="rocket-reward"><strong>${t.reward}:</strong> ${leader.reward.name}</p>` : ''}
             <div class="rocket-lineup">
               <h4>${t.lineup}:</h4>
               <ol>
@@ -400,31 +419,18 @@ export async function generateBotHtml(
                 <li>Slot 3: ${leader.lineup.slot3.map((p: any) => p.name).join(', ')}</li>
               </ol>
             </div>
+          </div>
         `;
-        if (leader.counters) {
-          rocketHtml += `
-            <div class="rocket-counters">
-              <h4>${t.counters}:</h4>
-              ${leader.counters.megaCounters?.length ? `<p><strong>Mega:</strong> ${leader.counters.megaCounters.join(', ')}</p>` : ''}
-              ${leader.counters.advancedCounters?.length ? `<p><strong>Best:</strong> ${leader.counters.advancedCounters.join(', ')}</p>` : ''}
-              ${leader.counters.budgetCounters?.length ? `<p><strong>Budget:</strong> ${leader.counters.budgetCounters.join(', ')}</p>` : ''}
-            </div>
-          `;
-        }
-        rocketHtml += `</div>`;
       });
     }
 
-    // Render Grunts
     if (rocket.grunts && rocket.grunts.length > 0) {
-      rocketHtml += `<h3>${lang === 'cs' ? 'Řadoví členové (Grunts)' : 'Team GO Rocket Grunts'}</h3><div class="grunt-grid">`;
+      rocketHtml += `<h3>Team GO Rocket Grunts</h3><div class="grunt-grid">`;
       rocket.grunts.forEach((grunt: any) => {
         rocketHtml += `
           <div class="grunt-card">
             <h4 class="grunt-phrase">"${lang === 'cs' ? grunt.phraseCs : grunt.phraseEn}"</h4>
-            <p class="grunt-info"><strong>Type:</strong> ${grunt.type} | <strong>Difficulty:</strong> ${grunt.difficulty}</p>
-            <p class="grunt-reward"><strong>Shadow:</strong> ${grunt.shadowPokemon?.join(', ') || 'N/A'}</p>
-            ${grunt.counters?.length ? `<p class="grunt-counters"><strong>${t.counters}:</strong> ${grunt.counters.join(', ')}</p>` : ''}
+            <p class="grunt-info"><strong>Type:</strong> ${grunt.type} | <strong>Shadow:</strong> ${grunt.shadowPokemon?.join(', ') || 'N/A'}</p>
           </div>
         `;
       });
@@ -432,7 +438,7 @@ export async function generateBotHtml(
     }
   }
 
-  // Generate complete HTML page
+  // Generate complete HTML page with structured internal navigation (<a href>)
   return `<!DOCTYPE html>
 <html lang="${lang}">
 <head>
@@ -442,10 +448,10 @@ export async function generateBotHtml(
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="${canonicalUrl}">
-  <link rel="alternate" hreflang="en" href="https://pogoevents.app/en${targetEventId ? `/events/${targetEventId}` : ''}">
-  <link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs${targetEventId ? `/events/${targetEventId}` : ''}">
-  <link rel="alternate" hreflang="ja" href="https://pogoevents.app/ja${targetEventId ? `/events/${targetEventId}` : ''}">
-  <link rel="alternate" hreflang="ru" href="https://pogoevents.app/ru${targetEventId ? `/events/${targetEventId}` : ''}">
+  <link rel="alternate" hreflang="en" href="https://pogoevents.app/en/events">
+  <link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/events">
+  <link rel="alternate" hreflang="ja" href="https://pogoevents.app/ja/events">
+  <link rel="alternate" hreflang="ru" href="https://pogoevents.app/ru/events">
   <meta property="og:type" content="website">
   <meta property="og:title" content="${pageTitle}">
   <meta property="og:description" content="${pageDesc}">
@@ -454,7 +460,7 @@ export async function generateBotHtml(
   <style>
     :root {
       --bg-color: #0b0c10;
-      --card-bg: rgba(22, 26, 35, 0.85);
+      --card-bg: rgba(22, 26, 35, 0.95);
       --text-color: #c5c6c7;
       --title-color: #ffffff;
       --accent-color: #66fcf1;
@@ -462,244 +468,186 @@ export async function generateBotHtml(
       --border-color: #1f2833;
     }
     body {
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
       background-color: var(--bg-color);
       color: var(--text-color);
-      padding: 30px 15px;
+      padding: 20px 15px;
       line-height: 1.6;
-      max-width: 900px;
+      max-width: 960px;
       margin: 0 auto;
     }
-    h1, h2, h3, h4 {
-      color: var(--title-color);
-      font-weight: 600;
+    a, a:hover, a:focus, a:active {
+      text-decoration: none;
+    }
+    header {
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 15px;
+      margin-bottom: 25px;
     }
     h1 {
-      font-size: 2.2rem;
-      border-bottom: 2px solid var(--accent-color);
-      padding-bottom: 10px;
-      margin-bottom: 5px;
+      font-size: 2rem;
+      color: var(--title-color);
+      margin: 0 0 10px 0;
     }
-    .date-indicator {
-      font-size: 0.95rem;
+    h1 a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .site-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .site-nav a {
+      background: var(--border-color);
+      color: var(--title-color);
+      padding: 8px 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    .site-nav a:hover, .site-nav a.active {
+      background: var(--accent-dim);
+      color: #fff;
+    }
+    .lang-switcher {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .lang-switcher a {
       color: var(--accent-color);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: bold;
+      padding: 2px 6px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+    }
+    .intro-box {
+      background: rgba(31, 40, 51, 0.4);
+      border-left: 4px solid var(--accent-color);
+      padding: 15px 20px;
+      border-radius: 6px;
       margin-bottom: 30px;
     }
-    .intro-paragraph {
-      font-size: 1.1rem;
-      margin-bottom: 40px;
-      color: #959aa0;
+    .intro-box p {
+      margin: 0;
+      font-size: 1rem;
     }
     h2 {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
+      color: var(--accent-color);
       border-bottom: 1px solid var(--border-color);
       padding-bottom: 8px;
-      margin-top: 50px;
-      margin-bottom: 25px;
-      color: var(--accent-color);
-    }
-    h3 {
-      font-size: 1.3rem;
-      margin-top: 30px;
-      margin-bottom: 15px;
-      color: #ffffff;
+      margin-top: 40px;
+      margin-bottom: 20px;
     }
     .event-card {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
+      border-radius: 12px;
       padding: 20px;
       margin-bottom: 25px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .active-card {
-      border-left: 4px solid var(--accent-color);
-    }
-    .upcoming-card {
-      border-left: 4px solid var(--accent-dim);
-    }
-    .event-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      font-size: 0.85rem;
-    }
-    .event-status-badge {
-      font-weight: bold;
-      text-transform: uppercase;
-      color: var(--accent-color);
-    }
-    .event-type {
-      background-color: var(--border-color);
-      padding: 3px 8px;
-      border-radius: 4px;
-      color: #959aa0;
     }
     .event-title {
-      font-size: 1.4rem;
-      margin: 5px 0 10px 0;
+      font-size: 1.35rem;
+      margin: 8px 0;
+    }
+    .event-title a {
       color: #ffffff;
+      text-decoration: none;
     }
-    .event-time {
-      font-size: 0.9rem;
-      color: #959aa0;
-      margin-bottom: 15px;
-    }
-    .event-summary {
-      color: #c5c6c7;
-      margin-bottom: 20px;
-    }
-    .event-details-section {
-      border-top: 1px dashed var(--border-color);
-      padding-top: 15px;
-      margin-top: 15px;
-    }
-    .detail-block {
-      margin-bottom: 15px;
-    }
-    .detail-block h4 {
-      margin-top: 0;
-      margin-bottom: 5px;
-      font-size: 1rem;
+    .event-title a:hover {
       color: var(--accent-color);
+      text-decoration: underline;
     }
-    .detail-block ul {
-      margin: 0;
-      padding-left: 20px;
+    .btn-event-detail {
+      display: inline-block;
+      margin-top: 15px;
+      background: rgba(102, 252, 241, 0.15);
+      color: var(--accent-color);
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
     }
-    .bonus-icon {
-      font-size: 1.1rem;
-      margin-right: 5px;
+    .btn-event-detail:hover {
+      background: var(--accent-color);
+      color: #000;
     }
-    .raid-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 15px;
-      margin-bottom: 30px;
-    }
-    @media (min-width: 600px) {
-      .raid-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-    .raid-card, .rocket-card {
+    .guide-section {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 15px;
-    }
-    .boss-name {
-      font-size: 1.1rem;
-      margin-top: 0;
-      margin-bottom: 8px;
-      color: #ffffff;
-    }
-    .cp-range {
-      font-size: 0.85rem;
-      margin: 0 0 12px 0;
-      color: #959aa0;
-    }
-    .boss-counters p, .rocket-counters p {
-      font-size: 0.85rem;
-      margin: 4px 0;
-    }
-    .rocket-card {
-      margin-bottom: 20px;
-    }
-    .rocket-name {
-      font-size: 1.25rem;
-      margin-top: 0;
-      margin-bottom: 10px;
-      color: #ffffff;
-    }
-    .rocket-reward p, .rocket-lineup p {
-      font-size: 0.9rem;
-      margin: 5px 0;
-    }
-    .rocket-lineup ol {
-      margin: 5px 0;
-      padding-left: 20px;
-      font-size: 0.9rem;
-    }
-    .rocket-counters h4, .rocket-lineup h4 {
-      margin-top: 15px;
-      margin-bottom: 5px;
-      font-size: 0.95rem;
-      color: var(--accent-color);
-    }
-    .badge-boss {
-      background-color: #ff3b30;
-      color: white;
-      font-size: 0.75rem;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-left: 8px;
-    }
-    .badge-leader {
-      background-color: #ff9500;
-      color: white;
-      font-size: 0.75rem;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-left: 8px;
-    }
-    .shadow-boss {
-      border: 1px solid #ff3b30;
-    }
-    .grunt-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 15px;
-      margin-bottom: 30px;
-    }
-    @media (min-width: 600px) {
-      .grunt-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-    .grunt-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 15px;
-    }
-    .grunt-phrase {
-      font-style: italic;
-      margin-top: 0;
-      margin-bottom: 8px;
-      color: #ffffff;
-    }
-    .grunt-info, .grunt-reward, .grunt-counters {
-      font-size: 0.85rem;
-      margin: 4px 0;
+      border-radius: 12px;
+      padding: 25px;
+      margin-top: 40px;
     }
     footer {
-      margin-top: 80px;
+      margin-top: 60px;
       border-top: 1px solid var(--border-color);
-      padding-top: 20px;
+      padding-top: 25px;
       text-align: center;
-      font-size: 0.8rem;
-      color: #4f5b66;
+      font-size: 0.85rem;
+      color: #888;
+    }
+    footer a {
+      color: var(--accent-color);
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-  <h1>${t.h1}</h1>
-  <div class="date-indicator">Data current as of: ${nowStr}</div>
-  <p class="intro-paragraph">${t.intro}</p>
-  
-  <h2>${t.events}</h2>
-  ${eventsHtml}
-  
-  <h2>${t.raids}</h2>
-  ${raidsHtml}
-  
-  <h2>${t.rocket}</h2>
-  ${rocketHtml}
-  
+  <header>
+    <h1><a href="/${lang}/events">${t.h1}</a></h1>
+    <div class="lang-switcher">
+      <a href="/cs/events">CS</a>
+      <a href="/en/events">EN</a>
+      <a href="/ja/events">JA</a>
+      <a href="/ru/events">RU</a>
+    </div>
+    <nav class="site-nav">
+      <a href="/${lang}/events" class="active">${t.events}</a>
+      <a href="/${lang}/raids">${t.raids}</a>
+      <a href="/${lang}/rocket">${t.rocket}</a>
+      <a href="/${lang}/ditto">${t.ditto}</a>
+      <a href="/${lang}/eggs">${t.eggs}</a>
+      <a href="/${lang}/rankings">${t.rankings}</a>
+      <a href="/${lang}/filter">${t.filter}</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="intro-box">
+      <p>${t.intro}</p>
+      <small style="display:block; margin-top: 8px; color: var(--accent-color);">Data updated: ${nowStr}</small>
+    </div>
+
+    <h2>${t.events}</h2>
+    ${eventsHtml}
+
+    <h2>${t.raids}</h2>
+    ${raidsHtml}
+
+    <h2>${t.rocket}</h2>
+    ${rocketHtml}
+
+    <section class="guide-section">
+      <h2>${t.guidesHeading}</h2>
+      <h3>${t.raids}</h3>
+      <p>${t.raidsGuideText}</p>
+      <h3>${t.rocket}</h3>
+      <p>${t.rocketGuideText}</p>
+    </section>
+  </main>
+
   <footer>
-    <p>&copy; ${new Date().getFullYear()} Pokémon GO Event Tracker. This website is not affiliated with Niantic, Inc. or Nintendo.</p>
+    <p>&copy; ${new Date().getFullYear()} Pokémon GO Event Tracker. ${t.rightsReserved}</p>
+    <p><a href="/privacy-policy.html">${t.privacyPolicy}</a></p>
   </footer>
 </body>
 </html>`;

@@ -1,6 +1,4 @@
-1: [DONE] Možnost v admin sekci u jednotlivých eventů přidat funkci znovuscrapování z nově zadané URL.
-2: [DONE] Vylepšit SEO například i přidáním měnící se url pomocí jazyků a jednotlivých sekcí/eventů, také dát jako hlavní jazyk angličtinu
-3: [DONE] přidat Možnost vypnutí overlaye, zároveň synchronizovat jazyk podle aplikace. pokud by bylo možné vytvořit funkci kde by aplikace četla data z obrazovky a pokud by se uživatel připojil do nějakého raidu aplikace by to poznala a poslala uživateli notifikaci s filtrem na doporučené countery.
+1: Přidat souhrn eventů na příští měsíc v jednoduché infografice
 
 
 Zaměření na mobilní aplikaci:

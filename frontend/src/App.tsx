@@ -349,7 +349,9 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
   const [activeTab, setActiveTab] = useState<TabType>(initialTab || 'events');
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
   const [lang, setLang] = useState<Language>(initialLang || 'en');
-  const showAds = activeTab !== 'settings' && activeTab !== 'admin';
+  // Set to true once AdSense approves the website to restore ad placements
+  const ENABLE_ADS = false;
+  const showAds = ENABLE_ADS && activeTab !== 'settings' && activeTab !== 'admin';
 
   const [events, setEvents] = useState<EventData[]>(() => sanitizeEvents(MOCK_EVENTS));
   const [filterType, setFilterType] = useState<string>('all');
@@ -922,70 +924,78 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
           )}
         </div>
         <nav className="sidebar-nav">
-          <button 
+          <a 
+            href={getUrlPathForTab('events', lang)} 
             className={`sidebar-nav-item ${activeTab === 'events' ? 'active' : ''}`} 
-            onClick={() => changeTab('events')}
+            onClick={(e) => { e.preventDefault(); changeTab('events'); }}
           >
             <span className="nav-icon"><Calendar size={20} /></span>
             <span className="nav-text">{t.tabs_events}</span>
-          </button>
+          </a>
           
-          <button 
+          <a 
+            href={getUrlPathForTab('raid', lang)} 
             className={`sidebar-nav-item ${activeTab === 'raid' ? 'active' : ''}`} 
-            onClick={() => changeTab('raid')}
+            onClick={(e) => { e.preventDefault(); changeTab('raid'); }}
           >
             <span className="nav-icon"><Swords size={20} /></span>
             <span className="nav-text">{t.tabs_raid}</span>
-          </button>
+          </a>
 
-          <button 
+          <a 
+            href={getUrlPathForTab('rocket', lang)} 
             className={`sidebar-nav-item ${activeTab === 'rocket' ? 'active' : ''}`} 
-            onClick={() => changeTab('rocket')}
+            onClick={(e) => { e.preventDefault(); changeTab('rocket'); }}
           >
             <span className="nav-icon"><Shield size={20} /></span>
             <span className="nav-text">{t.tabs_rocket}</span>
-          </button>
+          </a>
 
-          <button 
+          <a 
+            href={getUrlPathForTab('ditto', lang)} 
             className={`sidebar-nav-item ${activeTab === 'ditto' ? 'active' : ''}`} 
-            onClick={() => changeTab('ditto')}
+            onClick={(e) => { e.preventDefault(); changeTab('ditto'); }}
           >
             <span className="nav-icon"><Sparkles size={20} /></span>
             <span className="nav-text">{t.tabs_ditto}</span>
-          </button>
+          </a>
 
-          <button 
+          <a 
+            href={getUrlPathForTab('eggs', lang)} 
             className={`sidebar-nav-item ${activeTab === 'eggs' ? 'active' : ''}`} 
-            onClick={() => changeTab('eggs')}
+            onClick={(e) => { e.preventDefault(); changeTab('eggs'); }}
           >
             <span className="nav-icon"><Egg size={20} /></span>
             <span className="nav-text">{t.tabs_eggs}</span>
-          </button>
+          </a>
 
-          <button 
+          <a 
+            href={getUrlPathForTab('ranking', lang)} 
             className={`sidebar-nav-item ${activeTab === 'ranking' ? 'active' : ''}`} 
-            onClick={() => changeTab('ranking')}
+            onClick={(e) => { e.preventDefault(); changeTab('ranking'); }}
           >
             <span className="nav-icon"><Trophy size={20} /></span>
             <span className="nav-text">{t.tabs_ranking}</span>
-          </button>
+          </a>
 
-          <button 
+          <a 
+            href={getUrlPathForTab('filter', lang)} 
             className={`sidebar-nav-item ${activeTab === 'filter' ? 'active' : ''}`} 
-            onClick={() => changeTab('filter')}
+            onClick={(e) => { e.preventDefault(); changeTab('filter'); }}
           >
             <span className="nav-icon"><Filter size={20} /></span>
             <span className="nav-text">{t.tabs_filter}</span>
-          </button>
+          </a>
 
-          <button 
+          <a 
+            href={getUrlPathForTab('settings', lang)} 
             className={`sidebar-nav-item settings-item ${activeTab === 'settings' ? 'active' : ''}`} 
-            onClick={() => changeTab('settings')}
+            onClick={(e) => { e.preventDefault(); changeTab('settings'); }}
             style={{ marginTop: '28px' }}
           >
             <span className="nav-icon"><Settings size={20} /></span>
             <span className="nav-text">{t.tabs_settings}</span>
-          </button>
+          </a>
         </nav>
         
         {/* Sidebar Native Ad Placeholder */}
@@ -1238,62 +1248,60 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
             )}
           </main>
 
-          {/* Desktop Right Sidebar (Advertisements & Active Bonuses Widget Removed) */}
-          <aside className="desktop-right-sidebar">
-            {showAds && (
-              <>
-                <div className="sidebar-widget-container">
-                  <AdContainer type="sidebar" slot="4561558504" lang={lang} />
-                </div>
+          {/* Desktop Right Sidebar (Rendered only when ads are enabled) */}
+          {showAds && (
+            <aside className="desktop-right-sidebar">
+              <div className="sidebar-widget-container">
+                <AdContainer type="sidebar" slot="4561558504" lang={lang} />
+              </div>
 
-                {/* Second Ad (Medium Rectangle) replacing the Active Bonuses Panel */}
-                <div className="sidebar-widget-container">
-                  <AdContainer type="rectangle" slot="3032854416" lang={lang} />
-                </div>
-              </>
-            )}
-          </aside>
+              <div className="sidebar-widget-container">
+                <AdContainer type="rectangle" slot="3032854416" lang={lang} />
+              </div>
+            </aside>
+          )}
         </div>
 
         {/* Mobile Bottom Navigation Bar (Hidden on Desktop) */}
         <nav className="bottom-nav">
-          <button className={`nav-item ${activeTab === 'events' ? 'active' : ''}`} onClick={() => changeTab('events')}>
+          <a href={getUrlPathForTab('events', lang)} className={`nav-item ${activeTab === 'events' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('events'); }}>
             <span className="nav-icon"><Calendar size={20} /></span>
             <span className="nav-text">{t.tabs_events}</span>
-          </button>
+          </a>
           
-          <button className={`nav-item ${activeTab === 'raid' ? 'active' : ''}`} onClick={() => changeTab('raid')}>
+          <a href={getUrlPathForTab('raid', lang)} className={`nav-item ${activeTab === 'raid' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('raid'); }}>
             <span className="nav-icon"><Swords size={20} /></span>
             <span className="nav-text">{t.tabs_raid}</span>
-          </button>
+          </a>
 
-          <button className={`nav-item ${activeTab === 'rocket' ? 'active' : ''}`} onClick={() => changeTab('rocket')}>
+          <a href={getUrlPathForTab('rocket', lang)} className={`nav-item ${activeTab === 'rocket' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('rocket'); }}>
             <span className="nav-icon"><Shield size={20} /></span>
             <span className="nav-text">{t.tabs_rocket}</span>
-          </button>
+          </a>
 
-          <button className={`nav-item ${activeTab === 'ditto' ? 'active' : ''}`} onClick={() => changeTab('ditto')}>
+          <a href={getUrlPathForTab('ditto', lang)} className={`nav-item ${activeTab === 'ditto' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('ditto'); }}>
             <span className="nav-icon"><Sparkles size={20} /></span>
             <span className="nav-text">{t.tabs_ditto}</span>
-          </button>
+          </a>
 
-          <button className={`nav-item ${activeTab === 'eggs' ? 'active' : ''}`} onClick={() => changeTab('eggs')}>
+          <a href={getUrlPathForTab('eggs', lang)} className={`nav-item ${activeTab === 'eggs' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('eggs'); }}>
             <span className="nav-icon"><Egg size={20} /></span>
             <span className="nav-text">{t.tabs_eggs}</span>
-          </button>
+          </a>
 
-          <button className={`nav-item ${activeTab === 'ranking' ? 'active' : ''}`} onClick={() => changeTab('ranking')}>
+          <a href={getUrlPathForTab('ranking', lang)} className={`nav-item ${activeTab === 'ranking' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('ranking'); }}>
             <span className="nav-icon"><Trophy size={20} /></span>
             <span className="nav-text">{t.tabs_ranking}</span>
-          </button>
+          </a>
 
-          <button 
+          <a 
+            href={getUrlPathForTab('filter', lang)}
             className={`nav-item ${activeTab === 'filter' ? 'active' : ''}`} 
-            onClick={() => changeTab('filter')}
+            onClick={(e) => { e.preventDefault(); changeTab('filter'); }}
           >
             <span className="nav-icon"><Filter size={20} /></span>
             <span className="nav-text">{t.tabs_filter}</span>
-          </button>
+          </a>
         </nav>
       </div>
     </div>
