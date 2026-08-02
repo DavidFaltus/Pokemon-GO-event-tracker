@@ -48,6 +48,32 @@ html {
   --font-sans: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
+/* Gold 100% IV Font & Glow */
+.gold-hundo-text,
+.hundo-label,
+.hundo-label-boost {
+  color: #fbbf24 !important;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef08a 25%, #f59e0b 65%, #d97706 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  font-weight: 800 !important;
+  filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.5));
+  white-space: nowrap !important;
+  display: inline-block;
+}
+
+.cp-span,
+.raid-cp-val {
+  white-space: nowrap !important;
+}
+
+.gold-hundo-badge {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.35) 100%) !important;
+  border: 1px solid rgba(251, 191, 36, 0.6) !important;
+  color: #fef08a !important;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4) !important;
+}
+
 /* Light Theme Variables */
 [data-theme="light"], body.light-mode {
   --bg-dark: #ffffff;
@@ -65,6 +91,33 @@ html {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(168, 85, 247, 0.4) rgba(15, 16, 21, 0.6);
+}
+
+/* Custom Sleek Dark Glassmorphic Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 16, 21, 0.6);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(168, 85, 247, 0.35);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(168, 85, 247, 0.65);
+}
+
+* {
   -webkit-tap-highlight-color: transparent;
 }
 

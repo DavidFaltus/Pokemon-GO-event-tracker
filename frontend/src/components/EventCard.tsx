@@ -20,6 +20,7 @@ import { RaidInfographic } from './RaidInfographic';
 import { RocketInfographic } from './RocketInfographic';
 import { MaxInfographic } from './MaxInfographic';
 import { EventInfographic } from './EventInfographic';
+import { MultiBossAvatar } from './MultiBossAvatar';
 
 const EggIcon = ({ size = 16 }: { size?: number }) => (
   <svg viewBox="0 0 100 120" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
@@ -279,8 +280,34 @@ export const EventCard: React.FC<EventCardProps> = ({
   const [cdViewMode, setCdViewMode] = useState<'infographic' | 'details'>('infographic');
 
 
-  // Check raid bosses
-  const bosses = event.extraData?.raidbattles?.bosses || [];
+  // Check raid bosses (handling all possible formats: array of objects, array of strings, comma-separated string, or tier object)
+  const getRaidBossesList = (extraData: any): any[] => {
+    if (!extraData) return [];
+    let list: any[] = [];
+    if (Array.isArray(extraData.raidbattles?.bosses)) list = extraData.raidbattles.bosses;
+    else if (Array.isArray(extraData.raids)) list = extraData.raids;
+    else if (Array.isArray(extraData.raidBosses)) list = extraData.raidBosses;
+    else if (Array.isArray(extraData.bosses)) list = extraData.bosses;
+    else if (extraData.raidbattles?.tiers && typeof extraData.raidbattles.tiers === 'object') {
+      Object.values(extraData.raidbattles.tiers).forEach((tb: any) => {
+        if (Array.isArray(tb)) list.push(...tb);
+      });
+    }
+
+    const flat: any[] = [];
+    list.forEach(item => {
+      if (typeof item === 'string' && item.includes(',')) {
+        item.split(',').forEach(s => { if (s.trim()) flat.push({ name: s.trim() }); });
+      } else if (typeof item === 'object' && item?.name && typeof item.name === 'string' && item.name.includes(',') && !item.isSingle) {
+        item.name.split(',').forEach((s: string) => { if (s.trim()) flat.push({ ...item, name: s.trim() }); });
+      } else {
+        flat.push(item);
+      }
+    });
+    return flat;
+  };
+
+  const bosses = getRaidBossesList(event.extraData);
 
   // Find raid counters
   const matchedRaidCounters: RaidCounters[] = [];
@@ -1372,13 +1399,13 @@ export const EventCard: React.FC<EventCardProps> = ({
                       {counters.maxCp > 0 && (
                         <div className="cp-row">
                           <span className="cp-header-label">{t.details_standard_cp}</span>
-                          <span className="cp-span">{counters.minCp} – <strong className="hundo-label">{counters.maxCp} CP (100% IV)</strong></span>
+                          <span className="cp-span">{counters.minCp} – <strong className="hundo-label">{counters.maxCp} CP</strong></span>
                         </div>
                       )}
                       {counters.maxBoostedCp > 0 && (
                         <div className="cp-row">
                           <span className="cp-header-label">{t.details_weather_cp}</span>
-                          <span className="cp-span">{counters.minBoostedCp} – <strong className="hundo-label-boost">{counters.maxBoostedCp} CP (100% IV)</strong></span>
+                          <span className="cp-span">{counters.minBoostedCp} – <strong className="hundo-label-boost">{counters.maxBoostedCp} CP</strong></span>
                         </div>
                       )}
                       {counters.weatherBoosts.length > 0 && (
@@ -1415,34 +1442,38 @@ export const EventCard: React.FC<EventCardProps> = ({
       >
         <div className="card-top">
           <div className="event-img-wrapper">
-            <img 
-              src={resolveImage(event.image, event.eventType, event.name)} 
-              alt={event.name}
-              width={100}
-              height={100}
-              loading="lazy"
-              decoding="async"
-              onError={(e) => {
-                const img = e.target as HTMLImageElement;
-                img.onerror = null;
-                const baseName = getBasePokemonName(event.name);
-                const knownNames = getBasePokemonNames();
-                const hasKnownPokemon = knownNames.some(kn => event.name.toLowerCase().includes(kn.toLowerCase()));
-                if (hasKnownPokemon && baseName) {
-                  img.src = getPokemonIconUrl(baseName);
-                  img.onerror = () => {
-                    img.onerror = null;
-                    img.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
-                  };
-                } else {
-                  img.src = resolveImage(undefined, event.eventType);
-                  img.onerror = () => {
-                    img.onerror = null;
-                    img.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
-                  };
-                }
-              }}
-            />
+            {bosses.length > 1 ? (
+              <MultiBossAvatar bosses={bosses} eventName={event.name} eventType={event.eventType} size={56} />
+            ) : (
+              <img 
+                src={resolveImage(event.image, event.eventType, event.name)} 
+                alt={event.name}
+                width={100}
+                height={100}
+                loading="lazy"
+                decoding="async"
+                onError={(e) => {
+                  const img = e.target as HTMLImageElement;
+                  img.onerror = null;
+                  const baseName = getBasePokemonName(event.name);
+                  const knownNames = getBasePokemonNames();
+                  const hasKnownPokemon = knownNames.some(kn => event.name.toLowerCase().includes(kn.toLowerCase()));
+                  if (hasKnownPokemon && baseName) {
+                    img.src = getPokemonIconUrl(baseName);
+                    img.onerror = () => {
+                      img.onerror = null;
+                      img.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
+                    };
+                  } else {
+                    img.src = resolveImage(undefined, event.eventType);
+                    img.onerror = () => {
+                      img.onerror = null;
+                      img.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
+                    };
+                  }
+                }}
+              />
+            )}
             <span className={`status-pill ${status}`}>
               {status === 'active' ? (lang === 'cs' ? '● Probíhá' : '● Active') : status === 'upcoming' ? (lang === 'cs' ? 'Připravuje se' : 'Upcoming') : (lang === 'cs' ? 'Ukončeno' : 'Ended')}
             </span>

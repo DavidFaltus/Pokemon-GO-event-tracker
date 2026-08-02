@@ -204,12 +204,23 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
               <div className="raid-multi-boss-grid">
                 {bossesList.map((boss, idx) => (
                   <div key={idx} className="raid-multi-boss-item">
-                    <img 
-                      src={resolveImage(boss.image, event.eventType, boss.name)} 
-                      alt={boss.name} 
-                      className="raid-multi-boss-img"
-                      onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, boss.name)}
-                    />
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                      <img 
+                        src={resolveImage(boss.image, event.eventType, boss.name, false)} 
+                        alt={boss.name} 
+                        className="raid-multi-boss-img"
+                        onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, boss.name, false)}
+                      />
+                      {boss.canBeShiny && (
+                        <img 
+                          src={resolveImage(boss.image, event.eventType, boss.name, true)} 
+                          alt={`${boss.name} Shiny`} 
+                          className="raid-multi-boss-img shiny-sprite"
+                          title="Shiny Form"
+                          onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, boss.name, true)}
+                        />
+                      )}
+                    </div>
                     <span className="raid-multi-boss-name">{getPokemonName(boss.name, lang)}</span>
                     {boss.canBeShiny && (
                       <span className="raid-multi-shiny-tag">✨ Shiny</span>
@@ -220,12 +231,23 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
             ) : (
               <>
                 <div className="raid-image-halo"></div>
-                <img 
-                  src={resolveImage(bossesList[0].image, event.eventType, primaryBossName)} 
-                  alt={primaryBossName} 
-                  className="raid-poke-img"
-                  onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, primaryBossName)}
-                />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', zIndex: 2, position: 'relative' }}>
+                  <img 
+                    src={resolveImage(bossesList[0].image, event.eventType, primaryBossName, false)} 
+                    alt={primaryBossName} 
+                    className="raid-poke-img"
+                    onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, primaryBossName, false)}
+                  />
+                  {bossesList[0].canBeShiny && (
+                    <img 
+                      src={resolveImage(bossesList[0].image, event.eventType, primaryBossName, true)} 
+                      alt={`${primaryBossName} Shiny`} 
+                      className="raid-poke-img shiny-sprite"
+                      style={{ filter: 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.6))' }}
+                      onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, primaryBossName, true)}
+                    />
+                  )}
+                </div>
                 <h3 className="raid-poke-name">{getPokemonName(primaryBossName, lang)}</h3>
                 {bossesList[0].canBeShiny && (
                   <div className="raid-shiny-chip">
@@ -241,20 +263,20 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
           <div className="raid-cp-box">
             <div className="raid-cp-header">
               <Shield size={16} />
-              <span>{lang === 'cs' ? '100% IV CATCH CP ROZSAH' : '100% IV CATCH CP RANGE'}</span>
+              <span>{lang === 'cs' ? 'CP ROZSAH' : 'CP RANGE'}</span>
             </div>
 
             <div className="raid-cp-row">
               <div className="raid-cp-item">
                 <span className="raid-cp-label">Lvl 20 (Normal):</span>
-                <span className="raid-cp-val">CP 2,250 - 2,350</span>
+                <span className="raid-cp-val">CP 2,250 – <strong className="gold-hundo-text">2,350</strong></span>
               </div>
               <div className="raid-cp-item boost">
                 <div className="raid-cp-label-boost">
                   <CloudRain size={14} />
                   <span>Lvl 25 (Weather Boost):</span>
                 </div>
-                <span className="raid-cp-val boost">CP 2,812 - 2,937</span>
+                <span className="raid-cp-val boost">CP 2,812 – <strong className="gold-hundo-text">2,937</strong></span>
               </div>
             </div>
           </div>

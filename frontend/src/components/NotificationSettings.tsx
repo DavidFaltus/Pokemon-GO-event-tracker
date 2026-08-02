@@ -279,39 +279,41 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
             </div>
           </div>
 
-          {/* Mobile Floating Overlay Settings Card */}
-          <div className="settings-card overlay-picker-card">
-            <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
-              <span className="duotone-icon duotone-white"><Layers size={16} /></span>
-              {t.settings_overlay_title}
-            </h3>
-            <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '12px', lineHeight: '1.4' }}>
-              {t.settings_overlay_desc}
-            </p>
-            <button
-              onClick={toggleOverlay}
-              className={`test-notification-btn ${overlayActive ? 'active' : ''}`}
-              style={{
-                width: '100%',
-                padding: '10px 14px',
-                borderRadius: '10px',
-                background: overlayActive ? 'var(--accent-gradient)' : 'var(--bg-card)',
-                border: '1px solid var(--border-color)',
-                color: '#fff',
-                fontWeight: 600,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px'
-              }}
-            >
-              <Layers size={16} />
-              {overlayActive
-                ? t.settings_overlay_active
-                : t.settings_overlay_inactive}
-            </button>
-          </div>
+          {/* Mobile Floating Overlay Settings Card (Mobile Capacitor app only) */}
+          {isNative && (
+            <div className="settings-card overlay-picker-card">
+              <h3 style={{ display: 'inline-flex', alignItems: 'center' }}>
+                <span className="duotone-icon duotone-white"><Layers size={16} /></span>
+                {t.settings_overlay_title}
+              </h3>
+              <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '12px', lineHeight: '1.4' }}>
+                {t.settings_overlay_desc}
+              </p>
+              <button
+                onClick={toggleOverlay}
+                className={`test-notification-btn ${overlayActive ? 'active' : ''}`}
+                style={{
+                  width: '100%',
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  background: overlayActive ? 'var(--accent-gradient)' : 'var(--bg-card)',
+                  border: '1px solid var(--border-color)',
+                  color: '#fff',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+              >
+                <Layers size={16} />
+                {overlayActive
+                  ? t.settings_overlay_active
+                  : t.settings_overlay_inactive}
+              </button>
+            </div>
+          )}
 
           {/* Event Layout Selector */}
           <div className="settings-card layout-picker-card">

@@ -87,3 +87,59 @@ export async function saveCustomEvents(events: CustomEvent[]): Promise<boolean> 
     return false;
   }
 }
+
+const ICONS_FILE_PATH = path.join(__dirname, '..', 'pokemon_icons.json');
+const ICONS_FILE_NAME = 'pokemon_icons.json';
+
+export async function loadPokemonIconOverrides(): Promise<Record<string, string>> {
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(ICONS_FILE_NAME);
+      const [exists] = await file.exists();
+      if (exists) {
+        const [content] = await file.download();
+        return JSON.parse(content.toString());
+      }
+      return {};
+    } catch (err: any) {
+      console.error('Failed to load pokemon icons from GCS:', err.message);
+    }
+  }
+
+  try {
+    if (fs.existsSync(ICONS_FILE_PATH)) {
+      const content = fs.readFileSync(ICONS_FILE_PATH, 'utf-8');
+      return JSON.parse(content);
+    }
+  } catch (err) {
+    console.error('Failed to load pokemon icons locally:', err);
+  }
+  return {};
+}
+
+export async function savePokemonIconOverrides(overrides: Record<string, string>): Promise<boolean> {
+  const dataStr = JSON.stringify(overrides, null, 2);
+
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(ICONS_FILE_NAME);
+      await file.save(dataStr, {
+        contentType: 'application/json',
+        resumable: false
+      });
+      return true;
+    } catch (err: any) {
+      console.error('Failed to save pokemon icons to GCS:', err.message);
+    }
+  }
+
+  try {
+    fs.writeFileSync(ICONS_FILE_PATH, dataStr, 'utf-8');
+    return true;
+  } catch (err) {
+    console.error('Failed to save pokemon icons locally:', err);
+    return false;
+  }
+}

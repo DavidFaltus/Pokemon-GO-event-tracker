@@ -8,7 +8,7 @@ import {
   scrapeEvents,
   scrapeEventDetails,
 } from './scraper';
-import { loadCustomEvents, saveCustomEvents, CustomEvent } from './storage';
+import { loadCustomEvents, saveCustomEvents, CustomEvent, loadPokemonIconOverrides, savePokemonIconOverrides } from './storage';
 import { generateBotHtml } from './ssr';
 
 const app = express();
@@ -668,6 +668,35 @@ app.post('/api/admin/scrape', requireAuth, (req, res) => {
   // Fire and forget — runs in background
   runScheduledScraper('admin').catch(err => console.error('[Admin scrape] Error:', err));
   res.json({ success: true, message: 'Scraper started in background' });
+});
+
+// Get all pokemon icon overrides (public)
+app.get('/api/pokemon-icons', async (_req, res) => {
+  try {
+    const overrides = await loadPokemonIconOverrides();
+    res.json({ success: true, overrides });
+  } catch (err: any) {
+    res.json({ success: true, overrides: {} });
+  }
+});
+
+// Update pokemon icon overrides (admin only)
+app.post('/api/admin/pokemon-icons', requireAuth, async (req, res) => {
+  try {
+    const { overrides } = req.body;
+    if (typeof overrides !== 'object' || overrides === null) {
+      return res.status(400).json({ error: 'Invalid overrides object' });
+    }
+    const ok = await savePokemonIconOverrides(overrides);
+    if (ok) {
+      deleteFromCache('events_list');
+      res.json({ success: true, overrides });
+    } else {
+      res.status(500).json({ error: 'Failed to save icon overrides' });
+    }
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Get all custom events / overrides

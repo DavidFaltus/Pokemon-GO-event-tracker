@@ -19,6 +19,7 @@ import { DittoEggsView } from './components/DittoEggsView';
 import { PokemonRankingsView } from './components/PokemonRankingsView';
 import { AdminPanelView } from './components/AdminPanelView';
 import { FilterGeneratorView } from './components/FilterGeneratorView';
+import { setPokemonIconOverrides } from './utils/imageResolver';
 import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy, Filter } from 'lucide-react';
 
 type TabType = 'events' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin';
@@ -700,6 +701,13 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
         const updatedIds = freshEvents.map(e => e.eventID);
         localStorage.setItem('pogo_tracker_seen_event_ids', JSON.stringify(updatedIds));
       };
+
+      fetch(`${API_BASE_URL}/api/pokemon-icons`)
+        .then(res => (res.ok ? res.json() : null))
+        .then(data => {
+          if (data && data.overrides) setPokemonIconOverrides(data.overrides);
+        })
+        .catch(() => {});
 
       // 1. Try to read from localStorage cache
       const cached = localStorage.getItem('pogo_events_cache');

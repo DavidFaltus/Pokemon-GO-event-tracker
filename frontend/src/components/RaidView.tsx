@@ -11,7 +11,7 @@ import { API_BASE_URL } from '../config';
 import { Sparkles, Trophy } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
 import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
-import { resolveImage, handlePokemonImageError, SHADOW_ICON_URL, handleShadowIconError } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError, SHADOW_ICON_URL, MEGA_ICON_URL, PRIMAL_ICON_URL, handleShadowIconError, handleMegaIconError, handlePrimalIconError } from '../utils/imageResolver';
 import { DirectRaidFilterBox } from './DirectRaidFilterBox';
 
 const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
@@ -28,6 +28,40 @@ const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> 
       ...style
     }}
     onError={(e) => handleShadowIconError(e.target as HTMLImageElement)}
+  />
+);
+
+const MegaIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
+  <img
+    src={MEGA_ICON_URL}
+    alt="Mega"
+    className={className}
+    style={{
+      width: '18px',
+      height: '18px',
+      objectFit: 'contain',
+      display: 'inline-block',
+      verticalAlign: 'middle',
+      ...style
+    }}
+    onError={(e) => handleMegaIconError(e.target as HTMLImageElement)}
+  />
+);
+
+const PrimalIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
+  <img
+    src={PRIMAL_ICON_URL}
+    alt="Primal"
+    className={className}
+    style={{
+      width: '18px',
+      height: '18px',
+      objectFit: 'contain',
+      display: 'inline-block',
+      verticalAlign: 'middle',
+      ...style
+    }}
+    onError={(e) => handlePrimalIconError(e.target as HTMLImageElement)}
   />
 );
 
@@ -101,6 +135,21 @@ type FilterTier = 'all' | '5' | 'mega' | '3' | '1';
 export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator }) => {
   const [activeFilter, setActiveFilter] = useState<FilterTier>('all');
   const [expandedBoss, setExpandedBoss] = useState<string | null>(null);
+  const [inlineBossName, setInlineBossName] = useState<string | null>(null);
+  const [shinyBosses, setShinyBosses] = useState<Set<string>>(new Set());
+
+  const toggleShinyBoss = (bossName: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setShinyBosses(prev => {
+      const next = new Set(prev);
+      if (next.has(bossName)) {
+        next.delete(bossName);
+      } else {
+        next.add(bossName);
+      }
+      return next;
+    });
+  };
   const [bosses, setBosses] = useState<RaidBoss[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -169,9 +218,6 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator 
     if (activeFilter === '1') return boss.tier === '1' || boss.tier === 'shadow-1';
     return boss.tier === activeFilter;
   });
-
-  const [inlineBossName, setInlineBossName] = useState<string | null>(null);
-
   const toggleExpandBoss = (name: string, targetEl?: HTMLElement | null) => {
     if (expandedBoss === name) {
       setExpandedBoss(null);
@@ -363,41 +409,90 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator 
                     className="raid-boss-summary" 
                     onClick={(e) => toggleExpandBoss(boss.name, e.currentTarget)}
                   >
-                    <div className="boss-img-wrapper">
-                      {boss.tier.startsWith('shadow') && (
-                        <ShadowIcon 
-                          className="shadow-aura-effect" 
-                          style={{ 
-                            position: 'absolute', 
-                            top: '-4px', 
-                            right: '-4px',
-                            width: '18px',
-                            height: '18px'
-                          }} 
-                        />
-                      )}
-                      <img 
-                        src={resolveImage(boss.image, 'raid', boss.name)} 
-                        alt={getPokemonName(boss.name, lang)}
-                        width={64}
-                        height={64}
-                        loading="lazy"
-                        decoding="async"
-                        onError={(e) => {
-                          handlePokemonImageError(e.target as HTMLImageElement, boss.name);
-                        }}
-                        className="boss-avatar-img"
-                      />
-                    </div>
+                    {(() => {
+                      const isBossShiny = shinyBosses.has(boss.name);
+                      return (
+                        <div className="boss-img-wrapper" style={{ position: 'relative' }}>
+                          {boss.canBeShiny && (
+                            <button
+                              className={`shiny-poke-toggle-btn ${isBossShiny ? 'active' : ''}`}
+                              title={lang === 'cs' ? 'Přepnout Shiny náhled' : 'Toggle Shiny preview'}
+                              onClick={(e) => toggleShinyBoss(boss.name, e)}
+                              style={{
+                                position: 'absolute',
+                                top: '-6px',
+                                left: '-6px',
+                                background: isBossShiny ? 'rgba(245, 158, 11, 0.95)' : 'rgba(15, 23, 42, 0.85)',
+                                border: '1px solid rgba(251, 191, 36, 0.7)',
+                                borderRadius: '50%',
+                                width: '20px',
+                                height: '20px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                padding: 0,
+                                zIndex: 6
+                              }}
+                            >
+                              <Sparkles size={11} style={{ color: isBossShiny ? '#fff' : '#fbbf24' }} />
+                            </button>
+                          )}
+                          {boss.name.toLowerCase().includes('primal') && (
+                            <PrimalIcon 
+                              style={{ 
+                                position: 'absolute', 
+                                top: '-4px', 
+                                right: '-4px',
+                                width: '18px',
+                                height: '18px'
+                              }} 
+                            />
+                          )}
+                          {!boss.name.toLowerCase().includes('primal') && (boss.tier === 'mega' || boss.name.toLowerCase().includes('mega')) && (
+                            <MegaIcon 
+                              style={{ 
+                                position: 'absolute', 
+                                top: '-4px', 
+                                right: '-4px',
+                                width: '18px',
+                                height: '18px'
+                              }} 
+                            />
+                          )}
+                          {!boss.name.toLowerCase().includes('primal') && boss.tier !== 'mega' && !boss.name.toLowerCase().includes('mega') && boss.tier.startsWith('shadow') && (
+                            <ShadowIcon 
+                              className="shadow-aura-effect" 
+                              style={{ 
+                                position: 'absolute', 
+                                top: '-4px', 
+                                right: '-4px',
+                                width: '18px',
+                                height: '18px'
+                              }} 
+                            />
+                          )}
+                          <img 
+                            src={resolveImage(boss.image, 'raid', boss.name, isBossShiny)} 
+                            alt={getPokemonName(boss.name, lang)}
+                            width={64}
+                            height={64}
+                            loading="lazy"
+                            decoding="async"
+                            onError={(e) => {
+                              handlePokemonImageError(e.target as HTMLImageElement, boss.name, isBossShiny);
+                            }}
+                            className="boss-avatar-img"
+                          />
+                        </div>
+                      );
+                    })()}
                     
                     <div className="boss-meta-info">
                        <span className={`boss-tier-badge tier-${boss.tier.startsWith('shadow') ? 'shadow' : boss.tier}`}>
                          {getTierLabel(boss.tier)}
                        </span>
                        <h3 className="boss-title-name" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
-                         {boss.tier.startsWith('shadow') && (
-                           <ShadowIcon style={{ marginRight: '6px', width: '14px', height: '14px', filter: 'none' }} />
-                         )}
                          <span>{getPokemonName(boss.name, lang)}</span>
                          {/* PoGO Hub Rating & Evolution Info */}
                          {(() => {
@@ -450,11 +545,11 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator 
                       {counters && counters.maxCp > 0 ? (
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '1px' }}>
                           <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-primary)' }}>
-                            {counters.minCp} – <strong className="hundo-label" style={{ color: 'var(--tier-s)', fontWeight: 700 }}>{counters.maxCp} CP</strong>
+                            {counters.minCp} – <strong className="hundo-label" style={{ fontWeight: 700 }}>{counters.maxCp} CP</strong>
                           </span>
                           {counters.maxBoostedCp > 0 && (
                             <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                              <span style={{ color: '#60a5fa' }}>⚡</span> {counters.minBoostedCp} – <strong className="hundo-label-boost" style={{ color: '#60a5fa', fontWeight: 600 }}>{counters.maxBoostedCp} CP</strong>
+                              <span style={{ color: '#60a5fa' }}>⚡</span> {counters.minBoostedCp} – <strong className="hundo-label-boost" style={{ fontWeight: 600 }}>{counters.maxBoostedCp} CP</strong>
                             </span>
                           )}
                         </div>
@@ -476,7 +571,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator 
                         <div style={{ display: 'flex', gap: '4px' }}>
                           {counters.weatherBoosts.map((w: string) => <WeatherIcon key={w} weatherStr={w} />)}
                         </div>
-                      ) : (boss.weatherBoosts && boss.weatherBoosts.length > 0) ? (
+                      ) : boss.weatherBoosts && boss.weatherBoosts.length > 0 ? (
                         <div style={{ display: 'flex', gap: '4px' }}>
                           {boss.weatherBoosts.map((w: string) => <WeatherIcon key={w} weatherStr={w} />)}
                         </div>

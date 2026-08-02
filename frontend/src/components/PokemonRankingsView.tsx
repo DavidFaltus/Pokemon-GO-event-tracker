@@ -4,7 +4,7 @@ import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
 import { pokemonRankings } from '../data/pokemonRankings';
 import type { PokemonRankData } from '../data/pokemonRankings';
-import { resolveImage, handlePokemonImageError, SHADOW_ICON_URL, MEGA_ICON_URL, handleShadowIconError, handleMegaIconError } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError, SHADOW_ICON_URL, MEGA_ICON_URL, PRIMAL_ICON_URL, handleShadowIconError, handleMegaIconError, handlePrimalIconError } from '../utils/imageResolver';
 import { TypeBadge } from './EventCard';
 import { getPokemonName, getStatusTagName } from '../utils/pokemonTranslator';
 import { Search, Trophy, Sword, ShieldAlert, Heart, Star, ChevronDown, ChevronUp, Target, Zap, Sparkles, SlidersHorizontal } from 'lucide-react';
@@ -297,11 +297,11 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
 
                   <div className="ranking-poke-img-wrapper" style={{ position: 'relative' }}>
                     <img 
-                      src={resolveImage(undefined, undefined, poke.name)} 
+                      src={resolveImage(undefined, undefined, poke.name, false)} 
                       alt={poke.name} 
                       className="ranking-poke-img"
                       onError={(e) => {
-                        handlePokemonImageError(e.target as HTMLImageElement, poke.name);
+                        handlePokemonImageError(e.target as HTMLImageElement, poke.name, false);
                       }}
                     />
                     {poke.isShadow && (
@@ -313,12 +313,21 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                         onError={(e) => handleShadowIconError(e.target as HTMLImageElement)}
                       />
                     )}
-                    {(poke.isMega || poke.isPrimal) && (
+                    {poke.isPrimal && (
+                      <img 
+                        src={PRIMAL_ICON_URL} 
+                        alt="Primal" 
+                        className="poke-sprite-badge-bottom-left mega-badge-img"
+                        title="Primal Pokémon"
+                        onError={(e) => handlePrimalIconError(e.target as HTMLImageElement)}
+                      />
+                    )}
+                    {poke.isMega && !poke.isPrimal && (
                       <img 
                         src={MEGA_ICON_URL} 
                         alt="Mega" 
                         className="poke-sprite-badge-bottom-left mega-badge-img"
-                        title="Mega / Primal Pokémon"
+                        title="Mega Pokémon"
                         onError={(e) => handleMegaIconError(e.target as HTMLImageElement)}
                       />
                     )}
@@ -338,17 +347,20 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
                         ))}
                       </div>
                       {poke.isShadow && (
-                        <span className="status-tag shadow-tag">
+                        <span className="status-tag shadow-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <img src={SHADOW_ICON_URL} alt="Shadow" style={{ width: '12px', height: '12px', objectFit: 'contain' }} onError={(e) => handleShadowIconError(e.target as HTMLImageElement)} />
                           {getStatusTagName('Shadow', lang)}
                         </span>
                       )}
                       {poke.isMega && (
-                        <span className="status-tag mega-tag">
+                        <span className="status-tag mega-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <img src={MEGA_ICON_URL} alt="Mega" style={{ width: '12px', height: '12px', objectFit: 'contain' }} onError={(e) => handleMegaIconError(e.target as HTMLImageElement)} />
                           {getStatusTagName('Mega', lang)}
                         </span>
                       )}
                       {poke.isPrimal && (
-                        <span className="status-tag primal-tag">
+                        <span className="status-tag primal-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <img src={PRIMAL_ICON_URL} alt="Primal" style={{ width: '12px', height: '12px', objectFit: 'contain' }} onError={(e) => handlePrimalIconError(e.target as HTMLImageElement)} />
                           {getStatusTagName('Primal', lang)}
                         </span>
                       )}

@@ -81,8 +81,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
     if (event.eventType === 'community-day' && event.extraData?.communityday?.spawns?.[0]?.image) {
       return resolveImage(event.extraData.communityday.spawns[0].image, event.eventType, event.extraData.communityday.spawns[0].name);
     }
-    if ((event.eventType === 'raid-hour' || event.eventType === 'raid-battles') && event.extraData?.raidbattles?.bosses?.[0]?.image) {
-      return resolveImage(event.extraData.raidbattles.bosses[0].image, event.eventType, event.extraData.raidbattles.bosses[0].name);
+    if ((event.eventType === 'raid-hour' || event.eventType === 'raid-battles') && event.extraData?.raidbattles?.bosses?.[0]) {
+      const boss = event.extraData.raidbattles.bosses[0];
+      const bossName = typeof boss === 'string' ? boss : (boss?.name || event.name);
+      const bossImg = typeof boss === 'object' ? boss?.image : undefined;
+      return resolveImage(bossImg, event.eventType, bossName);
     }
     return null;
   };

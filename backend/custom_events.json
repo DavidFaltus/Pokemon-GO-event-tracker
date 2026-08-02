@@ -331,5 +331,139 @@
     },
     "isDeleted": false,
     "isCustom": false
+  },
+  {
+    "eventID": "raidhour20260805",
+    "name": "Uxie, Mesprit, and Azelf Raid Hour",
+    "eventType": "raid-hour",
+    "heading": "Raid Hour",
+    "link": "https://pokemongolive.com/post/uxie-mesprit-and-azelf-raid-hour-2026/",
+    "officialLink": "https://pokemongolive.com/post/uxie-mesprit-and-azelf-raid-hour-2026/",
+    "secondaryLink": "",
+    "image": "https://cdn.leekduck.com/assets/img/events/raidhour.jpg",
+    "icon": "",
+    "start": "2026-08-05T10:00:00.000Z",
+    "end": "2026-08-05T11:00:00.000Z",
+    "extraData": {
+      "generic": {
+        "hasSpawns": false,
+        "hasFieldResearchTasks": false
+      },
+      "raidbattles": {
+        "bosses": [
+          {
+            "name": "Azelf",
+            "canBeShiny": true
+          },
+          {
+            "name": "Mesprit",
+            "canBeShiny": true
+          },
+          {
+            "name": "Uxie",
+            "canBeShiny": true
+          }
+        ]
+      },
+      "rawDescription": "Raid Hour",
+      "iconUrl": "",
+      "raids": [
+        {
+          "name": "Azelf",
+          "canBeShiny": true
+        },
+        {
+          "name": "Mesprit",
+          "canBeShiny": true
+        },
+        {
+          "name": "Uxie",
+          "canBeShiny": true
+        }
+      ],
+      "bosses": [
+        {
+          "name": "Azelf",
+          "canBeShiny": true
+        },
+        {
+          "name": "Mesprit",
+          "canBeShiny": true
+        },
+        {
+          "name": "Uxie",
+          "canBeShiny": true
+        }
+      ]
+    },
+    "isDeleted": false,
+    "isCustom": false
+  },
+  {
+    "eventID": "raidhour20260826",
+    "name": "Regirock, Regice, and Registeel Raid Hour",
+    "eventType": "raid-hour",
+    "heading": "Raid Hour",
+    "link": "https://pokemongolive.com/post/regirock-regice-and-registeel-raid-hour-2026/",
+    "officialLink": "https://pokemongolive.com/post/regirock-regice-and-registeel-raid-hour-2026/",
+    "secondaryLink": "",
+    "image": "https://cdn.leekduck.com/assets/img/events/raidhour.jpg",
+    "icon": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png",
+    "start": "2026-08-26T16:00:00.000Z",
+    "end": "2026-08-26T17:00:00.000Z",
+    "extraData": {
+      "generic": {
+        "hasSpawns": false,
+        "hasFieldResearchTasks": false
+      },
+      "raidbattles": {
+        "bosses": [
+          {
+            "name": "Regirock",
+            "canBeShiny": true
+          },
+          {
+            "name": "Registeel",
+            "canBeShiny": true
+          },
+          {
+            "name": "Regice",
+            "canBeShiny": true
+          }
+        ]
+      },
+      "raids": [
+        {
+          "name": "Regirock",
+          "canBeShiny": true
+        },
+        {
+          "name": "Registeel",
+          "canBeShiny": true
+        },
+        {
+          "name": "Regice",
+          "canBeShiny": true
+        }
+      ],
+      "bosses": [
+        {
+          "name": "Regirock",
+          "canBeShiny": true
+        },
+        {
+          "name": "Registeel",
+          "canBeShiny": true
+        },
+        {
+          "name": "Regice",
+          "canBeShiny": true
+        }
+      ],
+      "rawDescription": "Raid Hour",
+      "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"
+    },
+    "isDeleted": false,
+    "isCustom": false
   }
 ]

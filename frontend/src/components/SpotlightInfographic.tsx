@@ -171,12 +171,23 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
           {/* Featured Pokemon Showcase */}
           <div className="spotlight-poke-card">
             <div className="spotlight-image-halo"></div>
-            <img 
-              src={resolveImage(pokemonImg, event.eventType, pokeName)} 
-              alt={pokeName} 
-              className="spotlight-poke-img"
-              onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, pokeName)}
-            />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', zIndex: 2, position: 'relative' }}>
+              <img 
+                src={resolveImage(pokemonImg, event.eventType, pokeName, false)} 
+                alt={pokeName} 
+                className="spotlight-poke-img"
+                onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, pokeName, false)}
+              />
+              {canBeShiny && (
+                <img 
+                  src={resolveImage(pokemonImg, event.eventType, pokeName, true)} 
+                  alt={`${pokeName} Shiny`} 
+                  className="spotlight-poke-img shiny-sprite"
+                  style={{ filter: 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.6))' }}
+                  onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, pokeName, true)}
+                />
+              )}
+            </div>
             <h3 className="spotlight-poke-name">{getPokemonName(pokeName, lang)}</h3>
             {canBeShiny && (
               <div className="spotlight-shiny-chip">

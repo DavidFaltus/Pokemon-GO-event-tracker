@@ -6,11 +6,12 @@ import {
   ArrowLeft, Lock, Plus, Trash2, Save, AlertTriangle, CheckCircle,
   EyeOff, Search, Edit, Database, Upload, RefreshCw, Server,
   Image, PackageOpen, ChevronDown, ChevronUp, X, FileJson, Zap,
-  Star, Egg, Swords, Gift, Download, FileText, Sparkles, ExternalLink
+  Star, Egg, Swords, Gift, Download, FileText, Sparkles, ExternalLink,
+  Share2, Send, Copy, Check
 } from 'lucide-react';
 import { EventCard } from './EventCard';
 import type { EventData } from './EventCard';
-import { getPokemonIconUrl } from '../utils/imageResolver';
+import { getPokemonIconUrl, resolveImage, setPokemonIconOverrides } from '../utils/imageResolver';
 
 interface AdminPanelViewProps {
   lang: Language;
@@ -38,6 +39,7 @@ interface CustomEventOverride {
   officialLink?: string;
   secondaryLink?: string;
   image: string;
+  icon?: string;
   start: string;
   end: string;
   extraData?: any;
@@ -73,13 +75,14 @@ const PokemonIconPicker: React.FC<{
   value: string;
   onChange: (name: string) => void;
   placeholder?: string;
-}> = ({ value, onChange, placeholder = 'Pokémon name...' }) => {
+  onEditIcon?: (name: string) => void;
+}> = ({ value, onChange, placeholder = 'Pokémon name...', onEditIcon }) => {
   const [showChips, setShowChips] = useState(false);
   const iconUrl = value.trim() ? getPokemonIconUrl(value.trim()) : null;
 
   return (
     <div className="poke-icon-picker-container" style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
-      <div className="poke-icon-picker">
+      <div className="poke-icon-picker" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
         {iconUrl && (
           <img
             src={iconUrl}
@@ -97,7 +100,30 @@ const PokemonIconPicker: React.FC<{
           onFocus={() => setShowChips(true)}
           placeholder={placeholder}
           className="poke-picker-input"
+          style={{ flex: 1 }}
         />
+        {value.trim() && onEditIcon && (
+          <button
+            type="button"
+            onClick={() => onEditIcon(value)}
+            style={{
+              padding: '4px 8px',
+              fontSize: '0.72rem',
+              borderRadius: '6px',
+              border: '1px solid var(--border-color)',
+              background: 'rgba(168, 85, 247, 0.15)',
+              color: '#c084fc',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              whiteSpace: 'nowrap'
+            }}
+            title="Změnit ikonu/sprite tohoto Pokémona"
+          >
+            <Sparkles size={12} /> Změnit ikonu
+          </button>
+        )}
       </div>
       {showChips && (
         <div className="poke-chip-suggestions" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '2px' }}>
@@ -130,7 +156,8 @@ const StructuredEditor: React.FC<{
   data: any;
   onChange: (data: any) => void;
   lang: Language;
-}> = ({ data, onChange, lang }) => {
+  onEditIcon?: (name: string) => void;
+}> = ({ data, onChange, lang, onEditIcon }) => {
   const safe = data || {};
 
   // Bonuses
@@ -141,9 +168,59 @@ const StructuredEditor: React.FC<{
   const spawns: PokemonEntry[] = safe.spawns || [];
   const setSpawns = (s: PokemonEntry[]) => onChange({ ...safe, spawns: s });
 
+  // Helper to extract raid bosses list from any format
+  const getRawRaidBosses = (dataObj: any): RaidBoss[] => {
+    if (!dataObj) return [];
+    let list: any[] = [];
+    if (Array.isArray(dataObj.raidbattles?.bosses)) {
+      list = dataObj.raidbattles.bosses;
+    } else if (Array.isArray(dataObj.raids)) {
+      list = dataObj.raids;
+    } else if (Array.isArray(dataObj.raidBosses)) {
+      list = dataObj.raidBosses;
+    } else if (Array.isArray(dataObj.bosses)) {
+      list = dataObj.bosses;
+    } else if (dataObj.raidbattles?.tiers && typeof dataObj.raidbattles.tiers === 'object') {
+      Object.values(dataObj.raidbattles.tiers).forEach((tb: any) => {
+        if (Array.isArray(tb)) list.push(...tb);
+      });
+    }
+
+    const normalized: RaidBoss[] = [];
+    list.forEach((item: any) => {
+      if (typeof item === 'string') {
+        if (item.includes(',')) {
+          item.split(',').forEach(subName => {
+            const trimmed = subName.trim();
+            if (trimmed) normalized.push({ name: trimmed, canBeShiny: false });
+          });
+        } else {
+          const trimmed = item.trim();
+          if (trimmed) normalized.push({ name: trimmed, canBeShiny: false });
+        }
+      } else if (item && typeof item === 'object') {
+        const nameVal = typeof item.name === 'object' ? (item.name.en || item.name.cs || '') : (item.name || '');
+        if (typeof nameVal === 'string' && nameVal.includes(',') && !item.isSingle) {
+          nameVal.split(',').forEach((subName: string) => {
+            const trimmed = subName.trim();
+            if (trimmed) normalized.push({ ...item, name: trimmed, canBeShiny: item.canBeShiny ?? false });
+          });
+        } else {
+          normalized.push({ ...item, name: nameVal, canBeShiny: item.canBeShiny ?? false });
+        }
+      }
+    });
+    return normalized;
+  };
+
   // Raids
-  const raidBosses: RaidBoss[] = safe.raidbattles?.bosses || [];
-  const setRaidBosses = (r: RaidBoss[]) => onChange({ ...safe, raidbattles: { ...(safe.raidbattles || {}), bosses: r } });
+  const raidBosses: RaidBoss[] = getRawRaidBosses(safe);
+  const setRaidBosses = (r: RaidBoss[]) => onChange({
+    ...safe,
+    raidbattles: { ...(safe.raidbattles || {}), bosses: r },
+    raids: r,
+    bosses: r
+  });
 
   // Eggs
   const eggGroups: EggGroup[] = safe.eggs || [];
@@ -205,6 +282,7 @@ const StructuredEditor: React.FC<{
               <PokemonIconPicker
                 value={formatLocalizedString(s.name, 'en')}
                 onChange={(name) => { const ns = [...spawns]; ns[i] = { ...ns[i], name }; setSpawns(ns); }}
+                onEditIcon={onEditIcon}
               />
               <label className="se-shiny-checkbox">
                 <input
@@ -237,6 +315,7 @@ const StructuredEditor: React.FC<{
               <PokemonIconPicker
                 value={formatLocalizedString(f.name, 'en')}
                 onChange={(name) => { const nf = [...featured]; nf[i] = { ...nf[i], name }; setFeatured(nf); }}
+                onEditIcon={onEditIcon}
               />
               <label className="se-shiny-checkbox">
                 <input
@@ -269,6 +348,7 @@ const StructuredEditor: React.FC<{
               <PokemonIconPicker
                 value={formatLocalizedString(r.name, 'en')}
                 onChange={(name) => { const nr = [...raidBosses]; nr[i] = { ...nr[i], name }; setRaidBosses(nr); }}
+                onEditIcon={onEditIcon}
               />
               <label className="se-shiny-checkbox">
                 <input
@@ -364,11 +444,36 @@ const StructuredEditor: React.FC<{
   );
 };
 
+const PRESET_BACKGROUNDS = [
+  { label: '⚡ Raid Hour', url: 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=600&auto=format&fit=crop' },
+  { label: '🚀 GO Rocket', url: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop' },
+  { label: '🎈 Community Day', url: 'https://images.unsplash.com/photo-1526726538690-5cbf956ae2fd?q=80&w=600&auto=format&fit=crop' },
+  { label: '💡 Spotlight Hour', url: 'https://images.unsplash.com/photo-1503095396549-807759245b35?q=80&w=600&auto=format&fit=crop' },
+  { label: '✨ Mega / Primal', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop' },
+  { label: '⚔️ Max Battle', url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=600&auto=format&fit=crop' },
+];
+
+const generateSocialCaption = (event: EventData, lang: Language): string => {
+  const nameStr = formatLocalizedString(event.name, lang);
+  const typeStr = event.eventType || 'Event';
+  const startStr = new Date(event.start).toLocaleString(lang === 'cs' ? 'cs-CZ' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const endStr = new Date(event.end).toLocaleString(lang === 'cs' ? 'cs-CZ' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+  const cleanType = typeStr.replace(/[^a-zA-Z0-9]/g, '');
+  const cleanName = nameStr.replace(/[^a-zA-Z0-9]/g, '');
+
+  if (lang === 'cs') {
+    return `🎉 Událost: ${nameStr} v Pokémon GO! 📱\n\n📅 Trvání: ${startStr} – ${endStr}\n⚡ Typ události: ${typeStr}\n\n✨ Sleduj podrobného průvodce, bossy v raidech, bonusy a nejlepší counters přímo v naší aplikaci!\n👉 https://pogoevents.app\n\n#PokemonGO #PogoEvents #Pokemon #GottaCatchEmAll #${cleanType} #${cleanName} #PokemonGOCzech #PogoCS`;
+  }
+
+  return `🎉 Event: ${nameStr} in Pokémon GO! 📱\n\n📅 Date: ${startStr} – ${endStr}\n⚡ Category: ${typeStr}\n\n✨ Check full event guide, raid bosses, counters, and bonuses in our app!\n👉 https://pogoevents.app\n\n#PokemonGO #PogoEvents #Pokemon #GottaCatchEmAll #${cleanType} #${cleanName}`;
+};
+
 // ============================================================
 // Main AdminPanelView component
 // ============================================================
 
-type AdminTab = 'events' | 'scraper' | 'import' | 'cache';
+type AdminTab = 'events' | 'social' | 'icons' | 'scraper' | 'import' | 'cache';
 
 export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -377,6 +482,30 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   const [error, setError] = useState<string>('');
   const [successMsg, setSuccessMsg] = useState<string>('');
   const [adminTab, setAdminTab] = useState<AdminTab>('events');
+  const imageFileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Social Media tab state
+  const [socialSelectedEventId, setSocialSelectedEventId] = useState<string>('');
+  const [socialWebhookUrl, setSocialWebhookUrl] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('pogo_admin_social_webhook_url') || '';
+    }
+    return '';
+  });
+  const [socialCopied, setSocialCopied] = useState<boolean>(false);
+  const [socialSending, setSocialSending] = useState<boolean>(false);
+  const [socialSendStatus, setSocialSendStatus] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [generatedSocialCaption, setGeneratedSocialCaption] = useState<string>('');
+
+  // Pokemon Icons tab state
+  const pokemonIconFileInputRef = useRef<HTMLInputElement | null>(null);
+  const [iconOverrides, setIconOverrides] = useState<Record<string, string>>({});
+  const [iconSearchQuery, setIconSearchQuery] = useState<string>('');
+  const [editingPokemonName, setEditingPokemonName] = useState<string>('');
+  const [editingPokemonUrl, setEditingPokemonUrl] = useState<string>('');
+  const [iconsLoading, setIconsLoading] = useState<boolean>(false);
+  const [iconsSaving, setIconsSaving] = useState<boolean>(false);
+  const [iconsMsg, setIconsMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Events state
   const [scrapedEvents, setScrapedEvents] = useState<EventData[]>([]);
@@ -384,6 +513,10 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   const [selectedEvent, setSelectedEvent] = useState<CustomEventOverride | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [listFilter, setListFilter] = useState<'all' | 'custom' | 'hidden'>('all');
+
+  // Event Icon state
+  const eventIconFileInputRef = useRef<HTMLInputElement | null>(null);
+  const [formIconUrl, setFormIconUrl] = useState<string>('');
 
   // Edit mode: 'visual' or 'json'
   const [editMode, setEditMode] = useState<'visual' | 'json'>('visual');
@@ -469,8 +602,10 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   const fetchAdminData = async (authToken: string) => {
     try {
       const resPublic = await fetch(`${API_BASE_URL}/api/events`);
-      const eventsData = await resPublic.json();
-      setScrapedEvents(eventsData);
+      if (resPublic.ok) {
+        const eventsData = await resPublic.json();
+        setScrapedEvents(eventsData);
+      }
 
       const resAdmin = await fetch(`${API_BASE_URL}/api/admin/events`, {
         headers: { 'Authorization': `Bearer ${authToken}` }
@@ -479,8 +614,8 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
         const overrides = await resAdmin.json();
         setCustomOverrides(overrides);
       }
-    } catch (err) {
-      console.error('Failed to fetch admin data:', err);
+    } catch {
+      /* silent fallback when offline/backend restarting */
     }
   };
 
@@ -501,17 +636,107 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     } catch { /* silent */ }
   }, [token]);
 
+  const fetchIconOverrides = useCallback(async () => {
+    setIconsLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/pokemon-icons`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.overrides) {
+          setIconOverrides(data.overrides);
+          setPokemonIconOverrides(data.overrides);
+        }
+      }
+    } catch {
+      /* silent fallback when offline/dev server starting */
+    } finally {
+      setIconsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (isLoggedIn) {
       fetchScraperStatus();
       fetchCacheStats();
+      fetchIconOverrides();
     }
-  }, [isLoggedIn, fetchScraperStatus, fetchCacheStats]);
+  }, [isLoggedIn, fetchScraperStatus, fetchCacheStats, fetchIconOverrides]);
 
   useEffect(() => {
     if (adminTab === 'scraper' && isLoggedIn) fetchScraperStatus();
     if (adminTab === 'cache' && isLoggedIn) fetchCacheStats();
-  }, [adminTab, isLoggedIn, fetchScraperStatus, fetchCacheStats]);
+    if (adminTab === 'icons' && isLoggedIn) fetchIconOverrides();
+  }, [adminTab, isLoggedIn, fetchScraperStatus, fetchCacheStats, fetchIconOverrides]);
+
+  const handleSaveIconOverrides = async (updatedMap?: Record<string, string>) => {
+    const mapToSave = updatedMap || iconOverrides;
+    setIconsSaving(true);
+    setIconsMsg(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/pokemon-icons`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ overrides: mapToSave })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setIconOverrides(mapToSave);
+        setPokemonIconOverrides(mapToSave);
+        setIconsMsg({
+          type: 'success',
+          text: lang === 'cs' ? '✅ Změny ikon Pokémonů byly úspěšně uloženy!' : '✅ Pokémon icon changes saved successfully!'
+        });
+      } else {
+        setIconsMsg({
+          type: 'error',
+          text: (lang === 'cs' ? '❌ Uložení selhalo: ' : '❌ Save failed: ') + (data.error || 'Unknown error')
+        });
+      }
+    } catch (err: any) {
+      setIconsMsg({
+        type: 'error',
+        text: (lang === 'cs' ? '❌ Chyba sítě: ' : '❌ Network error: ') + err.message
+      });
+    } finally {
+      setIconsSaving(false);
+    }
+  };
+
+  const handlePokemonIconFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setIconsMsg({ type: 'error', text: lang === 'cs' ? 'Soubor je příliš velký (max 5 MB)' : 'File too large (max 5 MB)' });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      if (ev.target?.result) {
+        setEditingPokemonUrl(ev.target.result as string);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleEventIconFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setError(lang === 'cs' ? 'Soubor je příliš velký (max 5 MB)' : 'File too large (max 5 MB)');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      if (ev.target?.result) {
+        setFormIconUrl(ev.target.result as string);
+        setSuccessMsg(lang === 'cs' ? 'Ikona události načtena ze souboru!' : 'Event icon loaded from file!');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 
   const selectEventForEditing = async (event: EventData | CustomEventOverride) => {
     setError('');
@@ -543,6 +768,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     const rawTxt = activeEvent.extraData?.rawDescription || activeEvent.extraData?.scrapedText || activeEvent.extraData?.description || activeEvent.heading || '';
     setFormScrapedText(typeof rawTxt === 'object' ? formatLocalizedString(rawTxt, 'cs') : String(rawTxt));
     setFormImage(activeEvent.image);
+    setFormIconUrl((activeEvent as any).icon || activeEvent.extraData?.iconUrl || '');
     const fmt = (s: string) => s ? s.substring(0, 16) : '';
     setFormStart(fmt(activeEvent.start));
     setFormEnd(fmt(activeEvent.end));
@@ -578,8 +804,8 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
           return current;
         });
       }
-    } catch (err) {
-      console.error("Failed to fetch event details for editing:", err);
+    } catch {
+      /* silent fallback */
     } finally {
       setSelectedEvent(current => {
         if (current && current.eventID === activeEvent.eventID) {
@@ -650,7 +876,8 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
 
     const finalExtraData = {
       ...(parsedExtraData || {}),
-      rawDescription: formScrapedText
+      rawDescription: formScrapedText,
+      iconUrl: formIconUrl
     };
 
     const eventPayload: CustomEventOverride = {
@@ -662,6 +889,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
       officialLink: formOfficialLink,
       secondaryLink: formSecondaryLink,
       image: formImage,
+      icon: formIconUrl,
       start: isoStart,
       end: isoEnd,
       extraData: finalExtraData,
@@ -856,6 +1084,84 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     }
   };
 
+  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setError(lang === 'cs' ? 'Soubor je příliš velký (max 5 MB)' : 'File too large (max 5 MB)');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      if (ev.target?.result) {
+        setFormImage(ev.target.result as string);
+        setSuccessMsg(lang === 'cs' ? 'Fotka načtena ze souboru!' : 'Image loaded from file!');
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handlePickPokemonSprite = () => {
+    const nameToUse = formName || selectedEvent?.name || '';
+    if (!nameToUse) return;
+    const spriteUrl = getPokemonIconUrl(nameToUse);
+    setFormImage(spriteUrl);
+    setSuccessMsg(lang === 'cs' ? `Načten sprite pro: ${nameToUse}` : `Loaded sprite for: ${nameToUse}`);
+  };
+
+  const socialSelectedEvent = scrapedEvents.find(e => e.eventID === socialSelectedEventId) || null;
+
+  useEffect(() => {
+    if (socialSelectedEvent) {
+      const caption = generateSocialCaption(socialSelectedEvent, lang);
+      setGeneratedSocialCaption(caption);
+    } else {
+      setGeneratedSocialCaption('');
+    }
+  }, [socialSelectedEvent, lang]);
+
+  const handleSendSocialWebhook = async () => {
+    if (!socialSelectedEvent || !socialWebhookUrl.trim()) return;
+    setSocialSending(true);
+    setSocialSendStatus(null);
+    try {
+      const payload = {
+        eventId: socialSelectedEvent.eventID,
+        title: formatLocalizedString(socialSelectedEvent.name, lang),
+        eventType: socialSelectedEvent.eventType,
+        start: socialSelectedEvent.start,
+        end: socialSelectedEvent.end,
+        caption: generatedSocialCaption,
+        imageUrl: resolveImage(socialSelectedEvent.image, socialSelectedEvent.eventType, socialSelectedEvent.name),
+        appUrl: 'https://pogoevents.app',
+        timestamp: new Date().toISOString()
+      };
+      const res = await fetch(socialWebhookUrl.trim(), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        setSocialSendStatus({
+          type: 'success',
+          text: lang === 'cs' ? '✅ Příspěvek byl úspěšně odeslán na Webhook!' : '✅ Post successfully sent to Webhook!'
+        });
+      } else {
+        setSocialSendStatus({
+          type: 'error',
+          text: (lang === 'cs' ? '❌ Webhook vrátil chybu HTTP ' : '❌ Webhook returned HTTP error ') + res.status
+        });
+      }
+    } catch (err: any) {
+      setSocialSendStatus({
+        type: 'error',
+        text: (lang === 'cs' ? '❌ Chyba sítě při volání webhooku: ' : '❌ Network error calling webhook: ') + err.message
+      });
+    } finally {
+      setSocialSending(false);
+    }
+  };
+
   const getHeadingForType = (type: string): string => {
     switch (type) {
       case 'community-day': return 'Community Day';
@@ -947,6 +1253,12 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
       <div className="admin-nav-tabs">
         <button className={`admin-nav-btn ${adminTab === 'events' ? 'active' : ''}`} onClick={() => setAdminTab('events')}>
           <Edit size={15} />{lang === 'cs' ? 'Události' : 'Events'}
+        </button>
+        <button className={`admin-nav-btn ${adminTab === 'social' ? 'active' : ''}`} onClick={() => setAdminTab('social')}>
+          <Share2 size={15} />{lang === 'cs' ? 'TikTok & IG Hub' : 'TikTok & IG Hub'}
+        </button>
+        <button className={`admin-nav-btn ${adminTab === 'icons' ? 'active' : ''}`} onClick={() => setAdminTab('icons')}>
+          <Sparkles size={15} />{lang === 'cs' ? 'Ikony Pokémonů' : 'Pokémon Icons'}
         </button>
         <button className={`admin-nav-btn ${adminTab === 'scraper' ? 'active' : ''}`} onClick={() => setAdminTab('scraper')}>
           <RefreshCw size={15} />{lang === 'cs' ? 'Scraper' : 'Scraper'}
@@ -1194,13 +1506,140 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
                     )}
                   </div>
 
-                  {/* Image with live preview */}
-                  <div className="form-field full-width-field">
-                    <label><Image size={12} style={{ display: 'inline', marginRight: '4px' }} />{lang === 'cs' ? 'Obrázek (URL)' : 'Image URL'}</label>
+                  {/* Image Management with Live Preview, File Upload, Sprites & Presets */}
+                  <div className="form-field full-width-field image-management-box" style={{ background: 'rgba(255,255,255,0.03)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <label style={{ fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Image size={14} style={{ color: 'var(--accent-color)' }} />
+                        {lang === 'cs' ? 'Správa a úprava fotky eventu' : 'Event Image Management'}
+                      </label>
+                      {formImage && (
+                        <button
+                          type="button"
+                          onClick={() => setFormImage('')}
+                          style={{ fontSize: '0.75rem', cursor: 'pointer', background: 'none', border: 'none', color: '#f87171', display: 'flex', alignItems: 'center', gap: '3px' }}
+                        >
+                          <X size={12} /> {lang === 'cs' ? 'Odstranit obrázek' : 'Remove image'}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Toolbar for Upload & Sprite Picker */}
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                      <input type="file" accept="image/*" ref={imageFileInputRef} onChange={handleImageFileUpload} style={{ display: 'none' }} />
+                      <button
+                        type="button"
+                        className="admin-btn btn-secondary"
+                        onClick={() => imageFileInputRef.current?.click()}
+                        style={{ padding: '6px 12px', fontSize: '0.78rem' }}
+                      >
+                        <Upload size={13} /> {lang === 'cs' ? 'Nahrát soubor z PC/Mobilu' : 'Upload file from PC/Mobile'}
+                      </button>
+                      
+                      <button
+                        type="button"
+                        className="admin-btn btn-secondary"
+                        onClick={handlePickPokemonSprite}
+                        style={{ padding: '6px 12px', fontSize: '0.78rem' }}
+                        title={lang === 'cs' ? 'Načíst ikonu Pokémona podle názvu' : 'Get Pokémon sprite by name'}
+                      >
+                        <Sparkles size={13} /> {lang === 'cs' ? 'Použít Pokémon Sprite' : 'Use Pokémon Sprite'}
+                      </button>
+                    </div>
+
+                    {/* Presets Bar */}
+                    <div style={{ marginBottom: '10px' }}>
+                      <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+                        {lang === 'cs' ? 'Tématická pozadí z Unsplash:' : 'Themed Unsplash backgrounds:'}
+                      </span>
+                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                        {PRESET_BACKGROUNDS.map((preset, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setFormImage(preset.url)}
+                            style={{
+                              fontSize: '0.72rem',
+                              padding: '3px 8px',
+                              borderRadius: '6px',
+                              border: '1px solid var(--border-color)',
+                              background: formImage === preset.url ? 'var(--accent-color)' : 'rgba(255,255,255,0.06)',
+                              color: formImage === preset.url ? '#000' : 'var(--text-primary)',
+                              cursor: 'pointer',
+                              fontWeight: formImage === preset.url ? 'bold' : 'normal'
+                            }}
+                          >
+                            {preset.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* URL Input & Live Preview */}
                     <div className="image-url-row">
-                      <input type="text" value={formImage} onChange={(e) => setFormImage(e.target.value)} />
+                      <input
+                        type="text"
+                        placeholder="https://..."
+                        value={formImage}
+                        onChange={(e) => setFormImage(e.target.value)}
+                      />
                       {formImage && (
                         <img src={formImage} alt="preview" className="image-url-preview" onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Event Icon Management */}
+                  <div className="form-field full-width-field icon-management-box" style={{ background: 'rgba(255,255,255,0.03)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-color)', marginTop: '4px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <label style={{ fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Sparkles size={14} style={{ color: '#a855f7' }} />
+                        {lang === 'cs' ? 'Správa ikony události (Event Icon)' : 'Event Icon Management'}
+                      </label>
+                      {formIconUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setFormIconUrl('')}
+                          style={{ fontSize: '0.75rem', cursor: 'pointer', background: 'none', border: 'none', color: '#f87171', display: 'flex', alignItems: 'center', gap: '3px' }}
+                        >
+                          <X size={12} /> {lang === 'cs' ? 'Odstranit ikonu' : 'Remove icon'}
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Toolbar for Uploading Event Icon & Presets */}
+                    <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+                      <input type="file" accept="image/*" ref={eventIconFileInputRef} onChange={handleEventIconFileUpload} style={{ display: 'none' }} />
+                      <button
+                        type="button"
+                        className="admin-btn btn-secondary"
+                        onClick={() => eventIconFileInputRef.current?.click()}
+                        style={{ padding: '6px 12px', fontSize: '0.78rem' }}
+                      >
+                        <Upload size={13} /> {lang === 'cs' ? 'Nahrát ikonu z PC/Mobilu' : 'Upload icon from PC/Mobile'}
+                      </button>
+
+                      {/* Icon presets */}
+                      <button type="button" className="preset-bg-chip" onClick={() => setFormIconUrl('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png')} style={{ fontSize: '0.72rem', padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.06)', color: '#fff', cursor: 'pointer' }}>
+                        🔴 Poké Ball
+                      </button>
+                      <button type="button" className="preset-bg-chip" onClick={() => setFormIconUrl('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/raid-pass.png')} style={{ fontSize: '0.72rem', padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.06)', color: '#fff', cursor: 'pointer' }}>
+                        🎟️ Raid Pass
+                      </button>
+                      <button type="button" className="preset-bg-chip" onClick={() => setFormIconUrl('https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Rocket/ic_rocket.png')} style={{ fontSize: '0.72rem', padding: '3px 8px', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'rgba(255,255,255,0.06)', color: '#fff', cursor: 'pointer' }}>
+                        🚀 Rocket R
+                      </button>
+                    </div>
+
+                    <div className="image-url-row">
+                      <input
+                        type="text"
+                        placeholder="https://... (URL ikony události)"
+                        value={formIconUrl}
+                        onChange={(e) => setFormIconUrl(e.target.value)}
+                      />
+                      {formIconUrl && (
+                        <img src={formIconUrl} alt="icon preview" className="image-url-preview" style={{ width: '42px', height: '42px', objectFit: 'contain' }} onError={(e) => (e.target as HTMLImageElement).style.display = 'none'} />
                       )}
                     </div>
                   </div>
@@ -1264,6 +1703,13 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
                         setFormExtraDataJson(JSON.stringify(d, null, 2));
                       }}
                       lang={lang}
+                      onEditIcon={(pokeName) => {
+                        setEditingPokemonName(pokeName);
+                        setAdminTab('icons');
+                        if (typeof window !== 'undefined') {
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+                      }}
                     />
                   ) : (
                     <div className="json-editor-wrapper">
@@ -1345,6 +1791,372 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
                 <p>{lang === 'cs' ? 'Vyberte událost nebo vytvořte novou.' : 'Select an event or create a new one.'}</p>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ===== TAB: SOCIAL MEDIA HUB (TikTok & Instagram) ===== */}
+      {adminTab === 'social' && (
+        <div className="admin-social-panel" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div className="admin-card-glass" style={{ padding: '24px', borderRadius: '16px', border: '1px solid rgba(56, 189, 248, 0.25)', background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.8))' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+              <Share2 size={24} style={{ color: 'var(--accent-color, #38bdf8)' }} />
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
+                  {lang === 'cs' ? 'Generátor & Publikace pro TikTok a Instagram' : 'TikTok & Instagram Infographic Publisher'}
+                </h3>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  {lang === 'cs'
+                    ? 'Vyberte událost pro vygenerování 1-Click balíčku (popisek pro sociální sítě, odkaz na infografiku a odeslání přes Webhook).'
+                    : 'Select an event to auto-generate infographic post packages, captions, and send to Webhook.'}
+                </p>
+              </div>
+            </div>
+
+            {/* Select Event */}
+            <div className="form-field" style={{ marginBottom: '20px' }}>
+              <label style={{ fontWeight: 700, fontSize: '0.85rem' }}>
+                {lang === 'cs' ? '1. Vyberte událost:' : '1. Select Event:'}
+              </label>
+              <select
+                value={socialSelectedEventId}
+                onChange={(e) => setSocialSelectedEventId(e.target.value)}
+                className="admin-select"
+                style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', background: 'rgba(0,0,0,0.4)', color: '#fff', border: '1px solid var(--border-color)' }}
+              >
+                <option value="">-- {lang === 'cs' ? 'Vyberte událost ze seznamu' : 'Select an event'} --</option>
+                {scrapedEvents.map(e => (
+                  <option key={e.eventID} value={e.eventID}>
+                    [{e.eventType}] {formatLocalizedString(e.name, lang)} ({new Date(e.start).toLocaleDateString()})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {socialSelectedEvent ? (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                {/* Left Column: Event Infographic & Image Preview */}
+                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                  <h4 style={{ margin: '0 0 12px 0', fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-color)' }}>
+                    {lang === 'cs' ? '📸 Náhled Obrázku & Podkladu' : '📸 Image & Media Preview'}
+                  </h4>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
+                    <div style={{ width: '100%', maxHeight: '240px', overflow: 'hidden', borderRadius: '12px', border: '1px solid var(--border-color)', position: 'relative' }}>
+                      <img
+                        src={resolveImage(socialSelectedEvent.image, socialSelectedEvent.eventType, socialSelectedEvent.name)}
+                        alt={formatLocalizedString(socialSelectedEvent.name, lang)}
+                        style={{ width: '100%', height: '240px', objectFit: 'cover' }}
+                      />
+                      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '10px', background: 'linear-gradient(transparent, rgba(0,0,0,0.9))' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase' }}>{socialSelectedEvent.eventType}</span>
+                        <div style={{ fontWeight: 800, fontSize: '1rem', color: '#fff' }}>{formatLocalizedString(socialSelectedEvent.name, lang)}</div>
+                      </div>
+                    </div>
+
+                    {/* Download buttons */}
+                    <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
+                      <a
+                        href={resolveImage(socialSelectedEvent.image, socialSelectedEvent.eventType, socialSelectedEvent.name)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="admin-btn btn-secondary"
+                        style={{ flex: 1, fontSize: '0.78rem', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}
+                      >
+                        <Download size={13} /> {lang === 'cs' ? 'Otevřít/Stáhnout Obrázek (9:16 / 1:1)' : 'Download Image'}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column: Social Caption Generator & Webhook Publishing */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label style={{ fontWeight: 700, fontSize: '0.85rem' }}>
+                        {lang === 'cs' ? '📝 Popisek pro Instagram / TikTok:' : '📝 IG / TikTok Caption:'}
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(generatedSocialCaption);
+                          setSocialCopied(true);
+                          setTimeout(() => setSocialCopied(false), 2000);
+                        }}
+                        className="admin-btn btn-secondary"
+                        style={{ padding: '4px 10px', fontSize: '0.75rem' }}
+                      >
+                        {socialCopied ? <Check size={13} style={{ color: '#4ade80' }} /> : <Copy size={13} />}
+                        {socialCopied ? (lang === 'cs' ? 'Zkopírováno!' : 'Copied!') : (lang === 'cs' ? 'Zkopírovat popisek' : 'Copy Caption')}
+                      </button>
+                    </div>
+                    <textarea
+                      rows={10}
+                      value={generatedSocialCaption}
+                      onChange={(e) => setGeneratedSocialCaption(e.target.value)}
+                      style={{
+                        width: '100%',
+                        background: 'rgba(0,0,0,0.5)',
+                        border: '1px solid var(--border-color)',
+                        borderRadius: '10px',
+                        padding: '10px',
+                        color: '#fff',
+                        fontSize: '0.82rem',
+                        fontFamily: 'monospace',
+                        resize: 'vertical'
+                      }}
+                    />
+                  </div>
+
+                  {/* Webhook Configuration & Auto-Post Trigger */}
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '14px', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+                    <label style={{ fontWeight: 700, fontSize: '0.8rem', display: 'block', marginBottom: '6px' }}>
+                      {lang === 'cs' ? '🔗 Webhook URL (Make.com / Zapier / Buffer):' : '🔗 Webhook URL (Make.com / Zapier / Buffer):'}
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="https://hook.eu1.make.com/your-custom-webhook-id"
+                      value={socialWebhookUrl}
+                      onChange={(e) => {
+                        setSocialWebhookUrl(e.target.value);
+                        localStorage.setItem('pogo_admin_social_webhook_url', e.target.value);
+                      }}
+                      style={{ width: '100%', padding: '8px 12px', fontSize: '0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.4)', color: '#fff', marginBottom: '10px' }}
+                    />
+
+                    {socialSendStatus && (
+                      <div style={{
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        fontSize: '0.8rem',
+                        marginBottom: '10px',
+                        background: socialSendStatus.type === 'success' ? 'rgba(74, 222, 128, 0.15)' : 'rgba(248, 113, 113, 0.15)',
+                        color: socialSendStatus.type === 'success' ? '#4ade80' : '#f87171',
+                        border: `1px solid ${socialSendStatus.type === 'success' ? 'rgba(74, 222, 128, 0.3)' : 'rgba(248, 113, 113, 0.3)'}`
+                      }}>
+                        {socialSendStatus.text}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={handleSendSocialWebhook}
+                      disabled={socialSending || !socialWebhookUrl.trim()}
+                      className="admin-btn btn-primary"
+                      style={{ width: '100%', padding: '10px', fontSize: '0.88rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                    >
+                      <Send size={15} />
+                      {socialSending
+                        ? (lang === 'cs' ? 'Odesílám...' : 'Sending...')
+                        : (lang === 'cs' ? 'Odeslat na Webhook (Auto-post na IG / TikTok)' : 'Send to Webhook (Auto-post IG/TikTok)')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                {lang === 'cs' ? 'Vyberte událost ze seznamu výše pro generování popisku a podkladů.' : 'Select an event above to generate captions and media.'}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ===== TAB: POKEMON ICONS MANAGER ===== */}
+      {adminTab === 'icons' && (
+        <div className="admin-icons-panel" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div className="admin-card-glass" style={{ padding: '24px', borderRadius: '16px', border: '1px solid rgba(168, 85, 247, 0.25)', background: 'linear-gradient(135deg, rgba(20, 15, 35, 0.9), rgba(10, 10, 20, 0.9))' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+              <Sparkles size={24} style={{ color: '#a855f7' }} />
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800 }}>
+                  {lang === 'cs' ? 'Globální správa ikonek Pokémonů' : 'Global Pokémon Icons Manager'}
+                </h3>
+                <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  {lang === 'cs'
+                    ? 'Zde můžete změnit ikonu nebo sprite jakéhokoliv Pokémona v celé aplikaci (raidy, spawny, líhnutí, žebříčky).'
+                    : 'Change the icon or sprite for any Pokémon globally across the app (raids, spawns, eggs, rankings).'}
+                </p>
+              </div>
+            </div>
+
+            {iconsMsg && (
+              <div style={{
+                padding: '10px 14px',
+                borderRadius: '10px',
+                fontSize: '0.85rem',
+                marginBottom: '16px',
+                background: iconsMsg.type === 'success' ? 'rgba(74, 222, 128, 0.15)' : 'rgba(248, 113, 113, 0.15)',
+                color: iconsMsg.type === 'success' ? '#4ade80' : '#f87171',
+                border: `1px solid ${iconsMsg.type === 'success' ? 'rgba(74, 222, 128, 0.3)' : 'rgba(248, 113, 113, 0.3)'}`
+              }}>
+                {iconsMsg.text}
+              </div>
+            )}
+
+            {/* Form to Add/Edit a Pokémon Icon */}
+            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '20px' }}>
+              <h4 style={{ margin: '0 0 14px 0', fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-color)' }}>
+                {lang === 'cs' ? '✏️ Přidat / Upravit ikonu Pokémona' : '✏️ Add / Edit Pokémon Icon'}
+              </h4>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '12px', marginBottom: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>
+                    {lang === 'cs' ? 'Název Pokémona:' : 'Pokémon Name:'}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="např. Pikachu, Mewtwo, Kyurem"
+                    value={editingPokemonName}
+                    onChange={(e) => setEditingPokemonName(e.target.value)}
+                    style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.4)', color: '#fff', fontSize: '0.85rem' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ fontSize: '0.78rem', fontWeight: 700, display: 'block', marginBottom: '4px' }}>
+                    {lang === 'cs' ? 'URL adresa vlastního obrázku / spritu:' : 'Custom Image / Sprite URL:'}
+                  </label>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      placeholder="https://..."
+                      value={editingPokemonUrl}
+                      onChange={(e) => setEditingPokemonUrl(e.target.value)}
+                      style={{ flex: 1, padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.4)', color: '#fff', fontSize: '0.85rem' }}
+                    />
+                    {editingPokemonUrl && (
+                      <img
+                        src={editingPokemonUrl}
+                        alt="preview"
+                        style={{ width: '38px', height: '38px', objectFit: 'contain', borderRadius: '6px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)' }}
+                        onError={(e) => (e.target as HTMLImageElement).style.display = 'none'}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Actions & Presets */}
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '14px' }}>
+                <input type="file" accept="image/*" ref={pokemonIconFileInputRef} onChange={handlePokemonIconFileUpload} style={{ display: 'none' }} />
+                <button
+                  type="button"
+                  className="admin-btn btn-secondary"
+                  onClick={() => pokemonIconFileInputRef.current?.click()}
+                  style={{ padding: '6px 12px', fontSize: '0.78rem' }}
+                >
+                  <Upload size={13} /> {lang === 'cs' ? 'Nahrát fotku z PC/Mobilu' : 'Upload photo from PC/Mobile'}
+                </button>
+
+                {editingPokemonName && (
+                  <>
+                    <button
+                      type="button"
+                      className="admin-btn btn-secondary"
+                      onClick={() => {
+                        const nameClean = editingPokemonName.toLowerCase().trim();
+                        setEditingPokemonUrl(`https://img.pokemondb.net/sprites/home/shiny/${nameClean}.png`);
+                      }}
+                      style={{ padding: '6px 12px', fontSize: '0.78rem' }}
+                    >
+                      🌟 Shiny 3D Sprite
+                    </button>
+
+                    <button
+                      type="button"
+                      className="admin-btn btn-secondary"
+                      onClick={() => {
+                        const nameClean = editingPokemonName.toLowerCase().trim();
+                        setEditingPokemonUrl(`https://img.pokemondb.net/artwork/large/${nameClean}.jpg`);
+                      }}
+                      style={{ padding: '6px 12px', fontSize: '0.78rem' }}
+                    >
+                      🎨 Official Artwork
+                    </button>
+                  </>
+                )}
+
+                <button
+                  type="button"
+                  className="admin-btn btn-primary"
+                  onClick={() => {
+                    const key = editingPokemonName.toLowerCase().trim();
+                    if (!key || !editingPokemonUrl.trim()) return;
+                    const next = { ...iconOverrides, [key]: editingPokemonUrl.trim() };
+                    handleSaveIconOverrides(next);
+                    setEditingPokemonName('');
+                    setEditingPokemonUrl('');
+                  }}
+                  disabled={!editingPokemonName.trim() || !editingPokemonUrl.trim() || iconsSaving}
+                  style={{ padding: '6px 14px', fontSize: '0.78rem', marginLeft: 'auto' }}
+                >
+                  <Plus size={13} /> {lang === 'cs' ? 'Uložit ikonu Pokémona' : 'Save Pokémon Icon'}
+                </button>
+              </div>
+            </div>
+
+            {/* List of Current Overrides */}
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <h4 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700 }}>
+                  {lang === 'cs' ? '📋 Aktivní změněné ikony Pokémonů' : '📋 Active Custom Pokémon Icons'}
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: '8px' }}>
+                    ({Object.keys(iconOverrides).length})
+                  </span>
+                </h4>
+
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <input
+                    type="text"
+                    placeholder={lang === 'cs' ? 'Hledat v ikonách...' : 'Search icons...'}
+                    value={iconSearchQuery}
+                    onChange={(e) => setIconSearchQuery(e.target.value)}
+                    style={{ padding: '5px 10px', fontSize: '0.78rem', borderRadius: '6px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.4)', color: '#fff' }}
+                  />
+                </div>
+              </div>
+
+              {Object.keys(iconOverrides).length === 0 ? (
+                <div style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                  {lang === 'cs' ? 'Zatím nebyly nastaveny žádné vlastní ikony Pokémonů.' : 'No custom Pokémon icon overrides set yet.'}
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '10px' }}>
+                  {Object.entries(iconOverrides)
+                    .filter(([name]) => name.toLowerCase().includes(iconSearchQuery.toLowerCase()))
+                    .map(([name, url]) => (
+                      <div key={name} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '8px 12px', background: 'rgba(0,0,0,0.3)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                        <img
+                          src={url}
+                          alt={name}
+                          style={{ width: '40px', height: '40px', objectFit: 'contain', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', padding: '2px' }}
+                          onError={(e) => (e.target as HTMLImageElement).src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png'}
+                        />
+                        <div style={{ flex: 1, overflow: 'hidden' }}>
+                          <div style={{ fontWeight: 800, fontSize: '0.85rem', textTransform: 'capitalize', color: '#fff' }}>{name}</div>
+                          <a href={url} target="_blank" rel="noreferrer" style={{ fontSize: '0.7rem', color: 'var(--accent-color)', textDecoration: 'none', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
+                            {url}
+                          </a>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const next = { ...iconOverrides };
+                            delete next[name];
+                            handleSaveIconOverrides(next);
+                          }}
+                          style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer', padding: '4px' }}
+                          title={lang === 'cs' ? 'Smazat úpravu ikony' : 'Delete icon override'}
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

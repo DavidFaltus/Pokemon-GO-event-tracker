@@ -346,12 +346,21 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
 
           <div className="cd-showcase-right">
             <div className="cd-image-halo"></div>
-            <img 
-              src={resolveImage(pokemonImg, event.eventType, mainPokemonName)} 
-              alt={mainPokemonName} 
-              className="cd-featured-img"
-              onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, mainPokemonName)}
-            />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', zIndex: 2, position: 'relative' }}>
+              <img 
+                src={resolveImage(pokemonImg, event.eventType, mainPokemonName, false)} 
+                alt={mainPokemonName} 
+                className="cd-featured-img"
+                onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, mainPokemonName, false)}
+              />
+              <img 
+                src={resolveImage(pokemonImg, event.eventType, mainPokemonName, true)} 
+                alt={`${mainPokemonName} Shiny`} 
+                className="cd-featured-img shiny-sprite"
+                style={{ filter: 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.65))' }}
+                onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, mainPokemonName, true)}
+              />
+            </div>
           </div>
         </div>
 
