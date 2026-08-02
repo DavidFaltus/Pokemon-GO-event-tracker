@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { Sparkles } from 'lucide-react';
 import './TimelineView.css';
 import './CalendarView.css';
 import { EventCard } from './EventCard';
@@ -6,6 +7,7 @@ import type { EventData } from './EventCard';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
 import { resolveImage } from '../utils/imageResolver';
+import { MonthSummaryInfographic } from './MonthSummaryInfographic';
 
 interface TimelineViewProps {
   events: EventData[];
@@ -42,6 +44,7 @@ const WEEKDAY_NAMES: { [key in Language]: string[] } = {
 
 export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezone }) => {
   const [activeModalEvent, setActiveModalEvent] = useState<EventData | null>(null);
+  const [showPosterModal, setShowPosterModal] = useState<boolean>(false);
   
   const t = translations[lang];
 
@@ -234,6 +237,27 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
           >
             {lang === 'ja' ? '今月' : lang === 'cs' ? 'Dnes' : 'Today'}
           </button>
+          <button
+            className="calendar-poster-btn"
+            onClick={() => setShowPosterModal(true)}
+            style={{
+              padding: '4px 10px',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              borderRadius: '6px',
+              border: '1px solid var(--accent-color, #38bdf8)',
+              backgroundColor: 'rgba(56, 189, 248, 0.12)',
+              color: 'var(--accent-color, #38bdf8)',
+              cursor: 'pointer',
+              marginLeft: '6px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px'
+            }}
+          >
+            <Sparkles size={13} />
+            {lang === 'cs' ? 'Plakát měsíce' : 'Month Poster'}
+          </button>
         </div>
         
         {/* Simple Legend for Event Categories */}
@@ -393,6 +417,16 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
             <EventCard event={activeModalEvent} lang={lang} timezone={timezone} defaultExpanded={true} useInline={true} />
           </div>
         </div>
+      )}
+
+      {/* Month Summary Poster Infographic Modal */}
+      {showPosterModal && (
+        <MonthSummaryInfographic
+          events={events}
+          lang={lang}
+          targetDate={viewDate}
+          onClose={() => setShowPosterModal(false)}
+        />
       )}
 
       <div className="timeline-tip" style={{ padding: '8px 12px', fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center' }}>

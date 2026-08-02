@@ -310,7 +310,7 @@ const safeLocalStorage = {
 
 const getTabFromUrlPath = (pathname: string): TabType => {
   const p = pathname.toLowerCase();
-  if (p === '/admin' || p.startsWith('/admin/')) return 'admin';
+  if (p.includes('/admin')) return 'admin';
   if (p.includes('/raids') || p.includes('/raid')) return 'raid';
   if (p.includes('/rocket')) return 'rocket';
   if (p.includes('/rankings') || p.includes('/ranking')) return 'ranking';
@@ -540,7 +540,17 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
 
   useEffect(() => {
     trackGAEvent('change_language', 'Settings', lang);
-  }, [lang]);
+    if (typeof window === 'undefined') return;
+    const isCapacitor = !!(window as any).Capacitor || 
+                        window.location.protocol === 'capacitor:' || 
+                        window.location.protocol === 'file:';
+    if (!isCapacitor) {
+      const targetPath = getUrlPathForTab(activeTab, lang, activeTab === 'events' ? expandedEventId : null);
+      if (window.location.pathname !== targetPath) {
+        window.history.pushState(null, '', targetPath);
+      }
+    }
+  }, [lang, activeTab, expandedEventId]);
 
   const toggleVisibleEvent = (key: keyof VisibleEventsPreference) => {
     setVisibleEvents(prev => ({ ...prev, [key]: !prev[key] }));
@@ -922,6 +932,29 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
               )}
             </span>
           )}
+          <div className="sidebar-lang-switcher" style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
+            {(['cs', 'en', 'ja', 'ru'] as Language[]).map(l => (
+              <button
+                key={l}
+                className={`lang-btn ${lang === l ? 'active' : ''}`}
+                onClick={() => handleSetLang(l)}
+                style={{
+                  padding: '2px 7px',
+                  fontSize: '10px',
+                  fontWeight: 'bold',
+                  borderRadius: '5px',
+                  border: '1px solid var(--border-color)',
+                  background: lang === l ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)',
+                  color: lang === l ? '#000' : 'var(--text-muted)',
+                  cursor: 'pointer',
+                  textTransform: 'uppercase',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {l}
+              </button>
+            ))}
+          </div>
         </div>
         <nav className="sidebar-nav">
           <a 
@@ -1090,6 +1123,29 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
                 )}
               </span>
             )}
+            <div className="mobile-lang-switcher" style={{ display: 'flex', gap: '3px', marginRight: '2px' }}>
+              {(['cs', 'en', 'ja', 'ru'] as Language[]).map(l => (
+                <button
+                  key={l}
+                  className={`lang-btn ${lang === l ? 'active' : ''}`}
+                  onClick={() => handleSetLang(l)}
+                  style={{
+                    padding: '2px 5px',
+                    fontSize: '10px',
+                    fontWeight: 'bold',
+                    borderRadius: '4px',
+                    border: '1px solid var(--border-color)',
+                    background: lang === l ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)',
+                    color: lang === l ? '#000' : 'var(--text-muted)',
+                    cursor: 'pointer',
+                    textTransform: 'uppercase',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  {l}
+                </button>
+              ))}
+            </div>
             <button 
               className={`header-settings-btn ${activeTab === 'settings' ? 'active' : ''}`} 
               onClick={() => changeTab('settings')}
