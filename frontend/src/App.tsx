@@ -266,31 +266,6 @@ const getPathForLang = (l: Language): string => {
 };
 
 const detectUserLanguage = (): Language => {
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    if (tz) {
-      const czSvkTzs = ['europe/prague', 'europe/bratislava', 'europe/kosice'];
-      if (czSvkTzs.some(t => tz.toLowerCase().includes(t))) {
-        return 'cs';
-      }
-      if (tz.toLowerCase().includes('asia/tokyo')) {
-        return 'ja';
-      }
-    }
-  } catch (e) {
-    console.warn('Failed to detect timezone:', e);
-  }
-
-  const browserLanguages = navigator.languages
-    ? navigator.languages.map(l => l.toLowerCase().substring(0, 2))
-    : [navigator.language.toLowerCase().substring(0, 2)];
-
-  for (const bLang of browserLanguages) {
-    if (bLang === 'cs' || bLang === 'sk') return 'cs';
-    if (bLang === 'ja') return 'ja';
-    if (bLang === 'ru') return 'ru';
-  }
-
   return 'en';
 };
 
@@ -467,7 +442,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
     return () => window.removeEventListener('popstate', handlePopState);
   }, [lang]);
   
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
   useEffect(() => {
     const saved = safeLocalStorage.getItem('pogo_tracker_theme');
