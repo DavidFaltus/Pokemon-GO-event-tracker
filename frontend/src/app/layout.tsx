@@ -60,13 +60,9 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
       </head>
       <body>
-        {/* Google Tag (gtag.js) */}
+        {/* Google Tag (gtag.js) - single library load for both analytics IDs */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-17PT93VMXQ"
-          strategy="lazyOnload"
-        />
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-MKGYZSS7GK"
           strategy="lazyOnload"
         />
         <Script id="google-analytics" strategy="lazyOnload">
@@ -79,10 +75,10 @@ export default function RootLayout({
             gtag('config', 'G-MKGYZSS7GK');
           `}
         </Script>
-        {/* Google AdSense - native script tag without data-nscript to prevent AdSense warning */}
-        <script
-          async
+        {/* Google AdSense - lazyOnload strategy to prevent render-blocking on page load */}
+        <Script
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8800056915088711"
+          strategy="lazyOnload"
           crossOrigin="anonymous"
         />
         <div id="root">

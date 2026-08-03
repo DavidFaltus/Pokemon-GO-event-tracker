@@ -245,9 +245,14 @@ export function getPokemonIconUrl(name: string, isShiny?: boolean): string {
     return `https://img.pokemondb.net/sprites/home/${folder}/${formClean}.png`;
   }
 
-  // Standard non-mega/primal Pokemon: try PokeAPI Pokedex ID home sprite first
+  // Standard non-mega/primal Pokemon: Gen 1-5 (pokedexId < 650) use ZeChrales 4KB PogoAssets icon
   const pokedexId = getPokedexIdByName(baseName);
   if (pokedexId) {
+    if (pokedexId < 650) {
+      const padId = pokedexId.toString().padStart(3, '0');
+      const shinySuffix = isShiny ? '_shiny' : '';
+      return `https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/pokemon_icons/pokemon_icon_${padId}_00${shinySuffix}.png`;
+    }
     const homeFolder = isShiny ? 'home/shiny' : 'home';
     return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/${homeFolder}/${pokedexId}.png`;
   }
@@ -403,9 +408,9 @@ export function resolveImage(url: string | undefined, eventType?: string, name?:
     if (lowerUrl.includes('mega-default') || (eventType && eventType.toLowerCase().includes('mega'))) {
       return 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop'; // Abstract energetic swirl
     }
-    if (lowerUrl.includes('events-default-img') || lowerUrl.includes('default')) {
-      return 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop'; // Colorful abstract design
-    }
+    
+    // Safety fallback for any other leekduck event image path
+    return getFallbackImage(eventType, name, isShiny);
   }
 
   return url;
