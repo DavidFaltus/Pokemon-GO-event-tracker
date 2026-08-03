@@ -48,9 +48,7 @@ export default function RootLayout({
         <link
           href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
           rel="stylesheet"
-          media="print"
-          // @ts-ignore
-          onLoad="this.media='all'"
+          media="all"
         />
         <noscript>
           <link
@@ -81,10 +79,10 @@ export default function RootLayout({
             gtag('config', 'G-MKGYZSS7GK');
           `}
         </Script>
-        {/* Google AdSense - afterInteractive: loads only after page is interactive */}
-        <Script
+        {/* Google AdSense - native script tag without data-nscript to prevent AdSense warning */}
+        <script
+          async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8800056915088711"
-          strategy="afterInteractive"
           crossOrigin="anonymous"
         />
         <div id="root">

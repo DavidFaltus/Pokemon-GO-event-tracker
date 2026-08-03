@@ -75,35 +75,48 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
 
-    <!-- Google Analytics - deferred to avoid render-blocking -->
+    <!-- Google Analytics & AdSense - deferred to first user interaction or 3.5s idle timer for max performance -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-17PT93VMXQ');
       gtag('config', 'G-MKGYZSS7GK');
-      // Lazy-load GA script after page is interactive
-      window.addEventListener('load', function() {
-        var s = document.createElement('script');
-        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-17PT93VMXQ';
-        s.async = true;
-        document.head.appendChild(s);
-      });
+
+      (function() {
+        var loaded = false;
+        function loadThirdPartyScripts() {
+          if (loaded) return;
+          loaded = true;
+
+          // Google Analytics
+          var ga = document.createElement('script');
+          ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-17PT93VMXQ';
+          ga.async = true;
+          document.head.appendChild(ga);
+
+          // Google AdSense
+          var ads = document.createElement('script');
+          ads.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8800056915088711';
+          ads.async = true;
+          ads.crossOrigin = 'anonymous';
+          document.head.appendChild(ads);
+
+          ['pointerdown', 'scroll', 'keydown', 'touchstart'].forEach(function(ev) {
+            window.removeEventListener(ev, loadThirdPartyScripts, { passive: true });
+          });
+        }
+
+        ['pointerdown', 'scroll', 'keydown', 'touchstart'].forEach(function(ev) {
+          window.addEventListener(ev, loadThirdPartyScripts, { passive: true, once: true });
+        });
+
+        setTimeout(loadThirdPartyScripts, 3500);
+      })();
     </script>
     
     <!-- Web App Manifest -->
     <link rel="manifest" href="./manifest.json" />
-
-    <!-- Google AdSense - deferred to avoid render-blocking -->
-    <script>
-      window.addEventListener('load', function() {
-        var s = document.createElement('script');
-        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8800056915088711';
-        s.async = true;
-        s.crossOrigin = 'anonymous';
-        document.head.appendChild(s);
-      });
-    </script>
   </head>
   <body>
     <div id="root">

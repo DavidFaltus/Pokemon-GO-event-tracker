@@ -924,12 +924,14 @@ app.get('*', async (req, res, next) => {
     } catch { /* ignore script injection if shell missing */ }
 
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate, s-maxage=300, stale-while-revalidate=86400');
     return res.status(200).send(html);
   } catch (err: any) {
     console.error('[SSR Route Error] Failed to generate pre-rendered HTML:', err.message);
     try {
       const html = await getSpaShell();
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate, s-maxage=300, stale-while-revalidate=86400');
       return res.status(200).send(html);
     } catch (fallbackErr) {
       return res.status(500).send('Internal Server Error');
