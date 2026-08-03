@@ -37,20 +37,29 @@ export default function RootLayout({
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
+        {/* Google Fonts - non-blocking via print media trick (prevents render-blocking) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preload" as="style"
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+        />
+        {/* media=print trick: loads font async, then switches to all when done */}
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+          media="print"
+          // @ts-ignore
+          onLoad="this.media='all'"
+        />
+        <noscript>
+          <link
+            href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+          />
+        </noscript>
         <link rel="preconnect" href="https://raw.githubusercontent.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-        {/* Google AdSense Script */}
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8800056915088711"
-          crossOrigin="anonymous"
-        />
       </head>
       <body>
         {/* Google Tag (gtag.js) */}
@@ -72,6 +81,12 @@ export default function RootLayout({
             gtag('config', 'G-MKGYZSS7GK');
           `}
         </Script>
+        {/* Google AdSense - afterInteractive: loads only after page is interactive */}
+        <Script
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8800056915088711"
+          strategy="afterInteractive"
+          crossOrigin="anonymous"
+        />
         <div id="root">
           {children}
         </div>

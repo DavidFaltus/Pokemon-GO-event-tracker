@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pokego-tracker-v6';
+const CACHE_NAME = 'pokego-tracker-v7';
 
 // Install Event - skip waiting immediately
 self.addEventListener('install', (e) => {
@@ -10,7 +10,7 @@ self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
-        keys.map((key) => caches.delete(key))
+        keys.filter(key => key !== CACHE_NAME).map((key) => caches.delete(key))
       );
     }).then(() => self.clients.claim())
   );
@@ -56,6 +56,29 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
+  // JS and CSS chunks (hashed filenames = safe to cache indefinitely)
+  // Matches: /_next/static/**/*.js, /_next/static/**/*.css, /assets/*.js, /assets/*.css
+  if (
+    (url.pathname.startsWith('/_next/static/') || url.pathname.startsWith('/assets/')) &&
+    url.pathname.match(/\.(js|css)$/)
+  ) {
+    e.respondWith(
+      caches.match(e.request).then((cachedResponse) => {
+        if (cachedResponse) return cachedResponse;
+        return fetch(e.request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(e.request, responseToCache).catch(() => {});
+            });
+          }
+          return networkResponse;
+        });
+      })
+    );
+    return;
+  }
+
   // Static assets (images, fonts): cache-first with network fallback
   if (url.pathname.match(/\.(png|jpg|jpeg|svg|gif|webp|woff2?|ttf)$/i)) {
     e.respondWith(
@@ -78,3 +101,4 @@ self.addEventListener('fetch', (e) => {
   // All other requests pass straight to network
   e.respondWith(fetch(e.request));
 });
+

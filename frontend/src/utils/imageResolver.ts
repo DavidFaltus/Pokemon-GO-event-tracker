@@ -1,4 +1,22 @@
-import { pokemonRankings } from '../data/pokemonRankings';
+// pokemonRankings is loaded lazily to avoid blocking initial bundle parse (115 KB dataset)
+import type { PokemonRankData } from '../data/pokemonRankings';
+let pokemonRankingsCache: PokemonRankData[] | null = null;
+let pokemonRankingsPromise: Promise<PokemonRankData[]> | null = null;
+let basePokemonNamesCache: string[] | null = null;
+
+function getPokemonRankings(): PokemonRankData[] {
+  if (pokemonRankingsCache) return pokemonRankingsCache;
+  // Synchronous fallback: if not yet loaded, start the load and return empty array.
+  // EventCard image resolver works fine with just the extraBaseNames static list.
+  if (!pokemonRankingsPromise) {
+    pokemonRankingsPromise = import('../data/pokemonRankings').then(m => {
+      pokemonRankingsCache = m.pokemonRankings;
+      basePokemonNamesCache = null; // Reset cache so it rebuilds with full data on next call
+      return pokemonRankingsCache!;
+    });
+  }
+  return []; // Return empty until loaded
+}
 
 export const SHADOW_ICON_URL = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Raids/shadow_icon.png";
 export const SHADOW_ICON_FALLBACK = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Rocket/ic_shadow.png";
@@ -39,7 +57,6 @@ export function handlePrimalIconError(img: HTMLImageElement): void {
   }
 }
 
-let basePokemonNamesCache: string[] | null = null;
 
 export function getBasePokemonNames(): string[] {
   if (basePokemonNamesCache) return basePokemonNamesCache;
@@ -60,7 +77,7 @@ export function getBasePokemonNames(): string[] {
   ];
   extraBaseNames.forEach(n => namesSet.add(n));
 
-  for (const p of pokemonRankings) {
+  for (const p of getPokemonRankings()) {
     const simplest = p.name.replace(/^Shadow\s+/i, '')
                             .replace(/^Mega\s+/i, '')
                             .replace(/^Primal\s+/i, '')
@@ -142,15 +159,16 @@ export function getBasePokemonName(name: string): string {
 
 export function getPokedexIdByName(name: string): number | null {
   const cleanName = getBasePokemonName(name).toLowerCase();
+  const rankings = getPokemonRankings();
   
   // First try direct match
-  let found = pokemonRankings.find(p => p.name.toLowerCase() === cleanName);
+  let found = rankings.find(p => p.name.toLowerCase() === cleanName);
   if (found) {
     return found.pokedexId;
   }
   
   // Try matching by base name of the ranking name as well
-  found = pokemonRankings.find(p => getBasePokemonName(p.name).toLowerCase() === cleanName);
+  found = rankings.find(p => getBasePokemonName(p.name).toLowerCase() === cleanName);
   if (found) {
     return found.pokedexId;
   }

@@ -2,25 +2,27 @@
 
 import './index.css';
 import './App.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useNotifications } from './hooks/useNotifications';
 import { EventCard } from './components/EventCard';
 import type { EventData } from './components/EventCard';
-import { RaidView } from './components/RaidView';
-import { RocketGuide } from './components/RocketGuide';
 import { NotificationSettings } from './components/NotificationSettings';
 import type { VisibleEventsPreference } from './components/NotificationSettings';
 import { translations } from './data/translations';
 import type { Language } from './data/translations';
 import { API_BASE_URL } from './config';
-import { TimelineView } from './components/TimelineView';
 import { AdContainer } from './components/AdContainer';
-import { DittoEggsView } from './components/DittoEggsView';
-import { PokemonRankingsView } from './components/PokemonRankingsView';
-import { AdminPanelView } from './components/AdminPanelView';
-import { FilterGeneratorView } from './components/FilterGeneratorView';
 import { setPokemonIconOverrides } from './utils/imageResolver';
 import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy, Filter } from 'lucide-react';
+
+// Lazy-loaded tabs - loaded only when user navigates to them (reduces initial bundle ~40%)
+const RaidView = lazy(() => import('./components/RaidView').then(m => ({ default: m.RaidView })));
+const RocketGuide = lazy(() => import('./components/RocketGuide').then(m => ({ default: m.RocketGuide })));
+const TimelineView = lazy(() => import('./components/TimelineView').then(m => ({ default: m.TimelineView })));
+const DittoEggsView = lazy(() => import('./components/DittoEggsView').then(m => ({ default: m.DittoEggsView })));
+const PokemonRankingsView = lazy(() => import('./components/PokemonRankingsView').then(m => ({ default: m.PokemonRankingsView })));
+const FilterGeneratorView = lazy(() => import('./components/FilterGeneratorView').then(m => ({ default: m.FilterGeneratorView })));
+const AdminPanelView = lazy(() => import('./components/AdminPanelView').then(m => ({ default: m.AdminPanelView })));
 
 type TabType = 'events' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin';
 
@@ -1149,6 +1151,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
                 <p>{t.loading_text}</p>
               </div>
             ) : (
+              <Suspense fallback={<div className="loading-container"><div className="spinner"></div></div>}>
               <>
                 {activeTab === 'events' && (
                   <div className="tab-content events-tab">
@@ -1284,6 +1287,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
                   </div>
                 )}
               </>
+              </Suspense>
             )}
           </main>
 

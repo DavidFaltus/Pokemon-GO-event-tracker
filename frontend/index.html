@@ -67,28 +67,43 @@
 
     <title>PoGo Events & Meta Guide</title>
     
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-17PT93VMXQ"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MKGYZSS7GK"></script>
+    <!-- Google Fonts - preconnect & preload for render performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- font-display=swap prevents FOIT (invisible text during load) and improves LCP -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+
+    <!-- Google Analytics - deferred to avoid render-blocking -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-17PT93VMXQ');
       gtag('config', 'G-MKGYZSS7GK');
+      // Lazy-load GA script after page is interactive
+      window.addEventListener('load', function() {
+        var s = document.createElement('script');
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-17PT93VMXQ';
+        s.async = true;
+        document.head.appendChild(s);
+      });
     </script>
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;850&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Web App Manifest -->
     <link rel="manifest" href="./manifest.json" />
 
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8800056915088711" crossorigin="anonymous"></script>
+    <!-- Google AdSense - deferred to avoid render-blocking -->
+    <script>
+      window.addEventListener('load', function() {
+        var s = document.createElement('script');
+        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8800056915088711';
+        s.async = true;
+        s.crossOrigin = 'anonymous';
+        document.head.appendChild(s);
+      });
+    </script>
   </head>
   <body>
     <div id="root">
