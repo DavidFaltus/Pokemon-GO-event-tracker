@@ -13,6 +13,7 @@ import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Fla
 import { CounterItem, WeatherIcon } from './CounterItem';
 import { resolveImage, handlePokemonImageError, getBasePokemonName, getBasePokemonNames, getPokemonIconUrl } from '../utils/imageResolver';
 import { getPokemonName } from '../utils/pokemonTranslator';
+import { getRegionalInfo } from '../utils/regionalHelper';
 import { DirectRaidFilterBox } from './DirectRaidFilterBox';
 import { CommunityDayInfographic } from './CommunityDayInfographic';
 import { SpotlightInfographic } from './SpotlightInfographic';
@@ -1342,6 +1343,15 @@ export const EventCard: React.FC<EventCardProps> = ({
                           }}
                         />
                         <span className="boss-name">{getPokemonName(bossName, lang)}</span>
+                        {(() => {
+                          const regInfo = getRegionalInfo(englishName);
+                          if (!regInfo) return null;
+                          return (
+                            <span className="regional-indicator" style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', padding: '1px 6px', fontSize: '0.65rem', borderRadius: '4px', backgroundColor: 'rgba(59, 130, 246, 0.15)', color: '#93c5fd', border: '1px solid rgba(96, 165, 250, 0.3)', marginTop: '2px' }}>
+                              {regInfo.shortLabel[lang] || regInfo.shortLabel.cs}
+                            </span>
+                          );
+                        })()}
                         {canBeShiny && (
                           <span className="shiny-indicator" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                             <Sparkles size={10} fill="currentColor" stroke="none" style={{ color: '#fbbf24' }} /> Shiny

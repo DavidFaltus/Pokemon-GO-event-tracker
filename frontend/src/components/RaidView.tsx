@@ -11,8 +11,10 @@ import { API_BASE_URL } from '../config';
 import { Sparkles, Trophy } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
 import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
+import { findRaidCounters } from '../data/raidCounters';
 import { resolveImage, handlePokemonImageError, SHADOW_ICON_URL, MEGA_ICON_URL, PRIMAL_ICON_URL, handleShadowIconError, handleMegaIconError, handlePrimalIconError } from '../utils/imageResolver';
 import { DirectRaidFilterBox } from './DirectRaidFilterBox';
+import { detectUserRegion, isPokemonInUserRegion, getRegionalInfo } from '../utils/regionalHelper';
 
 const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
   <img
@@ -130,7 +132,42 @@ interface RaidBoss {
   } | null;
 }
 
+export interface RegionalInfo {
+  regionCode: 'EMEA' | 'Americas' | 'Asia' | 'North' | 'South';
+  label: { cs: string; en: string; ja: string };
+  shortLabel: { cs: string; en: string; ja: string };
+}
+
+export const REGIONAL_POKEMON: Record<string, RegionalInfo> = {
+  'uxie': {
+    regionCode: 'Asia',
+    label: { cs: '🌏 Asie & Pacifik', en: '🌏 Asia-Pacific', ja: '🌏 アジア太平洋' },
+    shortLabel: { cs: '🌏 Asie & Pacifik', en: '🌏 Asia-Pacific', ja: '🌏 アジア' },
+  },
+  'mesprit': {
+    regionCode: 'EMEA',
+    label: { cs: '🇪🇺 Evropa, Blízký východ, Afrika & Indie', en: '🇪🇺 Europe, Middle East, Africa & India (EMEA)', ja: '🇪🇺 欧州・中東・アフリカ・インド' },
+    shortLabel: { cs: '🇪🇺 Evropa & EMEA', en: '🇪🇺 Europe / EMEA', ja: '🇪🇺 欧州・EMEA' },
+  },
+  'azelf': {
+    regionCode: 'Americas',
+    label: { cs: '🌎 Amerika & Grónsko', en: '🌎 Americas & Greenland', ja: '🌎 南北アメリカ・グリーンランド' },
+    shortLabel: { cs: '🌎 Amerika', en: '🌎 Americas', ja: '🌎 アメリカ' },
+  },
+  'kartana': {
+    regionCode: 'North',
+    label: { cs: '🧭 Severní polokoule', en: '🧭 Northern Hemisphere', ja: '🧭 北半球' },
+    shortLabel: { cs: '🧭 Severní polokoule', en: '🧭 Northern Hemisphere', ja: '🧭 北半球' },
+  },
+  'celesteela': {
+    regionCode: 'South',
+    label: { cs: '🧭 Jižní polokoule', en: '🧭 Southern Hemisphere', ja: '🧭 南半球' },
+    shortLabel: { cs: '🧭 Jižní polokoule', en: '🧭 Southern Hemisphere', ja: '🧭 南半球' },
+  }
+};
+
 type FilterTier = 'all' | '5' | 'mega' | '3' | '1';
+type RegionFilter = 'all' | 'EMEA' | 'Asia' | 'Americas';
 
 export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator }) => {
   const [activeFilter, setActiveFilter] = useState<FilterTier>('all');
@@ -211,12 +248,38 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator 
     }
   };
 
-  const filteredBosses = bosses.filter(boss => {
-    if (activeFilter === 'all') return true;
-    if (activeFilter === '5') return boss.tier === '5' || boss.tier === 'shadow-5';
-    if (activeFilter === '3') return boss.tier === '3' || boss.tier === 'shadow-3';
-    if (activeFilter === '1') return boss.tier === '1' || boss.tier === 'shadow-1';
-    return boss.tier === activeFilter;
+  const userRegion = React.useMemo(() => detectUserRegion(), []);
+
+  // Deduplicate and split composite boss names in frontend as safety fallback
+  const processedBosses = React.useMemo(() => {
+    const list: RaidBoss[] = [];
+    const seen = new Set<string>();
+
+    for (const b of bosses) {
+      const subNames = b.name.split(/,|\sand\s|&/i).map(s => s.trim()).filter(Boolean);
+      for (const name of subNames) {
+        const key = `${name.toLowerCase()}-${b.tier}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          list.push({ ...b, name });
+        }
+      }
+    }
+    return list;
+  }, [bosses]);
+
+  const filteredBosses = processedBosses.filter(boss => {
+    // 1. Tier filter
+    let tierMatch = true;
+    if (activeFilter === '5') tierMatch = boss.tier === '5' || boss.tier === 'shadow-5';
+    else if (activeFilter === '3') tierMatch = boss.tier === '3' || boss.tier === 'shadow-3';
+    else if (activeFilter === '1') tierMatch = boss.tier === '1' || boss.tier === 'shadow-1';
+    else if (activeFilter !== 'all') tierMatch = boss.tier === activeFilter;
+
+    if (!tierMatch) return false;
+
+    // 2. Automatically filter regional Pokemon belonging to other regions
+    return isPokemonInUserRegion(boss.name, userRegion);
   });
   const toggleExpandBoss = (name: string, targetEl?: HTMLElement | null) => {
     if (expandedBoss === name) {
@@ -396,7 +459,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator 
         ) : (
           filteredBosses.map((boss, idx) => {
             const isExpanded = expandedBoss === boss.name;
-            const counters = boss.counters;
+            const counters = boss.counters || findRaidCounters(boss.name);
             const uniqueKey = `${boss.name}-${boss.tier}-${idx}`;
             const isInline = isExpanded && inlineBossName === boss.name;
 
@@ -532,12 +595,61 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator 
                        </h3>
 
                        {boss.canBeShiny && (
-                         <div style={{ marginTop: '3px' }}>
+                         <div style={{ marginTop: '3px', display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
                            <span className="shiny-star-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', padding: '1px 5px', fontSize: '0.65rem', borderRadius: '4px', backgroundColor: 'rgba(251, 191, 36, 0.1)', color: '#fbbf24', border: '1px solid rgba(251, 191, 36, 0.2)' }}>
                              <Sparkles size={8} fill="currentColor" stroke="none" /> {lang === 'ja' ? 'ひかる' : 'Shiny'}
                            </span>
+                           {(() => {
+                             const regInfo = REGIONAL_POKEMON[boss.name.toLowerCase()];
+                             if (!regInfo) return null;
+                             return (
+                               <span 
+                                 className="regional-boss-badge"
+                                 style={{
+                                   display: 'inline-flex',
+                                   alignItems: 'center',
+                                   gap: '3px',
+                                   padding: '1px 6px',
+                                   fontSize: '0.65rem',
+                                   fontWeight: 600,
+                                   borderRadius: '4px',
+                                   backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                                   border: '1px solid rgba(96, 165, 250, 0.3)',
+                                   color: '#93c5fd'
+                                 }}
+                               >
+                                 {regInfo.shortLabel[lang] || regInfo.shortLabel.cs}
+                               </span>
+                             );
+                           })()}
                          </div>
                        )}
+
+                       {!boss.canBeShiny && (() => {
+                         const regInfo = REGIONAL_POKEMON[boss.name.toLowerCase()];
+                         if (!regInfo) return null;
+                         return (
+                           <div style={{ marginTop: '3px' }}>
+                             <span 
+                               className="regional-boss-badge"
+                               style={{
+                                 display: 'inline-flex',
+                                 alignItems: 'center',
+                                 gap: '3px',
+                                 padding: '1px 6px',
+                                 fontSize: '0.65rem',
+                                 fontWeight: 600,
+                                 borderRadius: '4px',
+                                 backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                                 border: '1px solid rgba(96, 165, 250, 0.3)',
+                                 color: '#93c5fd'
+                               }}
+                             >
+                               {regInfo.shortLabel[lang] || regInfo.shortLabel.cs}
+                             </span>
+                           </div>
+                         );
+                       })()}
                      </div>
 
                     <div className="boss-right-info" style={{ marginLeft: 'auto', marginRight: '16px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px', textAlign: 'right' }}>

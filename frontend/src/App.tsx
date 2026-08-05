@@ -574,7 +574,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
   }, [visibleEvents, filterType]);
   
   const notificationsHook = useNotifications();
-  const { triggerNotification, notifyNewEvents } = notificationsHook;
+  const { triggerNotification, notifyNewEvents, addInAppNotification } = notificationsHook;
 
   // Poll scraper status every 5 minutes to show last update time
   useEffect(() => {
@@ -816,11 +816,10 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
                 : `${event.name} is starting! Evolve to get the special move!`;
             }
 
-            triggerNotification(
+            addInAppNotification(
               lang === 'cs' ? `🔴 Začal event: ${event.name}` : `🔴 Active Event: ${event.name}`,
               bodyText,
-              event.eventType,
-              event.link
+              event.eventType
             );
             notifiedIds.push(event.eventID);
           }
@@ -833,7 +832,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
     // Delay checking slightly to allow state to settle
     const timeout = setTimeout(checkEventsForNotifications, 2000);
     return () => clearTimeout(timeout);
-  }, [events, triggerNotification, lang]);
+  }, [events, addInAppNotification, lang]);
 
   // Schedule native system notifications reactively
   useEffect(() => {

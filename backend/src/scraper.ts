@@ -221,6 +221,42 @@ export const pokemonMetaDb: Record<string, PokemonMetaInfo> = {
 };
 
 export const raidCountersDb: Record<string, RaidCounters> = {
+  "mesprit": {
+    bossName: "Mesprit",
+    weaknesses: ["Ghost", "Dark", "Bug"],
+    megaCounters: ["Mega Gengar", "Mega Tyranitar", "Mega Houndoom", "Mega Banette"],
+    advancedCounters: ["Hydreigon (Brutal Swing)", "Darkrai (Dark Pulse)", "Giratina Origin (Shadow Ball)", "Tyranitar (Brutal Swing)", "Gengar (Shadow Ball)"],
+    budgetCounters: ["Chandelure (Shadow Ball)", "Weavile (Foul Play)", "Houndoom (Foul Play)", "Gholdengo (Shadow Ball)", "Scizor (X-Scissor)"],
+    minCp: 1669,
+    maxCp: 1747,
+    minBoostedCp: 2087,
+    maxBoostedCp: 2184,
+    weatherBoosts: ["Větrno (Windy)"]
+  },
+  "uxie": {
+    bossName: "Uxie",
+    weaknesses: ["Ghost", "Dark", "Bug"],
+    megaCounters: ["Mega Gengar", "Mega Tyranitar", "Mega Houndoom", "Mega Banette"],
+    advancedCounters: ["Hydreigon (Brutal Swing)", "Darkrai (Dark Pulse)", "Giratina Origin (Shadow Ball)", "Tyranitar (Brutal Swing)", "Gengar (Shadow Ball)"],
+    budgetCounters: ["Chandelure (Shadow Ball)", "Weavile (Foul Play)", "Houndoom (Foul Play)", "Gholdengo (Shadow Ball)", "Scizor (X-Scissor)"],
+    minCp: 1370,
+    maxCp: 1442,
+    minBoostedCp: 1713,
+    maxBoostedCp: 1803,
+    weatherBoosts: ["Větrno (Windy)"]
+  },
+  "azelf": {
+    bossName: "Azelf",
+    weaknesses: ["Ghost", "Dark", "Bug"],
+    megaCounters: ["Mega Gengar", "Mega Tyranitar", "Mega Houndoom", "Mega Banette"],
+    advancedCounters: ["Hydreigon (Brutal Swing)", "Darkrai (Dark Pulse)", "Giratina Origin (Shadow Ball)", "Tyranitar (Brutal Swing)", "Gengar (Shadow Ball)"],
+    budgetCounters: ["Chandelure (Shadow Ball)", "Weavile (Foul Play)", "Houndoom (Foul Play)", "Gholdengo (Shadow Ball)", "Scizor (X-Scissor)"],
+    minCp: 1752,
+    maxCp: 1834,
+    minBoostedCp: 2190,
+    maxBoostedCp: 2293,
+    weatherBoosts: ["Větrno (Windy)"]
+  },
   "larvitar": {
     bossName: "Larvitar",
     weaknesses: ["Water (2x)", "Grass (2x)", "Fighting", "Ground", "Steel", "Ice"],
@@ -2117,11 +2153,37 @@ export async function scrapeEventDetails(eventID: string, link: string, name?: s
 }
 
 function getPokemonIconUrl(name: string): string {
+  if (!name) return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
+
+  const isRegionalForm = /alolan|alola|hisuian|hisui|galarian|galar|paldean|paldea/i.test(name);
+  if (isRegionalForm) {
+    let form = '';
+    if (/alolan|alola/i.test(name)) form = 'alolan';
+    else if (/hisuian|hisui/i.test(name)) form = 'hisuian';
+    else if (/galarian|galar/i.test(name)) form = 'galarian';
+    else if (/paldean|paldea/i.test(name)) form = 'paldean';
+
+    let base = name.toLowerCase()
+      .replace(/alolan|alola|hisuian|hisui|galarian|galar|paldean|paldea/gi, '')
+      .replace(/\s*\([^)]*\)/g, '')
+      .replace(/^shadow\s+/i, '')
+      .replace(/^mega\s+/i, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
+
+    if (base && form) {
+      return `https://img.pokemondb.net/sprites/home/normal/${base}-${form}.png`;
+    }
+  }
+
   const clean = name.toLowerCase()
     .replace(/\s*\([^)]*\)/g, '')
     .replace(/^shadow\s+/i, '')
     .replace(/^mega\s+/i, '')
-    .replace(/[^a-z0-9]/g, '');
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '');
   return `https://img.pokemondb.net/sprites/home/normal/${clean}.png`;
 }
 
@@ -2446,28 +2508,58 @@ export async function scrapeRaidBosses(scrapedEvents?: EventData[]): Promise<Scr
 
     // B. Ensure active event bosses are present in bosses array
     for (const active of activeRaidEvents) {
-      const exists = bosses.some(b => b.tier === active.tier && b.name.toLowerCase().includes(active.bossName.toLowerCase()));
-      if (!exists) {
-        console.log(`[scrapeRaidBosses] Adding active event boss "${active.bossName}" (Tier ${active.tier})`);
-        const matchedCounters = findRaidCounters(active.bossName);
-        bosses.push({
-          name: active.bossName,
-          tier: active.tier,
-          image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${active.bossName.toLowerCase()}.png`,
-          canBeShiny: true,
-          cpRange: matchedCounters ? `${matchedCounters.minCp} - ${matchedCounters.maxCp}` : undefined,
-          boostedCpRange: matchedCounters ? `${matchedCounters.minBoostedCp} - ${matchedCounters.maxBoostedCp}` : undefined,
-          weatherBoosts: matchedCounters?.weatherBoosts,
-          types: undefined,
-          counters: matchedCounters
-        });
+      // Split composite names like "Uxie, Mesprit, and Azelf" into individual names
+      const individualNames = active.bossName.split(/,|\sand\s|&/i).map(s => s.trim()).filter(Boolean);
+
+      for (const singleName of individualNames) {
+        const exists = bosses.some(b => b.tier === active.tier && (
+          b.name.toLowerCase() === singleName.toLowerCase() ||
+          b.name.toLowerCase().includes(singleName.toLowerCase())
+        ));
+        if (!exists) {
+          console.log(`[scrapeRaidBosses] Adding active event boss "${singleName}" (Tier ${active.tier})`);
+          const matchedCounters = findRaidCounters(singleName);
+          bosses.push({
+            name: singleName,
+            tier: active.tier,
+            image: getPokemonIconUrl(singleName),
+            canBeShiny: true,
+            cpRange: matchedCounters ? `${matchedCounters.minCp} - ${matchedCounters.maxCp}` : undefined,
+            boostedCpRange: matchedCounters ? `${matchedCounters.minBoostedCp} - ${matchedCounters.maxBoostedCp}` : undefined,
+            weatherBoosts: matchedCounters?.weatherBoosts,
+            types: undefined,
+            counters: matchedCounters
+          });
+        }
       }
     }
   } catch (err: any) {
     console.warn(`[scrapeRaidBosses] Error syncing with active events: ${err.message}`);
   }
 
-  return bosses;
+  // C. Final Cleanup & Deduplication: Expand composite names and remove duplicates
+  const finalBosses: ScrapedRaidBoss[] = [];
+  const seenKeys = new Set<string>();
+
+  for (const boss of bosses) {
+    // Split any leftover composite names (e.g. "Uxie, Mesprit, and Azelf")
+    const subNames = boss.name.split(/,|\sand\s|&/i).map(s => s.trim()).filter(Boolean);
+    for (const subName of subNames) {
+      const key = `${subName.toLowerCase()}-${boss.tier}`;
+      if (!seenKeys.has(key)) {
+        seenKeys.add(key);
+        const matchedCounters = findRaidCounters(subName);
+        finalBosses.push({
+          ...boss,
+          name: subName,
+          image: getPokemonIconUrl(subName),
+          counters: matchedCounters || boss.counters
+        });
+      }
+    }
+  }
+
+  return finalBosses;
 }
 
 export async function scrapeRocketLineups(): Promise<{

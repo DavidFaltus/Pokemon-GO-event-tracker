@@ -1,102 +1,125 @@
-# 🎮 Pokémon GO Event Tracker
+# 🎮 Pokémon GO Event Tracker & Mobile App
 
-> Přehledná webová a mobilní aplikace pro sledování aktivních eventů, raidů, hnízdění Pokémonů a dalších herních informací z Pokémon GO v reálném čase.
+> Přehledná webová a nativní mobilní aplikace (Android) pro sledování aktivních eventů, raidů, Team GO Rocket, hnízdění Pokémonů a dalších herních informací z Pokémon GO v reálném čase.
 
 [![Deploy](https://img.shields.io/badge/Live-pogoevents.app-brightgreen?style=flat-square&logo=firebase)](https://pogoevents.app)
-[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/DavidFaltus/Pokemon-GO-event-tracker/deploy.yml?style=flat-square&label=CI%2FCD)](https://github.com/DavidFaltus/Pokemon-GO-event-tracker/actions)
-![TypeScript](https://img.shields.io/badge/TypeScript-6.0-blue?style=flat-square&logo=typescript)
+[![Release](https://img.shields.io/github/v/release/DavidFaltus/Pokemon-GO-event-tracker?style=flat-square&logo=github&color=blue)](https://github.com/DavidFaltus/Pokemon-GO-event-tracker/releases)
+[![Build & Release APK](https://img.shields.io/github/actions/workflow/status/DavidFaltus/Pokemon-GO-event-tracker/release-apk.yml?style=flat-square&label=Android%20APK%20Build)](https://github.com/DavidFaltus/Pokemon-GO-event-tracker/actions)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=flat-square&logo=typescript)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)
+![Capacitor](https://img.shields.io/badge/Capacitor-8-119EFF?style=flat-square&logo=capacitor)
 
 ---
 
-## ✨ Funkce
+## ✨ Hlavní funkce
 
-- **📅 Přehled eventů** – Aktuálně aktivní a nadcházející eventy s přesnými časy zahájení a ukončení.
-- **⚔️ Raidy** – Seznam aktivních raid bossů s doporučenými countery a hodnocením.
-- **🏅 Žebříček Pokémonů (PVE Ranking)** – Pokémoni seřazeni podle PVE výkonu s ideálními útoky a statistikami. Na mobilech a tabletech lze karty rozbalit kliknutím.
-- **🥚 Hnízdění & Líhnutí** – Přehled, kde se aktuálně líhnou a hnízdí vybraní Pokémoni.
-- **🚀 Team GO Rocket** – Aktuální složení lídrů Rocketů a Grunts s tipy pro porážku.
-- **🔔 Notifikace** – Nastavitelné push notifikace na začátek eventů (mobilní verze).
-- **🌍 Vícejazyčnost** – Podpora češtiny a angličtiny.
+* **📅 Přehled eventů v reálném čase** – Živé odpočty (Community Days, Raid Hours, Spotlight Hours, Max Mondays, Rocket Takeovers) s přesným časem začátku a konce.
+* **⚔️ Raidy & Doporučené counters (5★, Mega, 3★, 1★ & Shadow)** – Detailní přehled aktivních raid bossů s 100% IV CP rozpětím (základní i weather boosted), indikátorem Shiny formy, PoGO Hub hodnocením a vybranými týmy (Mega, Advanced, Budget).
+* **🌍 Automatická detekce regionálních Pokémonů** – Aplikace automaticky podle polohy/časové zóny uživatele (např. EMEA / Evropa) zobrazí místního regionálního raid bossa (např. *Mesprit*) a cizí regionální bossy (*Uxie*, *Azelf*) automaticky skryje. U všech událostí navíc zobrazuje přehledné regionální odznaky.
+* **🚀 Team GO Rocket & Shadow Pokémoni** – Kompletní průvodce pro porážku lídrů (Cliff, Arlo, Sierra, Giovanni) a Gruntů vč. aktivních Shadow odměn a slabostí.
+* **💜 Ditto maskování & 🥚 Líhnutí z vajec** – Aktuální seznam Pokémonů, za které se maskuje Ditto, a kompletní přehled líhnutí z 2km, 5km, 7km, 10km a 12km vajec.
+* **🏅 PVE & PVP Žebříčky Pokémonů** – Přehledný žebříček nejlepších útočníků s doporučenými rychlými i nabíjecími útoky a přímým generátorem vyhledávacích řetězců (Filter Generator).
+* **📸 Generátor infografik** – Export vysoce kvalitních tématických obrázků (PNG) pro Raid Hours, Community Days, Spotlight Hours a Rocket Takeovers pro snadné sdílení v komunitě.
+* **🔔 Mobilní pozadí & Přesné notifikace (Android)** – Přesné nativní notifikace s vysokou prioritou chráněné proti Doze módu (pomocí `allowWhileIdle` přesných alarmů), které upozorní na nadcházející eventy i při vypnuté aplikaci.
+* **📌 Plovoucí widget (Android Overlay Service)** – Podpora přenosného plovoucího okna přes systémové rozhraní Androidu pro rychlé sledování statistik přímo při hraní Pokémon GO.
+
+---
+
+## 📲 Ke stažení (Android APK)
+
+Nejnovější přeloženou verzi mobilní aplikace pro Android (vyžaduje Android 8.0+) si můžete stáhnout přímo z [GitHub Releases](https://github.com/DavidFaltus/Pokemon-GO-event-tracker/releases):
+
+* 📦 **[PokeGO-Event-Tracker.apk](https://github.com/DavidFaltus/Pokemon-GO-event-tracker/releases/latest)** – Automaticky sestavovaný Android balíček vytvořený přes GitHub Actions.
 
 ---
 
 ## 🖥️ Technologický stack
 
-| Vrstva | Technologie |
-|---|---|
-| Frontend | React 19, TypeScript 6, Vite |
-| Styling | Vanilla CSS (dark mode, glassmorphism, HSL palettes) |
-| Mobilní app | Capacitor 8 (Android) |
-| Hosting | Firebase Hosting |
-| CI/CD | GitHub Actions |
-| Backend | Node.js + TypeScript |
+| Vrstva | Technologie | Popis |
+|---|---|---|
+| **Frontend** | React 19, TypeScript, Next.js (SSG Export) | Rychlý, SEO-optimalizovaný a plně responzivní frontend |
+| **Design** | Vanilla CSS (Dark Glassmorphism) | HSL schémata, gradients, mikroanimace, záře |
+| **Mobilní app** | Capacitor 8 (Android) | Nativní propojení WebView a systémových služeb Androidu |
+| **Backend / Scraper** | Node.js, Express, Axios, Cheerio | Scraper běžící na Cloud Run se záložním Bingbot user-agentem |
+| **Hosting** | Firebase Hosting (`pogoevents.app`) | CDN distribuce webové aplikace s clean-URLs |
+| **CI/CD** | GitHub Actions | Automatické nasazení na Firebase a build GitHub Releases (APK) |
 
 ---
 
-## 📁 Struktura repozitáře
+## 📁 Architektura projektu
 
 ```
-├── pogo-tracker-web/        # Webová verze (Firebase Hosting)
-│   ├── frontend/            # React/Vite frontend
-│   └── backend/             # Node.js API server
+├── frontend/                # Sdílený React/Next.js frontend & Capacitor Android app
+│   ├── src/                 # Komponenty, háčky, databáze a pomocné utility
+│   │   ├── components/      # UI komponenty (RaidView, EventCard, RocketGuide, atd.)
+│   │   ├── data/            # Databáze útoků, counterů, hodnocení a překladů
+│   │   └── utils/           # Resolver obrázků (Unsplash/PogoAssets/PokemonDB) a regionů
+│   ├── android/             # Nativní Android projekt (Capacitor + Java Overlay plugin)
+│   └── package.json         # Skripty pro build webu (npm run build:deploy) i Androidu (npm run build:android)
 │
-├── pogo-tracker-new/        # Mobilní verze (Capacitor / Android)
-│   ├── frontend/            # React/Vite frontend + Capacitor
-│   └── android/             # Nativní Android projekt
+├── backend/                 # API server a Cloud Run scraper
+│   ├── src/scraper.ts       # HTTP Scraper pro LeekDuck, PoGOHub a Niantic News
+│   └── custom_events.json   # Ruční a záložní databáze událostí
 │
-└── .github/workflows/       # CI/CD (GitHub Actions → GitHub Pages)
+└── .github/workflows/       # CI/CD Workflows
+    ├── deploy.yml           # Automatické nasazení webu na Firebase Hosting
+    └── release-apk.yml      # Automatický build Android APK & GitHub Release při pushnutí tagu (v*)
 ```
 
 ---
 
-## 🚀 Spuštění lokálně
+## 🚀 Lokální spuštění a Vývoj
 
-### Webová verze
+### 1. Webová verze (`frontend`)
 
 ```bash
-cd pogo-tracker-web/frontend
+cd frontend
 npm install
 npm run dev
 ```
 
-### Mobilní verze (Android)
+Aplikace poběží lokálně na `http://localhost:3000`.
+
+### 2. Sestavení pro Android (`frontend/android`)
 
 ```bash
-cd pogo-tracker-new/frontend
+cd frontend
 npm install
-npm run android:sync   # Build + Capacitor sync
-# Poté otevřete android/ v Android Studio
+npm run build:android    # Zkompiluje Next.js a synchronizuje webové assety do Capacitor Androidu
 ```
 
-### Backend (API server)
+Následně otevřete složku `frontend/android/` v **Android Studiu** a spusťte build nebo vytvořte APK soubor.
+
+### 3. Backend & Scraper (`backend`)
 
 ```bash
-cd pogo-tracker-web/backend
+cd backend
 npm install
 npm run dev
 ```
 
 ---
 
-## 🌐 Live verze
+## 🔄 Automatické vydávání verzí (CI/CD Releases)
 
-| Platforma | URL |
-|---|---|
-| Web App | [pogoevents.app](https://pogoevents.app) |
+Projekt používá plně automatizované sestavení GitHub Release balíčků podle vzoru `v*`:
+
+Pro vydání nové verze aplikace stačí vytvořit a odeslat git tag:
+
+```bash
+git tag -a v1.0.0 -m "Release v1.0.0 - Notifikace, automatické regiony a opravy spritů"
+git push origin main --tags
+```
+
+GitHub Actions workflow `.github/workflows/release-apk.yml` automaticky:
+1. Nainstaluje závislosti a zkompiluje produkční frontend.
+2. Synchronizuje Capacitor Android projekt.
+3. Pomocí Gradle a JDK 21 sestaví balíček `PokeGO-Event-Tracker.apk`.
+4. Vytvoří nový **GitHub Release** na repozitáři a přiloží hotový `.apk` ke stažení.
 
 ---
 
-## 📱 Responzivní design
+## 📝 Licence & Autorská práva
 
-Aplikace je plně přizpůsobena pro tři typy zařízení:
-
-- **📱 Mobilní telefony** – Jednosloupcový layout, spodní navigační panel, kolaps statistik v žebříčku.
-- **💻 Tablety** – Dvou/třísloupcový grid, rozložení optimalizované pro dotyk.
-- **🖥️ Desktop** – Plný layout s postranními panely, statistiky zobrazeny vždy.
-
----
-
-## 📝 Licence
-
-Tento projekt je určen pouze pro osobní a nekomerční použití. Pokémon GO a veškeré související ochranné známky jsou majetkem společností Niantic a Nintendo.
+Tento projekt je určen pro komunita a osobní nekomerční použití. 
+Pokémon GO a veškeré související názvy, grafika a ochranné známky jsou majetkem společností **Niantic, Inc.**, **The Pokémon Company** a **Nintendo**.

@@ -79,6 +79,34 @@ export function useNotifications() {
     }
   }, []);
 
+  // Helper to ensure notification channels exist on Android (required for background notifications)
+  const ensureNotificationChannels = async () => {
+    if (!isNative) return;
+    try {
+      // @ts-ignore
+      const { LocalNotifications } = await import(/* @vite-ignore */ CAPACITOR_NOTIF_PKG);
+      await LocalNotifications.createChannel({
+        id: 'events',
+        name: 'Pokémon GO Události / Events',
+        description: 'Upozornění na začínající události v Pokémon GO a 30minutové připomínky',
+        importance: 5,
+        visibility: 1,
+        vibration: true,
+      });
+
+      await LocalNotifications.createChannel({
+        id: 'new-events',
+        name: 'Nové události / New Events',
+        description: 'Upozornění při přidání nových událostí do kalendáře',
+        importance: 4,
+        visibility: 1,
+        vibration: true,
+      });
+    } catch (e) {
+      console.error("Failed to create notification channels:", e);
+    }
+  };
+
   // Check notification permission on load
   useEffect(() => {
     const checkNotificationPermission = async () => {
@@ -89,6 +117,9 @@ export function useNotifications() {
           const perm = await LocalNotifications.checkPermissions();
           const mapped = perm.display === 'granted' ? 'granted' : perm.display === 'denied' ? 'denied' : 'default';
           setPermission(mapped);
+          if (mapped === 'granted') {
+            await ensureNotificationChannels();
+          }
         } catch (e) {
           console.error("Capacitor checkPermissions failed:", e);
         }
@@ -130,6 +161,9 @@ export function useNotifications() {
       const resp = await LocalNotifications.requestPermissions();
       const mapped = resp.display === 'granted' ? 'granted' : resp.display === 'denied' ? 'denied' : 'default';
       setPermission(mapped);
+      if (mapped === 'granted') {
+        await ensureNotificationChannels();
+      }
       return resp.display === 'granted';
     } catch (e) {
       console.error("Chyba při žádosti o povolení notifikací", e);
@@ -397,11 +431,19 @@ export function useNotifications() {
         }
       }
 
+      // Ensure channels exist before scheduling
+      await ensureNotificationChannels();
+
       // Step 3: Schedule batch
       if (toSchedule.length > 0) {
-        await LocalNotifications.schedule({ notifications: toSchedule });
+        // Map allowWhileIdle for exact alarm wakeup in Android Doze mode
+        const formattedSchedule = toSchedule.map(n => ({
+          ...n,
+          schedule: { ...n.schedule, allowWhileIdle: true }
+        }));
+        await LocalNotifications.schedule({ notifications: formattedSchedule });
         console.log(
-          `[Notifications] Scheduled ${toSchedule.length} notifications` +
+          `[Notifications] Scheduled ${formattedSchedule.length} notifications` +
           ` for ${Object.keys(newScheduledMap).length} upcoming events`
         );
       }
@@ -413,6 +455,19 @@ export function useNotifications() {
       console.error("scheduleEventNotifications failed:", e);
     }
   }, [permission, preferences, shouldNotifyForType]);
+
+  const addInAppNotification = useCallback((title: string, body: string, type: string) => {
+    if (!shouldNotifyForType(type)) return;
+    const newNotif: InAppNotification = {
+      id: Math.random().toString(36).substring(2, 9),
+      title,
+      body,
+      timestamp: new Date(),
+      read: false,
+      type
+    };
+    setInAppNotifications(prev => [newNotif, ...prev].slice(0, 50));
+  }, [shouldNotifyForType]);
 
   const markAllAsRead = () => {
     setInAppNotifications(prev => prev.map(n => ({ ...n, read: true })));
@@ -434,6 +489,7 @@ export function useNotifications() {
     triggerNotification,
     notifyNewEvents,
     scheduleEventNotifications,
+    addInAppNotification,
     markAllAsRead,
     clearNotifications,
     togglePreference

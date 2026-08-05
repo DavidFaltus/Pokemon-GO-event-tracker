@@ -212,7 +212,30 @@ export function getPokemonIconUrl(name: string, isShiny?: boolean): string {
   }
 
   const isMegaOrPrimal = /mega|primal/i.test(name);
+  const isRegionalForm = /alolan|alola|hisuian|hisui|galarian|galar|paldean|paldea/i.test(name);
   const folder = isShiny ? 'shiny' : 'normal';
+
+  // If it's a Regional form (Alolan, Hisuian, Galarian, Paldean), PokemonDB provides the form sprite (e.g. samurott-hisuian, marowak-alolan)
+  if (isRegionalForm) {
+    let form = '';
+    if (/alolan|alola/i.test(name)) form = 'alolan';
+    else if (/hisuian|hisui/i.test(name)) form = 'hisuian';
+    else if (/galarian|galar/i.test(name)) form = 'galarian';
+    else if (/paldean|paldea/i.test(name)) form = 'paldean';
+
+    let base = baseName.toLowerCase()
+      .replace(/alolan|alola|hisuian|hisui|galarian|galar|paldean|paldea/gi, '')
+      .replace(/^shadow\s+/i, '')
+      .replace(/^mega\s+/i, '')
+      .replace(/\s*\(.*?\)\s*/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
+
+    if (base && form) {
+      return `https://img.pokemondb.net/sprites/home/${folder}/${base}-${form}.png`;
+    }
+  }
 
   // If it's a Mega or Primal form, PokemonDB provides the exact 3D home sprite for form variations (e.g. blaziken-mega, charizard-mega-x, groudon-primal)
   if (isMegaOrPrimal) {

@@ -6,6 +6,7 @@ import type { Language } from '../data/translations';
 import { resolveImage, handlePokemonImageError, getBasePokemonNames } from '../utils/imageResolver';
 import { getPokemonImage } from '../data/specialEvents';
 import { getPokemonName } from '../utils/pokemonTranslator';
+import { getRegionalInfo } from '../utils/regionalHelper';
 import { API_BASE_URL } from '../config';
 import { formatEventDateRange } from './MaxInfographic';
 import './RaidInfographic.css';
@@ -222,6 +223,15 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
                       )}
                     </div>
                     <span className="raid-multi-boss-name">{getPokemonName(boss.name, lang)}</span>
+                    {(() => {
+                      const regInfo = getRegionalInfo(boss.name);
+                      if (!regInfo) return null;
+                      return (
+                        <span style={{ fontSize: '0.62rem', padding: '1px 5px', borderRadius: '4px', backgroundColor: 'rgba(59, 130, 246, 0.2)', color: '#93c5fd', marginTop: '2px', display: 'inline-block' }}>
+                          {regInfo.shortLabel[lang] || regInfo.shortLabel.cs}
+                        </span>
+                      );
+                    })()}
                     {boss.canBeShiny && (
                       <span className="raid-multi-shiny-tag">✨ Shiny</span>
                     )}
