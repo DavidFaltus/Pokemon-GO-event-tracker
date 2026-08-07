@@ -18,6 +18,15 @@ export const MultiBossAvatar: React.FC<MultiBossAvatarProps> = ({
   const extracted = extractEventPokemonNames({ name: eventName, eventType, extraData: { bosses } });
   const namesList = extracted.slice(0, 3);
 
+  const isDynamax = (eventType || '').toLowerCase().includes('max-monday') ||
+                    (eventType || '').toLowerCase().includes('max-battle') ||
+                    (eventType || '').toLowerCase().includes('dynamax') ||
+                    (eventType || '').toLowerCase().includes('gigantamax') ||
+                    (eventName || '').toLowerCase().includes('max monday') ||
+                    (eventName || '').toLowerCase().includes('max battle') ||
+                    (eventName || '').toLowerCase().includes('dynamax') ||
+                    (eventName || '').toLowerCase().includes('gigantamax');
+
   // Fallback if no Pokemon species found in event title or extraData
   if (namesList.length === 0) {
     const fallbackUrl = resolveImage(undefined, eventType, eventName);
@@ -37,6 +46,62 @@ export const MultiBossAvatar: React.FC<MultiBossAvatarProps> = ({
   if (namesList.length === 1) {
     const pokeName = namesList[0];
     const iconUrl = getPokemonIconUrl(pokeName);
+
+    if (isDynamax) {
+      return (
+        <div
+          className="dynamax-avatar-wrapper"
+          style={{
+            position: 'relative',
+            width: `${size}px`,
+            height: `${size}px`,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(236, 72, 153, 0.45) 0%, rgba(15, 23, 42, 0.9) 100%)',
+            border: '2px solid #ec4899',
+            boxShadow: '0 0 14px rgba(236, 72, 153, 0.8), 0 0 24px rgba(217, 70, 239, 0.6)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0
+          }}
+          title={`${pokeName} (Dynamax)`}
+        >
+          <img
+            src={iconUrl}
+            alt={pokeName}
+            width={size}
+            height={size}
+            style={{
+              width: '90%',
+              height: '90%',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 0 6px rgba(244, 63, 94, 0.9))'
+            }}
+            onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, pokeName)}
+          />
+          <span
+            style={{
+              position: 'absolute',
+              bottom: '-2px',
+              right: '-2px',
+              background: 'linear-gradient(135deg, #ec4899, #d946ef)',
+              color: '#ffffff',
+              fontSize: '9px',
+              fontWeight: 800,
+              padding: '1px 4px',
+              borderRadius: '6px',
+              border: '1px solid rgba(255, 255, 255, 0.7)',
+              boxShadow: '0 2px 5px rgba(0, 0, 0, 0.5)',
+              lineHeight: 1,
+              letterSpacing: '0.5px'
+            }}
+          >
+            MAX
+          </span>
+        </div>
+      );
+    }
+
     return (
       <img
         src={iconUrl}
@@ -82,12 +147,15 @@ export const MultiBossAvatar: React.FC<MultiBossAvatarProps> = ({
               transform: 'translateY(-50%)',
               width: `${spriteSize}px`,
               height: `${spriteSize}px`,
-              // Reverse zIndex so first Pokemon sits cleanly on top and doesn't get covered!
               zIndex: namesList.length - idx,
               borderRadius: '50%',
-              background: 'rgba(15, 23, 42, 0.75)',
-              border: '1.5px solid rgba(245, 158, 11, 0.5)',
-              boxShadow: '0 4px 10px rgba(0, 0, 0, 0.6)',
+              background: isDynamax
+                ? 'radial-gradient(circle, rgba(236, 72, 153, 0.45) 0%, rgba(15, 23, 42, 0.85) 100%)'
+                : 'rgba(15, 23, 42, 0.75)',
+              border: isDynamax ? '1.5px solid #ec4899' : '1.5px solid rgba(245, 158, 11, 0.5)',
+              boxShadow: isDynamax
+                ? '0 0 10px rgba(236, 72, 153, 0.7), 0 4px 10px rgba(0, 0, 0, 0.6)'
+                : '0 4px 10px rgba(0, 0, 0, 0.6)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -101,7 +169,8 @@ export const MultiBossAvatar: React.FC<MultiBossAvatarProps> = ({
                 width: '100%',
                 height: '100%',
                 objectFit: 'contain',
-                padding: '2px'
+                padding: '2px',
+                filter: isDynamax ? 'drop-shadow(0 0 4px rgba(244, 63, 94, 0.8))' : 'none'
               }}
               onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, pokeName)}
             />
