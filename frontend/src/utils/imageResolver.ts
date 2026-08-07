@@ -356,6 +356,25 @@ export function resolveImage(url: string | undefined, eventType?: string, name?:
     return getPokemonIconUrl(name, true);
   }
 
+  // SPECIAL EXCEPTION: Spotlight Hours, Community Days, Max Battles / Max Mondays:
+  // Replace placeholder/Unsplash images (photo-1503095396549, photo-1526726538690, max-battles-kanto.jpg) with Pokemon sprite photo
+  if (name) {
+    const baseName = getBasePokemonName(name);
+    const knownNames = getBasePokemonNames();
+    const hasKnownPokemon = knownNames.some(kn => name.toLowerCase().includes(kn.toLowerCase()) || (baseName && baseName.toLowerCase().includes(kn.toLowerCase())));
+
+    const lowerType = (eventType || '').toLowerCase();
+    const lowerUrl = (url || '').toLowerCase();
+
+    const isSpecialEvent = lowerType.includes('spotlight') || lowerType.includes('community') || lowerType.includes('max-monday') || lowerType.includes('max-battle') || lowerType.includes('dynamax') || lowerType.includes('gigantamax') ||
+                           lowerUrl.includes('spotlight') || lowerUrl.includes('community') || lowerUrl.includes('max-battle') || lowerUrl.includes('max-monday') ||
+                           lowerUrl.includes('photo-1503095396549') || lowerUrl.includes('photo-1526726538690') || lowerUrl.includes('max-battles-kanto');
+
+    if (isSpecialEvent && hasKnownPokemon && baseName) {
+      return getPokemonIconUrl(name, isShiny);
+    }
+  }
+
   if (!url) {
     return getFallbackImage(eventType, name, isShiny);
   }
@@ -459,14 +478,17 @@ export function getFallbackImage(eventType?: string, name?: string, isShiny?: bo
 
 /**
  * Returns the exact header avatar sprite URL for an event card.
- * For Spotlight Hours, Community Days, Max Mondays, and Raids, returns the Pokémon sprite photo.
+ * For Spotlight Hours, Community Days, Max Mondays/Battles, and Raids, returns the Pokémon sprite photo.
  */
 export function getEventHeaderAvatar(event: { eventType?: string; name?: string; image?: string; extraData?: any }, bosses?: any[]): string {
   const type = (event.eventType || '').toLowerCase();
   const name = event.name || '';
+  const imgUrl = (event.image || '').toLowerCase();
 
-  // 1. Spotlight Hours, Community Days, Max Mondays: return featured Pokemon sprite
-  if (type.includes('spotlight') || type.includes('community') || type.includes('max-monday') || type.includes('dynamax') || type.includes('gigantamax')) {
+  // 1. Spotlight Hours, Community Days, Max Mondays / Max Battles:
+  if (type.includes('spotlight') || type.includes('community') || type.includes('max-monday') || type.includes('max-battle') || type.includes('dynamax') || type.includes('gigantamax') ||
+      imgUrl.includes('spotlight') || imgUrl.includes('community') || imgUrl.includes('max-battle') || imgUrl.includes('photo-1503095396549') || imgUrl.includes('photo-1526726538690') || imgUrl.includes('max-battles-kanto')) {
+    
     let pName = event.extraData?.spotlight?.name || event.extraData?.communityday?.name || event.extraData?.communityday?.featuredPokemon;
     if (!pName) {
       pName = getBasePokemonName(name);
@@ -497,4 +519,3 @@ export function getEventHeaderAvatar(event: { eventType?: string; name?: string;
   // 3. Fallback to standard resolveImage for other event types
   return resolveImage(event.image, event.eventType, event.name);
 }
-
