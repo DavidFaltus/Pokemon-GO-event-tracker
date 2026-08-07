@@ -1,5 +1,6 @@
 import React from 'react';
-import { extractEventPokemonNames, getPokemonIconUrl, handlePokemonImageError, resolveImage } from '../utils/imageResolver';
+import { extractEventPokemonNames, handlePokemonImageError, resolveImage } from '../utils/imageResolver';
+import { getPokemonImage } from '../data/specialEvents';
 
 interface MultiBossAvatarProps {
   bosses?: any[];
@@ -45,7 +46,7 @@ export const MultiBossAvatar: React.FC<MultiBossAvatarProps> = ({
   // Single Pokemon event (Spotlight Hour, Community Day, Max Monday, Single Raid Boss)
   if (namesList.length === 1) {
     const pokeName = namesList[0];
-    const iconUrl = getPokemonIconUrl(pokeName);
+    const iconUrl = getPokemonImage(pokeName);
 
     if (isDynamax) {
       return (
@@ -79,25 +80,6 @@ export const MultiBossAvatar: React.FC<MultiBossAvatarProps> = ({
             }}
             onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, pokeName)}
           />
-          <span
-            style={{
-              position: 'absolute',
-              bottom: '-2px',
-              right: '-2px',
-              background: 'linear-gradient(135deg, #ec4899, #d946ef)',
-              color: '#ffffff',
-              fontSize: '9px',
-              fontWeight: 800,
-              padding: '1px 4px',
-              borderRadius: '6px',
-              border: '1px solid rgba(255, 255, 255, 0.7)',
-              boxShadow: '0 2px 5px rgba(0, 0, 0, 0.5)',
-              lineHeight: 1,
-              letterSpacing: '0.5px'
-            }}
-          >
-            MAX
-          </span>
         </div>
       );
     }
@@ -134,7 +116,7 @@ export const MultiBossAvatar: React.FC<MultiBossAvatarProps> = ({
       title={namesList.join(', ')}
     >
       {namesList.map((pokeName, idx) => {
-        const iconUrl = getPokemonIconUrl(pokeName);
+        const iconUrl = getPokemonImage(pokeName);
         const leftOffset = idx * stepOffset;
 
         return (
