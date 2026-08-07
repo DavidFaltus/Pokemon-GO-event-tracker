@@ -112,6 +112,15 @@ export function getBasePokemonName(name: string): string {
 
   // Remove common phrases like "in Mega Raids", "in Raids", etc.
   baseName = baseName
+    .replace(/^max\s+monday:\s*/gi, '')
+    .replace(/^max\s+battles:\s*/gi, '')
+    .replace(/^spotlight\s+hour:\s*/gi, '')
+    .replace(/^community\s+day:\s*/gi, '')
+    .replace(/^raid\s+hour:\s*/gi, '')
+    .replace(/^raid\s+day:\s*/gi, '')
+    .replace(/^dynamax\s+/gi, '')
+    .replace(/^gigantamax\s+/gi, '')
+    .replace(/^g-max\s+/gi, '')
     .replace(/\s+in\s+mega\s+raids?/gi, '')
     .replace(/\s+in\s+shadow\s+raids?/gi, '')
     .replace(/\s+in\s+raids?/gi, '')
@@ -125,10 +134,6 @@ export function getBasePokemonName(name: string): string {
     .replace(/\s+max\s+monday/gi, '')
     .replace(/\s+takeover/gi, '')
     .replace(/\s+classic/gi, '')
-    .replace(/^raid\s+hour:\s*/gi, '')
-    .replace(/^raid\s+day:\s*/gi, '')
-    .replace(/^spotlight\s+hour:\s*/gi, '')
-    .replace(/^community\s+day:\s*/gi, '')
     .trim();
 
   const knownNames = getBasePokemonNames();
@@ -152,7 +157,7 @@ export function getBasePokemonName(name: string): string {
 
   // Fallback to manual cleaning regexes if not found in database
   baseName = baseName.replace(/\s*\(.*?\)\s*/g, ' ').trim();
-  baseName = baseName.replace(/^Shadow\s+/i, '').replace(/^Apex\s+/i, '').trim();
+  baseName = baseName.replace(/^Shadow\s+/i, '').replace(/^Apex\s+/i, '').replace(/^Dynamax\s+/i, '').replace(/^Gigantamax\s+/i, '').replace(/^G-Max\s+/i, '').trim();
 
   return baseName.trim();
 }
