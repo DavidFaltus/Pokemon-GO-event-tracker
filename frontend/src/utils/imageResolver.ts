@@ -356,24 +356,18 @@ export function resolveImage(url: string | undefined, eventType?: string, name?:
     return getPokemonIconUrl(name, true);
   }
 
-  // SPECIAL EXCEPTION: Spotlight Hours, Community Days, Max Battles / Max Mondays:
-  // Replace placeholder/Unsplash images (photo-1503095396549, photo-1526726538690, max-battles-kanto.jpg) with Pokemon sprite photo
+  // CRITICAL RULE: If a Pokemon name is present in the event (Spotlight, Community Day, Max Monday, Raids, etc.),
+  // ALWAYS FIRST point to the Pokemon's sprite photo! NEVER return Unsplash/placeholder backgrounds initially!
   if (name) {
     const baseName = getBasePokemonName(name);
     const knownNames = getBasePokemonNames();
     const hasKnownPokemon = knownNames.some(kn => name.toLowerCase().includes(kn.toLowerCase()) || (baseName && baseName.toLowerCase().includes(kn.toLowerCase())));
 
-    const lowerType = (eventType || '').toLowerCase();
-    const lowerUrl = (url || '').toLowerCase();
-
-    const isSpecialEvent = lowerType.includes('spotlight') || lowerType.includes('community') || lowerType.includes('max-monday') || lowerType.includes('max-battle') || lowerType.includes('dynamax') || lowerType.includes('gigantamax') ||
-                           lowerUrl.includes('spotlight') || lowerUrl.includes('community') || lowerUrl.includes('max-battle') || lowerUrl.includes('max-monday') ||
-                           lowerUrl.includes('photo-1503095396549') || lowerUrl.includes('photo-1526726538690') || lowerUrl.includes('max-battles-kanto');
-
-    if (isSpecialEvent && hasKnownPokemon && baseName) {
+    if (hasKnownPokemon && baseName) {
       return getPokemonIconUrl(name, isShiny);
     }
   }
+
 
   if (!url) {
     return getFallbackImage(eventType, name, isShiny);
