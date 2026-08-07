@@ -15,6 +15,49 @@ interface FilterGeneratorViewProps {
   initialRaidBoss?: string;
 }
 
+// Set of 5-Star Legendary Raid Bosses and Mega/Primal Raid Bosses Only
+const LEGENDARY_5STAR_AND_MEGAS = new Set<string>([
+  // 5-Star Legendaries & Mythicals
+  'Palkia', 'Dialga', 'Rayquaza', 'Mewtwo', 'Giratina', 'Kyogre', 'Groudon',
+  'Reshiram', 'Zekrom', 'Heatran', 'Darkrai', 'Necrozma', 'Kyurem', 'Regigigas',
+  'Regirock', 'Regice', 'Registeel', 'Raikou', 'Entei', 'Suicune', 'Lugia',
+  'Ho-Oh', 'Latios', 'Latias', 'Cobalion', 'Terrakion', 'Virizion', 'Tornadus',
+  'Thundurus', 'Landorus', 'Xerneas', 'Yveltal', 'Tapu Koko', 'Tapu Lele',
+  'Tapu Bulu', 'Tapu Fini', 'Zacian', 'Zamazenta', 'Nihilego', 'Buzzwole',
+  'Pheromosa', 'Xurkitree', 'Celesteela', 'Kartana', 'Guzzlord', 'Blacephalon',
+  'Stakataka', 'Deoxys', 'Genesect', 'Keldeo', 'Meloetta',
+
+  // Megas & Primals
+  'Mega Rayquaza', 'Mega Charizard Y', 'Mega Charizard X', 'Mega Lucario',
+  'Mega Garchomp', 'Mega Tyranitar', 'Mega Gardevoir', 'Mega Alakazam',
+  'Mega Gengar', 'Mega Blaziken', 'Mega Swampert', 'Mega Sceptile',
+  'Mega Aerodactyl', 'Mega Lopunny', 'Mega Salamence', 'Mega Latios',
+  'Mega Latias', 'Mega Aggron', 'Mega Steelix', 'Mega Scizor',
+  'Mega Houndoom', 'Mega Ampharos', 'Mega Manectric', 'Mega Gyarados',
+  'Mega Venusaur', 'Mega Blastoise', 'Mega Pinsir', 'Mega Heracross',
+  'Mega Beedrill', 'Mega Pidgeot', 'Mega Kangaskhan', 'Mega Banette',
+  'Mega Abomasnow', 'Mega Slowbro', 'Mega Medicham', 'Mega Glalie',
+  'Mega Diancie', 'Primal Kyogre', 'Primal Groudon',
+  'Lopunny', 'Charizard', 'Lucario', 'Garchomp', 'Tyranitar', 'Gardevoir',
+  'Alakazam', 'Gengar', 'Blaziken', 'Swampert', 'Sceptile', 'Aerodactyl',
+  'Salamence', 'Aggron', 'Steelix', 'Scizor', 'Houndoom', 'Ampharos',
+  'Manectric', 'Gyarados', 'Venusaur', 'Blastoise', 'Pinsir', 'Heracross',
+  'Beedrill', 'Pidgeot', 'Kangaskhan', 'Banette', 'Abomasnow', 'Slowbro',
+  'Medicham', 'Glalie', 'Diancie'
+]);
+
+function is5StarOrMegaBoss(name: string): boolean {
+  if (!name) return false;
+  const clean = name.replace(/^(shadow|mega|primal)\s+/, '').trim().toLowerCase();
+  for (const item of LEGENDARY_5STAR_AND_MEGAS) {
+    const itemClean = item.replace(/^(shadow|mega|primal)\s+/, '').trim().toLowerCase();
+    if (clean === itemClean || clean.includes(itemClean) || itemClean.includes(clean)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
   lang,
   events = [],
@@ -36,26 +79,23 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
     return getRecommendedMegaForEvents(events);
   }, [events]);
 
-  // Extract ALL active and scheduled Raid Bosses from events list
+  // Extract STRICTLY ONLY 5-Star Legendary and Mega Raid Bosses from current events schedule
   const currentRaidBosses = useMemo(() => {
     const set = new Set<string>();
 
     if (events && events.length > 0) {
       events.forEach(e => {
-        // Extract from all raid-related event types (raid-battles, raid-hour, mega-raid, max-monday, max-battle)
         const isRaidEvent =
           (e.eventType || '').toLowerCase().includes('raid') ||
-          (e.eventType || '').toLowerCase().includes('max') ||
+          (e.eventType || '').toLowerCase().includes('mega') ||
           (e.heading || '').toLowerCase().includes('raid') ||
-          (e.name || '').toLowerCase().includes('raid') ||
-          (e.name || '').toLowerCase().includes('max monday');
+          (e.name || '').toLowerCase().includes('raid');
 
         if (isRaidEvent) {
           const bossesList = [
             e.extraData?.raidbattles?.bosses,
             (e.extraData as any)?.raids,
-            (e.extraData as any)?.bosses,
-            (e.extraData as any)?.maxbattles?.bosses
+            (e.extraData as any)?.bosses
           ];
 
           bossesList.forEach(list => {
@@ -64,7 +104,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
                 const rawName = typeof b === 'string' ? b : b?.name;
                 if (rawName) {
                   const base = getBasePokemonName(rawName);
-                  if (base && base !== 'Raid Boss' && base !== 'Max Boss') {
+                  if (base && is5StarOrMegaBoss(base)) {
                     set.add(base);
                   }
                 }
@@ -72,23 +112,30 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
             }
           });
 
-          // Also clean name from event title
           const titleBase = getBasePokemonName(e.name);
-          if (titleBase && titleBase !== 'Raid Boss' && titleBase !== 'Max Boss' && titleBase.length > 2) {
+          if (titleBase && titleBase.length > 2 && is5StarOrMegaBoss(titleBase)) {
             set.add(titleBase);
           }
         }
       });
     }
 
-    // Default popular active legendaries if dataset doesn't have events loaded
+    // Default 5-Star Legendaries and Megas if dataset does not have active raid events loaded
+    const default5StarAndMegas = [
+      'Palkia', 'Dialga', 'Necrozma', 'Rayquaza', 'Groudon', 'Kyogre',
+      'Reshiram', 'Zekrom', 'Mewtwo', 'Giratina', 'Heatran', 'Darkrai',
+      'Charizard', 'Lopunny', 'Lucario', 'Tyranitar', 'Garchomp', 'Gardevoir'
+    ];
+
     if (set.size === 0) {
-      ['Palkia', 'Dialga', 'Necrozma', 'Rayquaza', 'Groudon', 'Kyogre', 'Charizard', 'Baxcalibur'].forEach(b => set.add(b));
+      default5StarAndMegas.forEach(b => set.add(b));
     }
 
     if (initialRaidBoss) {
       const baseInit = getBasePokemonName(initialRaidBoss);
-      if (baseInit) set.add(baseInit);
+      if (baseInit && is5StarOrMegaBoss(baseInit)) {
+        set.add(baseInit);
+      }
     }
 
     return Array.from(set).filter(Boolean);
@@ -179,10 +226,10 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
         if (lang === 'en') return 'Suggestions:';
         return 'Našeptávač:';
       case 'current_bosses_header':
-        if (lang === 'ja') return '現在開催中のイベントのレイドボス:';
-        if (lang === 'ru') return 'Рейд-боссы в текущих активных событиях:';
-        if (lang === 'en') return 'Raid bosses in current active events:';
-        return 'Raid bossové v probíhajících událostech & rotaci:';
+        if (lang === 'ja') return '現在開催中のレイドボス (5★＆メガ):';
+        if (lang === 'ru') return 'Рейд-боссы в текущей ротации (только 5★ и Мега):';
+        if (lang === 'en') return 'Raid bosses in current rotation (5★ & Mega Raids only):';
+        return 'Raid bossové v aktuální rotaci (pouze 5★ a Mega Raidy):';
       case 'counters_showcase_header':
         if (lang === 'ja') return 'おすすめ対策ポケモン:';
         if (lang === 'ru') return 'Рекомендуемые покемоны-контрники:';
@@ -312,7 +359,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
           </div>
         )}
 
-        {/* Current Active Events Raid Bosses Section */}
+        {/* Current Active Events Raid Bosses Section (STRICTLY 5-Star & Megas Only) */}
         <div className="filter-boss-section-header">
           <Sparkles size={14} style={{ color: 'var(--accent-purple, #a855f7)' }} />
           <span>{getText('current_bosses_header')}</span>
