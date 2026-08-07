@@ -2,12 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import './FilterGeneratorView.css';
 import type { Language } from '../data/translations';
 import type { EventData } from './EventCard';
-import { getTopCountersByName, getCounterTypesForName } from '../utils/pokemonCountersHelper';
+import { getTopCountersForPokemonDetailed, getCounterTypesForName } from '../utils/pokemonCountersHelper';
 import { handlePokemonImageError, getPokemonIconUrl } from '../utils/imageResolver';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { pokemonRankings } from '../data/pokemonRankings';
 import { getRecommendedMegaForEvents } from '../utils/megaFilterHelper';
-import { Copy, Check, Search, Filter, Zap, Sparkles, Dna } from 'lucide-react';
+import { Copy, Check, Search, Filter, Zap, Sparkles, Dna, ShieldCheck } from 'lucide-react';
 
 interface FilterGeneratorViewProps {
   lang: Language;
@@ -82,8 +82,15 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
       .slice(0, 10);
   }, [selectedBoss, allRaidBosses]);
 
-  const topCounters = useMemo(() => {
-    return getTopCountersByName(selectedBoss, 20);
+  // Detailed Top Counters algorithm considering BOTH Offensive SE AND Defensive NVE Resistance (Task #3)
+  const topCountersDetailed = useMemo(() => {
+    const clean = selectedBoss.toLowerCase().replace(/^(shadow|mega|primal)\s+/, '').trim();
+    const targetPoke = pokemonRankings.find(p => p.name.toLowerCase().includes(clean)) || {
+      name: selectedBoss, pokedexId: 483, types: ['Dragon', 'Steel'], attack: 275, defense: 211, stamina: 205, maxCp: 4565, pveScore: 90, dps: 25,
+      bestFastMove: { name: 'Dragon Breath', type: 'Dragon' }, bestChargedMove: { name: 'Draco Meteor', type: 'Dragon' }
+    };
+
+    return getTopCountersForPokemonDetailed(targetPoke, pokemonRankings, 12);
   }, [selectedBoss]);
 
   const counterTypes = useMemo(() => {
@@ -91,8 +98,8 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
   }, [selectedBoss]);
 
   const searchFilterString = useMemo(() => {
-    if (topCounters.length === 0) return '';
-    const uniqueIds = Array.from(new Set(topCounters.map(c => c.pokedexId)));
+    if (topCountersDetailed.length === 0) return '';
+    const uniqueIds = Array.from(new Set(topCountersDetailed.map(c => c.pokemon.pokedexId)));
     const parts: string[] = ['3*,4*'];
 
     if (counterTypes.length > 0) {
@@ -102,7 +109,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
 
     parts.push(uniqueIds.join(','));
     return parts.join('&');
-  }, [topCounters, counterTypes]);
+  }, [topCountersDetailed, counterTypes]);
 
   const handleCopyRaid = () => {
     if (!searchFilterString) return;
@@ -150,6 +157,11 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
         if (lang === 'ru') return 'Рейд-боссы в предстоящих событиях:';
         if (lang === 'en') return 'Raid bosses in upcoming events & popular:';
         return 'Raid bossové v nadcházejících událostech & populární:';
+      case 'counters_showcase_header':
+        if (lang === 'ja') return 'おすすめ対策ポケモン (効果ばつぐん + 耐性NVE優先):';
+        if (lang === 'ru') return 'Рекомендуемые покемоны (Супер-эффективные + Защита NVE):';
+        if (lang === 'en') return 'Top Recommended Counters (Super Effective + NVE Resistance):';
+        return 'Top Doporučení Counterři (Super Effective + Odolnost vůči bossu NVE):';
       case 'filter_output':
         if (lang === 'ja') return 'レイド対策検索フィルター';
         if (lang === 'ru') return 'Фильтр контр-покемонов';
@@ -250,6 +262,41 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
             </button>
           ))}
         </div>
+
+        {/* Recommended Counters Showcase Grid with Defensive Resistance Badges (Task #3) */}
+        {topCountersDetailed.length > 0 && (
+          <div className="filter-counters-showcase">
+            <div className="counters-showcase-header">
+              <ShieldCheck size={16} style={{ color: 'var(--accent-purple, #a855f7)' }} />
+              <span>{getText('counters_showcase_header')}</span>
+            </div>
+            <div className="counters-showcase-grid">
+              {topCountersDetailed.map(c => (
+                <div key={c.pokemon.name} className={`counter-card-mini ${c.defensiveRating}`}>
+                  <div className="counter-sprite-wrapper">
+                    <img
+                      src={getPokemonIconUrl(c.pokemon.name)}
+                      alt={c.pokemon.name}
+                      className="counter-sprite-img"
+                      onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, c.pokemon.name)}
+                    />
+                  </div>
+                  <div className="counter-card-meta">
+                    <strong className="counter-poke-name">{getPokemonName(c.pokemon.name, lang)}</strong>
+                    <span className="counter-move-badge">⚔️ {c.pokemon.bestChargedMove.name}</span>
+                    <span className={`counter-def-badge ${c.defensiveRating}`}>
+                      {c.defensiveRating === 'resistant'
+                        ? (lang === 'cs' ? '🛡️ Odolný (NVE)' : '🛡️ Resists (NVE)')
+                        : c.defensiveRating === 'vulnerable'
+                        ? (lang === 'cs' ? '⚠️ Zranitelný' : '⚠️ Weak')
+                        : (lang === 'cs' ? '⚔️ Neutrální' : '⚔️ Neutral')}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="filter-output-card">
@@ -327,4 +374,3 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
     </div>
   );
 };
-

@@ -151,27 +151,150 @@
 }
 
 .filter-boss-chip-btn.active {
-  background: linear-gradient(135deg, #a855f7, #7c3aed);
-  color: #ffffff;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(124, 58, 237, 0.3));
   border-color: #a855f7;
-  font-weight: 700;
-  box-shadow: 0 3px 12px rgba(168, 85, 247, 0.4);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
 }
 
-/* Output Card */
+/* Counters Showcase Grid with Defensive Resistance Badges (Task #3) */
+.filter-counters-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 14px;
+  margin-top: 6px;
+}
+
+.counters-showcase-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary, #ffffff);
+}
+
+.counters-showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 10px;
+}
+
+.counter-card-mini {
+  background: rgba(22, 27, 44, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.counter-card-mini.resistant {
+  border-color: rgba(34, 197, 94, 0.4);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(15, 23, 42, 0.8));
+}
+
+.counter-card-mini.vulnerable {
+  border-color: rgba(244, 63, 94, 0.3);
+  background: linear-gradient(135deg, rgba(244, 63, 94, 0.05), rgba(15, 23, 42, 0.8));
+}
+
+.counter-card-mini:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.counter-sprite-wrapper {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.7);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.counter-sprite-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.counter-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.counter-poke-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary, #ffffff);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.counter-move-badge {
+  font-size: 0.73rem;
+  color: #c084fc;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.counter-def-badge {
+  font-size: 0.70rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.counter-def-badge.resistant {
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.counter-def-badge.neutral {
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.counter-def-badge.vulnerable {
+  background: rgba(244, 63, 94, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(244, 63, 94, 0.25);
+}
+
+/* Filter Output Card */
 .filter-output-card {
-  background: linear-gradient(145deg, rgba(24, 20, 38, 0.95), rgba(18, 15, 30, 0.8));
-  border: 1px solid rgba(168, 85, 247, 0.35);
+  background: rgba(22, 27, 44, 0.85);
+  border: 1px solid rgba(168, 85, 247, 0.3);
   border-radius: 16px;
   padding: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 30px rgba(168, 85, 247, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), 0 0 20px rgba(168, 85, 247, 0.1);
 }
 
 .filter-output-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
   gap: 12px;
   flex-wrap: wrap;
 }
@@ -179,24 +302,23 @@
 .filter-output-title-wrapper {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .header-pokemon-avatar {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
-  filter: drop-shadow(0 2px 6px rgba(168, 85, 247, 0.4));
 }
 
 .filter-output-title {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--text-primary, #ffffff);
 }
 
 .filter-copy-action-btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 6px;
   background: linear-gradient(135deg, #a855f7, #7c3aed);
@@ -305,5 +427,3 @@
   align-items: center;
   gap: 6px;
 }
-
-

@@ -24,6 +24,48 @@ export function isLegacyMove(moveName: string): boolean {
   return LEGACY_MOVES.has(cleanName) || moveName.includes('*');
 }
 
+// ─── POKEMON GO TYPE EFFECTIVENESS MATRIX ───────────────────────────────────
+// Attacker Type -> Defender Type -> Multiplier
+// 1.6 = Super Effective (SE)
+// 0.625 = Not Very Effective (NVE)
+// 0.39 = Double Resistance / Immunity (NVE 2x)
+export const TYPE_CHART: Record<string, Record<string, number>> = {
+  Normal:   { Rock: 0.625, Ghost: 0.39, Steel: 0.625 },
+  Fire:     { Fire: 0.625, Water: 0.625, Grass: 1.6, Ice: 1.6, Bug: 1.6, Rock: 0.625, Dragon: 0.625, Steel: 1.6 },
+  Water:    { Fire: 1.6, Water: 0.625, Grass: 0.625, Ground: 1.6, Rock: 1.6, Dragon: 0.625 },
+  Grass:    { Fire: 0.625, Water: 1.6, Grass: 0.625, Poison: 0.625, Ground: 1.6, Flying: 0.625, Bug: 0.625, Rock: 1.6, Dragon: 0.625, Steel: 0.625 },
+  Electric: { Water: 1.6, Grass: 0.625, Electric: 0.625, Ground: 0.39, Flying: 1.6, Dragon: 0.625 },
+  Ice:      { Fire: 0.625, Water: 0.625, Grass: 1.6, Ice: 0.625, Ground: 1.6, Flying: 1.6, Dragon: 1.6, Steel: 0.625 },
+  Fighting: { Normal: 1.6, Ice: 1.6, Poison: 0.625, Flying: 0.625, Psychic: 0.625, Bug: 0.625, Rock: 1.6, Ghost: 0.39, Dark: 1.6, Steel: 1.6, Fairy: 0.625 },
+  Poison:   { Grass: 1.6, Poison: 0.625, Ground: 0.625, Rock: 0.625, Ghost: 0.625, Steel: 0.39, Fairy: 1.6 },
+  Ground:   { Fire: 1.6, Electric: 1.6, Grass: 0.625, Poison: 1.6, Flying: 0.39, Bug: 0.625, Rock: 1.6, Steel: 1.6 },
+  Flying:   { Grass: 1.6, Electric: 0.625, Fighting: 1.6, Bug: 1.6, Rock: 0.625, Steel: 0.625 },
+  Psychic:  { Fighting: 1.6, Poison: 1.6, Psychic: 0.625, Dark: 0.39, Steel: 0.625 },
+  Bug:      { Fire: 0.625, Grass: 1.6, Fighting: 0.625, Poison: 0.625, Flying: 0.625, Psychic: 1.6, Ghost: 0.625, Dark: 1.6, Steel: 0.625, Fairy: 0.625 },
+  Rock:     { Fire: 1.6, Ice: 1.6, Fighting: 0.625, Ground: 0.625, Flying: 1.6, Bug: 1.6, Steel: 0.625 },
+  Ghost:    { Normal: 0.39, Psychic: 1.6, Ghost: 1.6, Dark: 0.625 },
+  Dragon:   { Dragon: 1.6, Steel: 0.625, Fairy: 0.39 },
+  Dark:     { Fighting: 0.625, Psychic: 1.6, Ghost: 1.6, Dark: 0.625, Fairy: 0.625 },
+  Steel:    { Fire: 0.625, Water: 0.625, Electric: 0.625, Ice: 1.6, Rock: 1.6, Steel: 0.625, Fairy: 1.6 },
+  Fairy:    { Fire: 0.625, Fighting: 1.6, Poison: 0.625, Dragon: 1.6, Dark: 1.6, Steel: 0.625 }
+};
+
+export function getSingleTypeMultiplier(attackType: string, defenderType: string): number {
+  if (!attackType || !defenderType) return 1.0;
+  const map = TYPE_CHART[attackType];
+  if (!map) return 1.0;
+  return map[defenderType] ?? 1.0;
+}
+
+export function getCombinedDamageMultiplier(attackType: string, defenderTypes: string[]): number {
+  if (!defenderTypes || defenderTypes.length === 0) return 1.0;
+  let mult = 1.0;
+  defenderTypes.forEach(dType => {
+    mult *= getSingleTypeMultiplier(attackType, dType);
+  });
+  return mult;
+}
+
 // ─── TYPE WEAKNESS CHART ───────────────────────────────────────────────────
 // Type -> Array of types that deal Super Effective damage to it (1.6x)
 const TYPE_WEAKNESSES: Record<string, string[]> = {
@@ -76,14 +118,58 @@ export function getCounterTypes(types: string[]): CounterTypeInfo[] {
   return result.sort((a, b) => b.multiplier - a.multiplier);
 }
 
+// ─── DEFENSIVE MATCHUP SCORING ──────────────────────────────────────────────
+// Calculates how resistant a candidate attacker is to the Boss's STAB move types.
+// Reward counters that RESIST the boss's attacks (NVE) and penalize counters that are WEAK to the boss!
+export function calculateDefensiveMatchup(
+  attackerTypes: string[],
+  bossTypes: string[]
+): { defensiveMultiplier: number; defensiveRating: 'resistant' | 'neutral' | 'vulnerable'; defensiveLabel: string } {
+  if (!attackerTypes || attackerTypes.length === 0 || !bossTypes || bossTypes.length === 0) {
+    return { defensiveMultiplier: 1.0, defensiveRating: 'neutral', defensiveLabel: '⚔️ Neutral' };
+  }
+
+  // Calculate damage from each of boss's types to candidate attacker
+  const damageFromBoss = bossTypes.map(bType => getCombinedDamageMultiplier(bType, attackerTypes));
+  const maxDamageFromBoss = Math.max(...damageFromBoss);
+  const minDamageFromBoss = Math.min(...damageFromBoss);
+
+  // 1. Excellent Defensive Matchup (Attacker RESISTS or IMMUNIZES boss attacks, NVE <= 0.625x)
+  if (minDamageFromBoss <= 0.65 || maxDamageFromBoss <= 0.65) {
+    return {
+      defensiveMultiplier: 1.35, // 35% score boost for resistant tank counters!
+      defensiveRating: 'resistant',
+      defensiveLabel: '🛡️ Odolný vůči bossu (NVE)'
+    };
+  }
+
+  // 2. Vulnerable / Glass Matchup (Boss deals Super Effective damage back to attacker, SE >= 1.6x)
+  if (maxDamageFromBoss >= 1.5) {
+    return {
+      defensiveMultiplier: 0.70, // 30% penalty so glass counters don't obscure tanky counters!
+      defensiveRating: 'vulnerable',
+      defensiveLabel: '⚠️ Zranitelný vůči bossu'
+    };
+  }
+
+  // 3. Neutral Matchup
+  return {
+    defensiveMultiplier: 1.0,
+    defensiveRating: 'neutral',
+    defensiveLabel: '⚔️ Neutrální obrana'
+  };
+}
+
 // ─── TOP COUNTERS FOR A POKEMON ─────────────────────────────────────────────
 export interface CounterPokemonInfo {
   pokemon: PokemonRankData;
-  counterRating: number; // DPS / PVE score relative ranking
+  counterRating: number; // Combined offensive DPS + defensive resistance rating
   effectiveType: string;
+  defensiveRating: 'resistant' | 'neutral' | 'vulnerable';
+  defensiveLabel: string;
 }
 
-export function getTopCountersForPokemon(
+export function getTopCountersForPokemonDetailed(
   targetPokemon: PokemonRankData,
   allRankings: PokemonRankData[],
   limit: number = 20
@@ -98,21 +184,30 @@ export function getTopCountersForPokemon(
     return primaryCounterTypeNames.has(p.bestChargedMove.type);
   });
 
-  // Sort candidates by pveScore * multiplier
+  // Score candidates considering BOTH offensive weakness AND defensive resistance (TODO.txt Task #3)
   const scored = candidates.map(poke => {
     const counterInfo = counterTypes.find(c => c.type === poke.bestChargedMove.type);
-    const mult = counterInfo ? counterInfo.multiplier : 1.6;
-    const counterRating = Math.round(poke.pveScore * (mult / 1.6));
+    const offensiveMult = counterInfo ? counterInfo.multiplier : 1.6;
+
+    // Calculate defensive resistance matchup (Boss -> Attacker)
+    const defMatchup = calculateDefensiveMatchup(poke.types, targetPokemon.types);
+
+    // Combined score = Base PVE Score * Offensive Multiplier * Defensive Multiplier
+    const counterRating = Math.round(poke.pveScore * (offensiveMult / 1.6) * defMatchup.defensiveMultiplier);
+
     return {
       pokemon: poke,
       counterRating,
-      effectiveType: poke.bestChargedMove.type
+      effectiveType: poke.bestChargedMove.type,
+      defensiveRating: defMatchup.defensiveRating,
+      defensiveLabel: defMatchup.defensiveLabel
     };
   });
 
+  // Sort candidates by combined score (Resistant & SE counters move to top!)
   scored.sort((a, b) => b.counterRating - a.counterRating);
 
-  // Take top unique species up to limit (including Megas, Shadows, Legendaries, and Budget options)
+  // Take top unique species up to limit
   const topList: CounterPokemonInfo[] = [];
   const usedDex = new Set<number>();
 
@@ -127,6 +222,14 @@ export function getTopCountersForPokemon(
   return topList;
 }
 
+export function getTopCountersForPokemon(
+  targetPokemon: PokemonRankData,
+  allRankings: PokemonRankData[],
+  limit: number = 20
+): CounterPokemonInfo[] {
+  return getTopCountersForPokemonDetailed(targetPokemon, allRankings, limit);
+}
+
 // ─── TOP 5 MOVESETS FOR A POKEMON ───────────────────────────────────────────
 export interface MovesetOption {
   fastMove: MoveData & { isLegacy?: boolean };
@@ -138,11 +241,9 @@ export interface MovesetOption {
 export function getTopMovesetsForPokemon(poke: PokemonRankData): MovesetOption[] {
   const baseDps = poke.dps || 25.0;
 
-  // Alternate move options based on type and species
   const fastPrimary = poke.bestFastMove;
   const chargedPrimary = poke.bestChargedMove;
 
-  // Fallback / complementary moves
   const secondaryType = poke.types[1] || poke.types[0];
   
   const fastOptions: MoveData[] = [
@@ -181,7 +282,6 @@ export function getTopMovesetsForPokemon(poke: PokemonRankData): MovesetOption[]
   return result;
 }
 
-// Helper helpers for generating representative move names
 function primaryOrSecondaryType(poke: PokemonRankData, index: number): string {
   if (index === 1 && poke.types[1]) return poke.types[1];
   if (index === 2 && poke.types[0]) return poke.types[0];
