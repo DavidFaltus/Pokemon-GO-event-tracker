@@ -97,7 +97,7 @@ export function getBasePokemonName(name: string): string {
     baseName = baseName.split(' / ')[0].trim();
   }
 
-  // Remove common phrases like "in Mega Raids", "in Raids", etc.
+  // Remove common phrases like "in Mega Raids", "in Raids", "during Max Monday", etc.
   baseName = baseName
     .replace(/^max\s+monday:\s*/gi, '')
     .replace(/^max\s+battles:\s*/gi, '')
@@ -108,6 +108,9 @@ export function getBasePokemonName(name: string): string {
     .replace(/^dynamax\s+/gi, '')
     .replace(/^gigantamax\s+/gi, '')
     .replace(/^g-max\s+/gi, '')
+    .replace(/\s+during\s+max\s+monday/gi, '')
+    .replace(/\s+during\s+max\s+battles?/gi, '')
+    .replace(/\s+during/gi, '')
     .replace(/\s+in\s+mega\s+raids?/gi, '')
     .replace(/\s+in\s+shadow\s+raids?/gi, '')
     .replace(/\s+in\s+raids?/gi, '')
@@ -540,9 +543,14 @@ export function extractEventPokemonNames(event: { name?: string; eventType?: str
     }
   });
 
-  // 4. Scan event name against all known Pokemon species in database
+  // 4. Scan event name using getBasePokemonName and known species list
   const name = event.name || '';
   if (name) {
+    const baseFromTitle = getBasePokemonName(name);
+    if (baseFromTitle) {
+      addName(baseFromTitle);
+    }
+
     const known = getBasePokemonNames();
     const lowerName = name.toLowerCase();
 
