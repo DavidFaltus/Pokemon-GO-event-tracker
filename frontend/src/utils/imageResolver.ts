@@ -212,30 +212,7 @@ export function getPokemonIconUrl(name: string, isShiny?: boolean): string {
   }
 
   const isMegaOrPrimal = /mega|primal/i.test(name);
-  const isRegionalForm = /alolan|alola|hisuian|hisui|galarian|galar|paldean|paldea/i.test(name);
   const folder = isShiny ? 'shiny' : 'normal';
-
-  // If it's a Regional form (Alolan, Hisuian, Galarian, Paldean), PokemonDB provides the form sprite (e.g. samurott-hisuian, marowak-alolan)
-  if (isRegionalForm) {
-    let form = '';
-    if (/alolan|alola/i.test(name)) form = 'alolan';
-    else if (/hisuian|hisui/i.test(name)) form = 'hisuian';
-    else if (/galarian|galar/i.test(name)) form = 'galarian';
-    else if (/paldean|paldea/i.test(name)) form = 'paldean';
-
-    let base = baseName.toLowerCase()
-      .replace(/alolan|alola|hisuian|hisui|galarian|galar|paldean|paldea/gi, '')
-      .replace(/^shadow\s+/i, '')
-      .replace(/^mega\s+/i, '')
-      .replace(/\s*\(.*?\)\s*/g, '')
-      .trim()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9-]/g, '');
-
-    if (base && form) {
-      return `https://img.pokemondb.net/sprites/home/${folder}/${base}-${form}.png`;
-    }
-  }
 
   // If it's a Mega or Primal form, PokemonDB provides the exact 3D home sprite for form variations (e.g. blaziken-mega, charizard-mega-x, groudon-primal)
   if (isMegaOrPrimal) {
@@ -268,14 +245,9 @@ export function getPokemonIconUrl(name: string, isShiny?: boolean): string {
     return `https://img.pokemondb.net/sprites/home/${folder}/${formClean}.png`;
   }
 
-  // Standard non-mega/primal Pokemon: Gen 1-5 (pokedexId < 650) use ZeChrales 4KB PogoAssets icon
+  // Standard non-mega/primal Pokemon: try PokeAPI Pokedex ID home sprite first
   const pokedexId = getPokedexIdByName(baseName);
   if (pokedexId) {
-    if (pokedexId < 650) {
-      const padId = pokedexId.toString().padStart(3, '0');
-      const shinySuffix = isShiny ? '_shiny' : '';
-      return `https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/pokemon_icons/pokemon_icon_${padId}_00${shinySuffix}.png`;
-    }
     const homeFolder = isShiny ? 'home/shiny' : 'home';
     return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/${homeFolder}/${pokedexId}.png`;
   }
@@ -320,19 +292,30 @@ export function handlePokemonImageError(img: HTMLImageElement, name: string, isS
     let formClean = /primal/i.test(name) ? `${base}-primal` : `${base}-mega${suffix}`;
     formClean = formClean.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     const folder = isShiny ? 'shiny' : 'normal';
-    img.src = `https://img.pokemondb.net/sprites/home/${folder}/${formClean}.png`;
-    return;
+    const formUrl = `https://img.pokemondb.net/sprites/home/${folder}/${formClean}.png`;
+
+    if (img.src !== formUrl) {
+      img.src = formUrl;
+      return;
+    }
   }
 
   const pokedexId = getPokedexIdByName(baseName) || getPokedexIdByName(name);
 
-  // Fallback Step 2: PokeAPI Home 3D Sprite (Shiny / Normal)
+  // Fallback Step 2: Base Pokemon Sprite (ZeChrales PogoAssets for Gen 1-5 or PokeAPI Home 3D)
   if (pokedexId && !img.getAttribute('data-fb-home')) {
     img.setAttribute('data-fb-home', 'true');
-    const folder = isShiny ? 'home/shiny' : 'home';
-    img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/${folder}/${pokedexId}.png`;
+    if (pokedexId < 650) {
+      const padId = pokedexId.toString().padStart(3, '0');
+      const shinySuffix = isShiny ? '_shiny' : '';
+      img.src = `https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/pokemon_icons/pokemon_icon_${padId}_00${shinySuffix}.png`;
+    } else {
+      const folder = isShiny ? 'home/shiny' : 'home';
+      img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/${folder}/${pokedexId}.png`;
+    }
     return;
   }
+
 
   // Fallback Step 3: PokemonDB Home Normal/Shiny Sprite
   if (!img.getAttribute('data-fb-db')) {
@@ -431,9 +414,9 @@ export function resolveImage(url: string | undefined, eventType?: string, name?:
     if (lowerUrl.includes('mega-default') || (eventType && eventType.toLowerCase().includes('mega'))) {
       return 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop'; // Abstract energetic swirl
     }
-    
-    // Safety fallback for any other leekduck event image path
-    return getFallbackImage(eventType, name, isShiny);
+    if (lowerUrl.includes('events-default-img') || lowerUrl.includes('default')) {
+      return 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop'; // Colorful abstract design
+    }
   }
 
   return url;

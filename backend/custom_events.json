@@ -465,5 +465,72 @@
     },
     "isDeleted": false,
     "isCustom": false
+  },
+  {
+    "eventID": "raidhour20260902",
+    "name": "Regirock, Regice, and Registeel Raid Hour",
+    "eventType": "raid-hour",
+    "heading": "Raid Hour",
+    "link": "https://pokemongolive.com/post/regirock-regice-and-registeel-raid-hour-2026/",
+    "officialLink": "https://pokemongolive.com/post/regirock-regice-and-registeel-raid-hour-2026/",
+    "secondaryLink": "",
+    "image": "https://cdn.leekduck.com/assets/img/events/raidhour.jpg",
+    "icon": "",
+    "start": "2026-09-02T16:00:00.000Z",
+    "end": "2026-09-02T17:00:00.000Z",
+    "extraData": {
+      "generic": {
+        "hasSpawns": false,
+        "hasFieldResearchTasks": false
+      },
+      "raidbattles": {
+        "bosses": [
+          {
+            "name": "Regice",
+            "canBeShiny": true
+          },
+          {
+            "name": "Regirock",
+            "canBeShiny": true
+          },
+          {
+            "name": "Registeel",
+            "canBeShiny": true
+          }
+        ]
+      },
+      "raids": [
+        {
+          "name": "Regice",
+          "canBeShiny": true
+        },
+        {
+          "name": "Regirock",
+          "canBeShiny": true
+        },
+        {
+          "name": "Registeel",
+          "canBeShiny": true
+        }
+      ],
+      "bosses": [
+        {
+          "name": "Regice",
+          "canBeShiny": true
+        },
+        {
+          "name": "Regirock",
+          "canBeShiny": true
+        },
+        {
+          "name": "Registeel",
+          "canBeShiny": true
+        }
+      ],
+      "rawDescription": "Raid Hour",
+      "iconUrl": ""
+    },
+    "isDeleted": false,
+    "isCustom": false
   }
 ]

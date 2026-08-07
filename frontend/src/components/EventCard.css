@@ -171,7 +171,10 @@ body.light-mode .modal-close-btn {
   padding: 2px 4px;
   border-radius: 4px;
   text-transform: uppercase;
+  z-index: 10;
+  pointer-events: none;
 }
+
 
 .status-pill.active {
   background-color: rgba(16, 185, 129, 0.95);

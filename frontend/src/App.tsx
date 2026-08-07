@@ -23,6 +23,8 @@ const DittoEggsView = lazy(() => import('./components/DittoEggsView').then(m => 
 const PokemonRankingsView = lazy(() => import('./components/PokemonRankingsView').then(m => ({ default: m.PokemonRankingsView })));
 const FilterGeneratorView = lazy(() => import('./components/FilterGeneratorView').then(m => ({ default: m.FilterGeneratorView })));
 const AdminPanelView = lazy(() => import('./components/AdminPanelView').then(m => ({ default: m.AdminPanelView })));
+const MonthSummaryInfographic = lazy(() => import('./components/MonthSummaryInfographic').then(m => ({ default: m.MonthSummaryInfographic })));
+
 
 type TabType = 'events' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin';
 
@@ -335,7 +337,10 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
   const [filterType, setFilterType] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'active' | 'upcoming'>('active');
   const [viewMode, setViewMode] = useState<'list' | 'timeline'>('list');
+  const [showMonthSummary, setShowMonthSummary] = useState<boolean>(false);
+  const [monthSummaryInitialOffset, setMonthSummaryInitialOffset] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
+
   const [_apiStatus, setApiStatus] = useState<'success' | 'fallback'>('fallback');
   const [scraperStatus, setScraperStatus] = useState<{
     lastScrapedAt: string | null;
@@ -1156,13 +1161,12 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
                   <div className="tab-content events-tab">
                     <h1 className="tab-seo-title">{t.tabs_events}</h1>
                     <p className="tab-seo-description">{t.seo_events_desc}</p>
-                    {/* Active / Upcoming Status Tabs */}
+                    {/* Active / Upcoming / Next Month Summary Status Tabs (Split in thirds) */}
                     {viewMode !== 'timeline' && (
                       <div className="status-tabs-container">
                         <button 
                           className={`status-tab-btn ${statusFilter === 'active' ? 'active' : ''}`}
                           onClick={() => setStatusFilter('active')}
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                         >
                           <Play size={14} fill="currentColor" stroke="none" />
                           {lang === 'cs' ? 'Probíhá' : 'Active'}
@@ -1170,10 +1174,20 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
                         <button 
                           className={`status-tab-btn ${statusFilter === 'upcoming' ? 'active' : ''}`}
                           onClick={() => setStatusFilter('upcoming')}
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                         >
                           <Clock size={14} />
                           {lang === 'cs' ? 'Připravuje se' : 'Upcoming'}
+                        </button>
+                        <button 
+                          className="status-tab-btn infographic-tab-btn"
+                          onClick={() => {
+                            setMonthSummaryInitialOffset(1);
+                            setShowMonthSummary(true);
+                          }}
+                          title={lang === 'cs' ? 'Zobrazit souhrnnou infografiku na příští měsíc' : 'View next month summary infographic'}
+                        >
+                          <Sparkles size={14} />
+                          {lang === 'cs' ? 'Souhrn na příští měsíc' : lang === 'ja' ? '来月のサマリー' : lang === 'ru' ? 'Сводка на следующий месяц' : 'Next Month Summary'}
                         </button>
                       </div>
                     )}
@@ -1227,6 +1241,18 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
                     )}
                   </div>
                 )}
+
+                {showMonthSummary && (
+                  <Suspense fallback={null}>
+                    <MonthSummaryInfographic
+                      events={getAdjustedEvents()}
+                      lang={lang}
+                      initialOffset={monthSummaryInitialOffset}
+                      onClose={() => setShowMonthSummary(false)}
+                    />
+                  </Suspense>
+                )}
+
 
                 {activeTab === 'raid' && (
                   <div className="tab-content raid-tab">

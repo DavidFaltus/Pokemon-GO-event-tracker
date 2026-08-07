@@ -100,7 +100,8 @@ export const MultiBossAvatar: React.FC<MultiBossAvatarProps> = ({
               transform: 'translateY(-50%)',
               width: `${spriteSize}px`,
               height: `${spriteSize}px`,
-              zIndex: namesList.length - idx,
+              zIndex: idx + 1,
+
               borderRadius: '50%',
               background: 'rgba(15, 23, 42, 0.75)',
               border: '1.5px solid rgba(245, 158, 11, 0.5)',

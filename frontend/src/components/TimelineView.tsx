@@ -428,9 +428,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
           events={events}
           lang={lang}
           targetDate={viewDate}
+          initialOffset={0}
           onClose={() => setShowPosterModal(false)}
         />
       )}
+
 
       <div className="timeline-tip" style={{ padding: '8px 12px', fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center' }}>
         💡 {lang === 'ja' ? 'カレンダーのバーやイベントをクリックすると、レイド対策やボーナスなどの詳細なガイドが表示されます。' : lang === 'cs' ? 'Kliknutím na pruh nebo krátkou událost v kalendáři otevřete podrobného průvodce, bossy a bonusy.' : 'Click on any calendar banner or short event to view detailed guide, counters, and bonuses.'}

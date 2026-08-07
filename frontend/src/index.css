@@ -817,19 +817,20 @@ body {
   border-color: var(--accent-color);
 }
 
-/* Status Tabs (Active / Upcoming) */
+/* Status Tabs (Active / Upcoming / Infographic Summary - Split into thirds) */
 .status-tabs-container {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 4px;
   margin-bottom: 14px;
-  gap: 4px;
+  gap: 6px;
 }
 
 .status-tab-btn {
-  flex: 1;
+  width: 100%;
   background: none;
   border: none;
   color: var(--text-secondary);
@@ -844,7 +845,23 @@ body {
   align-items: center;
   gap: 6px;
   transition: all 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+.status-tab-btn.infographic-tab-btn {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+}
+
+.status-tab-btn.infographic-tab-btn:hover {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #7dd3fc;
+}
+
 
 .status-tab-btn:hover {
   color: var(--text-primary);
