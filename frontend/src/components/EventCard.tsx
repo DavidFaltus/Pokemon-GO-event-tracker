@@ -11,7 +11,7 @@ import { findPokemonMeta } from '../data/pokemonMeta';
 import { useDynamicEventDetails } from '../hooks/useDynamicEventDetails';
 import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Flame, RefreshCw, Plus, Check, Image as ImageIcon, LayoutList } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
-import { resolveImage, handlePokemonImageError, getBasePokemonName, getBasePokemonNames, getPokemonIconUrl } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError, getBasePokemonName, getBasePokemonNames, getPokemonIconUrl, getEventHeaderAvatar } from '../utils/imageResolver';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { getRegionalInfo } from '../utils/regionalHelper';
 import { DirectRaidFilterBox } from './DirectRaidFilterBox';
@@ -1456,8 +1456,9 @@ export const EventCard: React.FC<EventCardProps> = ({
               <MultiBossAvatar bosses={bosses} eventName={event.name} eventType={event.eventType} size={56} />
             ) : (
               <img 
-                src={resolveImage(event.image, event.eventType, event.name)} 
+                src={getEventHeaderAvatar(event, bosses)} 
                 alt={event.name}
+
                 width={100}
                 height={100}
                 loading="lazy"

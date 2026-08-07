@@ -3,7 +3,7 @@ import { toPng } from 'html-to-image';
 import { Download, Sparkles, Calendar, Swords, Shield, Clock, X, Check, Egg, Trophy } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
-import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError, getEventHeaderAvatar } from '../utils/imageResolver';
 import { API_BASE_URL } from '../config';
 import './MonthSummaryInfographic.css';
 
@@ -243,7 +243,7 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
                         <div key={item.eventID} className="poster-card">
                           <div className="poster-card-icon-wrapper">
                             <img
-                              src={resolveImage(item.image, item.eventType, item.name)}
+                              src={getEventHeaderAvatar(item)}
                               alt={item.name}
                               className="poster-card-icon"
                               onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, item.name)}
@@ -281,7 +281,7 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
                         <div key={item.eventID} className="poster-card">
                           <div className="poster-card-icon-wrapper">
                             <img
-                              src={resolveImage(item.image, item.eventType, item.name)}
+                              src={getEventHeaderAvatar(item)}
                               alt={item.name}
                               className="poster-card-icon"
                               onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, item.name)}
@@ -318,7 +318,7 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
                         <div key={item.eventID} className="poster-card">
                           <div className="poster-card-icon-wrapper">
                             <img
-                              src={resolveImage(item.image, item.eventType, item.name)}
+                              src={getEventHeaderAvatar(item)}
                               alt={item.name}
                               className="poster-card-icon"
                               onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, item.name)}
@@ -356,7 +356,7 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
                         <div key={item.eventID} className="poster-card">
                           <div className="poster-card-icon-wrapper">
                             <img
-                              src={resolveImage(item.image, item.eventType, item.name)}
+                              src={getEventHeaderAvatar(item)}
                               alt={item.name}
                               className="poster-card-icon"
                               onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, item.name)}

@@ -456,3 +456,45 @@ export function getFallbackImage(eventType?: string, name?: string, isShiny?: bo
 
   return 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop';
 }
+
+/**
+ * Returns the exact header avatar sprite URL for an event card.
+ * For Spotlight Hours, Community Days, Max Mondays, and Raids, returns the Pokémon sprite photo.
+ */
+export function getEventHeaderAvatar(event: { eventType?: string; name?: string; image?: string; extraData?: any }, bosses?: any[]): string {
+  const type = (event.eventType || '').toLowerCase();
+  const name = event.name || '';
+
+  // 1. Spotlight Hours, Community Days, Max Mondays: return featured Pokemon sprite
+  if (type.includes('spotlight') || type.includes('community') || type.includes('max-monday') || type.includes('dynamax') || type.includes('gigantamax')) {
+    let pName = event.extraData?.spotlight?.name || event.extraData?.communityday?.name || event.extraData?.communityday?.featuredPokemon;
+    if (!pName) {
+      pName = getBasePokemonName(name);
+    }
+    if (pName) {
+      const knownNames = getBasePokemonNames();
+      const isKnown = knownNames.some(kn => name.toLowerCase().includes(kn.toLowerCase()) || pName.toLowerCase().includes(kn.toLowerCase()));
+      if (isKnown) {
+        return getPokemonIconUrl(pName);
+      }
+    }
+  }
+
+  // 2. Raid Hours & Raid Battles with boss list
+  if (bosses && bosses.length === 1 && bosses[0]?.name) {
+    return getPokemonIconUrl(bosses[0].name, bosses[0].canBeShiny);
+  }
+  if (type.includes('raid')) {
+    const pName = getBasePokemonName(name);
+    if (pName) {
+      const knownNames = getBasePokemonNames();
+      if (knownNames.some(kn => name.toLowerCase().includes(kn.toLowerCase()))) {
+        return getPokemonIconUrl(pName);
+      }
+    }
+  }
+
+  // 3. Fallback to standard resolveImage for other event types
+  return resolveImage(event.image, event.eventType, event.name);
+}
+
