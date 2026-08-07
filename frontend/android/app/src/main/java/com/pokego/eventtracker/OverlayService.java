@@ -461,10 +461,16 @@ public class OverlayService extends Service {
             String combinedText = String.join(" ", eventNames).toLowerCase();
             if (combinedText.contains("dragon") || combinedText.contains("palkia") || combinedText.contains("kyurem")) {
                 megaTextView.setText("💡 Doporučená Mega: Mega Rayquaza / Mega Garchomp / Mega Abomasnow\nPro bonus +1 Candy & XL Candy ze Dragon/Ice spawnů.");
+                lastMegaFilter = "megaevolve&dragon,ice";
             } else if (combinedText.contains("rocket") || combinedText.contains("shadow")) {
-                megaTextView.setText("💡 Doporučená Mega: Mega Tyranitar / Mega Houndoom\nPro bonus +1 Candy ze Dark/Fighting Rocket spawnů.");
+                megaTextView.setText("💡 Doporučená Mega: Mega Tyranitar / Mega Lucario / Mega Houndoom\nPro bonus +1 Candy z Dark/Fighting Rocket spawnů.");
+                lastMegaFilter = "megaevolve&dark,fighting";
+            } else if (combinedText.contains("community") || combinedText.contains("spotlight")) {
+                megaTextView.setText("💡 Doporučená Mega: Mega Charizard Y / Mega Sceptile / Mega Blaziken\nPro bonus +1 Candy & XP z hlavních divokých spawnů.");
+                lastMegaFilter = "megaevolve&fire,flying,grass";
             } else {
                 megaTextView.setText("💡 Doporučená Mega: Mega Rayquaza / Mega Lucario / Mega Aggron\nPro bonus +1 Candy & XL Candy z aktivních raidů.");
+                lastMegaFilter = "megaevolve&dragon,steel,fighting";
             }
         }
 
@@ -547,6 +553,7 @@ public class OverlayService extends Service {
 
     private void renderBossCounters(String bossName) {
         if (raidsTextView == null) return;
+        selectedBossName = bossName;
 
         String lower = bossName.toLowerCase();
         StringBuilder sb = new StringBuilder();
@@ -560,6 +567,7 @@ public class OverlayService extends Service {
             sb.append("3. Metagross (Bullet Punch / Meteor Mash)\n");
             sb.append("4. Mega Rayquaza (Dragon Tail / Dragon Ascent)\n");
             sb.append("5. Reshiram (Fire Fang / Fusion Flare)");
+            lastRaidCounterFilter = "3*,4*&@fighting,@rock,@steel,@dragon,@fairy&448,639,376,384,643";
         } else if (lower.contains("aggron")) {
             sb.append("💥 SLABOSTI: Fighting, Ground, Fire\n\n");
             sb.append("🏆 NEJLEPŠÍ COUNTERY NA LOBBY:\n");
@@ -568,6 +576,7 @@ public class OverlayService extends Service {
             sb.append("3. Groudon (Mud-Shot / Precipice Blades)\n");
             sb.append("4. Lucario (Force Palm / Aura Sphere)\n");
             sb.append("5. Excadrill (Mud-Slap / Scorching Sands)");
+            lastRaidCounterFilter = "3*,4*&@fighting,@ground,@fire&257,639,383,448,530";
         } else if (lower.contains("palkia")) {
             sb.append("💥 SLABOSTI: Dragon, Fairy\n\n");
             sb.append("🏆 NEJLEPŠÍ COUNTERY NA LOBBY:\n");
@@ -576,6 +585,7 @@ public class OverlayService extends Service {
             sb.append("3. Dialga Origin (Dragon Breath / Roar of Time)\n");
             sb.append("4. Dragonite (Dragon Tail / Dragon Claw)\n");
             sb.append("5. Shadow Salamence (Dragon Tail / Outrage)");
+            lastRaidCounterFilter = "3*,4*&@dragon,@fairy&384,484,483,149,373";
         } else if (lower.contains("samurott")) {
             sb.append("💥 SLABOSTI: Grass, Electric, Fighting, Bug, Fairy\n\n");
             sb.append("🏆 NEJLEPŠÍ COUNTERY NA LOBBY:\n");
@@ -584,6 +594,7 @@ public class OverlayService extends Service {
             sb.append("3. Xurkitree (Spark / Discharge)\n");
             sb.append("4. Terrakion (Double Kick / Sacred Sword)\n");
             sb.append("5. Zekrom (Charge Beam / Fusion Bolt)");
+            lastRaidCounterFilter = "3*,4*&@grass,@electric,@fighting&254,798,796,639,644";
         } else if (lower.contains("excadrill")) {
             sb.append("💥 SLABOSTI: Fire, Water, Fighting, Ground\n\n");
             sb.append("🏆 NEJLEPŠÍ COUNTERY NA LOBBY:\n");
@@ -592,6 +603,7 @@ public class OverlayService extends Service {
             sb.append("3. Reshiram (Fire Fang / Fusion Flare)\n");
             sb.append("4. Mega Blaziken (Counter / Blast Burn)\n");
             sb.append("5. Terrakion (Double Kick / Sacred Sword)");
+            lastRaidCounterFilter = "3*,4*&@fire,@water,@fighting,@ground&382,383,643,257,639";
         } else {
             sb.append("💥 SLABOSTI: Fighting, Ground, Fire, Water, Electric\n\n");
             sb.append("🏆 NEJLEPŠÍ COUNTERY NA LOBBY:\n");
@@ -600,9 +612,11 @@ public class OverlayService extends Service {
             sb.append("3. Groudon (Mud-Shot / Precipice Blades)\n");
             sb.append("4. Metagross (Bullet Punch / Meteor Mash)\n");
             sb.append("5. Lucario (Force Palm / Aura Sphere)");
+            lastRaidCounterFilter = "3*,4*&@fighting,@ground,@fire,@water&639,384,383,376,448";
         }
 
         raidsTextView.setText(sb.toString());
+
     }
 
     @Override

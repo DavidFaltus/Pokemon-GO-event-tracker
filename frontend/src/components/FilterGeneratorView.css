@@ -240,3 +240,69 @@
   word-break: break-all;
   line-height: 1.5;
 }
+
+/* Recommended Mega Card */
+.filter-mega-card {
+  background: linear-gradient(145deg, rgba(16, 35, 45, 0.9), rgba(13, 24, 33, 0.8));
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 25px rgba(16, 185, 129, 0.1);
+}
+
+.filter-mega-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-mega-title-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #10b981;
+}
+
+.mega-icon-glow {
+  color: #10b981;
+  filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.6));
+}
+
+.filter-mega-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--text-primary, #ffffff);
+}
+
+.filter-mega-reason {
+  font-size: 0.88rem;
+  color: var(--text-muted, #94a3b8);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.filter-mega-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0;
+}
+
+.filter-mega-chip {
+  padding: 6px 14px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 100px;
+  color: #6ee7b7;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+

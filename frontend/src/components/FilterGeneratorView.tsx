@@ -6,7 +6,8 @@ import { getTopCountersByName, getCounterTypesForName } from '../utils/pokemonCo
 import { handlePokemonImageError, getPokemonIconUrl } from '../utils/imageResolver';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { pokemonRankings } from '../data/pokemonRankings';
-import { Copy, Check, Search, Filter, Zap, Sparkles } from 'lucide-react';
+import { getRecommendedMegaForEvents } from '../utils/megaFilterHelper';
+import { Copy, Check, Search, Filter, Zap, Sparkles, Dna } from 'lucide-react';
 
 interface FilterGeneratorViewProps {
   lang: Language;
@@ -20,13 +21,19 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
   initialRaidBoss = 'Palkia'
 }) => {
   const [selectedBoss, setSelectedBoss] = useState<string>(initialRaidBoss);
-  const [copied, setCopied] = useState<boolean>(false);
+  const [copiedRaid, setCopiedRaid] = useState<boolean>(false);
+  const [copiedMega, setCopiedMega] = useState<boolean>(false);
 
   useEffect(() => {
     if (initialRaidBoss) {
       setSelectedBoss(initialRaidBoss);
     }
   }, [initialRaidBoss]);
+
+  // Recommended Mega Evolution based on active events
+  const recommendedMega = useMemo(() => {
+    return getRecommendedMegaForEvents(events);
+  }, [events]);
 
   // Dynamically extract ALL current & upcoming raid bosses from events list + popular legendaries
   const allRaidBosses = useMemo(() => {
@@ -97,11 +104,18 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
     return parts.join('&');
   }, [topCounters, counterTypes]);
 
-  const handleCopy = () => {
+  const handleCopyRaid = () => {
     if (!searchFilterString) return;
     navigator.clipboard.writeText(searchFilterString);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+    setCopiedRaid(true);
+    setTimeout(() => setCopiedRaid(false), 2500);
+  };
+
+  const handleCopyMega = () => {
+    if (!recommendedMega.filterString) return;
+    navigator.clipboard.writeText(recommendedMega.filterString);
+    setCopiedMega(true);
+    setTimeout(() => setCopiedMega(false), 2500);
   };
 
   const getText = (key: string) => {
@@ -112,20 +126,20 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
         if (lang === 'en') return 'Pokémon GO Search Filter Generator';
         return 'Generátor vyhledávacího filtru do Pokémon GO';
       case 'desc':
-        if (lang === 'ja') return 'ポケモンGOのボックス用検索文字列を自動生成します。生成されたコードをゲーム内の検索バーに貼り付けると、最適な対策ポケモンを即座に絞り込めます！';
-        if (lang === 'ru') return 'Генерирует точную строку поиска атак и типов для хранилища Pokémon GO. Вставьте код в поисковую строку игры для быстрого выбора лучших контр-пиков!';
-        if (lang === 'en') return 'Generates exact move & type search strings for your Pokémon GO storage. Paste the string into your in-game search bar to instantly find your best raid counters!';
-        return 'Vygeneruje přesný vyhledávací řetězec útoků a typů pro Pokémon GO inventář. Vložte vygenerovaný text do vyhledávacího pole ve hře pro okamžité nalezení nejlepších raid counterů!';
+        if (lang === 'ja') return 'ポケモンGOのボックス用検索文字列を自動生成します。対策ポケモンやメガシンカのフィルターを1タップでコピー！';
+        if (lang === 'ru') return 'Генерирует поисковые фильтры для Pokémon GO. Быстро копируйте фильтры контр-покемонов и Мега-эволюций!';
+        if (lang === 'en') return 'Generates exact search strings for Pokémon GO storage. Copy raid counters and Mega evolution filters with one tap!';
+        return 'Vygeneruje přesný vyhledávací řetězec útoků, typů a Mega evolucí pro Pokémon GO inventář. Kopírujte filtry counterů i Mega evolucí jedním klepnutím!';
       case 'select_prompt':
-        if (lang === 'ja') return 'ポケモンを選択または入力:';
-        if (lang === 'ru') return 'Выберите или введите любого покемона:';
-        if (lang === 'en') return 'Select or type any Pokémon:';
-        return 'Vyberte nebo zadejte libovolného Pokémona:';
+        if (lang === 'ja') return 'レイドボスを選択または入力:';
+        if (lang === 'ru') return 'Выберите или введите рейд-босса:';
+        if (lang === 'en') return 'Select or type any Raid Boss:';
+        return 'Vyberte nebo zadejte Raid Bosse:';
       case 'placeholder':
-        if (lang === 'ja') return 'ポケモン名を入力（例: ボーマンダ, レックウザ, ネクロズマ）...';
-        if (lang === 'ru') return 'Введите имя покемона (напр. Саламенс, Райкваза, Некрозма)...';
-        if (lang === 'en') return 'Type Pokémon name (e.g. Salamence, Rayquaza, Necrozma)...';
-        return 'Napište jméno Pokémona (např. Salamence, Rayquaza, Necrozma)...';
+        if (lang === 'ja') return 'ポケモン名を入力（例: レックウザ, ギラティナ）...';
+        if (lang === 'ru') return 'Введите имя босса (напр. Райкваза, Гиратина)...';
+        if (lang === 'en') return 'Type boss name (e.g. Rayquaza, Giratina)...';
+        return 'Napište jméno bosse (např. Rayquaza, Giratina)...';
       case 'suggestions':
         if (lang === 'ja') return '候補:';
         if (lang === 'ru') return 'Подсказки:';
@@ -133,14 +147,19 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
         return 'Našeptávač:';
       case 'bosses_header':
         if (lang === 'ja') return '近日のイベントレイドボス＆人気ポケモン:';
-        if (lang === 'ru') return 'Рейд-боссы в предстоящих событиях и популярные:';
+        if (lang === 'ru') return 'Рейд-боссы в предстоящих событиях:';
         if (lang === 'en') return 'Raid bosses in upcoming events & popular:';
-        return 'Raid bossové v nadchádzajících událostech & populární:';
+        return 'Raid bossové v nadcházejících událostech & populární:';
       case 'filter_output':
-        if (lang === 'ja') return '検索フィルター';
-        if (lang === 'ru') return 'Поисковый фильтр';
-        if (lang === 'en') return 'Search filter';
-        return 'Vyhledávací filtr';
+        if (lang === 'ja') return 'レイド対策検索フィルター';
+        if (lang === 'ru') return 'Фильтр контр-покемонов';
+        if (lang === 'en') return 'Raid Counter Filter';
+        return 'Vyhledávací filtr Raid Counterů';
+      case 'mega_title':
+        if (lang === 'ja') return '🧬 イベント向けおすすめメガシンカ (アメボーナス)';
+        if (lang === 'ru') return '🧬 Рекомендуемая Мега-эволюция (бонус конфет)';
+        if (lang === 'en') return '🧬 Recommended Mega Evolution (Candy Bonus)';
+        return '🧬 Doporučená Mega Evoluce (Bonus Candy & XL)';
       case 'copy':
         if (lang === 'ja') return 'コピー';
         if (lang === 'ru') return 'Копировать';
@@ -166,6 +185,47 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
         <p className="tab-seo-description">{getText('desc')}</p>
       </div>
 
+      {/* Recommended Mega Evolution Card */}
+      <div className="filter-mega-card">
+        <div className="filter-mega-header">
+          <div className="filter-mega-title-group">
+            <Dna size={20} className="mega-icon-glow" />
+            <span className="filter-mega-title">{getText('mega_title')}</span>
+          </div>
+          <button
+            type="button"
+            className={`filter-copy-action-btn ${copiedMega ? 'copied' : ''}`}
+            onClick={handleCopyMega}
+          >
+            {copiedMega ? <Check size={16} /> : <Copy size={16} />}
+            <span>{copiedMega ? getText('copied') : getText('copy')}</span>
+          </button>
+        </div>
+
+        <p className="filter-mega-reason">
+          {lang === 'cs' ? recommendedMega.reasonCs : recommendedMega.reasonEn}
+        </p>
+
+        <div className="filter-mega-chips">
+          {recommendedMega.megas.map(megaName => (
+            <div key={megaName} className="filter-mega-chip">
+              <img
+                src={getPokemonIconUrl(megaName)}
+                alt={megaName}
+                className="chip-pokemon-sprite"
+                onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, megaName)}
+              />
+              <span>{getPokemonName(megaName, lang)}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="filter-code-display-box" onClick={handleCopyMega}>
+          <code>{recommendedMega.filterString}</code>
+        </div>
+      </div>
+
+      {/* Raid Counter Filter Generator Card */}
       <div className="filter-generator-card">
         <div className="filter-group-header">
           <Search size={16} style={{ color: 'var(--accent-purple, #a855f7)' }} />
@@ -252,17 +312,18 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
           </div>
           <button
             type="button"
-            className={`filter-copy-action-btn ${copied ? 'copied' : ''}`}
-            onClick={handleCopy}
+            className={`filter-copy-action-btn ${copiedRaid ? 'copied' : ''}`}
+            onClick={handleCopyRaid}
           >
-            {copied ? <Check size={16} /> : <Copy size={16} />}
-            <span>{copied ? getText('copied') : getText('copy')}</span>
+            {copiedRaid ? <Check size={16} /> : <Copy size={16} />}
+            <span>{copiedRaid ? getText('copied') : getText('copy')}</span>
           </button>
         </div>
-        <div className="filter-code-display-box" onClick={handleCopy}>
+        <div className="filter-code-display-box" onClick={handleCopyRaid}>
           <code>{searchFilterString}</code>
         </div>
       </div>
     </div>
   );
 };
+
