@@ -185,46 +185,6 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
         <p className="tab-seo-description">{getText('desc')}</p>
       </div>
 
-      {/* Recommended Mega Evolution Card */}
-      <div className="filter-mega-card">
-        <div className="filter-mega-header">
-          <div className="filter-mega-title-group">
-            <Dna size={20} className="mega-icon-glow" />
-            <span className="filter-mega-title">{getText('mega_title')}</span>
-          </div>
-          <button
-            type="button"
-            className={`filter-copy-action-btn ${copiedMega ? 'copied' : ''}`}
-            onClick={handleCopyMega}
-          >
-            {copiedMega ? <Check size={16} /> : <Copy size={16} />}
-            <span>{copiedMega ? getText('copied') : getText('copy')}</span>
-          </button>
-        </div>
-
-        <p className="filter-mega-reason">
-          {lang === 'cs' ? recommendedMega.reasonCs : recommendedMega.reasonEn}
-        </p>
-
-        <div className="filter-mega-chips">
-          {recommendedMega.megas.map(megaName => (
-            <div key={megaName} className="filter-mega-chip">
-              <img
-                src={getPokemonIconUrl(megaName)}
-                alt={megaName}
-                className="chip-pokemon-sprite"
-                onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, megaName)}
-              />
-              <span>{getPokemonName(megaName, lang)}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="filter-code-display-box" onClick={handleCopyMega}>
-          <code>{recommendedMega.filterString}</code>
-        </div>
-      </div>
-
       {/* Raid Counter Filter Generator Card */}
       <div className="filter-generator-card">
         <div className="filter-group-header">
@@ -323,6 +283,47 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
           <code>{searchFilterString}</code>
         </div>
       </div>
+
+      {/* Recommended Mega Evolution Card */}
+      <div className="filter-mega-card">
+        <div className="filter-mega-header">
+          <div className="filter-mega-title-group">
+            <Dna size={20} className="mega-icon-glow" />
+            <span className="filter-mega-title">{getText('mega_title')}</span>
+          </div>
+          <button
+            type="button"
+            className={`filter-copy-action-btn ${copiedMega ? 'copied' : ''}`}
+            onClick={handleCopyMega}
+          >
+            {copiedMega ? <Check size={16} /> : <Copy size={16} />}
+            <span>{copiedMega ? getText('copied') : getText('copy')}</span>
+          </button>
+        </div>
+
+        <p className="filter-mega-reason">
+          {lang === 'cs' ? recommendedMega.reasonCs : recommendedMega.reasonEn}
+        </p>
+
+        <div className="filter-mega-chips">
+          {recommendedMega.megas.map(megaName => (
+            <div key={megaName} className="filter-mega-chip">
+              <img
+                src={getPokemonIconUrl(megaName)}
+                alt={megaName}
+                className="chip-pokemon-sprite"
+                onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, megaName)}
+              />
+              <span>{getPokemonName(megaName, lang)}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="filter-code-display-box" onClick={handleCopyMega}>
+          <code>{recommendedMega.filterString}</code>
+        </div>
+      </div>
+
     </div>
   );
 };

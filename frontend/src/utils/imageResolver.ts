@@ -211,8 +211,19 @@ export function getPokemonIconUrl(name: string, isShiny?: boolean): string {
     return pokemonIconOverridesCache[directKey];
   }
 
+  const isGigantamax = /gigantamax|gmax/i.test(name);
   const isMegaOrPrimal = /mega|primal/i.test(name);
   const folder = isShiny ? 'shiny' : 'normal';
+
+  // If it's a Gigantamax form, try PokemonDB 3D G-Max home sprite first (e.g. gengar-gmax.png, charizard-gmax.png)
+  if (isGigantamax) {
+    const knownNames = getBasePokemonNames();
+    const matchedKnown = knownNames.find(kn => name.toLowerCase().includes(kn.toLowerCase()));
+    let base = matchedKnown ? matchedKnown.toLowerCase() : baseName.toLowerCase();
+    base = base.replace(/^gigantamax\s+/i, '').replace(/^dynamax\s+/i, '').replace(/^gmax\s+/i, '').trim();
+    base = base.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    return `https://img.pokemondb.net/sprites/home/${folder}/${base}-gmax.png`;
+  }
 
   // If it's a Mega or Primal form, PokemonDB provides the exact 3D home sprite for form variations (e.g. blaziken-mega, charizard-mega-x, groudon-primal)
   if (isMegaOrPrimal) {
@@ -256,6 +267,8 @@ export function getPokemonIconUrl(name: string, isShiny?: boolean): string {
   let clean = baseName.toLowerCase()
     .replace('shadow ', '')
     .replace('apex ', '')
+    .replace('dynamax ', '')
+    .replace('gigantamax ', '')
     .replace(/\s*\(.*?\)\s*/g, '')
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '');
@@ -280,7 +293,6 @@ export function handlePokemonImageError(img: HTMLImageElement, name: string, isS
     const matchedKnown = knownNames.find(kn => name.toLowerCase().includes(kn.toLowerCase()));
     let base = matchedKnown ? matchedKnown.toLowerCase() : baseName.toLowerCase();
     base = base.replace(/^mega\s+/i, '').replace(/^primal\s+/i, '').replace(/\s+mega$/i, '').replace(/\s+primal$/i, '').trim();
-    // Strip trailing form identifiers like " x" or " y" from base (e.g. "mewtwo y" → "mewtwo")
     base = base.replace(/\s+[xy]$/i, '').trim();
 
     // Strip parenthetical suffixes from name for suffix detection
@@ -326,7 +338,7 @@ export function handlePokemonImageError(img: HTMLImageElement, name: string, isS
     return;
   }
 
-  // Fallback Step 3: PokeAPI Official Artwork
+  // Fallback Step 4: PokeAPI Official Artwork
   if (pokedexId && !img.getAttribute('data-fb-artwork')) {
     img.setAttribute('data-fb-artwork', 'true');
     const folder = isShiny ? 'official-artwork/shiny' : 'official-artwork';
@@ -334,7 +346,7 @@ export function handlePokemonImageError(img: HTMLImageElement, name: string, isS
     return;
   }
 
-  // Fallback Step 4: PokeAPI Front Default 2D Sprite
+  // Fallback Step 5: PokeAPI Front Default 2D Sprite
   if (pokedexId && !img.getAttribute('data-fb-default')) {
     img.setAttribute('data-fb-default', 'true');
     const folder = isShiny ? 'shiny' : '';
@@ -354,6 +366,17 @@ export function handlePokemonImageError(img: HTMLImageElement, name: string, isS
 export function resolveImage(url: string | undefined, eventType?: string, name?: string, isShiny?: boolean): string {
   if (isShiny && name) {
     return getPokemonIconUrl(name, true);
+  }
+
+  // Spotlight Hours, Community Days, and Max Mondays: prioritize Pokemon sprite photo if name is present
+  if (eventType && name) {
+    const lowerType = eventType.toLowerCase();
+    if (lowerType.includes('spotlight') || lowerType.includes('community') || lowerType.includes('max-monday') || lowerType.includes('dynamax') || lowerType.includes('gigantamax')) {
+      const base = getBasePokemonName(name);
+      if (base) {
+        return getPokemonIconUrl(name, isShiny);
+      }
+    }
   }
 
   if (!url) {
@@ -385,37 +408,41 @@ export function resolveImage(url: string | undefined, eventType?: string, name?:
     );
   }
 
-  // If it's a Leek Duck event image, redirect to high-quality, royalty-free Unsplash images
+  // If it's a Leek Duck event image, redirect to high-quality Unsplash images or Pokemon sprite
   if (url.includes('cdn.leekduck.com/assets/img/events/')) {
     const lowerUrl = url.toLowerCase();
     
-    // Intercept default/placeholder images or any event image to use pokemon sprite if name has a known pokemon
-    if (name) {
-      const baseName = getBasePokemonName(name);
-      const knownNames = getBasePokemonNames();
-      const hasPokemon = knownNames.some(kn => name.toLowerCase().includes(kn.toLowerCase()));
-      if (hasPokemon && baseName) {
-        return getPokemonIconUrl(baseName, isShiny);
+    // Intercept Spotlight Hours, Community Days, and Max Mondays
+    if (lowerUrl.includes('pokemonspotlighthour') || lowerUrl.includes('spotlight') || (eventType && eventType.toLowerCase().includes('spotlight'))) {
+      if (name && getBasePokemonName(name)) {
+        return getPokemonIconUrl(name, isShiny);
       }
+      return 'https://images.unsplash.com/photo-1503095396549-807759245b35?q=80&w=600&auto=format&fit=crop';
+    }
+    if (lowerUrl.includes('communityday') || lowerUrl.includes('community-day') || (eventType && eventType.toLowerCase().includes('community-day'))) {
+      if (name && getBasePokemonName(name)) {
+        return getPokemonIconUrl(name, isShiny);
+      }
+      return 'https://images.unsplash.com/photo-1526726538690-5cbf956ae2fd?q=80&w=600&auto=format&fit=crop';
+    }
+    if (lowerUrl.includes('max-monday') || lowerUrl.includes('maxmonday') || (eventType && eventType.toLowerCase().includes('max-monday'))) {
+      if (name && getBasePokemonName(name)) {
+        return getPokemonIconUrl(name, isShiny);
+      }
+      return 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop';
     }
     
     if (lowerUrl.includes('rocket-takeover') || (eventType && eventType.toLowerCase().includes('rocket'))) {
-      return 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop'; // Dark purple glowing atmosphere
+      return 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=600&auto=format&fit=crop';
     }
     if (lowerUrl.includes('raidhour') || lowerUrl.includes('raid-hour') || (eventType && eventType.toLowerCase().includes('raid-hour'))) {
-      return 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=600&auto=format&fit=crop'; // Energetic stage spotlight / arena
-    }
-    if (lowerUrl.includes('pokemonspotlighthour') || lowerUrl.includes('spotlight') || (eventType && eventType.toLowerCase().includes('spotlight'))) {
-      return 'https://images.unsplash.com/photo-1503095396549-807759245b35?q=80&w=600&auto=format&fit=crop'; // Stage/Spotlight beam
-    }
-    if (lowerUrl.includes('communityday') || lowerUrl.includes('community-day') || (eventType && eventType.toLowerCase().includes('community-day'))) {
-      return 'https://images.unsplash.com/photo-1526726538690-5cbf956ae2fd?q=80&w=600&auto=format&fit=crop'; // Bright sky with colorful balloons
+      return 'https://images.unsplash.com/photo-1516280440614-37939bbacd6a?q=80&w=600&auto=format&fit=crop';
     }
     if (lowerUrl.includes('mega-default') || (eventType && eventType.toLowerCase().includes('mega'))) {
-      return 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop'; // Abstract energetic swirl
+      return 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop';
     }
     if (lowerUrl.includes('events-default-img') || lowerUrl.includes('default')) {
-      return 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop'; // Colorful abstract design
+      return 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop';
     }
   }
 

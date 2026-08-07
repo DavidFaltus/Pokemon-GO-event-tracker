@@ -1,10 +1,6 @@
-1: Přidat souhrn eventů na příští měsíc v jednoduché infografice
-
-
-Zaměření na mobilní aplikaci:
-Overlay:
-pro navrhnování ideálních counterů na raid na který se uživatel připojí. generátor stringu který si uživatel vloži jako filtr do jeho pokemon go aplikace.
-Navrhování vhodného mega evolvu podle aktivního eventu (taky nejspíš filtrovací string)
+1: Vylepšit a zpřesnit 100% IV pokemony jsou rozdíly mezi oficiálními a našimi.
+2: Vyměnit ikony spoitlight hours, comunity days a max mondays za sprite fotky pokémonů (pokud půjde použít dynamax verze pokémonů použít ty u max mondays)
+3: Vylepšit generování filtrů tak aby doporučoval pokemony které jsou vůči bossům super efective ale zároveň oni nejsou super effective proti nim(nejlépe jsou not very effective)
 
 pogo-admin-2026
 npm run android:sync
