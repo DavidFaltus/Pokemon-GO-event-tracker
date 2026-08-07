@@ -7,6 +7,7 @@ import { handlePokemonImageError, getPokemonIconUrl, getBasePokemonName } from '
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { pokemonRankings } from '../data/pokemonRankings';
 import { getRecommendedMegaForEvents } from '../utils/megaFilterHelper';
+import { API_BASE_URL } from '../config';
 import { Copy, Check, Search, Filter, Zap, Sparkles, Dna, ShieldCheck } from 'lucide-react';
 
 interface FilterGeneratorViewProps {
@@ -25,7 +26,7 @@ const LEGENDARY_5STAR_AND_MEGAS = new Set<string>([
   'Thundurus', 'Landorus', 'Xerneas', 'Yveltal', 'Tapu Koko', 'Tapu Lele',
   'Tapu Bulu', 'Tapu Fini', 'Zacian', 'Zamazenta', 'Nihilego', 'Buzzwole',
   'Pheromosa', 'Xurkitree', 'Celesteela', 'Kartana', 'Guzzlord', 'Blacephalon',
-  'Stakataka', 'Deoxys', 'Genesect', 'Keldeo', 'Meloetta',
+  'Stakataka', 'Deoxys', 'Genesect', 'Keldeo', 'Meloetta', 'Mesprit', 'Uxie', 'Azelf',
 
   // Megas & Primals
   'Mega Rayquaza', 'Mega Charizard Y', 'Mega Charizard X', 'Mega Lucario',
@@ -61,12 +62,43 @@ function is5StarOrMegaBoss(name: string): boolean {
 export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
   lang,
   events = [],
-  initialRaidBoss = 'Palkia'
+  initialRaidBoss = 'Mesprit'
 }) => {
   const [selectedBoss, setSelectedBoss] = useState<string>(initialRaidBoss);
   const [copiedRaid, setCopiedRaid] = useState<boolean>(false);
   const [copiedMega, setCopiedMega] = useState<boolean>(false);
   const [filterStrategy, setFilterStrategy] = useState<'resistant' | 'max_dps'>('resistant');
+  const [apiRaidBosses, setApiRaidBosses] = useState<string[]>([]);
+
+  // Fetch live active raid bosses directly from /api/raids endpoint (same source as Raids section)
+  useEffect(() => {
+    let isMounted = true;
+    fetch(`${API_BASE_URL}/api/raids`)
+      .then(res => res.json())
+      .then(data => {
+        if (isMounted && Array.isArray(data)) {
+          const fetchedNames: string[] = [];
+          data.forEach(item => {
+            // Keep 5-Star, Mega, and Shadow-5 raid bosses
+            if (item.tier === '5' || item.tier === 'mega' || item.tier === 'shadow-5' || (item.tier && item.tier.includes('5'))) {
+              const base = getBasePokemonName(item.name);
+              if (base && !fetchedNames.includes(base)) {
+                fetchedNames.push(base);
+              }
+            }
+          });
+          if (fetchedNames.length > 0) {
+            setApiRaidBosses(fetchedNames);
+            if (!initialRaidBoss || initialRaidBoss === 'Palkia') {
+              setSelectedBoss(fetchedNames[0]);
+            }
+          }
+        }
+      })
+      .catch(err => console.error('FilterGeneratorView live raid fetch error:', err));
+
+    return () => { isMounted = false; };
+  }, [initialRaidBoss]);
 
   useEffect(() => {
     if (initialRaidBoss) {
@@ -79,10 +111,16 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
     return getRecommendedMegaForEvents(events);
   }, [events]);
 
-  // Extract STRICTLY ONLY 5-Star Legendary and Mega Raid Bosses from current events schedule
+  // Extract STRICTLY ONLY 5-Star Legendary and Mega Raid Bosses from live API or current events
   const currentRaidBosses = useMemo(() => {
     const set = new Set<string>();
 
+    // 1. First add live raid bosses from /api/raids (Mesprit, Shadow Giratina, Mega Blaziken)
+    if (apiRaidBosses && apiRaidBosses.length > 0) {
+      apiRaidBosses.forEach(b => set.add(b));
+    }
+
+    // 2. Add raid bosses from current active events
     if (events && events.length > 0) {
       events.forEach(e => {
         const isRaidEvent =
@@ -120,15 +158,9 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
       });
     }
 
-    // Default 5-Star Legendaries and Megas if dataset does not have active raid events loaded
-    const default5StarAndMegas = [
-      'Palkia', 'Dialga', 'Necrozma', 'Rayquaza', 'Groudon', 'Kyogre',
-      'Reshiram', 'Zekrom', 'Mewtwo', 'Giratina', 'Heatran', 'Darkrai',
-      'Charizard', 'Lopunny', 'Lucario', 'Tyranitar', 'Garchomp', 'Gardevoir'
-    ];
-
+    // 3. Fallback default legendaries and megas
     if (set.size === 0) {
-      default5StarAndMegas.forEach(b => set.add(b));
+      ['Mesprit', 'Giratina', 'Blaziken', 'Palkia', 'Dialga', 'Necrozma', 'Rayquaza', 'Groudon', 'Kyogre', 'Reshiram', 'Zekrom', 'Mewtwo', 'Heatran', 'Darkrai', 'Charizard', 'Lopunny', 'Lucario', 'Tyranitar'].forEach(b => set.add(b));
     }
 
     if (initialRaidBoss) {
@@ -139,7 +171,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
     }
 
     return Array.from(set).filter(Boolean);
-  }, [events, initialRaidBoss]);
+  }, [apiRaidBosses, events, initialRaidBoss]);
 
   // Autocomplete suggestions for typed query matching 360+ species
   const autocompleteSuggestions = useMemo(() => {
@@ -237,7 +269,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
         return 'Top Doporučení Counterři:';
       case 'filter_output':
         if (lang === 'ja') return 'レイド対策検索フィルター';
-        if (lang === 'ru') return 'Фильтр контр-покемонов';
+        if (lang === 'ru') return 'Фильтр контр-ポケモン';
         if (lang === 'en') return 'Raid Counter Filter';
         return 'Vyhledávací filtr Raid Counterů';
       case 'mega_title':
@@ -359,7 +391,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
           </div>
         )}
 
-        {/* Current Active Events Raid Bosses Section (STRICTLY 5-Star & Megas Only) */}
+        {/* Current Active Events Raid Bosses Section (STRICTLY Live API & 5-Star & Megas Only) */}
         <div className="filter-boss-section-header">
           <Sparkles size={14} style={{ color: 'var(--accent-purple, #a855f7)' }} />
           <span>{getText('current_bosses_header')}</span>
