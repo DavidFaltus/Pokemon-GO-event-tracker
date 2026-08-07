@@ -7,7 +7,7 @@ import { handlePokemonImageError, getPokemonIconUrl } from '../utils/imageResolv
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { pokemonRankings } from '../data/pokemonRankings';
 import { getRecommendedMegaForEvents } from '../utils/megaFilterHelper';
-import { Copy, Check, Search, Filter, Zap, Sparkles, Dna, ShieldCheck } from 'lucide-react';
+import { Copy, Check, Search, Filter, Zap, Sparkles, Dna, ShieldCheck, ShieldAlert, Layers } from 'lucide-react';
 
 interface FilterGeneratorViewProps {
   lang: Language;
@@ -23,6 +23,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
   const [selectedBoss, setSelectedBoss] = useState<string>(initialRaidBoss);
   const [copiedRaid, setCopiedRaid] = useState<boolean>(false);
   const [copiedMega, setCopiedMega] = useState<boolean>(false);
+  const [filterStrategy, setFilterStrategy] = useState<'resistant' | 'max_dps'>('resistant');
 
   useEffect(() => {
     if (initialRaidBoss) {
@@ -35,34 +36,37 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
     return getRecommendedMegaForEvents(events);
   }, [events]);
 
-  // Dynamically extract ALL current & upcoming raid bosses from events list + popular legendaries
-  const allRaidBosses = useMemo(() => {
+  // Dynamically extract ONLY raid bosses from events that are CURRENTLY ACTIVE right now
+  const currentRaidBosses = useMemo(() => {
     const set = new Set<string>();
-    
-    // Extract bosses from events (Raid Hours, Rotations, Spotlight, etc.)
+    const now = new Date();
+
     if (events && events.length > 0) {
       events.forEach(e => {
-        const bosses = e.extraData?.raidbattles?.bosses;
-        if (Array.isArray(bosses)) {
-          bosses.forEach(b => {
-            if (b.name) set.add(b.name.replace(/shadow|mega|primal/gi, '').trim());
-          });
-        }
-        if (e.eventType === 'raid-hour' || e.eventType === 'raid-battles') {
-          const clean = e.name.replace(/raid\s*(hour|battles|rotation|day)/gi, '').trim();
-          if (clean && clean.length > 2) set.add(clean);
+        const start = new Date(e.start);
+        const end = new Date(e.end);
+        const isActive = start <= now && now <= end;
+
+        if (isActive) {
+          const bosses = e.extraData?.raidbattles?.bosses;
+          if (Array.isArray(bosses)) {
+            bosses.forEach(b => {
+              if (b.name) set.add(b.name.replace(/shadow|mega|primal/gi, '').trim());
+            });
+          }
+          if (e.eventType === 'raid-hour' || e.eventType === 'raid-battles' || e.eventType === 'mega-raid') {
+            const clean = e.name.replace(/raid\s*(hour|battles|rotation|day)/gi, '').trim();
+            if (clean && clean.length > 2) set.add(clean);
+          }
         }
       });
     }
 
-    // Default popular legendaries and meta raid bosses
-    const defaultPopular = [
-      'Palkia', 'Dialga', 'Rayquaza', 'Salamence', 'Mewtwo', 'Giratina', 'Kyogre', 'Groudon',
-      'Lucario', 'Tyranitar', 'Garchomp', 'Reshiram', 'Zekrom', 'Heatran', 'Darkrai',
-      'Charizard', 'Baxcalibur', 'Kyurem', 'Dragonite', 'Metagross', 'Gardevoir'
-    ];
-    
-    defaultPopular.forEach(b => set.add(b));
+    // Fallback current active legendaries if no active raid events in database right now
+    if (set.size === 0) {
+      ['Palkia', 'Dialga', 'Necrozma', 'Rayquaza', 'Groudon', 'Kyogre', 'Charizard', 'Baxcalibur'].forEach(b => set.add(b));
+    }
+
     if (initialRaidBoss) set.add(initialRaidBoss.replace(/shadow|mega|primal/gi, '').trim());
 
     return Array.from(set).filter(Boolean);
@@ -75,12 +79,12 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
     
     const allKnownNames = new Set<string>();
     pokemonRankings.forEach(p => allKnownNames.add(p.name.replace(/shadow|mega|primal/gi, '').trim()));
-    allRaidBosses.forEach(b => allKnownNames.add(b));
+    currentRaidBosses.forEach(b => allKnownNames.add(b));
 
     return Array.from(allKnownNames)
       .filter(name => name.toLowerCase().includes(q))
       .slice(0, 10);
-  }, [selectedBoss, allRaidBosses]);
+  }, [selectedBoss, currentRaidBosses]);
 
   // Detailed Top Counters algorithm considering BOTH Offensive SE AND Defensive NVE Resistance (Task #3)
   const topCountersDetailed = useMemo(() => {
@@ -90,16 +94,27 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
       bestFastMove: { name: 'Dragon Breath', type: 'Dragon' }, bestChargedMove: { name: 'Draco Meteor', type: 'Dragon' }
     };
 
-    return getTopCountersForPokemonDetailed(targetPoke, pokemonRankings, 12);
+    return getTopCountersForPokemonDetailed(targetPoke, pokemonRankings, 14);
   }, [selectedBoss]);
+
+  // Filter counters based on selected strategy (Resistant Tanky vs Max DPS)
+  const filteredCounters = useMemo(() => {
+    if (filterStrategy === 'resistant') {
+      // Exclude fragile glass cannons (vulnerable) and prioritize NVE resistant counters
+      const resistantOnly = topCountersDetailed.filter(c => c.defensiveRating !== 'vulnerable');
+      return resistantOnly.length > 0 ? resistantOnly : topCountersDetailed;
+    }
+    // Max DPS mode: return all counters without filtering out glass cannons
+    return topCountersDetailed;
+  }, [topCountersDetailed, filterStrategy]);
 
   const counterTypes = useMemo(() => {
     return getCounterTypesForName(selectedBoss);
   }, [selectedBoss]);
 
   const searchFilterString = useMemo(() => {
-    if (topCountersDetailed.length === 0) return '';
-    const uniqueIds = Array.from(new Set(topCountersDetailed.map(c => c.pokemon.pokedexId)));
+    if (filteredCounters.length === 0) return '';
+    const uniqueIds = Array.from(new Set(filteredCounters.map(c => c.pokemon.pokedexId)));
     const parts: string[] = ['3*,4*'];
 
     if (counterTypes.length > 0) {
@@ -109,7 +124,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
 
     parts.push(uniqueIds.join(','));
     return parts.join('&');
-  }, [topCountersDetailed, counterTypes]);
+  }, [filteredCounters, counterTypes]);
 
   const handleCopyRaid = () => {
     if (!searchFilterString) return;
@@ -152,16 +167,16 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
         if (lang === 'ru') return 'Подсказки:';
         if (lang === 'en') return 'Suggestions:';
         return 'Našeptávač:';
-      case 'bosses_header':
-        if (lang === 'ja') return '近日のイベントレイドボス＆人気ポケモン:';
-        if (lang === 'ru') return 'Рейд-боссы в предстоящих событиях:';
-        if (lang === 'en') return 'Raid bosses in upcoming events & popular:';
-        return 'Raid bossové v nadcházejících událostech & populární:';
+      case 'current_bosses_header':
+        if (lang === 'ja') return '現在開催中のイベントのレイドボス:';
+        if (lang === 'ru') return 'Рейд-боссы в текущих активных событиях:';
+        if (lang === 'en') return 'Raid bosses in current active events:';
+        return 'Raid bossové v právě probíhajících událostech:';
       case 'counters_showcase_header':
-        if (lang === 'ja') return 'おすすめ対策ポケモン (効果ばつぐん + 耐性NVE優先):';
-        if (lang === 'ru') return 'Рекомендуемые покемоны (Супер-эффективные + Защита NVE):';
-        if (lang === 'en') return 'Top Recommended Counters (Super Effective + NVE Resistance):';
-        return 'Top Doporučení Counterři (Super Effective + Odolnost vůči bossu NVE):';
+        if (lang === 'ja') return 'おすすめ対策ポケモン:';
+        if (lang === 'ru') return 'Рекомендуемые покемоны-контрники:';
+        if (lang === 'en') return 'Top Recommended Counters:';
+        return 'Top Doporučení Counterři:';
       case 'filter_output':
         if (lang === 'ja') return 'レイド対策検索フィルター';
         if (lang === 'ru') return 'Фильтр контр-покемонов';
@@ -195,6 +210,63 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
           {getText('title')}
         </h1>
         <p className="tab-seo-description">{getText('desc')}</p>
+      </div>
+
+      {/* Modern Filter Modes Description Banner */}
+      <div className="filter-modes-info-banner">
+        <div className={`mode-info-card ${filterStrategy === 'resistant' ? 'active-resistant' : ''}`}>
+          <div className="mode-info-header">
+            <ShieldCheck size={18} className="mode-icon green" />
+            <strong>
+              {lang === 'cs' ? '🛡️ Režim Odolní & Tanky (Doporučeno)' : '🛡️ Tanky & NVE Resistant Mode (Recommended)'}
+            </strong>
+          </div>
+          <p>
+            {lang === 'cs'
+              ? 'Odfiltruje křehké skleněné kanóny (Glass Cannons). Výběr upřednostňuje Pokémony, kteří udělují Super Effective poškození a ZÁROVEŇ sami odolávají útokům bosse (NVE). Šetří oživovače a lektvary v raidech!'
+              : 'Filters out fragile glass cannons and prioritizes high-damage counters that resist the boss’s STAB attacks (NVE). Saves revives & potions in raids!'}
+          </p>
+        </div>
+
+        <div className={`mode-info-card ${filterStrategy === 'max_dps' ? 'active-dps' : ''}`}>
+          <div className="mode-info-header">
+            <Zap size={18} className="mode-icon purple" />
+            <strong>
+              {lang === 'cs' ? '⚡ Režim Max DPS & Všechny Countery' : '⚡ Max DPS & All Counters Mode'}
+            </strong>
+          </div>
+          <p>
+            {lang === 'cs'
+              ? 'Zobrazí kompletní žebříček podle nejsilnějšího poškození za sekundu (DPS) včetně skleněných útočníků, bez ohledu na jejich zranitelnost.'
+              : 'Displays raw maximum damage per second (DPS) counters including fragile attackers regardless of defender vulnerabilities.'}
+          </p>
+        </div>
+      </div>
+
+      {/* Segmented Filter Strategy Switch Toggle */}
+      <div className="filter-strategy-switch-bar">
+        <span className="strategy-switch-label">
+          <Layers size={16} style={{ color: 'var(--accent-purple, #a855f7)' }} />
+          {lang === 'cs' ? 'Strategie filtrování:' : 'Filtering Strategy:'}
+        </span>
+        <div className="strategy-toggle-buttons">
+          <button
+            type="button"
+            className={`strategy-toggle-btn ${filterStrategy === 'resistant' ? 'active resistant' : ''}`}
+            onClick={() => setFilterStrategy('resistant')}
+          >
+            <ShieldCheck size={16} />
+            <span>{lang === 'cs' ? '🛡️ Odolní & Tanky (Bez Glass Cannonů)' : '🛡️ Resistant & Tanky (No Glass Cannons)'}</span>
+          </button>
+          <button
+            type="button"
+            className={`strategy-toggle-btn ${filterStrategy === 'max_dps' ? 'active max-dps' : ''}`}
+            onClick={() => setFilterStrategy('max_dps')}
+          >
+            <Zap size={16} />
+            <span>{lang === 'cs' ? '⚡ Max DPS (Všechny Countery)' : '⚡ Max DPS (All Counters)'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Raid Counter Filter Generator Card */}
@@ -239,13 +311,14 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
           </div>
         )}
 
+        {/* Current Active Events Raid Bosses Section */}
         <div className="filter-boss-section-header">
           <Sparkles size={14} style={{ color: 'var(--accent-purple, #a855f7)' }} />
-          <span>{getText('bosses_header')}</span>
+          <span>{getText('current_bosses_header')}</span>
         </div>
         
         <div className="filter-boss-chips-container">
-          {allRaidBosses.map(boss => (
+          {currentRaidBosses.map(boss => (
             <button
               key={boss}
               type="button"
@@ -263,15 +336,15 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
           ))}
         </div>
 
-        {/* Recommended Counters Showcase Grid with Defensive Resistance Badges (Task #3) */}
-        {topCountersDetailed.length > 0 && (
+        {/* Recommended Counters Showcase Grid with Defensive Resistance Badges */}
+        {filteredCounters.length > 0 && (
           <div className="filter-counters-showcase">
             <div className="counters-showcase-header">
               <ShieldCheck size={16} style={{ color: 'var(--accent-purple, #a855f7)' }} />
               <span>{getText('counters_showcase_header')}</span>
             </div>
             <div className="counters-showcase-grid">
-              {topCountersDetailed.map(c => (
+              {filteredCounters.map(c => (
                 <div key={c.pokemon.name} className={`counter-card-mini ${c.defensiveRating}`}>
                   <div className="counter-sprite-wrapper">
                     <img
@@ -288,7 +361,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
                       {c.defensiveRating === 'resistant'
                         ? (lang === 'cs' ? '🛡️ Odolný (NVE)' : '🛡️ Resists (NVE)')
                         : c.defensiveRating === 'vulnerable'
-                        ? (lang === 'cs' ? '⚠️ Zranitelný' : '⚠️ Weak')
+                        ? (lang === 'cs' ? '⚠️ Glass Cannon' : '⚠️ Glass Cannon')
                         : (lang === 'cs' ? '⚔️ Neutrální' : '⚔️ Neutral')}
                     </span>
                   </div>
