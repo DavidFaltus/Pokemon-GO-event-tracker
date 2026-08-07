@@ -1452,39 +1452,7 @@ export const EventCard: React.FC<EventCardProps> = ({
       >
         <div className="card-top">
           <div className="event-img-wrapper">
-            {bosses.length > 1 ? (
-              <MultiBossAvatar bosses={bosses} eventName={event.name} eventType={event.eventType} size={56} />
-            ) : (
-              <img 
-                src={getEventHeaderAvatar(event, bosses)} 
-                alt={event.name}
-
-                width={100}
-                height={100}
-                loading="lazy"
-                decoding="async"
-                onError={(e) => {
-                  const img = e.target as HTMLImageElement;
-                  img.onerror = null;
-                  const baseName = getBasePokemonName(event.name);
-                  const knownNames = getBasePokemonNames();
-                  const hasKnownPokemon = knownNames.some(kn => event.name.toLowerCase().includes(kn.toLowerCase()));
-                  if (hasKnownPokemon && baseName) {
-                    img.src = getPokemonIconUrl(baseName);
-                    img.onerror = () => {
-                      img.onerror = null;
-                      img.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
-                    };
-                  } else {
-                    img.src = resolveImage(undefined, event.eventType);
-                    img.onerror = () => {
-                      img.onerror = null;
-                      img.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
-                    };
-                  }
-                }}
-              />
-            )}
+            <MultiBossAvatar bosses={bosses} eventName={event.name} eventType={event.eventType} size={56} />
             <span className={`status-pill ${status}`}>
               {status === 'active' ? (lang === 'cs' ? '● Probíhá' : '● Active') : status === 'upcoming' ? (lang === 'cs' ? 'Připravuje se' : 'Upcoming') : (lang === 'cs' ? 'Ukončeno' : 'Ended')}
             </span>

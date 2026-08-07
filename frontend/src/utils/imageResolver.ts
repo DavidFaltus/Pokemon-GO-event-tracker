@@ -513,3 +513,55 @@ export function getEventHeaderAvatar(event: { eventType?: string; name?: string;
   // 3. Fallback to standard resolveImage for other event types
   return resolveImage(event.image, event.eventType, event.name);
 }
+
+/**
+ * Robustly extracts all featured Pokémon names from an event object or title string.
+ */
+export function extractEventPokemonNames(event: { name?: string; eventType?: string; extraData?: any }): string[] {
+  if (!event) return [];
+  const foundNames: string[] = [];
+  const addName = (n: string) => {
+    if (!n || typeof n !== 'string') return;
+    const base = getBasePokemonName(n);
+    if (base && !foundNames.some(existing => existing.toLowerCase() === base.toLowerCase())) {
+      foundNames.push(base);
+    }
+  };
+
+  const extra = event.extraData || {};
+
+  // 1. Check Spotlight Name
+  if (extra.spotlight?.name) addName(extra.spotlight.name);
+
+  // 2. Check Community Day Name / Featured Pokemon
+  if (extra.communityday?.name) addName(extra.communityday.name);
+  if (extra.communityday?.featuredPokemon) addName(extra.communityday.featuredPokemon);
+
+  // 3. Check Raid Bosses / Max Bosses arrays
+  const bossLists = [extra.raidbattles?.bosses, extra.raids, extra.bosses, extra.maxbattles?.bosses, extra.dynamax];
+  bossLists.forEach(list => {
+    if (Array.isArray(list)) {
+      list.forEach(item => {
+        if (typeof item === 'string') addName(item);
+        else if (typeof item === 'object' && item?.name) addName(item.name);
+      });
+    }
+  });
+
+  // 4. Scan event name against all known Pokemon species in database
+  const name = event.name || '';
+  if (name) {
+    const known = getBasePokemonNames();
+    const lowerName = name.toLowerCase();
+
+    for (const pkmn of known) {
+      const lowerPkmn = pkmn.toLowerCase();
+      if (lowerName.includes(lowerPkmn)) {
+        addName(pkmn);
+      }
+    }
+  }
+
+  return foundNames;
+}
+

@@ -4,6 +4,7 @@ import { Download, Sparkles, Calendar, Swords, Shield, Clock, X, Check, Egg, Tro
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
 import { resolveImage, handlePokemonImageError, getEventHeaderAvatar } from '../utils/imageResolver';
+import { MultiBossAvatar } from './MultiBossAvatar';
 import { API_BASE_URL } from '../config';
 import './MonthSummaryInfographic.css';
 
@@ -242,12 +243,7 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
                       {communityDays.map((item) => (
                         <div key={item.eventID} className="poster-card">
                           <div className="poster-card-icon-wrapper">
-                            <img
-                              src={getEventHeaderAvatar(item)}
-                              alt={item.name}
-                              className="poster-card-icon"
-                              onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, item.name)}
-                            />
+                            <MultiBossAvatar eventName={item.name} eventType={item.eventType} bosses={(item.extraData as any)?.bosses} size={48} />
                           </div>
                           <div className="poster-card-info">
                             <div className="poster-card-date-badge-row">
@@ -280,12 +276,7 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
                       {raidEvents.map((item) => (
                         <div key={item.eventID} className="poster-card">
                           <div className="poster-card-icon-wrapper">
-                            <img
-                              src={getEventHeaderAvatar(item)}
-                              alt={item.name}
-                              className="poster-card-icon"
-                              onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, item.name)}
-                            />
+                            <MultiBossAvatar eventName={item.name} eventType={item.eventType} bosses={(item.extraData as any)?.bosses} size={48} />
                           </div>
                           <div className="poster-card-info">
                             <div className="poster-card-date-badge-row">
@@ -317,12 +308,7 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
                       {spotlightHours.map((item) => (
                         <div key={item.eventID} className="poster-card">
                           <div className="poster-card-icon-wrapper">
-                            <img
-                              src={getEventHeaderAvatar(item)}
-                              alt={item.name}
-                              className="poster-card-icon"
-                              onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, item.name)}
-                            />
+                            <MultiBossAvatar eventName={item.name} eventType={item.eventType} bosses={(item.extraData as any)?.bosses} size={48} />
                           </div>
                           <div className="poster-card-info">
                             <div className="poster-card-date-badge-row">
@@ -355,12 +341,7 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
                       {otherEvents.slice(0, 8).map((item) => (
                         <div key={item.eventID} className="poster-card">
                           <div className="poster-card-icon-wrapper">
-                            <img
-                              src={getEventHeaderAvatar(item)}
-                              alt={item.name}
-                              className="poster-card-icon"
-                              onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, item.name)}
-                            />
+                            <MultiBossAvatar eventName={item.name} eventType={item.eventType} bosses={(item.extraData as any)?.bosses} size={48} />
                           </div>
                           <div className="poster-card-info">
                             <span className="poster-card-date">{`${formatDateShort(item.start)} – ${formatDateShort(item.end)}`}</span>

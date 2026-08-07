@@ -1,5 +1,5 @@
 import React from 'react';
-import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
+import { extractEventPokemonNames, getPokemonIconUrl, handlePokemonImageError, resolveImage } from '../utils/imageResolver';
 
 interface MultiBossAvatarProps {
   bosses?: any[];
@@ -11,63 +11,45 @@ interface MultiBossAvatarProps {
 export const MultiBossAvatar: React.FC<MultiBossAvatarProps> = ({
   bosses = [],
   eventName = '',
-  eventType = 'raid-hour',
+  eventType = '',
   size = 56
 }) => {
-  const namesSet = new Set<string>();
+  // Extract all pokemon names featured in this event
+  const extracted = extractEventPokemonNames({ name: eventName, eventType, extraData: { bosses } });
+  const namesList = extracted.slice(0, 3);
 
-  // Extract from bosses array
-  if (Array.isArray(bosses)) {
-    bosses.forEach((b: any) => {
-      const name = typeof b === 'string' ? b : (b?.name || '');
-      if (name) {
-        if (name.includes(',')) {
-          name.split(',').forEach((s: string) => { if (s.trim()) namesSet.add(s.trim()); });
-        } else if (name.includes(' and ')) {
-          name.split(' and ').forEach((s: string) => { if (s.trim()) namesSet.add(s.trim()); });
-        } else if (name.includes(' & ')) {
-          name.split(' & ').forEach((s: string) => { if (s.trim()) namesSet.add(s.trim()); });
-        } else {
-          namesSet.add(name.trim());
-        }
-      }
-    });
-  }
-
-  // Also check eventName if bosses array was empty
-  if (namesSet.size === 0 && eventName) {
-    const knownLegendaries = [
-      'Uxie', 'Mesprit', 'Azelf', 'Kyurem', 'Zekrom', 'Reshiram', 'Dialga', 'Palkia',
-      'Solgaleo', 'Lunala', 'Necrozma', 'Rayquaza', 'Groudon', 'Kyogre', 'Raikou', 'Entei', 'Suicune',
-      'Articuno', 'Zapdos', 'Moltres', 'Regirock', 'Regice', 'Registeel', 'Cobalion', 'Terrakion', 'Virizion'
-    ];
-    knownLegendaries.forEach(legend => {
-      if (eventName.toLowerCase().includes(legend.toLowerCase())) {
-        namesSet.add(legend);
-      }
-    });
-  }
-
-  const namesList = Array.from(namesSet).slice(0, 3);
-
-  if (namesList.length <= 1) {
-    const singleName = namesList[0] || eventName;
-    const singleUrl = resolveImage(undefined, eventType, singleName);
+  // Fallback if no Pokemon species found in event title or extraData
+  if (namesList.length === 0) {
+    const fallbackUrl = resolveImage(undefined, eventType, eventName);
     return (
       <img
-        src={singleUrl}
-        alt={singleName || 'Raid Boss'}
+        src={fallbackUrl}
+        alt={eventName || 'Event'}
         width={size}
         height={size}
         style={{ width: `${size}px`, height: `${size}px`, objectFit: 'contain' }}
-        onError={(e) => {
-          handlePokemonImageError(e.target as HTMLImageElement, singleName);
-        }}
+        onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, eventName)}
       />
     );
   }
 
-  // Multi-boss composite badge (2-3 overlapping sprites)
+  // Single Pokemon event (Spotlight Hour, Community Day, Max Monday, Single Raid Boss)
+  if (namesList.length === 1) {
+    const pokeName = namesList[0];
+    const iconUrl = getPokemonIconUrl(pokeName);
+    return (
+      <img
+        src={iconUrl}
+        alt={pokeName}
+        width={size}
+        height={size}
+        style={{ width: `${size}px`, height: `${size}px`, objectFit: 'contain' }}
+        onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, pokeName)}
+      />
+    );
+  }
+
+  // Multi-boss composite badge (2-3 overlapping 3D Pokemon sprites)
   const spriteSize = Math.round(size * 0.76);
   const stepOffset = Math.round(size * 0.32);
   const totalWidth = size + (namesList.length - 1) * stepOffset;
@@ -87,7 +69,7 @@ export const MultiBossAvatar: React.FC<MultiBossAvatarProps> = ({
       title={namesList.join(', ')}
     >
       {namesList.map((pokeName, idx) => {
-        const iconUrl = resolveImage(undefined, eventType, pokeName);
+        const iconUrl = getPokemonIconUrl(pokeName);
         const leftOffset = idx * stepOffset;
 
         return (
@@ -100,8 +82,8 @@ export const MultiBossAvatar: React.FC<MultiBossAvatarProps> = ({
               transform: 'translateY(-50%)',
               width: `${spriteSize}px`,
               height: `${spriteSize}px`,
-              zIndex: idx + 1,
-
+              // Reverse zIndex so first Pokemon sits cleanly on top and doesn't get covered!
+              zIndex: namesList.length - idx,
               borderRadius: '50%',
               background: 'rgba(15, 23, 42, 0.75)',
               border: '1.5px solid rgba(245, 158, 11, 0.5)',
@@ -121,9 +103,7 @@ export const MultiBossAvatar: React.FC<MultiBossAvatarProps> = ({
                 objectFit: 'contain',
                 padding: '2px'
               }}
-              onError={(e) => {
-                handlePokemonImageError(e.target as HTMLImageElement, pokeName);
-              }}
+              onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, pokeName)}
             />
           </div>
         );
