@@ -1,21 +1,8 @@
-// pokemonRankings is loaded lazily to avoid blocking initial bundle parse (115 KB dataset)
-import type { PokemonRankData } from '../data/pokemonRankings';
-let pokemonRankingsCache: PokemonRankData[] | null = null;
-let pokemonRankingsPromise: Promise<PokemonRankData[]> | null = null;
+import { pokemonRankings, type PokemonRankData } from '../data/pokemonRankings';
 let basePokemonNamesCache: string[] | null = null;
 
 function getPokemonRankings(): PokemonRankData[] {
-  if (pokemonRankingsCache) return pokemonRankingsCache;
-  // Synchronous fallback: if not yet loaded, start the load and return empty array.
-  // EventCard image resolver works fine with just the extraBaseNames static list.
-  if (!pokemonRankingsPromise) {
-    pokemonRankingsPromise = import('../data/pokemonRankings').then(m => {
-      pokemonRankingsCache = m.pokemonRankings;
-      basePokemonNamesCache = null; // Reset cache so it rebuilds with full data on next call
-      return pokemonRankingsCache!;
-    });
-  }
-  return []; // Return empty until loaded
+  return pokemonRankings;
 }
 
 export const SHADOW_ICON_URL = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Raids/shadow_icon.png";
