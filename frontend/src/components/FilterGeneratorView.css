@@ -8,7 +8,7 @@
   max-width: 100%;
 }
 
-/* Descriptions Banner under Page Title */
+/* Descriptions Banner under Page Title (Clickable Toggles) */
 .filter-modes-info-banner {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -20,31 +20,50 @@
   background: var(--bg-card, rgba(22, 27, 44, 0.8));
   border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
   border-radius: 16px;
-  padding: 16px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  transition: all 0.25 ease;
+  gap: 10px;
+  transition: all 0.25s ease;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
+.mode-info-card.interactive {
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+}
+
+.mode-info-card.interactive:hover {
+  transform: translateY(-2px);
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
 .mode-info-card.active-resistant {
-  border-color: rgba(34, 197, 94, 0.5);
-  box-shadow: 0 0 16px rgba(34, 197, 94, 0.15);
+  border: 1.5px solid #22c55e;
+  background: linear-gradient(145deg, rgba(34, 197, 94, 0.12), rgba(15, 23, 42, 0.85));
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.2);
 }
 
 .mode-info-card.active-dps {
-  border-color: rgba(168, 85, 247, 0.5);
-  box-shadow: 0 0 16px rgba(168, 85, 247, 0.15);
+  border: 1.5px solid #a855f7;
+  background: linear-gradient(145deg, rgba(168, 85, 247, 0.12), rgba(15, 23, 42, 0.85));
+  box-shadow: 0 4px 20px rgba(168, 85, 247, 0.2);
 }
 
 .mode-info-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.92rem;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+}
+
+.mode-title-text {
+  font-size: 0.94rem;
   font-weight: 700;
   color: var(--text-primary, #ffffff);
+  flex-grow: 1;
 }
 
 .mode-icon.green {
@@ -57,75 +76,35 @@
   filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.5));
 }
 
+.mode-status-badge {
+  font-size: 0.73rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted, #94a3b8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.mode-info-card.active-resistant .mode-status-badge {
+  background: rgba(34, 197, 94, 0.25);
+  color: #4ade80;
+  border-color: #22c55e;
+}
+
+.mode-info-card.active-dps .mode-status-badge {
+  background: rgba(168, 85, 247, 0.25);
+  color: #e9d5ff;
+  border-color: #a855f7;
+}
+
 .mode-info-card p {
   font-size: 0.84rem;
   color: var(--text-muted, #94a3b8);
   line-height: 1.45;
   margin: 0;
-}
-
-/* Filter Strategy Switch Bar */
-.filter-strategy-switch-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(168, 85, 247, 0.25);
-  border-radius: 14px;
-  padding: 10px 16px;
-  flex-wrap: wrap;
-}
-
-.strategy-switch-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.90rem;
-  font-weight: 700;
-  color: var(--text-primary, #ffffff);
-}
-
-.strategy-toggle-buttons {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.strategy-toggle-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
-  border-radius: 100px;
-  color: var(--text-muted, #cbd5e1);
-  font-size: 0.84rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.strategy-toggle-btn:hover {
-  background: rgba(168, 85, 247, 0.15);
-  border-color: rgba(168, 85, 247, 0.4);
-  color: #ffffff;
-}
-
-.strategy-toggle-btn.active.resistant {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.25), rgba(16, 185, 129, 0.25));
-  border-color: #22c55e;
-  color: #ffffff;
-  box-shadow: 0 0 12px rgba(34, 197, 94, 0.3);
-}
-
-.strategy-toggle-btn.active.max-dps {
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.25));
-  border-color: #a855f7;
-  color: #ffffff;
-  box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
 }
 
 .filter-generator-card {

@@ -3,11 +3,11 @@ import './FilterGeneratorView.css';
 import type { Language } from '../data/translations';
 import type { EventData } from './EventCard';
 import { getTopCountersForPokemonDetailed, getCounterTypesForName } from '../utils/pokemonCountersHelper';
-import { handlePokemonImageError, getPokemonIconUrl } from '../utils/imageResolver';
+import { handlePokemonImageError, getPokemonIconUrl, getBasePokemonName } from '../utils/imageResolver';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { pokemonRankings } from '../data/pokemonRankings';
 import { getRecommendedMegaForEvents } from '../utils/megaFilterHelper';
-import { Copy, Check, Search, Filter, Zap, Sparkles, Dna, ShieldCheck, ShieldAlert, Layers } from 'lucide-react';
+import { Copy, Check, Search, Filter, Zap, Sparkles, Dna, ShieldCheck } from 'lucide-react';
 
 interface FilterGeneratorViewProps {
   lang: Language;
@@ -36,38 +36,60 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
     return getRecommendedMegaForEvents(events);
   }, [events]);
 
-  // Dynamically extract ONLY raid bosses from events that are CURRENTLY ACTIVE right now
+  // Extract ALL active and scheduled Raid Bosses from events list
   const currentRaidBosses = useMemo(() => {
     const set = new Set<string>();
-    const now = new Date();
 
     if (events && events.length > 0) {
       events.forEach(e => {
-        const start = new Date(e.start);
-        const end = new Date(e.end);
-        const isActive = start <= now && now <= end;
+        // Extract from all raid-related event types (raid-battles, raid-hour, mega-raid, max-monday, max-battle)
+        const isRaidEvent =
+          (e.eventType || '').toLowerCase().includes('raid') ||
+          (e.eventType || '').toLowerCase().includes('max') ||
+          (e.heading || '').toLowerCase().includes('raid') ||
+          (e.name || '').toLowerCase().includes('raid') ||
+          (e.name || '').toLowerCase().includes('max monday');
 
-        if (isActive) {
-          const bosses = e.extraData?.raidbattles?.bosses;
-          if (Array.isArray(bosses)) {
-            bosses.forEach(b => {
-              if (b.name) set.add(b.name.replace(/shadow|mega|primal/gi, '').trim());
-            });
-          }
-          if (e.eventType === 'raid-hour' || e.eventType === 'raid-battles' || e.eventType === 'mega-raid') {
-            const clean = e.name.replace(/raid\s*(hour|battles|rotation|day)/gi, '').trim();
-            if (clean && clean.length > 2) set.add(clean);
+        if (isRaidEvent) {
+          const bossesList = [
+            e.extraData?.raidbattles?.bosses,
+            (e.extraData as any)?.raids,
+            (e.extraData as any)?.bosses,
+            (e.extraData as any)?.maxbattles?.bosses
+          ];
+
+          bossesList.forEach(list => {
+            if (Array.isArray(list)) {
+              list.forEach(b => {
+                const rawName = typeof b === 'string' ? b : b?.name;
+                if (rawName) {
+                  const base = getBasePokemonName(rawName);
+                  if (base && base !== 'Raid Boss' && base !== 'Max Boss') {
+                    set.add(base);
+                  }
+                }
+              });
+            }
+          });
+
+          // Also clean name from event title
+          const titleBase = getBasePokemonName(e.name);
+          if (titleBase && titleBase !== 'Raid Boss' && titleBase !== 'Max Boss' && titleBase.length > 2) {
+            set.add(titleBase);
           }
         }
       });
     }
 
-    // Fallback current active legendaries if no active raid events in database right now
+    // Default popular active legendaries if dataset doesn't have events loaded
     if (set.size === 0) {
       ['Palkia', 'Dialga', 'Necrozma', 'Rayquaza', 'Groudon', 'Kyogre', 'Charizard', 'Baxcalibur'].forEach(b => set.add(b));
     }
 
-    if (initialRaidBoss) set.add(initialRaidBoss.replace(/shadow|mega|primal/gi, '').trim());
+    if (initialRaidBoss) {
+      const baseInit = getBasePokemonName(initialRaidBoss);
+      if (baseInit) set.add(baseInit);
+    }
 
     return Array.from(set).filter(Boolean);
   }, [events, initialRaidBoss]);
@@ -86,7 +108,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
       .slice(0, 10);
   }, [selectedBoss, currentRaidBosses]);
 
-  // Detailed Top Counters algorithm considering BOTH Offensive SE AND Defensive NVE Resistance (Task #3)
+  // Detailed Top Counters algorithm dynamically recalculating based on filterStrategy (Resistant vs Max DPS)
   const topCountersDetailed = useMemo(() => {
     const clean = selectedBoss.toLowerCase().replace(/^(shadow|mega|primal)\s+/, '').trim();
     const targetPoke = pokemonRankings.find(p => p.name.toLowerCase().includes(clean)) || {
@@ -94,27 +116,16 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
       bestFastMove: { name: 'Dragon Breath', type: 'Dragon' }, bestChargedMove: { name: 'Draco Meteor', type: 'Dragon' }
     };
 
-    return getTopCountersForPokemonDetailed(targetPoke, pokemonRankings, 14);
-  }, [selectedBoss]);
-
-  // Filter counters based on selected strategy (Resistant Tanky vs Max DPS)
-  const filteredCounters = useMemo(() => {
-    if (filterStrategy === 'resistant') {
-      // Exclude fragile glass cannons (vulnerable) and prioritize NVE resistant counters
-      const resistantOnly = topCountersDetailed.filter(c => c.defensiveRating !== 'vulnerable');
-      return resistantOnly.length > 0 ? resistantOnly : topCountersDetailed;
-    }
-    // Max DPS mode: return all counters without filtering out glass cannons
-    return topCountersDetailed;
-  }, [topCountersDetailed, filterStrategy]);
+    return getTopCountersForPokemonDetailed(targetPoke, pokemonRankings, 12, filterStrategy);
+  }, [selectedBoss, filterStrategy]);
 
   const counterTypes = useMemo(() => {
     return getCounterTypesForName(selectedBoss);
   }, [selectedBoss]);
 
   const searchFilterString = useMemo(() => {
-    if (filteredCounters.length === 0) return '';
-    const uniqueIds = Array.from(new Set(filteredCounters.map(c => c.pokemon.pokedexId)));
+    if (topCountersDetailed.length === 0) return '';
+    const uniqueIds = Array.from(new Set(topCountersDetailed.map(c => c.pokemon.pokedexId)));
     const parts: string[] = ['3*,4*'];
 
     if (counterTypes.length > 0) {
@@ -124,7 +135,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
 
     parts.push(uniqueIds.join(','));
     return parts.join('&');
-  }, [filteredCounters, counterTypes]);
+  }, [topCountersDetailed, counterTypes]);
 
   const handleCopyRaid = () => {
     if (!searchFilterString) return;
@@ -171,7 +182,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
         if (lang === 'ja') return '現在開催中のイベントのレイドボス:';
         if (lang === 'ru') return 'Рейд-боссы в текущих активных событиях:';
         if (lang === 'en') return 'Raid bosses in current active events:';
-        return 'Raid bossové v právě probíhajících událostech:';
+        return 'Raid bossové v probíhajících událostech & rotaci:';
       case 'counters_showcase_header':
         if (lang === 'ja') return 'おすすめ対策ポケモン:';
         if (lang === 'ru') return 'Рекомендуемые покемоны-контрники:';
@@ -212,14 +223,22 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
         <p className="tab-seo-description">{getText('desc')}</p>
       </div>
 
-      {/* Modern Filter Modes Description Banner */}
+      {/* Interactive Filter Strategy Cards (Clickable Toggles) */}
       <div className="filter-modes-info-banner">
-        <div className={`mode-info-card ${filterStrategy === 'resistant' ? 'active-resistant' : ''}`}>
+        <div
+          className={`mode-info-card interactive ${filterStrategy === 'resistant' ? 'active-resistant' : ''}`}
+          onClick={() => setFilterStrategy('resistant')}
+          role="button"
+          tabIndex={0}
+        >
           <div className="mode-info-header">
-            <ShieldCheck size={18} className="mode-icon green" />
-            <strong>
+            <ShieldCheck size={20} className="mode-icon green" />
+            <strong className="mode-title-text">
               {lang === 'cs' ? '🛡️ Režim Odolní & Tanky (Doporučeno)' : '🛡️ Tanky & NVE Resistant Mode (Recommended)'}
             </strong>
+            <span className={`mode-status-badge ${filterStrategy === 'resistant' ? 'active' : ''}`}>
+              {filterStrategy === 'resistant' ? (lang === 'cs' ? 'Aktivní' : 'Active') : (lang === 'cs' ? 'Vybrat' : 'Select')}
+            </span>
           </div>
           <p>
             {lang === 'cs'
@@ -228,44 +247,26 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
           </p>
         </div>
 
-        <div className={`mode-info-card ${filterStrategy === 'max_dps' ? 'active-dps' : ''}`}>
+        <div
+          className={`mode-info-card interactive ${filterStrategy === 'max_dps' ? 'active-dps' : ''}`}
+          onClick={() => setFilterStrategy('max_dps')}
+          role="button"
+          tabIndex={0}
+        >
           <div className="mode-info-header">
-            <Zap size={18} className="mode-icon purple" />
-            <strong>
+            <Zap size={20} className="mode-icon purple" />
+            <strong className="mode-title-text">
               {lang === 'cs' ? '⚡ Režim Max DPS & Všechny Countery' : '⚡ Max DPS & All Counters Mode'}
             </strong>
+            <span className={`mode-status-badge ${filterStrategy === 'max_dps' ? 'active' : ''}`}>
+              {filterStrategy === 'max_dps' ? (lang === 'cs' ? 'Aktivní' : 'Active') : (lang === 'cs' ? 'Vybrat' : 'Select')}
+            </span>
           </div>
           <p>
             {lang === 'cs'
               ? 'Zobrazí kompletní žebříček podle nejsilnějšího poškození za sekundu (DPS) včetně skleněných útočníků, bez ohledu na jejich zranitelnost.'
               : 'Displays raw maximum damage per second (DPS) counters including fragile attackers regardless of defender vulnerabilities.'}
           </p>
-        </div>
-      </div>
-
-      {/* Segmented Filter Strategy Switch Toggle */}
-      <div className="filter-strategy-switch-bar">
-        <span className="strategy-switch-label">
-          <Layers size={16} style={{ color: 'var(--accent-purple, #a855f7)' }} />
-          {lang === 'cs' ? 'Strategie filtrování:' : 'Filtering Strategy:'}
-        </span>
-        <div className="strategy-toggle-buttons">
-          <button
-            type="button"
-            className={`strategy-toggle-btn ${filterStrategy === 'resistant' ? 'active resistant' : ''}`}
-            onClick={() => setFilterStrategy('resistant')}
-          >
-            <ShieldCheck size={16} />
-            <span>{lang === 'cs' ? '🛡️ Odolní & Tanky (Bez Glass Cannonů)' : '🛡️ Resistant & Tanky (No Glass Cannons)'}</span>
-          </button>
-          <button
-            type="button"
-            className={`strategy-toggle-btn ${filterStrategy === 'max_dps' ? 'active max-dps' : ''}`}
-            onClick={() => setFilterStrategy('max_dps')}
-          >
-            <Zap size={16} />
-            <span>{lang === 'cs' ? '⚡ Max DPS (Všechny Countery)' : '⚡ Max DPS (All Counters)'}</span>
-          </button>
         </div>
       </div>
 
@@ -337,14 +338,14 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
         </div>
 
         {/* Recommended Counters Showcase Grid with Defensive Resistance Badges */}
-        {filteredCounters.length > 0 && (
+        {topCountersDetailed.length > 0 && (
           <div className="filter-counters-showcase">
             <div className="counters-showcase-header">
               <ShieldCheck size={16} style={{ color: 'var(--accent-purple, #a855f7)' }} />
               <span>{getText('counters_showcase_header')}</span>
             </div>
             <div className="counters-showcase-grid">
-              {filteredCounters.map(c => (
+              {topCountersDetailed.map(c => (
                 <div key={c.pokemon.name} className={`counter-card-mini ${c.defensiveRating}`}>
                   <div className="counter-sprite-wrapper">
                     <img

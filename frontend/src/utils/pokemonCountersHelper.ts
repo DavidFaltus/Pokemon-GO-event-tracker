@@ -119,8 +119,6 @@ export function getCounterTypes(types: string[]): CounterTypeInfo[] {
 }
 
 // ─── DEFENSIVE MATCHUP SCORING ──────────────────────────────────────────────
-// Calculates how resistant a candidate attacker is to the Boss's STAB move types.
-// Reward counters that RESIST the boss's attacks (NVE) and penalize counters that are WEAK to the boss!
 export function calculateDefensiveMatchup(
   attackerTypes: string[],
   bossTypes: string[]
@@ -129,12 +127,11 @@ export function calculateDefensiveMatchup(
     return { defensiveMultiplier: 1.0, defensiveRating: 'neutral', defensiveLabel: '⚔️ Neutral' };
   }
 
-  // Calculate damage from each of boss's types to candidate attacker
   const damageFromBoss = bossTypes.map(bType => getCombinedDamageMultiplier(bType, attackerTypes));
   const maxDamageFromBoss = Math.max(...damageFromBoss);
   const minDamageFromBoss = Math.min(...damageFromBoss);
 
-  // 1. Excellent Defensive Matchup (Attacker RESISTS or IMMUNIZES boss attacks, NVE <= 0.625x)
+  // 1. Excellent Defensive Matchup (Attacker RESISTS or IMMUNIZES boss attacks, NVE <= 0.65x)
   if (minDamageFromBoss <= 0.65 || maxDamageFromBoss <= 0.65) {
     return {
       defensiveMultiplier: 1.35, // 35% score boost for resistant tank counters!
@@ -143,12 +140,12 @@ export function calculateDefensiveMatchup(
     };
   }
 
-  // 2. Vulnerable / Glass Matchup (Boss deals Super Effective damage back to attacker, SE >= 1.6x)
+  // 2. Vulnerable / Glass Matchup (Boss deals Super Effective damage back to attacker, SE >= 1.5x)
   if (maxDamageFromBoss >= 1.5) {
     return {
-      defensiveMultiplier: 0.70, // 30% penalty so glass counters don't obscure tanky counters!
+      defensiveMultiplier: 0.40, // Significant penalty for glass cannons!
       defensiveRating: 'vulnerable',
-      defensiveLabel: '⚠️ Zranitelný vůči bossu'
+      defensiveLabel: '⚠️ Glass Cannon / Zranitelný'
     };
   }
 
@@ -163,7 +160,7 @@ export function calculateDefensiveMatchup(
 // ─── TOP COUNTERS FOR A POKEMON ─────────────────────────────────────────────
 export interface CounterPokemonInfo {
   pokemon: PokemonRankData;
-  counterRating: number; // Combined offensive DPS + defensive resistance rating
+  counterRating: number;
   effectiveType: string;
   defensiveRating: 'resistant' | 'neutral' | 'vulnerable';
   defensiveLabel: string;
@@ -172,28 +169,26 @@ export interface CounterPokemonInfo {
 export function getTopCountersForPokemonDetailed(
   targetPokemon: PokemonRankData,
   allRankings: PokemonRankData[],
-  limit: number = 20
+  limit: number = 20,
+  filterStrategy: 'resistant' | 'max_dps' = 'resistant'
 ): CounterPokemonInfo[] {
   const counterTypes = getCounterTypes(targetPokemon.types);
   const primaryCounterTypeNames = new Set(counterTypes.map(c => c.type));
 
-  // Find candidate attackers whose charged move matches one of the counter types
   const candidates = allRankings.filter(p => {
-    // Exclude self or same base species if Mega/Shadow
     if (p.pokedexId === targetPokemon.pokedexId) return false;
     return primaryCounterTypeNames.has(p.bestChargedMove.type);
   });
 
-  // Score candidates considering BOTH offensive weakness AND defensive resistance (TODO.txt Task #3)
   const scored = candidates.map(poke => {
     const counterInfo = counterTypes.find(c => c.type === poke.bestChargedMove.type);
     const offensiveMult = counterInfo ? counterInfo.multiplier : 1.6;
 
-    // Calculate defensive resistance matchup (Boss -> Attacker)
     const defMatchup = calculateDefensiveMatchup(poke.types, targetPokemon.types);
 
-    // Combined score = Base PVE Score * Offensive Multiplier * Defensive Multiplier
-    const counterRating = Math.round(poke.pveScore * (offensiveMult / 1.6) * defMatchup.defensiveMultiplier);
+    const counterRating = filterStrategy === 'resistant'
+      ? Math.round(poke.pveScore * (offensiveMult / 1.6) * defMatchup.defensiveMultiplier)
+      : Math.round(poke.pveScore * (offensiveMult / 1.6));
 
     return {
       pokemon: poke,
@@ -204,14 +199,21 @@ export function getTopCountersForPokemonDetailed(
     };
   });
 
-  // Sort candidates by combined score (Resistant & SE counters move to top!)
   scored.sort((a, b) => b.counterRating - a.counterRating);
 
-  // Take top unique species up to limit
+  // In 'resistant' mode, strictly exclude glass cannons (vulnerable) so they don't appear in the search string!
+  let candidatesToUse = scored;
+  if (filterStrategy === 'resistant') {
+    const nonGlass = scored.filter(c => c.defensiveRating !== 'vulnerable');
+    if (nonGlass.length >= 4) {
+      candidatesToUse = nonGlass;
+    }
+  }
+
   const topList: CounterPokemonInfo[] = [];
   const usedDex = new Set<number>();
 
-  for (const item of scored) {
+  for (const item of candidatesToUse) {
     if (!usedDex.has(item.pokemon.pokedexId)) {
       usedDex.add(item.pokemon.pokedexId);
       topList.push(item);
@@ -227,7 +229,7 @@ export function getTopCountersForPokemon(
   allRankings: PokemonRankData[],
   limit: number = 20
 ): CounterPokemonInfo[] {
-  return getTopCountersForPokemonDetailed(targetPokemon, allRankings, limit);
+  return getTopCountersForPokemonDetailed(targetPokemon, allRankings, limit, 'resistant');
 }
 
 // ─── TOP 5 MOVESETS FOR A POKEMON ───────────────────────────────────────────
@@ -351,7 +353,6 @@ export function getTopCountersFilterString(bossName: string, includeMoves: boole
     parts.push('3*,4*');
   }
 
-  // Include move type filter e.g. "@ice,@dragon,@fairy,@rock"
   if (includeMoves && counterTypes.length > 0) {
     const moveTypesStr = counterTypes.map(t => `@${t.toLowerCase()}`).join(',');
     parts.push(moveTypesStr);
