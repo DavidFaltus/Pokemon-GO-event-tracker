@@ -3,6 +3,16 @@ import Script from 'next/script';
 import '../index.css';
 import '../App.css';
 import './globals.css';
+import '../components/RocketGuide.css';
+import '../components/RaidView.css';
+import '../components/EventCard.css';
+import '../components/DittoEggsView.css';
+import '../components/PokemonRankingsView.css';
+import '../components/FilterGeneratorView.css';
+import '../components/NotificationSettings.css';
+import '../components/AdminPanelView.css';
+import '../components/CalendarView.css';
+import '../components/ActiveBonuses.css';
 import type { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
