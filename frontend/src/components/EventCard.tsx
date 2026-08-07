@@ -1452,7 +1452,27 @@ export const EventCard: React.FC<EventCardProps> = ({
       >
         <div className="card-top">
           <div className="event-img-wrapper">
-            <MultiBossAvatar bosses={bosses} eventName={event.name} eventType={event.eventType} size={56} />
+            {(event.eventType?.toLowerCase().includes('spotlight') ||
+              event.eventType?.toLowerCase().includes('community') ||
+              event.eventType?.toLowerCase().includes('max-monday') ||
+              event.eventType?.toLowerCase().includes('max-battle') ||
+              event.name?.toLowerCase().includes('spotlight') ||
+              event.name?.toLowerCase().includes('community') ||
+              event.name?.toLowerCase().includes('max monday') ||
+              event.name?.toLowerCase().includes('max battle') ||
+              bosses.length > 1) ? (
+              <MultiBossAvatar bosses={bosses} eventName={event.name} eventType={event.eventType} size={56} />
+            ) : (
+              <img 
+                src={resolveImage(event.image, event.eventType, event.name)} 
+                alt={event.name}
+                width={100}
+                height={100}
+                loading="lazy"
+                decoding="async"
+                onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, event.name)}
+              />
+            )}
             <span className={`status-pill ${status}`}>
               {status === 'active' ? (lang === 'cs' ? '● Probíhá' : '● Active') : status === 'upcoming' ? (lang === 'cs' ? 'Připravuje se' : 'Upcoming') : (lang === 'cs' ? 'Ukončeno' : 'Ended')}
             </span>

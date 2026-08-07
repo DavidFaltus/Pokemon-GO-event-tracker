@@ -276,7 +276,12 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
                       {raidEvents.map((item) => (
                         <div key={item.eventID} className="poster-card">
                           <div className="poster-card-icon-wrapper">
-                            <MultiBossAvatar eventName={item.name} eventType={item.eventType} bosses={(item.extraData as any)?.bosses} size={48} />
+                            <img
+                              src={resolveImage(item.image, item.eventType, item.name)}
+                              alt={item.name}
+                              className="poster-card-icon"
+                              onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, item.name)}
+                            />
                           </div>
                           <div className="poster-card-info">
                             <div className="poster-card-date-badge-row">
@@ -341,7 +346,12 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
                       {otherEvents.slice(0, 8).map((item) => (
                         <div key={item.eventID} className="poster-card">
                           <div className="poster-card-icon-wrapper">
-                            <MultiBossAvatar eventName={item.name} eventType={item.eventType} bosses={(item.extraData as any)?.bosses} size={48} />
+                            <img
+                              src={resolveImage(item.image, item.eventType, item.name)}
+                              alt={item.name}
+                              className="poster-card-icon"
+                              onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, item.name)}
+                            />
                           </div>
                           <div className="poster-card-info">
                             <span className="poster-card-date">{`${formatDateShort(item.start)} – ${formatDateShort(item.end)}`}</span>
