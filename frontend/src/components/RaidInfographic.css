@@ -17,6 +17,48 @@
   max-width: 520px;
 }
 
+.boss-switcher-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 6px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  overflow-x: auto;
+}
+
+.boss-switcher-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #c084fc;
+  white-space: nowrap;
+}
+
+.boss-tab-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.boss-tab-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.boss-tab-btn.active {
+  background: linear-gradient(135deg, #a855f7, #7e22ce);
+  color: #fff;
+  border-color: #c084fc;
+}
+
 .slide-tabs.flex-row {
   display: flex;
   gap: 6px;
@@ -174,7 +216,7 @@
   vertical-align: middle;
 }
 
-/* Icon-Only Type Badge (NO Text Labels like "Fire" or "Fighting") */
+/* Icon-Only Type Badge */
 .type-badge.icon-only-badge {
   padding: 4px;
   border-radius: 50%;
@@ -229,7 +271,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 12px;
   flex: 1;
   margin-bottom: 8px;
 }
@@ -247,7 +289,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
+  gap: 16px;
   width: 100%;
 }
 
@@ -259,8 +301,8 @@
 }
 
 .boss-sprite-giant-max {
-  width: 180px;
-  height: 180px;
+  width: 175px;
+  height: 175px;
   object-fit: contain;
   filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.8));
 }
@@ -269,11 +311,33 @@
   filter: drop-shadow(0 0 26px rgba(251, 191, 36, 0.9));
 }
 
+.boss-sprite-combined-2 {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.7));
+}
+
+.boss-sprite-combined-2.shiny-glow {
+  filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.8));
+}
+
+.boss-sprite-combined-3 {
+  width: 85px;
+  height: 85px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.65));
+}
+
+.boss-sprite-combined-3.shiny-glow {
+  filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.75));
+}
+
 .sprite-label {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: #94a3b8;
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 .sprite-label.shiny {
@@ -284,7 +348,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 .regional-tag {
@@ -345,7 +409,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
+  gap: 16px;
+}
+
+.max-sprite-pair-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .boss-max-sprite-giant {
@@ -572,7 +642,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 /* Poster Footer */
