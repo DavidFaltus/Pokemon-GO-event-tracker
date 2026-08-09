@@ -1,6 +1,6 @@
 {
   "name": "pogo-event-tracker-backend",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Backend API for Pokemon GO Event Tracker",
   "main": "dist/index.js",
   "scripts": {

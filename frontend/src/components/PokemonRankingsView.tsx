@@ -143,7 +143,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
   }, [fullSortedRankings]);
 
   const getPokeKey = useCallback((poke: PokemonRankData) =>
-    `${poke.name}-${poke.pokedexId}-${poke.isShadow}-${poke.isMega}-${poke.isPrimal}`, []);
+    `${poke.name}-${poke.pokedexId}-${poke.bestChargedMove?.type || 'none'}-${poke.bestChargedMove?.name || 'none'}-${poke.isShadow}-${poke.isMega}-${poke.isPrimal}`, []);
 
   // Filtered + sorted list for display
   const filteredRankings = useMemo(() => {

@@ -117,30 +117,6 @@ export const pokemonRankings: PokemonRankData[] = [
     bestChargedMove: { name: "Future Sight", type: "Psychic" }
   },
   {
-    name: "Dawn Wings Necrozma",
-    pokedexId: 800,
-    types: ["Psychic", "Ghost"],
-    attack: 277, defense: 220, stamina: 200, maxCp: 4683, pveScore: 99, dps: 34.8,
-    bestFastMove: { name: "Shadow Claw", type: "Ghost" },
-    bestChargedMove: { name: "Moongeist Beam", type: "Ghost" }
-  },
-  {
-    name: "Dusk Mane Necrozma",
-    pokedexId: 800,
-    types: ["Psychic", "Steel"],
-    attack: 277, defense: 220, stamina: 200, maxCp: 4683, pveScore: 99, dps: 34.5,
-    bestFastMove: { name: "Metal Claw", type: "Steel" },
-    bestChargedMove: { name: "Sunsteel Strike", type: "Steel" }
-  },
-  {
-    name: "Necrozma",
-    pokedexId: 800,
-    types: ["Psychic"],
-    attack: 251, defense: 195, stamina: 219, maxCp: 4236, pveScore: 86, dps: 22.0,
-    bestFastMove: { name: "Psycho Cut", type: "Psychic" },
-    bestChargedMove: { name: "Future Sight", type: "Psychic" }
-  },
-  {
     name: "Aria Forme Meloetta",
     pokedexId: 648,
     types: ["Normal","Psychic"],
