@@ -123,7 +123,7 @@
 
 .raid-download-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(56, 189, 248, 0.4);
+  box-shadow: 0 6px 18px rgba(168, 85, 247, 0.5);
 }
 
 .raid-download-btn.success {
@@ -266,8 +266,23 @@
   overflow: hidden;
 }
 
-/* SLIDE 1: MAXIMIZED POKEMON SPRITES & ROTATION */
-.slide1-bosses-expanded {
+/* SLIDE 1: MULTI-BOSS GRID (2 TOP, 1 BOTTOM FOR 3 BOSSES WITH NAMES ABOVE SPRITES) */
+.boss-individual-name {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 4px;
+  text-align: center;
+  letter-spacing: 0.3px;
+  background: rgba(168, 85, 247, 0.25);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  padding: 2px 10px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.slide1-bosses-expanded,
+.max-sprites-grid {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -276,16 +291,34 @@
   margin-bottom: 8px;
 }
 
-.slide1-expanded-card {
+/* Grid Layout for 3 Combined Bosses: 2 Top, 1 Bottom Centered */
+.slide1-bosses-expanded.multi-3-grid,
+.max-sprites-grid.multi-3-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  width: 100%;
+  align-items: center;
+  justify-items: center;
+}
+
+.slide1-bosses-expanded.multi-3-grid .slide1-expanded-card:nth-child(3),
+.max-sprites-grid.multi-3-grid .max-sprite-card-item:nth-child(3) {
+  grid-column: span 2;
+  justify-self: center;
+}
+
+.slide1-expanded-card,
+.max-sprite-card-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex: 1;
   width: 100%;
 }
 
-.sprites-large-pair {
+.sprites-large-pair,
+.max-sprite-pair-flex {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -322,22 +355,22 @@
   filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.8));
 }
 
-.boss-sprite-combined-3 {
-  width: 85px;
-  height: 85px;
+.boss-sprite-grid-3 {
+  width: 75px;
+  height: 75px;
   object-fit: contain;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.65));
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.65));
 }
 
-.boss-sprite-combined-3.shiny-glow {
-  filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.75));
+.boss-sprite-grid-3.shiny-glow {
+  filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.8));
 }
 
 .sprite-label {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
   color: #94a3b8;
-  margin-top: 3px;
+  margin-top: 2px;
 }
 
 .sprite-label.shiny {
@@ -348,12 +381,12 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 .regional-tag {
-  font-size: 0.68rem;
-  padding: 2px 8px;
+  font-size: 0.65rem;
+  padding: 2px 6px;
   border-radius: 6px;
   background: rgba(59, 130, 246, 0.25);
   color: #93c5fd;
@@ -370,7 +403,7 @@
   background: rgba(248, 113, 113, 0.08);
   border: 1px solid rgba(248, 113, 113, 0.3);
   border-radius: 12px;
-  padding: 10px 14px;
+  padding: 8px 12px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -380,10 +413,10 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 800;
   color: #f87171;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   letter-spacing: 0.5px;
 }
 

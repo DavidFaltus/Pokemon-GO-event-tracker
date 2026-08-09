@@ -468,16 +468,23 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
           )}
         </div>
 
-        {/* SLIDE 1: RAID ROTATION (Displays all bosses if combined, or active boss if separate) */}
+        {/* SLIDE 1: RAID ROTATION (Displays 2 top, 1 bottom for 3 bosses with names above sprites) */}
         {activeSlide === 1 && (
           <div className="slide-content-block slide1">
-            <div className="slide1-bosses-expanded">
+            <div className={`slide1-bosses-expanded ${isCombined && bossesList.length === 3 ? 'multi-3-grid' : isCombined && bossesList.length === 2 ? 'multi-2-grid' : ''}`}>
               {(isCombined ? bossesList : [activeBoss]).map((boss, idx) => {
                 const count = isCombined ? bossesList.length : 1;
-                const spriteClass = count >= 3 ? 'boss-sprite-combined-3' : count === 2 ? 'boss-sprite-combined-2' : 'boss-sprite-giant-max';
+                const spriteClass = count >= 3 ? 'boss-sprite-grid-3' : count === 2 ? 'boss-sprite-combined-2' : 'boss-sprite-giant-max';
 
                 return (
                   <div key={idx} className="slide1-expanded-card">
+                    {/* Name ABOVE the sprite pair */}
+                    {count > 1 && (
+                      <span className="boss-individual-name">
+                        {getPokemonName(boss.name, 'en')}
+                      </span>
+                    )}
+
                     <div className="sprites-large-pair">
                       <div className="sprite-large-box">
                         <img 
@@ -532,40 +539,42 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
           </div>
         )}
 
-        {/* SLIDE 2: RAID HOUR (Maximized Sprites + Accurate Wednesday Raid Hour Date + Unified CP Box & Weather) */}
+        {/* SLIDE 2: RAID HOUR (2 top, 1 bottom for 3 bosses with names above sprites) */}
         {activeSlide === 2 && (
           <div className="slide-content-block slide2">
             <div className="slide2-boss-maximized">
-              <div className="max-sprites-flex">
+              <div className={`max-sprites-grid ${isCombined && bossesList.length === 3 ? 'multi-3-grid' : isCombined && bossesList.length === 2 ? 'multi-2-grid' : ''}`}>
                 {(isCombined ? bossesList : [activeBoss]).map((boss, idx) => {
                   const count = isCombined ? bossesList.length : 1;
-                  const spriteClass = count >= 3 ? 'boss-sprite-combined-3' : count === 2 ? 'boss-sprite-combined-2' : 'boss-max-sprite-giant';
+                  const spriteClass = count >= 3 ? 'boss-sprite-grid-3' : count === 2 ? 'boss-sprite-combined-2' : 'boss-max-sprite-giant';
 
                   return (
-                    <div key={idx} className="max-sprite-pair-item">
-                      <img
-                        src={resolveImage(boss.image, event.eventType, boss.name, false)}
-                        alt={boss.name}
-                        className={spriteClass}
-                        onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, boss.name, false)}
-                      />
-                      {boss.canBeShiny && (
-                        <img
-                          src={resolveImage(boss.image, event.eventType, boss.name, true)}
-                          alt={`${boss.name} Shiny`}
-                          className={`${spriteClass} shiny-glow`}
-                          onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, boss.name, true)}
-                        />
+                    <div key={idx} className="max-sprite-card-item">
+                      {count > 1 && (
+                        <span className="boss-individual-name">
+                          {getPokemonName(boss.name, 'en')}
+                        </span>
                       )}
+                      <div className="max-sprite-pair-flex">
+                        <img
+                          src={resolveImage(boss.image, event.eventType, boss.name, false)}
+                          alt={boss.name}
+                          className={spriteClass}
+                          onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, boss.name, false)}
+                        />
+                        {boss.canBeShiny && (
+                          <img
+                            src={resolveImage(boss.image, event.eventType, boss.name, true)}
+                            alt={`${boss.name} Shiny`}
+                            className={`${spriteClass} shiny-glow`}
+                            onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, boss.name, true)}
+                          />
+                        )}
+                      </div>
                     </div>
                   );
                 })}
               </div>
-              <h3 className="max-boss-title">
-                {isCombined && bossesList.length > 1
-                  ? bossesList.map(b => getPokemonName(b.name, 'en')).join(' • ')
-                  : getPokemonName(primaryBossName, 'en')}
-              </h3>
             </div>
 
             {/* Unified CP Box */}
