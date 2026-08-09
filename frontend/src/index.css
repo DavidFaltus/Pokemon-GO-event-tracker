@@ -817,34 +817,109 @@ body {
   border-color: var(--accent-color);
 }
 
+/* Events Header Bar & View Switcher */
+.events-header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.events-header-text {
+  flex: 1 1 240px;
+}
+
+.events-header-text .tab-seo-title {
+  margin-bottom: 4px;
+}
+
+.events-header-text .tab-seo-description {
+  margin-bottom: 0;
+}
+
+.events-view-switcher {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+  backdrop-filter: blur(8px);
+}
+
+.view-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.view-switch-btn:hover {
+  color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.view-switch-btn.active {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.25) 0%, rgba(59, 130, 246, 0.25) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  color: var(--text-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode .events-view-switcher {
+  background-color: #f1f5f9 !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
+}
+
+body.light-mode .view-switch-btn.active {
+  background: #ffffff !important;
+  border-color: rgba(168, 85, 247, 0.4) !important;
+  color: #0f172a !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+}
+
 /* Status Tabs (Active / Upcoming / Infographic Summary - Split into thirds) */
 .status-tabs-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 4px;
+  border-radius: 14px;
+  padding: 5px;
   margin-bottom: 14px;
   gap: 6px;
+  backdrop-filter: blur(10px);
 }
 
 .status-tab-btn {
   width: 100%;
   background: none;
-  border: none;
-  color: var(--text-secondary);
+  border: 2px solid transparent;
+  color: var(--text-muted);
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: 0.84rem;
   font-weight: 700;
-  padding: 10px 6px;
-  border-radius: 8px;
+  padding: 11px 8px;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 6px;
-  transition: all 0.2s ease;
+  gap: 7px;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -852,27 +927,42 @@ body {
 
 .status-tab-btn.infographic-tab-btn {
   background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%);
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  border: 1.5px solid rgba(56, 189, 248, 0.35);
   color: #38bdf8;
 }
 
 .status-tab-btn.infographic-tab-btn:hover {
   background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%);
-  border-color: rgba(56, 189, 248, 0.5);
+  border-color: rgba(56, 189, 248, 0.55);
   color: #7dd3fc;
 }
 
-
 .status-tab-btn:hover {
   color: var(--text-primary);
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .status-tab-btn.active {
-  background-color: var(--bg-card);
-  color: var(--text-primary);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(170, 59, 255, 0.15);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.28) 0%, rgba(99, 102, 241, 0.28) 100%);
+  border: 2px solid #a855f7;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.88rem;
+  box-shadow: 0 4px 18px rgba(168, 85, 247, 0.35), inset 0 0 10px rgba(168, 85, 247, 0.2);
+  transform: translateY(-1px);
+}
+
+.status-tab-btn.active svg {
+  stroke-width: 2.5px;
+  filter: drop-shadow(0 0 4px rgba(168, 85, 247, 0.6));
+}
+
+body.light-mode .status-tab-btn.active {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.18) 0%, rgba(99, 102, 241, 0.18) 100%) !important;
+  border: 2px solid #9333ea !important;
+  color: #0f172a !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 14px rgba(147, 51, 234, 0.22) !important;
 }
 
 /* Spotlight Hour Styling */

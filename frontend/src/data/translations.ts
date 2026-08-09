@@ -56,6 +56,10 @@ export const translations = {
     header_offline: "Offline Režim",
     header_active: "Aktivní",
 
+    // View Mode
+    view_mode_list: "Seznam",
+    view_mode_timeline: "Časová osa",
+
     // Filters
     filter_all: "Vše",
     filter_cd: "Community Day",
@@ -259,6 +263,10 @@ export const translations = {
     header_live: "Live Data",
     header_offline: "Offline Mode",
     header_active: "Active",
+
+    // View Mode
+    view_mode_list: "List",
+    view_mode_timeline: "Timeline",
 
     // Filters
     filter_all: "All",
@@ -466,6 +474,10 @@ export const translations = {
     header_offline: "オフライン",
     header_active: "アクティブ",
 
+    // View Mode
+    view_mode_list: "リスト",
+    view_mode_timeline: "タイムライン",
+
     // Filters
     filter_all: "すべて",
     filter_cd: "コミュニティデイ",
@@ -671,6 +683,10 @@ export const translations = {
     header_live: "Актуальные данные",
     header_offline: "Офлайн режим",
     header_active: "Активно",
+
+    // View Mode
+    view_mode_list: "Список",
+    view_mode_timeline: "Временная шкала",
 
     // Filters
     filter_all: "Все",

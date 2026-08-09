@@ -14,7 +14,7 @@ import { API_BASE_URL } from './config';
 import { AdContainer } from './components/AdContainer';
 import { setPokemonIconOverrides } from './utils/imageResolver';
 import { useAppNavigate } from './hooks/useAppNavigate';
-import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy, Filter } from 'lucide-react';
+import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy, Filter, LayoutList } from 'lucide-react';
 
 // Lazy-loaded tabs - loaded only when user navigates to them (reduces initial bundle ~40%)
 const RaidView = lazy(() => import('./components/RaidView').then(m => ({ default: m.RaidView })));
@@ -377,7 +377,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
   const [events, setEvents] = useState<EventData[]>(() => sanitizeEvents(MOCK_EVENTS));
   const [filterType, setFilterType] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'active' | 'upcoming'>('active');
-  const [viewMode, setViewMode] = useState<'list' | 'timeline'>('list');
+  const [viewMode, setViewMode] = useState<'list' | 'timeline'>('timeline');
   const [showMonthSummary, setShowMonthSummary] = useState<boolean>(false);
   const [monthSummaryInitialOffset, setMonthSummaryInitialOffset] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(false);
@@ -619,22 +619,6 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
     if (!isSpecific && !visibleEvents.majorEvents) return false;
     return true;
   };
-
-  useEffect(() => {
-    if (filterType === 'all') return;
-    const isCurrentVisible = 
-      (filterType === 'community-day' && visibleEvents.communityDays) ||
-      (filterType === 'pokemon-spotlight-hour' && visibleEvents.spotlightHours) ||
-      (filterType === 'raid-hour' && visibleEvents.raidHours) ||
-      (filterType === 'other' && visibleEvents.majorEvents);
-
-    if (!isCurrentVisible) {
-      if (visibleEvents.communityDays) setFilterType('community-day');
-      else if (visibleEvents.spotlightHours) setFilterType('pokemon-spotlight-hour');
-      else if (visibleEvents.raidHours) setFilterType('raid-hour');
-      else if (visibleEvents.majorEvents) setFilterType('other');
-    }
-  }, [visibleEvents, filterType]);
   
   const notificationsHook = useNotifications();
   const { triggerNotification, notifyNewEvents, addInAppNotification } = notificationsHook;
@@ -908,6 +892,43 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
       notificationsHook.scheduleEventNotifications(events, lang);
     }
   }, [events, notificationsHook.permission, notificationsHook.preferences, lang]);
+
+  // Category availability helper for current status tab events
+  const getCurrentStatusEvents = () => {
+    let list = getAdjustedEvents().filter(e => isEventVisible(e.eventType));
+    const now = new Date();
+    if (statusFilter === 'active') {
+      return list.filter(e => now >= new Date(e.start) && now <= new Date(e.end));
+    }
+    return list.filter(e => now < new Date(e.start));
+  };
+
+  const currentStatusEvents = getCurrentStatusEvents();
+  const specificCategoryTypes = ['community-day', 'pokemon-spotlight-hour', 'raid-hour'];
+
+  const hasCommunityDay = visibleEvents.communityDays && currentStatusEvents.some(e => e.eventType === 'community-day');
+  const hasSpotlightHour = visibleEvents.spotlightHours && currentStatusEvents.some(e => e.eventType === 'pokemon-spotlight-hour');
+  const hasRaidHour = visibleEvents.raidHours && currentStatusEvents.some(e => e.eventType === 'raid-hour');
+  const hasOtherCategory = visibleEvents.majorEvents && currentStatusEvents.some(e => !specificCategoryTypes.includes(e.eventType));
+
+  const specificCategoryCount = (hasCommunityDay ? 1 : 0) +
+                                (hasSpotlightHour ? 1 : 0) +
+                                (hasRaidHour ? 1 : 0);
+
+  const showFilterPills = specificCategoryCount > 0;
+
+  useEffect(() => {
+    if (filterType === 'all') return;
+    const isCurrentVisible = 
+      (filterType === 'community-day' && hasCommunityDay) ||
+      (filterType === 'pokemon-spotlight-hour' && hasSpotlightHour) ||
+      (filterType === 'raid-hour' && hasRaidHour) ||
+      (filterType === 'other' && hasOtherCategory);
+
+    if (!isCurrentVisible || !showFilterPills) {
+      setFilterType('all');
+    }
+  }, [filterType, hasCommunityDay, hasSpotlightHour, hasRaidHour, hasOtherCategory, showFilterPills]);
 
   // Filter events by tab
   const getFilteredEvents = () => {
@@ -1222,8 +1243,32 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
               <>
                 {activeTab === 'events' && (
                   <div className="tab-content events-tab">
-                    <h1 className="tab-seo-title">{t.tabs_events}</h1>
-                    <p className="tab-seo-description">{t.seo_events_desc}</p>
+                    <div className="events-header-bar">
+                      <div className="events-header-text">
+                        <h1 className="tab-seo-title">{t.tabs_events}</h1>
+                        <p className="tab-seo-description">{t.seo_events_desc}</p>
+                      </div>
+                      <div className="events-view-switcher" role="radiogroup" aria-label={t.settings_layout_title}>
+                        <button 
+                          className={`view-switch-btn ${viewMode === 'list' ? 'active' : ''}`}
+                          onClick={() => setViewMode('list')}
+                          title={t.settings_layout_list}
+                          aria-label={t.settings_layout_list}
+                        >
+                          <LayoutList size={14} />
+                          <span>{t.view_mode_list}</span>
+                        </button>
+                        <button 
+                          className={`view-switch-btn ${viewMode === 'timeline' ? 'active' : ''}`}
+                          onClick={() => setViewMode('timeline')}
+                          title={t.settings_layout_timeline}
+                          aria-label={t.settings_layout_timeline}
+                        >
+                          <Calendar size={14} />
+                          <span>{t.view_mode_timeline}</span>
+                        </button>
+                      </div>
+                    </div>
                     {/* Active / Upcoming / Next Month Summary Status Tabs (Split in thirds) */}
                     {viewMode !== 'timeline' && (
                       <div className="status-tabs-container">
@@ -1244,31 +1289,31 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
                         <button 
                           className="status-tab-btn infographic-tab-btn"
                           onClick={() => {
-                            setMonthSummaryInitialOffset(1);
+                            setMonthSummaryInitialOffset(0);
                             setShowMonthSummary(true);
                           }}
-                          title={lang === 'cs' ? 'Zobrazit souhrnnou infografiku na příští měsíc' : 'View next month summary infographic'}
+                          title={lang === 'cs' ? 'Zobrazit souhrnnou infografiku na tento měsíc' : 'View this month summary infographic'}
                         >
                           <Sparkles size={14} />
-                          {lang === 'cs' ? 'Souhrn na příští měsíc' : lang === 'ja' ? '来月のサマリー' : lang === 'ru' ? 'Сводка на следующий месяц' : 'Next Month Summary'}
+                          {lang === 'cs' ? 'Souhrn na tento měsíc' : lang === 'ja' ? '今月のサマリー' : lang === 'ru' ? 'Сводка на этот месяц' : 'This Month Summary'}
                         </button>
                       </div>
                     )}
 
-                    {/* Event Category Filters */}
-                    {viewMode !== 'timeline' && (
+                    {/* Event Category Filters - Only shown if specific sub-categories exist */}
+                    {viewMode !== 'timeline' && showFilterPills && (
                       <div className="filter-pill-container" style={{ marginTop: '12px' }}>
                         <button className={`filter-pill ${filterType === 'all' ? 'active' : ''}`} onClick={() => setFilterType('all')}>{t.filter_all}</button>
-                        {visibleEvents.communityDays && (
+                        {hasCommunityDay && (
                           <button className={`filter-pill ${filterType === 'community-day' ? 'active' : ''}`} onClick={() => setFilterType('community-day')}>{t.filter_cd}</button>
                         )}
-                        {visibleEvents.spotlightHours && (
+                        {hasSpotlightHour && (
                           <button className={`filter-pill ${filterType === 'pokemon-spotlight-hour' ? 'active' : ''}`} onClick={() => setFilterType('pokemon-spotlight-hour')}>{t.filter_spotlight}</button>
                         )}
-                        {visibleEvents.raidHours && (
+                        {hasRaidHour && (
                           <button className={`filter-pill ${filterType === 'raid-hour' ? 'active' : ''}`} onClick={() => setFilterType('raid-hour')}>{t.filter_raid_hour}</button>
                         )}
-                        {visibleEvents.majorEvents && (
+                        {hasOtherCategory && (
                           <button className={`filter-pill ${filterType === 'other' ? 'active' : ''}`} onClick={() => setFilterType('other')}>{t.filter_other}</button>
                         )}
                       </div>

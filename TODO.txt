@@ -1,6 +1,6 @@
 1: [COMPLETED] Vylepšení indexování stránek, url eventu bude odkazovat přímo na rozkliknutý event, srovnání routingu (URL se mění při překliku na sekce, eventy i jazyky)
 2: [COMPLETED] Další pokus o technická vylepšení ze stránky: https://pagespeed.web.dev/analysis/https-pogoevents-app/c53c34bbt0?utm_source=search_console&form_factor=mobile&hl=cs
-3: Přidat switch do sekce událostí na přepínání Zobrazení událostí (seznam nebo časová osa)
+3: [COMPLETED] Přidat switch do sekce událostí na přepínání Zobrazení událostí (seznam nebo časová osa)
 
 
 pogo-admin-2026
