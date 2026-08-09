@@ -52,12 +52,52 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
   // Translate bonus
   const getBonusText = (b: string) => {
     const lower = b.toLowerCase();
-    if (lower.includes('stardust')) return { title: lang === 'cs' ? '2× Catch Stardust' : '2× Catch Stardust', icon: '🧪', color: '#f39c12' };
-    if (lower.includes('xp') && lower.includes('catch')) return { title: lang === 'cs' ? '2× Catch XP' : '2× Catch XP', icon: '⭐', color: '#3498db' };
-    if (lower.includes('xp') && lower.includes('evolve')) return { title: lang === 'cs' ? '2× Evolve XP' : '2× Evolve XP', icon: '⚡', color: '#9b59b6' };
-    if (lower.includes('candy') && lower.includes('transfer')) return { title: lang === 'cs' ? '2× Transfer Candy' : '2× Transfer Candy', icon: '🍬', color: '#e67e22' };
-    if (lower.includes('candy')) return { title: lang === 'cs' ? '2× Catch Candy' : '2× Catch Candy', icon: '🍬', color: '#e67e22' };
-    return { title: b || (lang === 'cs' ? '2× Bonus za chytání' : '2× Catch Bonus'), icon: '🎁', color: '#f1c40f' };
+    if (lower.includes('stardust')) {
+      return {
+        title: '2× Catch Stardust',
+        iconUrl: 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Today%20View/TodayView_Icon_Stardust.png',
+        iconEmoji: '🧪',
+        color: '#f39c12'
+      };
+    }
+    if (lower.includes('xp') && lower.includes('evolve')) {
+      return {
+        title: '2× Evolve XP',
+        iconUrl: 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Today%20View/TodayView_Icon_Evolve.png',
+        iconEmoji: '⚡',
+        color: '#9b59b6'
+      };
+    }
+    if (lower.includes('xp')) {
+      return {
+        title: '2× Catch XP',
+        iconUrl: 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Today%20View/TodayView_Icon_XP.png',
+        iconEmoji: '⭐',
+        color: '#3498db'
+      };
+    }
+    if (lower.includes('candy') && lower.includes('transfer')) {
+      return {
+        title: '2× Transfer Candy',
+        iconUrl: '',
+        iconEmoji: '🍬',
+        color: '#e67e22'
+      };
+    }
+    if (lower.includes('candy')) {
+      return {
+        title: '2× Catch Candy',
+        iconUrl: '',
+        iconEmoji: '🍬',
+        color: '#e67e22'
+      };
+    }
+    return {
+      title: b || '2× Catch Bonus',
+      iconUrl: '',
+      iconEmoji: '🎁',
+      color: '#f1c40f'
+    };
   };
 
   const bonusInfo = getBonusText(rawBonus);
@@ -204,7 +244,11 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
               <span>{lang === 'cs' ? 'AKTIVNÍ BONUS HODINY' : 'ACTIVE HOUR BONUS'}</span>
             </div>
             <div className="spotlight-bonus-val-box" style={{ backgroundColor: `${bonusInfo.color}15` }}>
-              <span className="spotlight-bonus-emoji">{bonusInfo.icon}</span>
+              {bonusInfo.iconUrl ? (
+                <img src={bonusInfo.iconUrl} alt={bonusInfo.title} style={{ width: 28, height: 28, objectFit: 'contain' }} />
+              ) : (
+                <span className="spotlight-bonus-emoji">{bonusInfo.iconEmoji}</span>
+              )}
               <div className="spotlight-bonus-title" style={{ color: bonusInfo.color }}>{bonusInfo.title}</div>
             </div>
             <div className="spotlight-bonus-desc">

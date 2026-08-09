@@ -11,6 +11,13 @@ import {
 } from 'lucide-react';
 import { EventCard } from './EventCard';
 import type { EventData } from './EventCard';
+import { MonthSummaryInfographic } from './MonthSummaryInfographic';
+import { SpotlightInfographic } from './SpotlightInfographic';
+import { CommunityDayInfographic } from './CommunityDayInfographic';
+import { RaidInfographic } from './RaidInfographic';
+import { RocketInfographic } from './RocketInfographic';
+import { MaxInfographic } from './MaxInfographic';
+import { EventInfographic } from './EventInfographic';
 import { getPokemonIconUrl, resolveImage, setPokemonIconOverrides } from '../utils/imageResolver';
 
 interface AdminPanelViewProps {
@@ -485,6 +492,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   const imageFileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Social Media tab state
+  const [socialSubTab, setSocialSubTab] = useState<'single' | 'summary'>('single');
   const [socialSelectedEventId, setSocialSelectedEventId] = useState<string>('');
   const [socialWebhookUrl, setSocialWebhookUrl] = useState<string>(() => {
     if (typeof window !== 'undefined') {
@@ -1807,155 +1815,206 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
                 </h3>
                 <p style={{ margin: '4px 0 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
                   {lang === 'cs'
-                    ? 'Vyberte událost pro vygenerování 1-Click balíčku (popisek pro sociální sítě, odkaz na infografiku a odeslání přes Webhook).'
-                    : 'Select an event to auto-generate infographic post packages, captions, and send to Webhook.'}
+                    ? 'Vyberte událost nebo vygenerujte kompletní týdenní a měsíční přehled pro vaše sociální sítě.'
+                    : 'Generate individual event graphics or full weekly and monthly infographic summaries for social media.'}
                 </p>
               </div>
             </div>
 
-            {/* Select Event */}
-            <div className="form-field" style={{ marginBottom: '20px' }}>
-              <label style={{ fontWeight: 700, fontSize: '0.85rem' }}>
-                {lang === 'cs' ? '1. Vyberte událost:' : '1. Select Event:'}
-              </label>
-              <select
-                value={socialSelectedEventId}
-                onChange={(e) => setSocialSelectedEventId(e.target.value)}
-                className="admin-select"
-                style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', background: 'rgba(0,0,0,0.4)', color: '#fff', border: '1px solid var(--border-color)' }}
+            {/* Sub-tab Navigation Bar */}
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '12px' }}>
+              <button
+                type="button"
+                onClick={() => setSocialSubTab('single')}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  background: socialSubTab === 'single' ? 'var(--accent-color, #38bdf8)' : 'rgba(255, 255, 255, 0.06)',
+                  color: socialSubTab === 'single' ? '#090d16' : '#94a3b8',
+                  border: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s ease'
+                }}
               >
-                <option value="">-- {lang === 'cs' ? 'Vyberte událost ze seznamu' : 'Select an event'} --</option>
-                {scrapedEvents.map(e => (
-                  <option key={e.eventID} value={e.eventID}>
-                    [{e.eventType}] {formatLocalizedString(e.name, lang)} ({new Date(e.start).toLocaleDateString()})
-                  </option>
-                ))}
-              </select>
+                <Share2 size={15} />
+                {lang === 'cs' ? '📸 Infografika Události & Auto-Post' : '📸 Single Event & Auto-Post'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setSocialSubTab('summary')}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  background: socialSubTab === 'summary' ? 'var(--accent-color, #38bdf8)' : 'rgba(255, 255, 255, 0.06)',
+                  color: socialSubTab === 'summary' ? '#090d16' : '#94a3b8',
+                  border: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <Sparkles size={15} />
+                {lang === 'cs' ? '📅 Týdenní & Měsíční Shrnutí' : '📅 Weekly & Monthly Summaries'}
+              </button>
             </div>
 
-            {socialSelectedEvent ? (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                {/* Left Column: Event Infographic & Image Preview */}
-                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
-                  <h4 style={{ margin: '0 0 12px 0', fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-color)' }}>
-                    {lang === 'cs' ? '📸 Náhled Obrázku & Podkladu' : '📸 Image & Media Preview'}
-                  </h4>
-                  
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center' }}>
-                    <div style={{ width: '100%', maxHeight: '240px', overflow: 'hidden', borderRadius: '12px', border: '1px solid var(--border-color)', position: 'relative' }}>
-                      <img
-                        src={resolveImage(socialSelectedEvent.image, socialSelectedEvent.eventType, socialSelectedEvent.name)}
-                        alt={formatLocalizedString(socialSelectedEvent.name, lang)}
-                        style={{ width: '100%', height: '240px', objectFit: 'cover' }}
-                      />
-                      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '10px', background: 'linear-gradient(transparent, rgba(0,0,0,0.9))' }}>
-                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#38bdf8', textTransform: 'uppercase' }}>{socialSelectedEvent.eventType}</span>
-                        <div style={{ fontWeight: 800, fontSize: '1rem', color: '#fff' }}>{formatLocalizedString(socialSelectedEvent.name, lang)}</div>
-                      </div>
-                    </div>
-
-                    {/* Download buttons */}
-                    <div style={{ display: 'flex', gap: '10px', width: '100%' }}>
-                      <a
-                        href={resolveImage(socialSelectedEvent.image, socialSelectedEvent.eventType, socialSelectedEvent.name)}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="admin-btn btn-secondary"
-                        style={{ flex: 1, fontSize: '0.78rem', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}
-                      >
-                        <Download size={13} /> {lang === 'cs' ? 'Otevřít/Stáhnout Obrázek (9:16 / 1:1)' : 'Download Image'}
-                      </a>
-                    </div>
-                  </div>
+            {socialSubTab === 'single' ? (
+              <>
+                {/* Select Event */}
+                <div className="form-field" style={{ marginBottom: '20px' }}>
+                  <label style={{ fontWeight: 700, fontSize: '0.85rem' }}>
+                    {lang === 'cs' ? '1. Vyberte událost:' : '1. Select Event:'}
+                  </label>
+                  <select
+                    value={socialSelectedEventId}
+                    onChange={(e) => setSocialSelectedEventId(e.target.value)}
+                    className="admin-select"
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', background: 'rgba(0,0,0,0.4)', color: '#fff', border: '1px solid var(--border-color)' }}
+                  >
+                    <option value="">-- {lang === 'cs' ? 'Vyberte událost ze seznamu' : 'Select an event'} --</option>
+                    {scrapedEvents.map(e => (
+                      <option key={e.eventID} value={e.eventID}>
+                        [{e.eventType}] {formatLocalizedString(e.name, lang)} ({new Date(e.start).toLocaleDateString()})
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
-                {/* Right Column: Social Caption Generator & Webhook Publishing */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                  <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                      <label style={{ fontWeight: 700, fontSize: '0.85rem' }}>
-                        {lang === 'cs' ? '📝 Popisek pro Instagram / TikTok:' : '📝 IG / TikTok Caption:'}
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          navigator.clipboard.writeText(generatedSocialCaption);
-                          setSocialCopied(true);
-                          setTimeout(() => setSocialCopied(false), 2000);
-                        }}
-                        className="admin-btn btn-secondary"
-                        style={{ padding: '4px 10px', fontSize: '0.75rem' }}
-                      >
-                        {socialCopied ? <Check size={13} style={{ color: '#4ade80' }} /> : <Copy size={13} />}
-                        {socialCopied ? (lang === 'cs' ? 'Zkopírováno!' : 'Copied!') : (lang === 'cs' ? 'Zkopírovat popisek' : 'Copy Caption')}
-                      </button>
+                {socialSelectedEvent ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    {/* Left Column: Interactive Event Infographic Generator */}
+                    <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <h4 style={{ margin: '0 0 4px 0', fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-color)' }}>
+                        {lang === 'cs' ? '📸 Generátor & Náhled Infografiky Události' : '📸 Live Interactive Event Infographic'}
+                      </h4>
+                      
+                      {(() => {
+                        const type = socialSelectedEvent.eventType;
+                        const nameLower = typeof socialSelectedEvent.name === 'string' ? socialSelectedEvent.name.toLowerCase() : '';
+
+                        if (type === 'pokemon-spotlight-hour') {
+                          return <SpotlightInfographic event={socialSelectedEvent} lang={lang} />;
+                        }
+                        if (type === 'community-day' || type === 'hatch-day' || type === 'research-day') {
+                          return <CommunityDayInfographic event={socialSelectedEvent} lang={lang} />;
+                        }
+                        if (type === 'max-mondays' || nameLower.includes('max') || nameLower.includes('dynamax')) {
+                          return <MaxInfographic event={socialSelectedEvent} lang={lang} />;
+                        }
+                        if (type === 'raid-battles' || type === 'raid-day' || type === 'shadow-raid' || type === 'mega-raid' || type === 'raid-hour') {
+                          return <RaidInfographic event={socialSelectedEvent} lang={lang} />;
+                        }
+                        if (type === 'team-go-rocket' || nameLower.includes('rocket')) {
+                          return <RocketInfographic event={socialSelectedEvent} lang={lang} />;
+                        }
+
+                        return <EventInfographic event={socialSelectedEvent} lang={lang} />;
+                      })()}
                     </div>
-                    <textarea
-                      rows={10}
-                      value={generatedSocialCaption}
-                      onChange={(e) => setGeneratedSocialCaption(e.target.value)}
-                      style={{
-                        width: '100%',
-                        background: 'rgba(0,0,0,0.5)',
-                        border: '1px solid var(--border-color)',
-                        borderRadius: '10px',
-                        padding: '10px',
-                        color: '#fff',
-                        fontSize: '0.82rem',
-                        fontFamily: 'monospace',
-                        resize: 'vertical'
-                      }}
-                    />
-                  </div>
 
-                  {/* Webhook Configuration & Auto-Post Trigger */}
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '14px', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
-                    <label style={{ fontWeight: 700, fontSize: '0.8rem', display: 'block', marginBottom: '6px' }}>
-                      {lang === 'cs' ? '🔗 Webhook URL (Make.com / Zapier / Buffer):' : '🔗 Webhook URL (Make.com / Zapier / Buffer):'}
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="https://hook.eu1.make.com/your-custom-webhook-id"
-                      value={socialWebhookUrl}
-                      onChange={(e) => {
-                        setSocialWebhookUrl(e.target.value);
-                        localStorage.setItem('pogo_admin_social_webhook_url', e.target.value);
-                      }}
-                      style={{ width: '100%', padding: '8px 12px', fontSize: '0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.4)', color: '#fff', marginBottom: '10px' }}
-                    />
-
-                    {socialSendStatus && (
-                      <div style={{
-                        padding: '8px 12px',
-                        borderRadius: '8px',
-                        fontSize: '0.8rem',
-                        marginBottom: '10px',
-                        background: socialSendStatus.type === 'success' ? 'rgba(74, 222, 128, 0.15)' : 'rgba(248, 113, 113, 0.15)',
-                        color: socialSendStatus.type === 'success' ? '#4ade80' : '#f87171',
-                        border: `1px solid ${socialSendStatus.type === 'success' ? 'rgba(74, 222, 128, 0.3)' : 'rgba(248, 113, 113, 0.3)'}`
-                      }}>
-                        {socialSendStatus.text}
+                    {/* Right Column: Social Caption Generator & Webhook Publishing */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                          <label style={{ fontWeight: 700, fontSize: '0.85rem' }}>
+                            {lang === 'cs' ? '📝 Popisek pro Instagram / TikTok:' : '📝 IG / TikTok Caption:'}
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              navigator.clipboard.writeText(generatedSocialCaption);
+                              setSocialCopied(true);
+                              setTimeout(() => setSocialCopied(false), 2000);
+                            }}
+                            className="admin-btn btn-secondary"
+                            style={{ padding: '4px 10px', fontSize: '0.75rem' }}
+                          >
+                            {socialCopied ? <Check size={13} style={{ color: '#4ade80' }} /> : <Copy size={13} />}
+                            {socialCopied ? (lang === 'cs' ? 'Zkopírováno!' : 'Copied!') : (lang === 'cs' ? 'Zkopírovat popisek' : 'Copy Caption')}
+                          </button>
+                        </div>
+                        <textarea
+                          rows={10}
+                          value={generatedSocialCaption}
+                          onChange={(e) => setGeneratedSocialCaption(e.target.value)}
+                          style={{
+                            width: '100%',
+                            background: 'rgba(0,0,0,0.5)',
+                            border: '1px solid var(--border-color)',
+                            borderRadius: '10px',
+                            padding: '10px',
+                            color: '#fff',
+                            fontSize: '0.82rem',
+                            fontFamily: 'monospace',
+                            resize: 'vertical'
+                          }}
+                        />
                       </div>
-                    )}
 
-                    <button
-                      type="button"
-                      onClick={handleSendSocialWebhook}
-                      disabled={socialSending || !socialWebhookUrl.trim()}
-                      className="admin-btn btn-primary"
-                      style={{ width: '100%', padding: '10px', fontSize: '0.88rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                    >
-                      <Send size={15} />
-                      {socialSending
-                        ? (lang === 'cs' ? 'Odesílám...' : 'Sending...')
-                        : (lang === 'cs' ? 'Odeslat na Webhook (Auto-post na IG / TikTok)' : 'Send to Webhook (Auto-post IG/TikTok)')}
-                    </button>
+                      {/* Webhook Configuration & Auto-Post Trigger */}
+                      <div style={{ background: 'rgba(255,255,255,0.03)', padding: '14px', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+                        <label style={{ fontWeight: 700, fontSize: '0.8rem', display: 'block', marginBottom: '6px' }}>
+                          {lang === 'cs' ? '🔗 Webhook URL (Make.com / Zapier / Buffer):' : '🔗 Webhook URL (Make.com / Zapier / Buffer):'}
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="https://hook.eu1.make.com/your-custom-webhook-id"
+                          value={socialWebhookUrl}
+                          onChange={(e) => {
+                            setSocialWebhookUrl(e.target.value);
+                            localStorage.setItem('pogo_admin_social_webhook_url', e.target.value);
+                          }}
+                          style={{ width: '100%', padding: '8px 12px', fontSize: '0.8rem', borderRadius: '8px', border: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.4)', color: '#fff', marginBottom: '10px' }}
+                        />
+
+                        {socialSendStatus && (
+                          <div style={{
+                            padding: '8px 12px',
+                            borderRadius: '8px',
+                            fontSize: '0.8rem',
+                            marginBottom: '10px',
+                            background: socialSendStatus.type === 'success' ? 'rgba(74, 222, 128, 0.15)' : 'rgba(248, 113, 113, 0.15)',
+                            color: socialSendStatus.type === 'success' ? '#4ade80' : '#f87171',
+                            border: `1px solid ${socialSendStatus.type === 'success' ? 'rgba(74, 222, 128, 0.3)' : 'rgba(248, 113, 113, 0.3)'}`
+                          }}>
+                            {socialSendStatus.text}
+                          </div>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={handleSendSocialWebhook}
+                          disabled={socialSending || !socialWebhookUrl.trim()}
+                          className="admin-btn btn-primary"
+                          style={{ width: '100%', padding: '10px', fontSize: '0.88rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+                        >
+                          <Send size={15} />
+                          {socialSending
+                            ? (lang === 'cs' ? 'Odesílám...' : 'Sending...')
+                            : (lang === 'cs' ? 'Odeslat na Webhook (Auto-post na IG / TikTok)' : 'Send to Webhook (Auto-post IG/TikTok)')}
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                ) : (
+                  <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                    {lang === 'cs' ? 'Vyberte událost ze seznamu výše pro generování popisku a podkladů.' : 'Select an event above to generate captions and media.'}
+                  </div>
+                )}
+              </>
             ) : (
-              <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                {lang === 'cs' ? 'Vyberte událost ze seznamu výše pro generování popisku a podkladů.' : 'Select an event above to generate captions and media.'}
+              /* Summary Infographics Tab (Weekly & Monthly Overview) */
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <MonthSummaryInfographic events={scrapedEvents} lang={lang} />
               </div>
             )}
           </div>

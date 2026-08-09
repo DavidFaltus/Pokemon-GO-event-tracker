@@ -232,7 +232,7 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, lang }) =
             
             <div className="max-shiny-chip">
               <Sparkles size={13} />
-              <span>✨ Max Battle Encounter</span>
+              <span>Normal</span>
             </div>
           </div>
 
@@ -244,13 +244,38 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, lang }) =
             </div>
 
             <div className="max-details-row">
-              <div className="max-detail-item">
-                <span className="max-detail-label">{lang === 'cs' ? 'Vstupní Max Particles:' : 'Cost Max Particles:'}</span>
-                <span className="max-detail-val">800 MP</span>
+              <div className="max-detail-item" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <img
+                  src={
+                    (event.name.toLowerCase().includes('1-star') || event.name.toLowerCase().includes('2-star') || event.name.toLowerCase().includes('3-star'))
+                      ? 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Items/mp_pack.png'
+                      : 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Items/mp_pack_mulit.png'
+                  }
+                  alt="MP Pack"
+                  style={{ width: 24, height: 24, objectFit: 'contain' }}
+                />
+                <div>
+                  <span className="max-detail-label">{lang === 'cs' ? 'Vstupní MP:' : 'MP Cost:'}</span>
+                  <span className="max-detail-val">
+                    {event.name.toLowerCase().includes('1-star') ? '250 MP' : (event.name.toLowerCase().includes('2-star') || event.name.toLowerCase().includes('3-star')) ? '400 MP' : '800 MP'}
+                  </span>
+                </div>
               </div>
               <div className="max-detail-item highlight">
-                <span className="max-detail-label">{lang === 'cs' ? 'Odměna za výhru:' : 'Battle Reward:'}</span>
-                <span className="max-detail-val highlight">10,000 XP + MP</span>
+                <span className="max-detail-label">{lang === 'cs' ? 'XP Odměna:' : 'XP Reward:'}</span>
+                <span className="max-detail-val highlight">
+                  {event.name.toLowerCase().includes('eternatus')
+                    ? '50,000 XP'
+                    : isGigantamax
+                    ? '25,000 XP'
+                    : event.name.toLowerCase().includes('5-star')
+                    ? '15,000 XP'
+                    : event.name.toLowerCase().includes('3-star')
+                    ? '7,500 XP'
+                    : event.name.toLowerCase().includes('2-star')
+                    ? '6,000 XP'
+                    : '5,000 XP'}
+                </span>
               </div>
             </div>
           </div>

@@ -102,14 +102,19 @@
 .month-summary-poster {
   width: 100%;
   max-width: 520px;
+  aspect-ratio: 4 / 5;
   background: linear-gradient(135deg, #090d16 0%, #0f172a 50%, #1e1b4b 100%);
   border-radius: 16px;
   border: 1px solid rgba(56, 189, 248, 0.3);
   padding: 24px 20px;
   color: #fff;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  font-family: inherit;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 /* Poster Header */
@@ -164,70 +169,88 @@
   border-bottom: 1px solid rgba(56, 189, 248, 0.2);
 }
 
-.poster-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+/* New event list layout */
+.poster-events-list {
+  display: flex;
+  flex-direction: column;
   gap: 10px;
 }
 
-.poster-card {
+/* Each event row: name/date header + pokemon sprites underneath */
+.poster-event-row {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
-  padding: 10px 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  padding: 10px 14px;
+  transition: background 0.2s ease;
 }
 
-.poster-card-icon-wrapper {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
+.poster-event-row:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Event header: name left, date right on same line */
+.poster-event-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.poster-event-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fff;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.poster-event-date {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fbbf24;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+}
+
+/* Pokémon sprites row - horizontal scrolling list */
+.poster-event-pokemon-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.poster-pokemon-sprite {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
   background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
-.poster-card-icon {
-  width: 38px;
-  height: 38px;
+.poster-pokemon-sprite:hover {
+  transform: scale(1.1);
+  border-color: rgba(56, 189, 248, 0.5);
+}
+
+.poster-pokemon-img {
+  width: 34px;
+  height: 34px;
   object-fit: contain;
-}
-
-.poster-card-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  overflow: hidden;
-}
-
-.poster-card-date {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: #fbbf24;
-  text-transform: uppercase;
-}
-
-.poster-card-name {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.poster-card-sub {
-  font-size: 0.72rem;
-  color: #94a3b8;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* Poster Footer */
@@ -277,35 +300,6 @@
   transform: none;
 }
 
-/* Badges & Date Row */
-.poster-card-date-badge-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.poster-card-badge {
-  font-size: 0.62rem;
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-
-.poster-card-badge.shiny {
-  background: rgba(251, 191, 36, 0.2);
-  color: #fbbf24;
-  border: 1px solid rgba(251, 191, 36, 0.4);
-}
-
-.poster-card-badge.new {
-  background: rgba(56, 189, 248, 0.2);
-  color: #38bdf8;
-  border: 1px solid rgba(56, 189, 248, 0.4);
-}
-
 /* Poster Empty State */
 .poster-empty-state {
   display: flex;
@@ -326,3 +320,40 @@
   color: #94a3b8;
 }
 
+/* Mobile Responsiveness */
+@media (max-width: 600px) {
+  .month-summary-modal-overlay {
+    padding: 10px 8px;
+  }
+  .month-summary-modal-header {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 14px;
+  }
+  .month-summary-modal-header h3 {
+    font-size: 0.95rem;
+  }
+  .month-summary-modal-body {
+    padding: 12px 8px;
+  }
+  .month-summary-poster {
+    padding: 16px 12px;
+  }
+  .poster-event-row {
+    padding: 8px 10px;
+  }
+  .poster-event-name {
+    font-size: 0.82rem;
+  }
+  .poster-pokemon-sprite {
+    width: 36px;
+    height: 36px;
+  }
+  .poster-pokemon-img {
+    width: 30px;
+    height: 30px;
+  }
+  .poster-header h2 {
+    font-size: 1.35rem;
+  }
+}

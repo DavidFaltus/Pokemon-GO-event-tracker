@@ -1,6 +1,15 @@
-1: [COMPLETED] Vylepšení indexování stránek, url eventu bude odkazovat přímo na rozkliknutý event, srovnání routingu (URL se mění při překliku na sekce, eventy i jazyky)
-2: [COMPLETED] Další pokus o technická vylepšení ze stránky: https://pagespeed.web.dev/analysis/https-pogoevents-app/c53c34bbt0?utm_source=search_console&form_factor=mobile&hl=cs
-3: [COMPLETED] Přidat switch do sekce událostí na přepínání Zobrazení událostí (seznam nebo časová osa)
+Všechny infografiky dělej v poměru 4:5 kvůli možnosti postování na IG, celou ji piš v angličtině
+
+Infografika jednotlivých eventů: 
+Spojit Raid hour, Raid Rotation které mají společné pokemony například Uxie, Mesprit a Azelf
+infografiku rozděl na tři sekce a všechny sekce 
+První sekce: Raid rotation - Obrázek běžného a shiny pokémona, Type Weaknesses pokemona
+Druhá sekce: Raid hour - Rozsah CP které můžeš dostat s tím že vrchní limit bude zlatě označen, Šance na Shiny verzi
+Třetí sekce: Top Counters - Top 6 pokémonů s tím že Top 1 bude označen jako Top counter, Vedle counterů dej jejcih typy
+
+Měsíční přehledy:
+Rozdělit celou infografiku na více menších podle typů eventu, Spotlight hour, Raid hour, ...
+
 
 
 pogo-admin-2026

@@ -1,10 +1,10 @@
 import React, { useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
-import { Download, Sparkles, Calendar, Swords, Shield, Clock, X, Check, Egg, Trophy } from 'lucide-react';
+import { Download, Sparkles, Calendar, Swords, Clock, X, Check } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
-import { resolveImage, handlePokemonImageError, getEventHeaderAvatar } from '../utils/imageResolver';
-import { MultiBossAvatar } from './MultiBossAvatar';
+import { resolveImage, handlePokemonImageError, extractEventPokemonNames } from '../utils/imageResolver';
+import { getPokemonImage } from '../data/specialEvents';
 import { API_BASE_URL } from '../config';
 import './MonthSummaryInfographic.css';
 
@@ -16,12 +16,7 @@ interface MonthSummaryInfographicProps {
   onClose?: () => void;
 }
 
-const MONTH_NAMES: Record<Language, string[]> = {
-  cs: ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'],
-  en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-  ja: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-  ru: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
-};
+const MONTH_NAMES_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 const fetchImageAsBase64 = async (url: string): Promise<string> => {
   if (!url || url.startsWith('data:')) return url;
@@ -41,6 +36,25 @@ const fetchImageAsBase64 = async (url: string): Promise<string> => {
   }
 };
 
+/**
+ * Gets all normal (non-shiny) Pokémon image URLs for a given event.
+ * Returns an array of { name, url } for every featured Pokémon.
+ */
+const getAllEventPokemonImages = (item: EventData): { name: string; url: string }[] => {
+  const names = extractEventPokemonNames({
+    name: item.name,
+    eventType: item.eventType,
+    extraData: item.extraData
+  });
+
+  if (names.length > 0) {
+    return names.map(n => ({ name: n, url: getPokemonImage(n) }));
+  }
+
+  // Fallback: use the event image itself
+  return [{ name: item.name, url: resolveImage(item.image, item.eventType, item.name) }];
+};
+
 export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = ({
   events,
   lang,
@@ -52,13 +66,18 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
   const [downloading, setDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
 
+  // View Mode: 'weekly' (1 panel) vs 'monthly' (3 panels)
+  const [summaryMode, setSummaryMode] = useState<'weekly' | 'monthly'>('weekly');
+  const [selectedWeekNum, setSelectedWeekNum] = useState<number>(1); // 1 to 5
+  const [monthlyPanelTab, setMonthlyPanelTab] = useState<number>(1); // 1, 2, 3
+
   // Month selection state (0 = current month, 1 = next month)
   const [selectedMonthOffset, setSelectedMonthOffset] = useState<number>(initialOffset);
 
   const activeDate = new Date(targetDate.getFullYear(), targetDate.getMonth() + selectedMonthOffset, 1);
   const monthIndex = activeDate.getMonth();
   const yearNum = activeDate.getFullYear();
-  const monthName = MONTH_NAMES[lang]?.[monthIndex] || MONTH_NAMES['en'][monthIndex];
+  const monthName = MONTH_NAMES_EN[monthIndex];
 
   const currentMonthIndex = targetDate.getMonth();
   const nextMonthIndex = (currentMonthIndex + 1) % 12;
@@ -67,14 +86,26 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
   const startOfMonth = new Date(yearNum, monthIndex, 1, 0, 0, 0, 0);
   const endOfMonth = new Date(yearNum, monthIndex + 1, 0, 23, 59, 59, 999);
 
-  const monthEvents = events.filter((e) => {
-    const start = new Date(e.start);
-    const end = new Date(e.end);
-    return start <= endOfMonth && end >= startOfMonth;
-  });
+  // Week Date Ranges
+  const weekStartDay = (selectedWeekNum - 1) * 7 + 1;
+  const weekEndDay = Math.min(selectedWeekNum * 7, new Date(yearNum, monthIndex + 1, 0).getDate());
+  const startOfWeek = new Date(yearNum, monthIndex, weekStartDay, 0, 0, 0, 0);
+  const endOfWeek = new Date(yearNum, monthIndex, weekEndDay, 23, 59, 59, 999);
+
+  const rawEvents = summaryMode === 'weekly'
+    ? events.filter((e) => {
+        const s = new Date(e.start);
+        const end = new Date(e.end);
+        return s <= endOfWeek && end >= startOfWeek;
+      })
+    : events.filter((e) => {
+        const s = new Date(e.start);
+        const end = new Date(e.end);
+        return s <= endOfMonth && end >= startOfMonth;
+      });
 
   // Categorize events for the poster
-  const communityDays = monthEvents.filter(
+  const communityDays = rawEvents.filter(
     (e) =>
       e.eventType === 'community-day' ||
       e.eventType === 'hatch-day' ||
@@ -85,7 +116,7 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
       e.eventType === 'safari-zone'
   );
 
-  const raidEvents = monthEvents.filter(
+  const raidEvents = rawEvents.filter(
     (e) =>
       e.eventType === 'raid-battles' ||
       e.eventType === 'raid-day' ||
@@ -94,11 +125,11 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
       e.eventType === 'primal-raid'
   );
 
-  const spotlightHours = monthEvents.filter(
+  const spotlightHours = rawEvents.filter(
     (e) => e.eventType === 'pokemon-spotlight-hour' || e.eventType === 'raid-hour'
   );
 
-  const otherEvents = monthEvents.filter(
+  const otherEvents = rawEvents.filter(
     (e) =>
       !communityDays.includes(e) &&
       !raidEvents.includes(e) &&
@@ -107,18 +138,21 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
 
   const formatDateShort = (isoString: string) => {
     const d = new Date(isoString);
-    const day = d.getDate();
-    const monthStr = d.getMonth() + 1;
-    return `${day}. ${monthStr}.`;
+    return `${MONTH_NAMES_EN[d.getMonth()].slice(0, 3)} ${d.getDate()}`;
   };
 
-  const checkShiny = (item: EventData): boolean => {
-    if (item.extraData?.spotlight?.canBeShiny) return true;
-    if (item.extraData?.raidbattles?.bosses?.some((b) => b.canBeShiny)) return true;
-    if (item.extraData?.raidbattles?.shinies && item.extraData.raidbattles.shinies.length > 0) return true;
-    if (item.extraData?.communityday?.shinies && item.extraData.communityday.shinies.length > 0) return true;
-    if (item.name.toLowerCase().includes('shiny')) return true;
-    return false;
+  const formatDateRange = (start: string, end: string) => {
+    const s = new Date(start);
+    const e = new Date(end);
+    const sMonth = MONTH_NAMES_EN[s.getMonth()].slice(0, 3);
+    const eMonth = MONTH_NAMES_EN[e.getMonth()].slice(0, 3);
+    if (s.getDate() === e.getDate() && s.getMonth() === e.getMonth()) {
+      return `${sMonth} ${s.getDate()}`;
+    }
+    if (s.getMonth() === e.getMonth()) {
+      return `${sMonth} ${s.getDate()} – ${e.getDate()}`;
+    }
+    return `${sMonth} ${s.getDate()} – ${eMonth} ${e.getDate()}`;
   };
 
   const handleDownload = async () => {
@@ -143,10 +177,18 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
         })
       );
 
+      if (typeof document !== 'undefined' && document.fonts) {
+        try {
+          await document.fonts.ready;
+        } catch (e) {}
+      }
+
       const dataUrl = await toPng(posterRef.current, {
         cacheBust: false,
-        skipFonts: true,
+        skipFonts: false,
         pixelRatio: 2,
+        width: posterRef.current.offsetWidth,
+        height: posterRef.current.offsetHeight,
         backgroundColor: '#0f172a'
       });
 
@@ -167,254 +209,204 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
     }
   };
 
-  return (
-    <div className="month-summary-modal-overlay" onClick={onClose}>
-      <div className="month-summary-modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="month-summary-modal-header">
-          <h3>
-            <Sparkles size={18} style={{ color: 'var(--accent-color, #38bdf8)' }} />
-            {lang === 'cs'
-              ? 'Infografika & Souhrn Měsíce'
-              : lang === 'ja'
-              ? '月間イベントインフォグラフィック'
-              : lang === 'ru'
-              ? 'Инфографика событий месяца'
-              : 'Monthly Overview Infographic'}
-          </h3>
+  /**
+   * Renders a single event row: event name (left-aligned header) with date (right-aligned),
+   * followed by a row of all featured Pokémon sprites (normal versions only).
+   */
+  const renderEventRow = (item: EventData, showRange = false) => {
+    const pokemonList = getAllEventPokemonImages(item);
+    const dateLabel = showRange
+      ? formatDateRange(item.start, item.end)
+      : formatDateShort(item.start);
 
+    return (
+      <div key={item.eventID} className="poster-event-row">
+        <div className="poster-event-header">
+          <span className="poster-event-name">{item.name}</span>
+          <span className="poster-event-date">{dateLabel}</span>
+        </div>
+        <div className="poster-event-pokemon-row">
+          {pokemonList.map((poke, idx) => (
+            <div key={`${poke.name}-${idx}`} className="poster-pokemon-sprite" title={poke.name}>
+              <img
+                src={poke.url}
+                alt={poke.name}
+                className="poster-pokemon-img"
+                onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, poke.name)}
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="month-summary-container-inline">
+      <div className="month-summary-controls-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', marginBottom: '16px' }}>
+        {/* Top Toolbar: Mode Switcher & Month Selector */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', background: 'rgba(0,0,0,0.3)', padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+          {/* Mode Switcher */}
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <button
+              type="button"
+              className={`month-select-btn ${summaryMode === 'weekly' ? 'active' : ''}`}
+              onClick={() => setSummaryMode('weekly')}
+            >
+              📅 {lang === 'cs' ? 'Týdenní Přehled (1 Panel)' : 'Weekly Overview (1 Panel)'}
+            </button>
+            <button
+              type="button"
+              className={`month-select-btn ${summaryMode === 'monthly' ? 'active' : ''}`}
+              onClick={() => setSummaryMode('monthly')}
+            >
+              🗓️ {lang === 'cs' ? 'Měsíční Přehled (3 Panely)' : 'Monthly Overview (3 Panels)'}
+            </button>
+          </div>
+
+          {/* Month Offset Picker */}
           <div className="month-summary-modal-controls">
             <button
               className={`month-select-btn ${selectedMonthOffset === 0 ? 'active' : ''}`}
               onClick={() => setSelectedMonthOffset(0)}
             >
-              {lang === 'cs' ? 'Tento měsíc' : lang === 'ja' ? '今月' : lang === 'ru' ? 'Этот месяц' : 'This Month'} ({MONTH_NAMES[lang]?.[currentMonthIndex]})
+              This Month ({MONTH_NAMES_EN[currentMonthIndex]})
             </button>
             <button
               className={`month-select-btn ${selectedMonthOffset === 1 ? 'active' : ''}`}
               onClick={() => setSelectedMonthOffset(1)}
             >
-              ✨ {lang === 'cs' ? 'Příští měsíc' : lang === 'ja' ? '来月' : lang === 'ru' ? 'Следующий месяц' : 'Next Month'} ({MONTH_NAMES[lang]?.[nextMonthIndex]})
+              ✨ Next Month ({MONTH_NAMES_EN[nextMonthIndex]})
             </button>
-            {onClose && (
-              <button className="month-summary-close-btn" onClick={onClose} aria-label="Close">
-                <X size={20} />
+          </div>
+        </div>
+
+        {/* Sub-toolbar: Week Selector if Weekly Mode */}
+        {summaryMode === 'weekly' && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.03)', padding: '10px 14px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--text-muted)' }}>
+              {lang === 'cs' ? 'Vyberte týden:' : 'Select Week:'}
+            </span>
+            {[1, 2, 3, 4, 5].map((w) => (
+              <button
+                key={w}
+                type="button"
+                className={`month-select-btn ${selectedWeekNum === w ? 'active' : ''}`}
+                style={{ padding: '4px 10px', fontSize: '0.78rem' }}
+                onClick={() => setSelectedWeekNum(w)}
+              >
+                Week {w}
               </button>
-            )}
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="month-summary-modal-body" style={{ padding: 0 }}>
+        {/* Printable Poster DOM Element */}
+        <div className="month-summary-poster" ref={posterRef}>
+          <div className="poster-header">
+            <span className="poster-header-badge">
+              {summaryMode === 'weekly' ? `WEEKLY OVERVIEW • WEEK ${selectedWeekNum}` : 'POKÉMON GO EVENT TRACKER'}
+            </span>
+            <h2>
+              {summaryMode === 'weekly'
+                ? `${monthName.toUpperCase()} ${weekStartDay}–${weekEndDay}, ${yearNum}`
+                : `${monthName.toUpperCase()} ${yearNum}`}
+            </h2>
+          </div>
+
+          {rawEvents.length === 0 ? (
+            <div className="poster-empty-state">
+              <Calendar size={32} style={{ color: 'var(--text-muted, #94a3b8)', marginBottom: 8 }} />
+              <p>No confirmed events scheduled for this period yet.</p>
+            </div>
+          ) : (
+            <>
+              {/* Section 1: Community Days & Major Events */}
+              {communityDays.length > 0 && (
+                <div className="poster-section">
+                  <div className="poster-section-title">
+                    <Sparkles size={14} />
+                    Community Days & Major Events
+                  </div>
+                  <div className="poster-events-list">
+                    {communityDays.map((item) => renderEventRow(item, false))}
+                  </div>
+                </div>
+              )}
+
+              {/* Section 2: 5-Star & Mega Raid Bosses */}
+              {raidEvents.length > 0 && (
+                <div className="poster-section">
+                  <div className="poster-section-title">
+                    <Swords size={14} />
+                    Legendary & Mega Raids
+                  </div>
+                  <div className="poster-events-list">
+                    {raidEvents.map((item) => renderEventRow(item, true))}
+                  </div>
+                </div>
+              )}
+
+              {/* Section 3: Spotlight & Raid Hours */}
+              {spotlightHours.length > 0 && (
+                <div className="poster-section">
+                  <div className="poster-section-title">
+                    <Clock size={14} />
+                    Spotlight & Raid Hours
+                  </div>
+                  <div className="poster-events-list">
+                    {spotlightHours.map((item) => renderEventRow(item, false))}
+                  </div>
+                </div>
+              )}
+
+              {/* Section 4: Other Active Events */}
+              {otherEvents.length > 0 && (
+                <div className="poster-section">
+                  <div className="poster-section-title">
+                    <Calendar size={14} />
+                    Other Events
+                  </div>
+                  <div className="poster-events-list">
+                    {otherEvents.map((item) => renderEventRow(item, true))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Poster Footer */}
+          <div className="poster-footer">
+            <span className="poster-footer-brand">pogoevents.app</span>
+            <span>Pokémon GO Event Tracker</span>
           </div>
         </div>
 
-        <div className="month-summary-modal-body">
-          {/* Printable Poster DOM Element */}
-          <div className="month-summary-poster" ref={posterRef}>
-            <div className="poster-header">
-              <span className="poster-header-badge">Pokémon GO Event Tracker</span>
-              <h2>{`${monthName.toUpperCase()} ${yearNum}`}</h2>
-            </div>
-
-            {monthEvents.length === 0 ? (
-              <div className="poster-empty-state">
-                <Calendar size={32} style={{ color: 'var(--text-muted, #94a3b8)', marginBottom: 8 }} />
-                <p>
-                  {lang === 'cs'
-                    ? 'Pro tento měsíc zatím nejsou naplánovány žádné potvrzené události.'
-                    : lang === 'ja'
-                    ? 'この月の確定イベントはまだありません。'
-                    : lang === 'ru'
-                    ? 'Для этого месяца пока нет запланированных событий.'
-                    : 'No confirmed events scheduled for this month yet.'}
-                </p>
-              </div>
-            ) : (
-              <>
-                {/* Section 1: Community Days & Major Events */}
-                {communityDays.length > 0 && (
-                  <div className="poster-section">
-                    <div className="poster-section-title">
-                      <Sparkles size={14} />
-                      {lang === 'cs'
-                        ? 'Community Days & Hlavní Akce'
-                        : lang === 'ja'
-                        ? 'コミュニティ・デイ＆メインイベント'
-                        : lang === 'ru'
-                        ? 'Community Day и Главные События'
-                        : 'Community Days & Major Events'}
-                    </div>
-                    <div className="poster-grid">
-                      {communityDays.map((item) => (
-                        <div key={item.eventID} className="poster-card">
-                          <div className="poster-card-icon-wrapper">
-                            <MultiBossAvatar eventName={item.name} eventType={item.eventType} bosses={(item.extraData as any)?.bosses} size={48} />
-                          </div>
-                          <div className="poster-card-info">
-                            <div className="poster-card-date-badge-row">
-                              <span className="poster-card-date">{formatDateShort(item.start)}</span>
-                              {checkShiny(item) && <span className="poster-card-badge shiny">✨ Shiny</span>}
-                            </div>
-                            <span className="poster-card-name">{item.name}</span>
-                            <span className="poster-card-sub">{item.heading || item.eventType}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Section 2: 5-Star & Mega Raid Bosses */}
-                {raidEvents.length > 0 && (
-                  <div className="poster-section">
-                    <div className="poster-section-title">
-                      <Swords size={14} />
-                      {lang === 'cs'
-                        ? 'Legendární & Mega Raidy'
-                        : lang === 'ja'
-                        ? '伝説＆メガレイド'
-                        : lang === 'ru'
-                        ? 'Легендарные и Мега Рейды'
-                        : 'Legendary & Mega Raids'}
-                    </div>
-                    <div className="poster-grid">
-                      {raidEvents.map((item) => (
-                        <div key={item.eventID} className="poster-card">
-                          <div className="poster-card-icon-wrapper">
-                            <img
-                              src={resolveImage(item.image, item.eventType, item.name)}
-                              alt={item.name}
-                              className="poster-card-icon"
-                              onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, item.name)}
-                            />
-                          </div>
-                          <div className="poster-card-info">
-                            <div className="poster-card-date-badge-row">
-                              <span className="poster-card-date">{`${formatDateShort(item.start)} – ${formatDateShort(item.end)}`}</span>
-                              {checkShiny(item) && <span className="poster-card-badge shiny">✨ Shiny</span>}
-                            </div>
-                            <span className="poster-card-name">{item.name}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Section 3: Spotlight & Raid Hours */}
-                {spotlightHours.length > 0 && (
-                  <div className="poster-section">
-                    <div className="poster-section-title">
-                      <Clock size={14} />
-                      {lang === 'cs'
-                        ? 'Spotlight Hours & Raid Hours'
-                        : lang === 'ja'
-                        ? 'スポットライト＆レイドアワー'
-                        : lang === 'ru'
-                        ? 'Часы спавна и рейдов'
-                        : 'Spotlight & Raid Hours'}
-                    </div>
-                    <div className="poster-grid">
-                      {spotlightHours.map((item) => (
-                        <div key={item.eventID} className="poster-card">
-                          <div className="poster-card-icon-wrapper">
-                            <MultiBossAvatar eventName={item.name} eventType={item.eventType} bosses={(item.extraData as any)?.bosses} size={48} />
-                          </div>
-                          <div className="poster-card-info">
-                            <div className="poster-card-date-badge-row">
-                              <span className="poster-card-date">{formatDateShort(item.start)}</span>
-                              {checkShiny(item) && <span className="poster-card-badge shiny">✨ Shiny</span>}
-                            </div>
-                            <span className="poster-card-name">{item.name}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-
-                {/* Section 4: Other Active Events */}
-                {otherEvents.length > 0 && (
-                  <div className="poster-section">
-                    <div className="poster-section-title">
-                      <Calendar size={14} />
-                      {lang === 'cs'
-                        ? 'Další události měsíce'
-                        : lang === 'ja'
-                        ? 'その他の月間イベント'
-                        : lang === 'ru'
-                        ? 'Другие события месяца'
-                        : 'Other Monthly Events'}
-                    </div>
-                    <div className="poster-grid">
-                      {otherEvents.slice(0, 8).map((item) => (
-                        <div key={item.eventID} className="poster-card">
-                          <div className="poster-card-icon-wrapper">
-                            <img
-                              src={resolveImage(item.image, item.eventType, item.name)}
-                              alt={item.name}
-                              className="poster-card-icon"
-                              onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, item.name)}
-                            />
-                          </div>
-                          <div className="poster-card-info">
-                            <span className="poster-card-date">{`${formatDateShort(item.start)} – ${formatDateShort(item.end)}`}</span>
-                            <span className="poster-card-name">{item.name}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* Poster Footer */}
-            <div className="poster-footer">
-              <span className="poster-footer-brand">pogoevents.app</span>
-              <span>{lang === 'cs' ? 'Sledovač událostí Pokémon GO' : 'Pokémon GO Event Tracker'}</span>
-            </div>
-          </div>
-
-          {/* Download Action Button */}
-          <button className="download-poster-btn" onClick={handleDownload} disabled={downloading}>
-            {downloadSuccess ? (
-              <>
-                <Check size={20} />
-                {lang === 'cs'
-                  ? 'Uloženo jako PNG!'
-                  : lang === 'ja'
-                  ? 'PNG画像を保存しました！'
-                  : lang === 'ru'
-                  ? 'Сохранено как PNG!'
-                  : 'Saved as PNG!'}
-              </>
-            ) : downloading ? (
-              <>
-                <div
-                  className="spinner"
-                  style={{ width: 18, height: 18, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff' }}
-                ></div>
-                {lang === 'cs'
-                  ? 'Generuji obrázek...'
-                  : lang === 'ja'
-                  ? '画像を生成中...'
-                  : lang === 'ru'
-                  ? 'Создание изображения...'
-                  : 'Generating Image...'}
-              </>
-            ) : (
-              <>
-                <Download size={20} />
-                {lang === 'cs'
-                  ? 'Stáhnout infografiku (PNG)'
-                  : lang === 'ja'
-                  ? 'インフォグラフィックをダウンロード (PNG)'
-                  : lang === 'ru'
-                  ? 'Скачать инфографику (PNG)'
-                  : 'Download Poster (PNG)'}
-              </>
-            )}
-          </button>
-        </div>
+        {/* Download Action Button */}
+        <button className="download-poster-btn" onClick={handleDownload} disabled={downloading} style={{ marginTop: '16px' }}>
+          {downloadSuccess ? (
+            <>
+              <Check size={20} />
+              Saved as PNG!
+            </>
+          ) : downloading ? (
+            <>
+              <div
+                className="spinner"
+                style={{ width: 18, height: 18, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff' }}
+              ></div>
+              Generating Image...
+            </>
+          ) : (
+            <>
+              <Download size={20} />
+              {summaryMode === 'weekly' ? 'Download Weekly Poster (PNG)' : 'Download Monthly Poster (PNG)'}
+            </>
+          )}
+        </button>
       </div>
     </div>
   );
 };
-
