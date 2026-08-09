@@ -611,11 +611,10 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
             </div>
 
             <div className="slide2-shiny-rate-card">
-              <Sparkles size={16} style={{ color: '#fbbf24' }} />
-              <div>
-                <span className="shiny-card-label">CHANCE FOR SHINY ENCOUNTER</span>
-                <div className="shiny-card-val">~1 in 20 (5% Shiny Rate) ✨</div>
-              </div>
+              <Sparkles size={15} style={{ color: '#fbbf24' }} />
+              <span className="shiny-card-single-text">
+                SHINY RATE: <strong>~1 in 20 (5% Chance) ✨</strong>
+              </span>
             </div>
           </div>
         )}

@@ -236,14 +236,15 @@ export function getPokemonIconUrl(name: string, isShiny?: boolean): string {
     return `https://img.pokemondb.net/sprites/home/${folder}/${formClean}.png`;
   }
 
-  // Standard non-mega/primal Pokemon: try PokeAPI Pokedex ID home sprite first
-  const pokedexId = getPokedexIdByName(baseName);
-  if (pokedexId) {
-    const homeFolder = isShiny ? 'home/shiny' : 'home';
-    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/${homeFolder}/${pokedexId}.png`;
+  // Standard non-mega/primal Pokemon: Use PokeMiners pogo_assets (official Pokémon GO icons) for Gen 1-5 (<650)
+  const pokedexId = getPokedexIdByName(baseName) || getPokedexIdByName(name);
+  if (pokedexId && pokedexId < 650) {
+    const padId = pokedexId.toString().padStart(3, '0');
+    const shinySuffix = isShiny ? '_shiny' : '';
+    return `https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/Pokemon/pokemon_icon_${padId}_00${shinySuffix}.png`;
   }
 
-  // Fallback to PokemonDB
+  // Gen 6+ (Pokedex ID >= 650) or fallback to PokemonDB
   let clean = baseName.toLowerCase()
     .replace('shadow ', '')
     .replace('apex ', '')
@@ -293,13 +294,13 @@ export function handlePokemonImageError(img: HTMLImageElement, name: string, isS
 
   const pokedexId = getPokedexIdByName(baseName) || getPokedexIdByName(name);
 
-  // Fallback Step 2: Base Pokemon Sprite (ZeChrales PogoAssets for Gen 1-5 or PokeAPI Home 3D)
+  // Fallback Step 2: Base Pokemon Sprite (PokeMiners pogo_assets for Gen 1-5 or PokeAPI Home 3D)
   if (pokedexId && !img.getAttribute('data-fb-home')) {
     img.setAttribute('data-fb-home', 'true');
     if (pokedexId < 650) {
       const padId = pokedexId.toString().padStart(3, '0');
       const shinySuffix = isShiny ? '_shiny' : '';
-      img.src = `https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/pokemon_icons/pokemon_icon_${padId}_00${shinySuffix}.png`;
+      img.src = `https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/Pokemon/pokemon_icon_${padId}_00${shinySuffix}.png`;
     } else {
       const folder = isShiny ? 'home/shiny' : 'home';
       img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/${folder}/${pokedexId}.png`;
@@ -385,7 +386,7 @@ export function resolveImage(url: string | undefined, eventType?: string, name?:
 
     return url.replace(
       'https://cdn.leekduck.com/assets/img/pokemon_icons/',
-      'https://raw.githubusercontent.com/ZeChrales/PogoAssets/master/pokemon_icons/'
+      'https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/Pokemon/'
     );
   }
 

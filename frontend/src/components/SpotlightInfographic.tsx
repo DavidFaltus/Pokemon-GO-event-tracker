@@ -35,7 +35,7 @@ const fetchImageAsBase64 = async (url: string): Promise<string> => {
   }
 };
 
-export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ event, lang }) => {
+export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ event }) => {
   const posterRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
@@ -46,10 +46,10 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
   const canBeShiny = spotlightData?.canBeShiny ?? true;
   const rawBonus = spotlightData?.bonus || '';
 
-  // Format dates & times cleanly supporting multi-day range if needed
-  const { dateStr, timeStr, isMultiDay } = formatEventDateRange(event.start, event.end, lang);
+  // Format dates & times cleanly in English
+  const { dateStr, timeStr, isMultiDay } = formatEventDateRange(event.start, event.end, 'en');
 
-  // Translate bonus
+  // Translate bonus details
   const getBonusText = (b: string) => {
     const lower = b.toLowerCase();
     if (lower.includes('stardust')) {
@@ -135,7 +135,7 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
       });
 
       const link = document.createElement('a');
-      link.download = `pogo_spotlight_${pokeName.toLowerCase()}.png`;
+      link.download = `pogo_spotlight_${pokeName.toLowerCase()}_4x5.png`;
       link.href = dataUrl;
       link.click();
 
@@ -162,17 +162,17 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
           {downloadSuccess ? (
             <>
               <Check size={18} />
-              {lang === 'cs' ? 'Uloženo!' : 'Saved!'}
+              Saved PNG!
             </>
           ) : downloading ? (
             <>
               <div className="btn-spinner"></div>
-              {lang === 'cs' ? 'Generuji obrázek...' : 'Generating image...'}
+              Generating Image (4:5)...
             </>
           ) : (
             <>
               <Download size={18} />
-              {lang === 'cs' ? 'Stáhnout Infografiku' : 'Download Infographic'}
+              Download Infographic (4:5)
             </>
           )}
         </button>
@@ -187,18 +187,18 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
             <Star size={14} className="spotlight-star-icon" fill="currentColor" />
             <span>SPOTLIGHT HOUR</span>
           </div>
-          <h2 className="spotlight-poster-title">{getPokemonName(pokeName, lang)}</h2>
+          <h2 className="spotlight-poster-title">{getPokemonName(pokeName, 'en')}</h2>
           
           <div className="spotlight-poster-time-bar">
             <div className="spotlight-time-item">
-              <Calendar size={15} />
+              <Calendar size={14} />
               <span>{dateStr}</span>
             </div>
             {!isMultiDay && timeStr && (
               <>
                 <div className="spotlight-time-divider">•</div>
                 <div className="spotlight-time-item">
-                  <Clock size={15} />
+                  <Clock size={14} />
                   <span>{timeStr}</span>
                 </div>
               </>
@@ -208,52 +208,57 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
 
         {/* Main Section */}
         <div className="spotlight-poster-main">
-          {/* Featured Pokemon Showcase */}
-          <div className="spotlight-poke-card">
-            <div className="spotlight-image-halo"></div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', zIndex: 2, position: 'relative' }}>
-              <img 
-                src={resolveImage(pokemonImg, event.eventType, pokeName, false)} 
-                alt={pokeName} 
-                className="spotlight-poke-img"
-                onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, pokeName, false)}
-              />
-              {canBeShiny && (
+          {/* 1. Featured Pokemon Showcase (Normal & Shiny Sprites Side-by-Side, exact same sizes) */}
+          <div className="spotlight-poke-showcase">
+            <div className="spotlight-sprites-pair">
+              <div className="spotlight-sprite-box">
                 <img 
-                  src={resolveImage(pokemonImg, event.eventType, pokeName, true)} 
-                  alt={`${pokeName} Shiny`} 
-                  className="spotlight-poke-img shiny-sprite"
-                  style={{ filter: 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.6))' }}
-                  onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, pokeName, true)}
+                  src={resolveImage(pokemonImg, event.eventType, pokeName, false)} 
+                  alt={pokeName} 
+                  className="spotlight-poke-sprite"
+                  onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, pokeName, false)}
                 />
+                <span className="sprite-tag">Normal</span>
+              </div>
+              {canBeShiny && (
+                <div className="spotlight-sprite-box">
+                  <img 
+                    src={resolveImage(pokemonImg, event.eventType, pokeName, true)} 
+                    alt={`${pokeName} Shiny`} 
+                    className="spotlight-poke-sprite shiny-glow"
+                    onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, pokeName, true)}
+                  />
+                  <span className="sprite-tag shiny">✨ Shiny</span>
+                </div>
               )}
             </div>
-            <h3 className="spotlight-poke-name">{getPokemonName(pokeName, lang)}</h3>
-            {canBeShiny && (
-              <div className="spotlight-shiny-chip">
-                <Sparkles size={13} />
-                <span>✨ Shiny Available</span>
-              </div>
-            )}
           </div>
 
-          {/* Active Bonus Card */}
+          {/* 2. Active Hour Bonus Card (Moved directly below Pokemon photos) */}
           <div className="spotlight-bonus-card" style={{ borderColor: bonusInfo.color }}>
             <div className="spotlight-bonus-header">
               <Zap size={16} style={{ color: bonusInfo.color }} />
-              <span>{lang === 'cs' ? 'AKTIVNÍ BONUS HODINY' : 'ACTIVE HOUR BONUS'}</span>
+              <span>ACTIVE HOUR BONUS</span>
             </div>
-            <div className="spotlight-bonus-val-box" style={{ backgroundColor: `${bonusInfo.color}15` }}>
+            <div className="spotlight-bonus-val-box" style={{ backgroundColor: `${bonusInfo.color}18` }}>
               {bonusInfo.iconUrl ? (
-                <img src={bonusInfo.iconUrl} alt={bonusInfo.title} style={{ width: 28, height: 28, objectFit: 'contain' }} />
+                <img src={bonusInfo.iconUrl} alt={bonusInfo.title} className="spotlight-bonus-img" />
               ) : (
                 <span className="spotlight-bonus-emoji">{bonusInfo.iconEmoji}</span>
               )}
               <div className="spotlight-bonus-title" style={{ color: bonusInfo.color }}>{bonusInfo.title}</div>
             </div>
             <div className="spotlight-bonus-desc">
-              {lang === 'cs' ? 'Platí po celou dobu trvání akce pro všechny chycené Pokémony.' : 'Applies during the entire hour for all caught Pokémon.'}
+              Applies during the entire hour for all caught Pokémon.
             </div>
+          </div>
+
+          {/* 3. Shiny Rate Card (Clean single-line box) */}
+          <div className="spotlight-shiny-rate-card">
+            <Sparkles size={15} style={{ color: '#fbbf24' }} />
+            <span>
+              SHINY RATE: <strong>{canBeShiny ? '~1 in 500 (0.2% Chance) ✨' : 'Not Available 🚫'}</strong>
+            </span>
           </div>
         </div>
 
@@ -263,6 +268,7 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
             <ShieldCheck size={16} className="spotlight-shield-icon" />
             <span>pogoevents.app</span>
           </div>
+          <span>Pokémon GO Event Tracker</span>
         </div>
       </div>
     </div>

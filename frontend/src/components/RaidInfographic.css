@@ -306,6 +306,14 @@
 .max-sprites-grid.multi-3-grid .max-sprite-card-item:nth-child(3) {
   grid-column: span 2;
   justify-self: center;
+  width: auto;
+}
+
+.slide1-bosses-expanded.multi-3-grid .slide1-expanded-card:nth-child(3) .sprites-large-pair,
+.max-sprites-grid.multi-3-grid .max-sprite-card-item:nth-child(3) .max-sprite-pair-flex {
+  gap: 6px;
+  width: auto;
+  justify-content: center;
 }
 
 .slide1-expanded-card,
@@ -322,8 +330,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  width: 100%;
+  gap: 8px;
+  width: auto;
 }
 
 .sprite-large-box {
@@ -550,25 +558,26 @@
 .slide2-shiny-rate-card {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 8px;
   background: rgba(251, 191, 36, 0.1);
   border: 1px solid rgba(251, 191, 36, 0.3);
   padding: 8px 12px;
   border-radius: 12px;
+  text-align: center;
 }
 
-.shiny-card-label {
-  display: block;
-  font-size: 0.65rem;
+.shiny-card-single-text {
+  font-size: 0.78rem;
   font-weight: 700;
   color: #fbbf24;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
 }
 
-.shiny-card-val {
-  font-size: 0.82rem;
-  font-weight: 800;
+.shiny-card-single-text strong {
   color: #fff;
+  font-weight: 900;
 }
 
 /* SLIDE 3: PERFECT FIT 7 RAID COUNTERS GRID (MAXIMIZED HEIGHT) */
