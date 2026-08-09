@@ -55,16 +55,3 @@ export function calculateDialgaDexMetrics(poke: PokemonRankData): DialgaDexStats
     dpsRaw: rawDps
   };
 }
-
-/**
- * Enriches pokemonRankings array with DialgaDex calculated metrics.
- */
-export function enrichRankingsWithDialgaDex(rankings: PokemonRankData[]): (PokemonRankData & { dialgaDex: DialgaDexStats })[] {
-  return rankings.map(poke => {
-    const dialgaDex = calculateDialgaDexMetrics(poke);
-    return {
-      ...poke,
-      dialgaDex
-    };
-  });
-}

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import './FilterGeneratorView.css';
 import type { Language } from '../data/translations';
 import type { EventData } from './EventCard';
-import { getTopCountersForPokemonDetailed, getCounterTypesForName } from '../utils/pokemonCountersHelper';
+import { getTopCountersForPokemonDetailed, getCounterTypesForName, getPokemonTypesByName } from '../utils/pokemonCountersHelper';
 import { handlePokemonImageError, getPokemonIconUrl, getBasePokemonName } from '../utils/imageResolver';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { pokemonRankings } from '../data/pokemonRankings';
@@ -190,9 +190,10 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
   // Detailed Top Counters algorithm dynamically recalculating based on filterStrategy (Resistant vs Max DPS)
   const topCountersDetailed = useMemo(() => {
     const clean = selectedBoss.toLowerCase().replace(/^(shadow|mega|primal)\s+/, '').trim();
+    const resolvedTypes = getPokemonTypesByName(selectedBoss);
     const targetPoke = pokemonRankings.find(p => p.name.toLowerCase().includes(clean)) || {
-      name: selectedBoss, pokedexId: 483, types: ['Dragon', 'Steel'], attack: 275, defense: 211, stamina: 205, maxCp: 4565, pveScore: 90, dps: 25,
-      bestFastMove: { name: 'Dragon Breath', type: 'Dragon' }, bestChargedMove: { name: 'Draco Meteor', type: 'Dragon' }
+      name: selectedBoss, pokedexId: 9999, types: resolvedTypes, attack: 250, defense: 200, stamina: 200, maxCp: 3800, pveScore: 90, dps: 25,
+      bestFastMove: { name: 'Tackle', type: resolvedTypes[0] || 'Normal' }, bestChargedMove: { name: 'Body Slam', type: resolvedTypes[0] || 'Normal' }
     };
 
     return getTopCountersForPokemonDetailed(targetPoke, pokemonRankings, 12, filterStrategy);

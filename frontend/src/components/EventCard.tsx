@@ -11,7 +11,7 @@ import { findPokemonMeta } from '../data/pokemonMeta';
 import { useDynamicEventDetails } from '../hooks/useDynamicEventDetails';
 import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Flame, RefreshCw, Plus, Check, Image as ImageIcon, LayoutList } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
-import { resolveImage, handlePokemonImageError, getBasePokemonName, getBasePokemonNames, getPokemonIconUrl, getEventHeaderAvatar } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError, getBasePokemonName, getBasePokemonNames, getPokemonIconUrl } from '../utils/imageResolver';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { getRegionalInfo } from '../utils/regionalHelper';
 import { DirectRaidFilterBox } from './DirectRaidFilterBox';
@@ -217,6 +217,7 @@ interface EventCardProps {
   timezone?: string;
   defaultExpanded?: boolean;
   useInline?: boolean;
+  priority?: boolean;
   onOpenFilterGenerator?: (bossName?: string) => void;
   onToggleExpand?: (eventID: string, expanded: boolean) => void;
 }
@@ -227,6 +228,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   timezone,
   defaultExpanded,
   useInline: propsUseInline,
+  priority,
   onOpenFilterGenerator,
   onToggleExpand
 }) => {
@@ -1468,7 +1470,8 @@ export const EventCard: React.FC<EventCardProps> = ({
                 alt={event.name}
                 width={100}
                 height={100}
-                loading="lazy"
+                loading={priority ? 'eager' : 'lazy'}
+                fetchPriority={priority ? 'high' : 'auto'}
                 decoding="async"
                 onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, event.name)}
               />

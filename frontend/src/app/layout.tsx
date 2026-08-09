@@ -1,5 +1,7 @@
 import React from 'react';
 import Script from 'next/script';
+import { Outfit } from 'next/font/google';
+import { NavigatorProvider } from '@/hooks/useAppNavigate';
 import '../index.css';
 import '../App.css';
 import './globals.css';
@@ -14,6 +16,13 @@ import '../components/AdminPanelView.css';
 import '../components/CalendarView.css';
 import '../components/ActiveBonuses.css';
 import type { Metadata, Viewport } from 'next';
+
+const outfit = Outfit({
+  subsets: ['latin', 'latin-ext'],
+  weight: ['400', '500', '600', '700'],
+  display: 'swap',
+  variable: '--font-outfit',
+});
 
 export const metadata: Metadata = {
   title: 'Pokémon GO Event Tracker - Live Události, Raid Bossi & Rakeťáci',
@@ -43,39 +52,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-theme="dark">
+    <html lang="en" data-theme="dark" className={outfit.variable}>
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
-        {/* Google Fonts - non-blocking via print media trick (prevents render-blocking) */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preload" as="style"
-          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
-        />
-        {/* media=print trick: loads font async, then switches to all when done */}
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-          media="all"
-        />
-        <noscript>
-          <link
-            href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
-            rel="stylesheet"
-          />
-        </noscript>
+        {/* Preconnect & DNS prefetch for image CDNs to accelerate LCP & asset downloads */}
         <link rel="preconnect" href="https://raw.githubusercontent.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://img.pokemondb.net" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://cdn.leekduck.com" />
       </head>
-      <body>
-        {/* Google Tag (gtag.js) - single library load for both analytics IDs */}
+      <body className={outfit.className}>
+        {/* Google Tag (gtag.js) - afterInteractive loads analytics early without blocking initial render */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-17PT93VMXQ"
-          strategy="lazyOnload"
+          strategy="afterInteractive"
         />
-        <Script id="google-analytics" strategy="lazyOnload">
+        <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
@@ -92,9 +85,12 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <div id="root">
-          {children}
+          <NavigatorProvider>
+            {children}
+          </NavigatorProvider>
         </div>
       </body>
     </html>
   );
 }
+

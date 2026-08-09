@@ -11,13 +11,49 @@ import {
 import { loadCustomEvents, saveCustomEvents, CustomEvent, loadPokemonIconOverrides, savePokemonIconOverrides } from './storage';
 import { generateBotHtml } from './ssr';
 
+// Simple in-memory rate limiter
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+function rateLimit(windowMs: number, maxRequests: number) {
+  return (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    const now = Date.now();
+    const entry = rateLimitMap.get(ip);
+    if (!entry || now > entry.resetAt) {
+      rateLimitMap.set(ip, { count: 1, resetAt: now + windowMs });
+      return next();
+    }
+    entry.count++;
+    if (entry.count > maxRequests) {
+      return res.status(429).json({ error: 'Too many requests, please try again later' });
+    }
+    next();
+  };
+}
+// Clean up old rate limit entries every 5 minutes
+setInterval(() => {
+  const now = Date.now();
+  for (const [ip, entry] of rateLimitMap) {
+    if (now > entry.resetAt) rateLimitMap.delete(ip);
+  }
+}, 5 * 60 * 1000);
+
 const app = express();
 const PORT = process.env.PORT || 4000;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'pogo-admin-2026';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
+const activeAdminTokens = new Set<string>();
 
 // Enable CORS so the React app can call the API
-app.use(cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production'
+    ? ['https://pogoevents.app', 'https://pokemon-go-event-tracker.web.app']
+    : true,
+  credentials: true
+}));
 app.use(express.json());
+
+// Apply rate limiting: 100 requests per minute for API, 10 per minute for admin
+app.use('/api/admin', rateLimit(60 * 1000, 10));
+app.use('/api', rateLimit(60 * 1000, 100));
 
 // ==========================================
 // Hybrid Cache (In-Memory + Persistent Disk)
@@ -232,7 +268,7 @@ function requireAuth(req: express.Request, res: express.Response, next: express.
     return res.status(401).json({ error: 'Unauthorized: Missing token' });
   }
   const token = authHeader.split(' ')[1];
-  if (token !== ADMIN_PASSWORD) {
+  if (token !== ADMIN_PASSWORD && !activeAdminTokens.has(token)) {
     return res.status(403).json({ error: 'Forbidden: Invalid token' });
   }
   next();
@@ -653,8 +689,16 @@ app.post('/api/admin/import', requireAuth, async (req, res) => {
 app.post('/api/admin/login', (req, res) => {
   const { password } = req.body;
   if (!password) return res.status(400).json({ error: 'Missing password' });
+  if (!ADMIN_PASSWORD) return res.status(503).json({ error: 'Admin not configured' });
   if (password === ADMIN_PASSWORD) {
-    res.json({ success: true, token: ADMIN_PASSWORD });
+    // Generate a session token from password + timestamp to avoid exposing the raw password
+    const crypto = require('crypto');
+    const sessionToken = crypto.createHmac('sha256', ADMIN_PASSWORD).update(Date.now().toString()).digest('hex');
+    // Store token for validation (simple in-memory approach)
+    activeAdminTokens.add(sessionToken);
+    // Auto-expire after 24 hours
+    setTimeout(() => activeAdminTokens.delete(sessionToken), 24 * 60 * 60 * 1000);
+    res.json({ success: true, token: sessionToken });
   } else {
     res.status(401).json({ error: 'Invalid password' });
   }

@@ -1,6 +1,5 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import puppeteer, { Browser } from 'puppeteer';
 import { EventData, SpecialEventDetails, ScrapedRaidBoss, RocketMember, GruntData, RaidCounters } from './types';
 
 // ==========================================
@@ -1733,28 +1732,8 @@ async function scrapeLeekDuckEventDetails(eventID: string, link: string): Promis
 }
 
 // ==========================================
-// 3a. Niantic Official Scraper (Puppeteer)
+// 3a. Niantic Official Scraper (Axios/Cheerio)
 // ==========================================
-
-let sharedBrowser: Browser | null = null;
-
-async function getBrowser(): Promise<Browser> {
-  if (sharedBrowser && sharedBrowser.connected) {
-    return sharedBrowser;
-  }
-  sharedBrowser = await puppeteer.launch({
-    headless: true,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-gpu',
-      '--no-first-run',
-      '--no-zygote',
-    ]
-  });
-  return sharedBrowser;
-}
 
 function bonusTextToIcon(text: string): string {
   const t = text.toLowerCase();
@@ -1772,207 +1751,7 @@ function bonusTextToIcon(text: string): string {
   return '🎁';
 }
 
-export async function scrapeNianticEventDetails(urlOrID: string): Promise<SpecialEventDetails | null> {
-  const nianticUrl = urlOrID.startsWith('http') ? urlOrID : `https://pokemongolive.com/en/news/${urlOrID}`;
-  const eventID = nianticUrl.split('/').pop() || '';
-  
-  // Skip generic event IDs to avoid unnecessary 404s on pokemongolive.com
-  const genericPatterns = [
-    'raidhour',
-    'spotlighthour',
-    'pokemonspotlighthour',
-    'gbl-',
-    'rocket-takeover',
-    'max-monday',
-    'max-mondays',
-    'weekly-'
-  ];
-  if (genericPatterns.some(pattern => eventID.toLowerCase().includes(pattern))) {
-    console.log(`[Niantic] Skipping generic event ID ${eventID} (no official article expected)`);
-    return null;
-  }
 
-  console.log(`[Niantic] Scraping: ${nianticUrl}`);
-
-  try {
-    const browser = await getBrowser();
-    const page = await browser.newPage();
-
-    await page.setRequestInterception(true);
-    page.on('request', (req) => {
-      const type = req.resourceType();
-      if (['image', 'font', 'media'].includes(type)) {
-        req.abort();
-      } else {
-        req.continue();
-      }
-    });
-
-    await page.setUserAgent(
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    );
-
-    const response = await page.goto(nianticUrl, {
-      waitUntil: 'networkidle2',
-      timeout: 20000
-    });
-
-    if (!response || response.status() === 404) {
-      console.log(`[Niantic] 404 for ${nianticUrl}`);
-      await page.close();
-      return null;
-    }
-
-    try {
-      await page.waitForSelector('article, main h2, main h3, main ul li', { timeout: 8000 });
-    } catch {
-      console.log(`[Niantic] Timeout waiting for content on ${nianticUrl}`);
-      await page.close();
-      return null;
-    }
-
-    const extracted = await page.evaluate(() => {
-      const bonuses: { text: string; icon: string }[] = [];
-      const spawns: { name: string; isShinyAvailable: boolean }[] = [];
-      const eggs: { distance: string; contents: { name: string }[] }[] = [];
-      const debuts: { name: string; description: string }[] = [];
-      const research: { task: string; reward: string }[] = [];
-
-      const contentRoot = document.querySelector('article') || document.querySelector('main') || document.body;
-      const headings = contentRoot.querySelectorAll('h2, h3');
-
-      headings.forEach((heading) => {
-        const title = heading.textContent?.toLowerCase().trim() || '';
-
-        const siblingLists: Element[] = [];
-        const siblingTexts: string[] = [];
-        let next = heading.nextElementSibling;
-        while (next && !['H2', 'H3', 'H4'].includes(next.tagName)) {
-          if (next.tagName === 'UL' || next.tagName === 'OL') {
-            siblingLists.push(next);
-          } else if (next.tagName === 'P') {
-            const t = next.textContent?.trim();
-            if (t) siblingTexts.push(t);
-          }
-          next = next.nextElementSibling;
-        }
-
-        if (siblingLists.length === 0) return;
-
-        const allItems = siblingLists.flatMap(ul =>
-          Array.from(ul.querySelectorAll('li')).map(li => li.textContent?.trim() || '')
-        ).filter(t => t.length > 0);
-
-        if (title.includes('bonus') || title.includes('feature') || title.includes('event detail') || title.includes('what')) {
-          allItems.forEach(item => { bonuses.push({ text: item, icon: '' }); });
-          return;
-        }
-
-        if (title.includes('wild') || title.includes('spawn') || title.includes('encounter') || title.includes('appearing') || title.includes('in the wild')) {
-          allItems.forEach(item => {
-            const isShiny = item.includes('✦') || item.includes('⭐') || item.toLowerCase().includes('shiny');
-            const cleanName = item.replace(/[✦⭐★\*]/g, '').trim().split('–')[0].split('-')[0].trim();
-            if (cleanName) spawns.push({ name: cleanName, isShinyAvailable: isShiny });
-          });
-          return;
-        }
-
-        if (title.includes('egg') || title.includes('hatch') || title.includes('km')) {
-          const distMatch = title.match(/(\d+)\s*km/i);
-          const distance = distMatch ? distMatch[0] : '7km';
-          const contents = allItems.map(item => ({
-            name: item.replace(/[✦⭐★\*]/g, '').trim().split('–')[0].split('-')[0].trim()
-          })).filter(c => c.name.length > 0);
-          if (contents.length > 0) eggs.push({ distance, contents });
-          return;
-        }
-
-        if (title.includes('debut') || title.includes('first time') || title.includes('new to') || title.includes('shiny debut') || title.includes('new shiny') || title.includes('save shadow') || title.includes('featured')) {
-          const desc = siblingTexts.join(' ');
-          allItems.forEach(item => {
-            const cleanName = item.replace(/[✦⭐★\*]/g, '').trim().split('–')[0].trim();
-            if (cleanName) debuts.push({ name: cleanName, description: desc });
-          });
-          return;
-        }
-
-        if (title.includes('research') || title.includes('field') || title.includes('task')) {
-          allItems.forEach(item => {
-            const parts = item.split(/-|:|–/);
-            const task = parts[0]?.trim() || item;
-            const reward = parts.slice(1).join(' ').trim() || '';
-            if (task) research.push({ task, reward });
-          });
-          return;
-        }
-      });
-
-      return { bonuses, spawns, eggs, debuts, research };
-    });
-
-    await page.close();
-
-    if (!extracted) return null;
-
-    const processedBonuses = extracted.bonuses
-      .filter(b => b.text.length > 0)
-      .map(b => ({
-        text: { cs: translateTextToCs(b.text), en: b.text },
-        icon: bonusTextToIcon(b.text)
-      }));
-
-    const spawns = extracted.spawns
-      .filter(s => s.name.length > 1)
-      .map(s => ({
-        name: s.name,
-        image: '',
-        isShinyAvailable: s.isShinyAvailable,
-        isHighPriority: isMetaRelevant(s.name)
-      }));
-
-    const eggs = extracted.eggs.map(e => ({
-      distance: e.distance,
-      contents: e.contents.map(c => ({ name: c.name, image: '', isShinyAvailable: false }))
-    }));
-
-    const debuts = extracted.debuts.map(d => ({
-      name: d.name,
-      image: '',
-      description: {
-        cs: translateTextToCs(d.description || `${d.name} debutuje v Pokémon GO!`),
-        en: d.description || `${d.name} debuts in Pokémon GO!`
-      }
-    }));
-
-    const research = extracted.research.map(r => ({
-      task: { cs: translateTextToCs(r.task), en: r.task },
-      reward: r.reward,
-      image: '',
-      isShinyAvailable: false
-    }));
-
-    const hasData = processedBonuses.length > 0 || spawns.length > 0 || eggs.length > 0 || debuts.length > 0 || research.length > 0;
-    if (!hasData) {
-      console.log(`[Niantic] No structured data found for ${eventID}`);
-      return null;
-    }
-
-    console.log(`[Niantic] ✅ ${eventID}: bonuses=${processedBonuses.length}, spawns=${spawns.length}, eggs=${eggs.length}, debuts=${debuts.length}, research=${research.length}`);
-
-    return {
-      eventID,
-      bonuses: processedBonuses.length > 0 ? processedBonuses : undefined,
-      debuts: debuts.length > 0 ? debuts : undefined,
-      spawns: spawns.length > 0 ? spawns : undefined,
-      eggs: eggs.length > 0 ? eggs : undefined,
-      research: research.length > 0 ? research : undefined,
-    };
-
-  } catch (err: any) {
-    console.error(`[Niantic] Error scraping ${eventID}:`, err.message);
-    return null;
-  }
-}
 
 // ==========================================
 // 3c. News Listing Crawler & Matchers
@@ -1989,54 +1768,30 @@ let newsListingFetchedAt = 0;
 export async function scrapeNianticNewsListing(): Promise<NianticArticle[]> {
   console.log('[Niantic] Fetching news listing from https://pokemongolive.com/en/news/...');
   try {
-    const browser = await getBrowser();
-    const page = await browser.newPage();
-
-    await page.setRequestInterception(true);
-    page.on('request', (req) => {
-      const type = req.resourceType();
-      if (['image', 'font', 'media'].includes(type)) {
-        req.abort();
-      } else {
-        req.continue();
-      }
+    const response = await axios.get('https://pokemongolive.com/en/news/', {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)' },
+      timeout: 15000
     });
 
-    await page.setUserAgent(
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    );
+    const $ = cheerio.load(response.data);
+    
+    const articles = $('a')
+      .map((_, a) => {
+        const href = $(a).attr('href') || '';
+        const text = $(a).text().trim() || '';
+        return { href, title: text };
+      })
+      .get()
+      .filter(item => item.href.includes('/post/') || item.href.includes('/news/'))
+      .map(item => {
+        const titleClean = item.title.replace(/^[A-Za-z]{3}\s+\d{1,2},\s+\d{4}/, '').trim();
+        return {
+          href: item.href.startsWith('http') ? item.href : `https://pokemongolive.com${item.href}`,
+          title: titleClean
+        };
+      })
+      .filter(item => item.title.length > 5);
 
-    await page.goto('https://pokemongolive.com/en/news/', {
-      waitUntil: 'networkidle2',
-      timeout: 25000
-    });
-
-    try {
-      await page.waitForSelector('main a, article, .news-list, [class*="newsCard"]', { timeout: 8000 });
-    } catch {
-      // ignore
-    }
-
-    const articles = await page.evaluate(() => {
-      const links = Array.from(document.querySelectorAll('a'));
-      return links
-        .map(a => {
-          const href = a.getAttribute('href') || '';
-          const text = a.textContent?.trim() || '';
-          return { href, title: text };
-        })
-        .filter(item => item.href.includes('/post/') || item.href.includes('/news/'))
-        .map(item => {
-          const titleClean = item.title.replace(/^[A-Za-z]{3}\s+\d{1,2},\s+\d{4}/, '').trim();
-          return {
-            href: item.href.startsWith('http') ? item.href : `https://pokemongolive.com${item.href}`,
-            title: titleClean
-          };
-        })
-        .filter(item => item.title.length > 5);
-    });
-
-    await page.close();
     console.log(`[Niantic] Successfully indexed ${articles.length} news articles from listing page`);
     return articles;
   } catch (err: any) {
@@ -2263,94 +2018,7 @@ export async function scrapePoGOHubRaidBosses(): Promise<ScrapedRaidBoss[]> {
       }
     }
   } catch (err: any) {
-    console.warn(`[scrapePoGOHubRaidBosses] Fast HTTP GET failed: ${err.message}. Trying Puppeteer fallback...`);
-  }
-
-  // Method 2: Puppeteer Fallback
-  let browser;
-  try {
-    const puppeteer = await import('puppeteer');
-    browser = await puppeteer.launch({
-      headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    const page = await browser.newPage();
-    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36');
-
-    await page.goto('https://pokemongohub.net/post/guide/current-go-raids/', { waitUntil: 'domcontentloaded', timeout: 30000 });
-
-    const rawTiers = await page.evaluate(() => {
-      const results: Record<string, string[]> = {};
-      const headings = document.querySelectorAll('h2, h3');
-      headings.forEach(h => {
-        const title = h.textContent ? h.textContent.trim().toLowerCase() : '';
-        let tierKey: ScrapedRaidBoss['tier'] | null = null;
-
-        if (title === '1-star raids') tierKey = '1';
-        else if (title === '3-star raids') tierKey = '3';
-        else if (title === '5-star raids') tierKey = '5';
-        else if (title === 'mega raids') tierKey = 'mega';
-        else if (title.includes('1-star shadow')) tierKey = 'shadow-1';
-        else if (title.includes('3-star shadow')) tierKey = 'shadow-3';
-        else if (title.includes('5-star shadow')) tierKey = 'shadow-5';
-
-        if (tierKey) {
-          const names: string[] = [];
-          let curr = h.nextElementSibling;
-          while (curr && !['H2', 'H3'].includes(curr.tagName)) {
-            const links = curr.querySelectorAll('a');
-            links.forEach(a => {
-              const text = a.textContent ? a.textContent.trim() : '';
-              if (text && text.length < 40 && !text.includes('Guide') && !text.includes('Counter') && !text.includes('Raid')) {
-                names.push(text);
-              }
-            });
-            const lis = curr.querySelectorAll('li');
-            lis.forEach(li => {
-              const text = li.textContent ? li.textContent.trim() : '';
-              if (text && text.length < 40) names.push(text);
-            });
-            if (curr.tagName === 'P' || curr.tagName === 'DIV') {
-              const lines = (curr as HTMLElement).innerText.split('\n').map(l => l.trim()).filter(l => l.length > 0 && l.length < 40);
-              lines.forEach(l => {
-                if (!l.includes('Guide') && !l.includes('Counter') && !l.includes('Raid') && !l.includes('One-Star')) {
-                  names.push(l);
-                }
-              });
-            }
-            curr = curr.nextElementSibling;
-          }
-          results[tierKey] = Array.from(new Set(names));
-        }
-      });
-      return results;
-    });
-
-    const bosses: ScrapedRaidBoss[] = [];
-    for (const [tier, names] of Object.entries(rawTiers)) {
-      for (const name of names) {
-        const matchedCounters = findRaidCounters(name);
-        bosses.push({
-          name,
-          tier: tier as ScrapedRaidBoss['tier'],
-          image: getPokemonIconUrl(name),
-          canBeShiny: true,
-          cpRange: matchedCounters ? `${matchedCounters.minCp} - ${matchedCounters.maxCp}` : undefined,
-          boostedCpRange: matchedCounters ? `${matchedCounters.minBoostedCp} - ${matchedCounters.maxBoostedCp}` : undefined,
-          weatherBoosts: matchedCounters?.weatherBoosts,
-          types: undefined,
-          counters: matchedCounters
-        });
-      }
-    }
-    if (bosses.length > 0) {
-      console.log(`[scrapePoGOHubRaidBosses] Successfully scraped ${bosses.length} live raid bosses via Puppeteer`);
-      return bosses;
-    }
-  } catch (err: any) {
-    console.warn(`[scrapePoGOHubRaidBosses] Failed to scrape PoGO Hub via Puppeteer: ${err.message}`);
-  } finally {
-    if (browser) await browser.close().catch(() => {});
+    console.warn(`[scrapePoGOHubRaidBosses] HTTP GET failed: ${err.message}`);
   }
   return [];
 }

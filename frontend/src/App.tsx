@@ -13,6 +13,7 @@ import type { Language } from './data/translations';
 import { API_BASE_URL } from './config';
 import { AdContainer } from './components/AdContainer';
 import { setPokemonIconOverrides } from './utils/imageResolver';
+import { useAppNavigate } from './hooks/useAppNavigate';
 import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy, Filter } from 'lucide-react';
 
 // Lazy-loaded tabs - loaded only when user navigates to them (reduces initial bundle ~40%)
@@ -289,15 +290,20 @@ const safeLocalStorage = {
 };
 
 const getTabFromUrlPath = (pathname: string): TabType => {
-  const p = pathname.toLowerCase();
-  if (p.includes('/admin')) return 'admin';
-  if (p.includes('/raids') || p.includes('/raid')) return 'raid';
-  if (p.includes('/rocket')) return 'rocket';
-  if (p.includes('/rankings') || p.includes('/ranking')) return 'ranking';
-  if (p.includes('/ditto')) return 'ditto';
-  if (p.includes('/eggs')) return 'eggs';
-  if (p.includes('/filter')) return 'filter';
-  if (p.includes('/settings')) return 'settings';
+  const segments = pathname.toLowerCase().split('/').filter(Boolean);
+  // Skip language segment if present
+  const tabSegments = (['cs', 'en', 'ja', 'ru', 'sk', 'jp', 'us'].includes(segments[0]))
+    ? segments.slice(1)
+    : segments;
+  const first = tabSegments[0] || '';
+  if (first === 'admin') return 'admin';
+  if (first === 'raids' || first === 'raid') return 'raid';
+  if (first === 'rocket') return 'rocket';
+  if (first === 'rankings' || first === 'ranking') return 'ranking';
+  if (first === 'ditto') return 'ditto';
+  if (first === 'eggs') return 'eggs';
+  if (first === 'filter') return 'filter';
+  if (first === 'settings') return 'settings';
   return 'events';
 };
 
@@ -325,10 +331,45 @@ const getUrlPathForTab = (tab: TabType, l: Language, eventID?: string | null): s
   }
 };
 
+const TAB_TITLES: Record<TabType, Record<string, string>> = {
+  events: { cs: 'Události', en: 'Events', ja: 'イベント', ru: 'События' },
+  raid: { cs: 'Raid Bossi', en: 'Raid Bosses', ja: 'レイドボス', ru: 'Рейд-боссы' },
+  rocket: { cs: 'Team GO Rocket', en: 'Team GO Rocket', ja: 'Team GO Rocket', ru: 'Team GO Rocket' },
+  ditto: { cs: 'Ditto Přestrojení', en: 'Ditto Disguises', ja: 'メタモン変装', ru: 'Маскировки Дитто' },
+  eggs: { cs: 'Líhnutí vajec', en: 'Egg Hatching', ja: 'タマゴ孵化', ru: 'Яйца' },
+  ranking: { cs: 'PvP Žebříčky', en: 'PvP Rankings', ja: 'PvPランキング', ru: 'PvP Рейтинги' },
+  filter: { cs: 'Vyhledávací Filtr', en: 'Search Filter', ja: '検索フィルター', ru: 'Фильтр поиска' },
+  settings: { cs: 'Nastavení', en: 'Settings', ja: '設定', ru: 'Настройки' },
+  admin: { cs: 'Admin', en: 'Admin', ja: 'Admin', ru: 'Admin' },
+};
+
+const getPageTitle = (tab: TabType, lang: string, eventName?: string | null): string => {
+  const suffix = 'Pokémon GO Event Tracker';
+  if (tab === 'events' && eventName) {
+    return `${eventName} | ${suffix}`;
+  }
+  const tabTitle = TAB_TITLES[tab]?.[lang] || TAB_TITLES[tab]?.['en'] || 'Events';
+  return `${tabTitle} | ${suffix}`;
+};
+
+const updateHeadMeta = (tab: TabType, lang: string, eventId?: string | null): void => {
+  if (typeof window === 'undefined') return;
+  const canonicalPath = getUrlPathForTab(tab, lang as Language, eventId);
+  const canonicalUrl = `https://pogoevents.app${canonicalPath}`;
+  let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'canonical';
+    document.head.appendChild(link);
+  }
+  link.href = canonicalUrl;
+};
+
 function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?: TabType } = {}) {
   const [activeTab, setActiveTab] = useState<TabType>(initialTab || 'events');
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
   const [lang, setLang] = useState<Language>(initialLang || 'en');
+  const navigate = useAppNavigate();
   // Set to true once AdSense approves the website to restore ad placements
   const ENABLE_ADS = false;
   const showAds = ENABLE_ADS && activeTab !== 'settings' && activeTab !== 'admin';
@@ -388,12 +429,17 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
                         window.location.protocol === 'capacitor:' || 
                         window.location.protocol === 'file:';
 
-    if (!isCapacitor && (path === '/' || path === '' || path === '/cs' || path === '/en' || path === '/ja' || path === '/ru')) {
+    if (!isCapacitor) {
       const canonicalPath = getUrlPathForTab(urlTab || activeTab, resolvedLang, urlEventId);
       if (window.location.pathname !== canonicalPath) {
-        window.history.replaceState(null, '', canonicalPath);
+        navigate.replace(canonicalPath);
       }
     }
+
+    // Set initial page title, <html lang> and canonical meta on mount
+    document.title = getPageTitle(urlTab || activeTab, resolvedLang);
+    document.documentElement.lang = resolvedLang;
+    updateHeadMeta(urlTab || activeTab, resolvedLang, urlEventId);
   }, []);
 
   const changeTab = (newTab: TabType) => {
@@ -405,12 +451,15 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
       const isCapacitor = !!(window as any).Capacitor || 
                           window.location.protocol === 'capacitor:' || 
                           window.location.protocol === 'file:';
+      const eventId = newTab === 'events' ? expandedEventId : null;
       if (!isCapacitor) {
-        const targetPath = getUrlPathForTab(newTab, lang, newTab === 'events' ? expandedEventId : null);
+        const targetPath = getUrlPathForTab(newTab, lang, eventId);
         if (window.location.pathname !== targetPath) {
-          window.history.pushState(null, '', targetPath);
+          navigate.push(targetPath);
         }
       }
+      document.title = getPageTitle(newTab, lang);
+      updateHeadMeta(newTab, lang, eventId);
     }
   };
 
@@ -424,9 +473,12 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
       if (!isCapacitor) {
         const targetPath = getUrlPathForTab('events', lang, newExpandedId);
         if (window.location.pathname !== targetPath) {
-          window.history.pushState(null, '', targetPath);
+          navigate.push(targetPath);
         }
       }
+      const eventName = expanded ? events.find(e => e.eventID === eventID)?.name : null;
+      document.title = getPageTitle('events', lang, eventName);
+      updateHeadMeta('events', lang, newExpandedId);
     }
   };
 
@@ -443,6 +495,10 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
       }
       const urlEventId = getEventIdFromUrlPath(window.location.pathname);
       setExpandedEventId(urlEventId);
+      // Update title and meta on browser back/forward
+      const effectiveLang = urlLang || lang;
+      document.title = getPageTitle(newTab, effectiveLang);
+      updateHeadMeta(newTab, effectiveLang, urlEventId);
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -523,17 +579,19 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
 
   useEffect(() => {
     trackGAEvent('change_language', 'Settings', lang);
-    if (typeof window === 'undefined') return;
-    const isCapacitor = !!(window as any).Capacitor || 
-                        window.location.protocol === 'capacitor:' || 
-                        window.location.protocol === 'file:';
-    if (!isCapacitor) {
-      const targetPath = getUrlPathForTab(activeTab, lang, activeTab === 'events' ? expandedEventId : null);
-      if (window.location.pathname !== targetPath) {
-        window.history.pushState(null, '', targetPath);
-      }
+    if (typeof window !== 'undefined') {
+      document.documentElement.lang = lang;
     }
-  }, [lang, activeTab, expandedEventId]);
+  }, [lang]);
+
+  // Sync page title when expanded event changes or event data loads (e.g. deep link)
+  useEffect(() => {
+    if (typeof window === 'undefined' || !expandedEventId || activeTab !== 'events') return;
+    const event = events.find(e => e.eventID === expandedEventId);
+    if (event) {
+      document.title = getPageTitle('events', lang, event.name);
+    }
+  }, [expandedEventId, events, lang, activeTab]);
 
   const toggleVisibleEvent = (key: keyof VisibleEventsPreference) => {
     setVisibleEvents(prev => ({ ...prev, [key]: !prev[key] }));
@@ -606,14 +664,19 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
     setLang(newLang);
     safeLocalStorage.setItem('pogo_tracker_lang', newLang);
 
-    const isCapacitor = !!(window as any).Capacitor || 
-                        window.location.protocol === 'capacitor:' || 
-                        window.location.protocol === 'file:';
-    if (!isCapacitor && typeof window !== 'undefined') {
-      const targetPath = getUrlPathForTab(activeTab, newLang, activeTab === 'events' ? expandedEventId : null);
-      if (window.location.pathname !== targetPath) {
-        window.history.pushState(null, '', targetPath);
+    if (typeof window !== 'undefined') {
+      const isCapacitor = !!(window as any).Capacitor || 
+                          window.location.protocol === 'capacitor:' || 
+                          window.location.protocol === 'file:';
+      const eventId = activeTab === 'events' ? expandedEventId : null;
+      if (!isCapacitor) {
+        const targetPath = getUrlPathForTab(activeTab, newLang, eventId);
+        if (window.location.pathname !== targetPath) {
+          navigate.push(targetPath);
+        }
       }
+      document.title = getPageTitle(activeTab, newLang);
+      updateHeadMeta(activeTab, newLang, eventId);
     }
   };
 
@@ -1225,13 +1288,14 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
                             <p>{t.details_empty_category}</p>
                           </div>
                         ) : (
-                          getFilteredEvents().map(event => (
+                          getFilteredEvents().map((event, index) => (
                             <EventCard 
                               key={event.eventID} 
                               event={event} 
                               lang={lang} 
                               timezone={timezone} 
                               defaultExpanded={event.eventID === expandedEventId}
+                              priority={index === 0}
                               onOpenFilterGenerator={handleOpenFilterGenerator}
                               onToggleExpand={handleEventToggleExpand}
                             />

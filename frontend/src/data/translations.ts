@@ -832,24 +832,4 @@ export function getLocalizedString(str: any, lang: Language): string {
   return str.en || str.cs || '';
 }
 
-/**
- * Three-way inline translation helper.
- * Usage: t3(lang, 'Czech text', 'English text', 'Japanese text')
- * If Japanese text is omitted, falls back to English.
- */
-export function t3(lang: Language, cs: string, en: string, ja?: string, ru?: string): string {
-  if (lang === 'ja') return ja || en;
-  if (lang === 'cs') return cs;
-  if (lang === 'ru') return ru || en;
-  return en;
-}
 
-/**
- * Returns the appropriate locale string for Intl APIs.
- */
-export function getLocale(lang: Language): string {
-  if (lang === 'ja') return 'ja-JP';
-  if (lang === 'cs') return 'cs-CZ';
-  if (lang === 'ru') return 'ru-RU';
-  return 'en-US';
-}

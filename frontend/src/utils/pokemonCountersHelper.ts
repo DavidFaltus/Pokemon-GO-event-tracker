@@ -321,11 +321,163 @@ function getAltChargedMoveName(poke: PokemonRankData, altIndex: number): string 
   return altIndex === 1 ? (defaults1[type] || "Hyper Beam*") : (defaults2[type] || "Return");
 }
 
+// ─── POKEMON TYPE DATABASE FOR RAID BOSSES & SPECIES ───────────────────────
+export const POKEMON_TYPE_DB: Record<string, string[]> = {
+  // Lake Guardians & Psychic Legendaries
+  'mesprit': ['Psychic'],
+  'uxie': ['Psychic'],
+  'azelf': ['Psychic'],
+  'mewtwo': ['Psychic'],
+  'mew': ['Psychic'],
+  'cresselia': ['Psychic'],
+  'deoxys': ['Psychic'],
+  'necrozma': ['Psychic'],
+  'dusk mane necrozma': ['Psychic', 'Steel'],
+  'dawn wings necrozma': ['Psychic', 'Ghost'],
+  'ultra necrozma': ['Psychic', 'Dragon'],
+  'solgaleo': ['Psychic', 'Steel'],
+  'lunala': ['Psychic', 'Ghost'],
+  
+  // Kanto / Johto / Hoenn / Sinnoh / Unova / Kalos / Alola / Galar / Paldea Raid Bosses
+  'articuno': ['Ice', 'Flying'],
+  'zapdos': ['Electric', 'Flying'],
+  'moltres': ['Fire', 'Flying'],
+  'raikou': ['Electric'],
+  'entei': ['Fire'],
+  'suicune': ['Water'],
+  'lugia': ['Psychic', 'Flying'],
+  'ho-oh': ['Fire', 'Flying'],
+  'celebi': ['Psychic', 'Grass'],
+  'regirock': ['Rock'],
+  'regice': ['Ice'],
+  'registeel': ['Steel'],
+  'latias': ['Dragon', 'Psychic'],
+  'latios': ['Dragon', 'Psychic'],
+  'kyogre': ['Water'],
+  'groudon': ['Ground'],
+  'rayquaza': ['Dragon', 'Flying'],
+  'jirachi': ['Steel', 'Psychic'],
+  'dialga': ['Steel', 'Dragon'],
+  'palkia': ['Water', 'Dragon'],
+  'heatran': ['Fire', 'Steel'],
+  'regigigas': ['Normal'],
+  'giratina': ['Ghost', 'Dragon'],
+  'darkrai': ['Dark'],
+  'shaymin': ['Grass'],
+  'arceus': ['Normal'],
+  'victini': ['Psychic', 'Fire'],
+  'cobalion': ['Steel', 'Fighting'],
+  'terrakion': ['Rock', 'Fighting'],
+  'virizion': ['Grass', 'Fighting'],
+  'tornadus': ['Flying'],
+  'thundurus': ['Electric', 'Flying'],
+  'reshiram': ['Dragon', 'Fire'],
+  'zekrom': ['Dragon', 'Electric'],
+  'landorus': ['Ground', 'Flying'],
+  'kyurem': ['Dragon', 'Ice'],
+  'keldeo': ['Water', 'Fighting'],
+  'meloetta': ['Normal', 'Psychic'],
+  'genesect': ['Bug', 'Steel'],
+  'xerneas': ['Fairy'],
+  'yveltal': ['Dark', 'Flying'],
+  'zygarde': ['Dragon', 'Ground'],
+  'diancie': ['Rock', 'Fairy'],
+  'hoopa': ['Psychic', 'Ghost'],
+  'volcanion': ['Fire', 'Water'],
+  'tapu koko': ['Electric', 'Fairy'],
+  'tapu lele': ['Psychic', 'Fairy'],
+  'tapu bulu': ['Grass', 'Fairy'],
+  'tapu fini': ['Water', 'Fairy'],
+  'nihilego': ['Rock', 'Poison'],
+  'buzzwole': ['Bug', 'Fighting'],
+  'pheromosa': ['Bug', 'Fighting'],
+  'xurkitree': ['Electric'],
+  'celesteela': ['Steel', 'Flying'],
+  'kartana': ['Grass', 'Steel'],
+  'guzzlord': ['Dark', 'Dragon'],
+  'poipole': ['Poison'],
+  'naganadel': ['Poison', 'Dragon'],
+  'stakataka': ['Rock', 'Steel'],
+  'blacephalon': ['Fire', 'Ghost'],
+  'meltan': ['Steel'],
+  'melmetal': ['Steel'],
+  'zacian': ['Fairy'],
+  'zamazenta': ['Fighting'],
+  'eternatus': ['Poison', 'Dragon'],
+  'urshifu': ['Fighting', 'Dark'],
+  'zarude': ['Grass', 'Dark'],
+  'regieleki': ['Electric'],
+  'regidrago': ['Dragon'],
+  'glastrier': ['Ice'],
+  'spectrier': ['Ghost'],
+  'calyrex': ['Psychic', 'Grass'],
+  'enamorus': ['Fairy', 'Flying'],
+  'great tusk': ['Ground', 'Fighting'],
+  'iron treads': ['Ground', 'Steel'],
+  'iron bundle': ['Ice', 'Water'],
+  'iron hands': ['Fighting', 'Electric'],
+  'iron jugulis': ['Dark', 'Flying'],
+  'iron moth': ['Fire', 'Poison'],
+  'iron thorns': ['Rock', 'Electric'],
+  'frigibax': ['Dragon', 'Ice'],
+  'baxcalibur': ['Dragon', 'Ice'],
+  'gholdengo': ['Steel', 'Ghost'],
+  'wo-chien': ['Dark', 'Grass'],
+  'chien-pao': ['Dark', 'Ice'],
+  'ting-lu': ['Dark', 'Ground'],
+  'chi-yu': ['Dark', 'Fire'],
+  'roaring moon': ['Dragon', 'Dark'],
+  'iron valiant': ['Fairy', 'Fighting'],
+  'koraidon': ['Fighting', 'Dragon'],
+  'miraidon': ['Electric', 'Dragon'],
+  'walking wake': ['Water', 'Dragon'],
+  'iron leaves': ['Grass', 'Psychic'],
+  'archaludon': ['Steel', 'Dragon'],
+  'gouging fire': ['Fire', 'Dragon'],
+  'raging bolt': ['Electric', 'Dragon'],
+  'iron boulder': ['Rock', 'Psychic'],
+  'iron crown': ['Steel', 'Psychic'],
+  'terapagos': ['Normal']
+};
+
+/**
+ * Resolves the accurate elemental types for any Pokemon name.
+ */
+export function getPokemonTypesByName(bossName: string): string[] {
+  if (!bossName) return ['Normal'];
+  const clean = bossName.toLowerCase().replace(/^(shadow|mega|primal|apex)\s+/, '').trim();
+  const baseClean = clean.replace(/\s*\([^)]+\)/g, '').trim();
+
+  // 1. Check direct match in pokemonRankings
+  const rankMatch = pokemonRankings.find(p => p.name.toLowerCase().includes(clean) || p.name.toLowerCase().includes(baseClean));
+  if (rankMatch) return rankMatch.types;
+
+  // 2. Check direct match in POKEMON_TYPE_DB
+  if (POKEMON_TYPE_DB[clean]) return POKEMON_TYPE_DB[clean];
+  if (POKEMON_TYPE_DB[baseClean]) return POKEMON_TYPE_DB[baseClean];
+
+  // 3. Substring match in POKEMON_TYPE_DB
+  for (const key of Object.keys(POKEMON_TYPE_DB)) {
+    if (clean.includes(key) || key.includes(clean) || baseClean.includes(key)) {
+      return POKEMON_TYPE_DB[key];
+    }
+  }
+
+  // Fallback to Normal (neutral) instead of Dialga's Dragon/Steel
+  return ['Normal'];
+}
+
 export function getTopCountersByName(bossName: string, limit: number = 20): PokemonRankData[] {
   const clean = bossName.toLowerCase().replace(/^(shadow|mega|primal)\s+/, '').trim();
+  const resolvedTypes = getPokemonTypesByName(bossName);
+  
   const targetPoke = pokemonRankings.find(p => p.name.toLowerCase().includes(clean)) || {
-    name: bossName, pokedexId: 483, types: ['Dragon', 'Steel'], attack: 275, defense: 211, stamina: 205, maxCp: 4565, pveScore: 90, dps: 25,
-    bestFastMove: { name: 'Dragon Breath', type: 'Dragon' }, bestChargedMove: { name: 'Draco Meteor', type: 'Dragon' }
+    name: bossName,
+    pokedexId: 9999,
+    types: resolvedTypes,
+    attack: 250, defense: 200, stamina: 200, maxCp: 3800, pveScore: 90, dps: 25,
+    bestFastMove: { name: 'Tackle', type: resolvedTypes[0] || 'Normal' },
+    bestChargedMove: { name: 'Body Slam', type: resolvedTypes[0] || 'Normal' }
   };
 
   const counters = getTopCountersForPokemon(targetPoke, pokemonRankings, limit);
@@ -333,9 +485,7 @@ export function getTopCountersByName(bossName: string, limit: number = 20): Poke
 }
 
 export function getCounterTypesForName(bossName: string): string[] {
-  const clean = bossName.toLowerCase().replace(/^(shadow|mega|primal)\s+/, '').trim();
-  const targetPoke = pokemonRankings.find(p => p.name.toLowerCase().includes(clean));
-  const types = targetPoke ? targetPoke.types : ['Dragon', 'Steel'];
+  const types = getPokemonTypesByName(bossName);
   const counterInfos = getCounterTypes(types);
   return counterInfos.map(c => c.type);
 }

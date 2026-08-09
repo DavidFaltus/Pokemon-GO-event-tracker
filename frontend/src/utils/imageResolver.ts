@@ -177,10 +177,6 @@ export function setPokemonIconOverrides(overrides: Record<string, string>): void
   pokemonIconOverridesCache = { ...(overrides || {}) };
 }
 
-export function getPokemonIconOverrides(): Record<string, string> {
-  return pokemonIconOverridesCache;
-}
-
 export function getPokemonIconUrl(name: string, isShiny?: boolean): string {
   if (!name) {
     return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
