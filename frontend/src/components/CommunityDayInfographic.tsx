@@ -265,32 +265,6 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
 
   return (
     <div className="cd-infographic-wrapper">
-      {/* Top Action Bar */}
-      <div className="cd-infographic-actions">
-        <button 
-          className={`cd-download-btn ${downloadSuccess ? 'success' : ''}`}
-          onClick={handleDownload}
-          disabled={downloading}
-        >
-          {downloadSuccess ? (
-            <>
-              <Check size={18} />
-              {lang === 'cs' ? 'Uloženo!' : 'Saved!'}
-            </>
-          ) : downloading ? (
-            <>
-              <div className="btn-spinner"></div>
-              {lang === 'cs' ? 'Generuji obrázek...' : 'Generating image...'}
-            </>
-          ) : (
-            <>
-              <Download size={18} />
-              {lang === 'cs' ? 'Stáhnout Infografiku' : 'Download Infographic'}
-            </>
-          )}
-        </button>
-      </div>
-
       {/* Main Infographic Poster (Canvas Target) */}
       <div className="cd-poster-container" ref={posterRef}>
         {/* Background Decorative Glows */}
@@ -417,9 +391,34 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
             <ShieldCheck size={16} className="cd-shield-icon" />
             <span>pogoevents.app</span>
           </div>
-          <div className="cd-footer-right">
-          </div>
+          <div className="cd-footer-right"></div>
         </div>
+      </div>
+
+      {/* Action Bar (Below Infographic) */}
+      <div className="cd-infographic-actions" style={{ marginTop: '12px' }}>
+        <button 
+          className={`cd-download-btn ${downloadSuccess ? 'success' : ''}`}
+          onClick={handleDownload}
+          disabled={downloading}
+        >
+          {downloadSuccess ? (
+            <>
+              <Check size={18} />
+              {lang === 'cs' ? 'Uloženo!' : 'Saved!'}
+            </>
+          ) : downloading ? (
+            <>
+              <div className="btn-spinner"></div>
+              {lang === 'cs' ? 'Generuji obrázek...' : 'Generating image...'}
+            </>
+          ) : (
+            <>
+              <Download size={18} />
+              {lang === 'cs' ? 'Stáhnout Infografiku' : 'Download Infographic'}
+            </>
+          )}
+        </button>
       </div>
     </div>
   );

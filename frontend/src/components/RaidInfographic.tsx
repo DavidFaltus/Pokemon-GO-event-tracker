@@ -19,6 +19,7 @@ interface RaidInfographicProps {
   event: EventData;
   lang: Language;
   timezone?: string;
+  showTabs?: boolean;
 }
 
 // Converts image URL to Base64 Data URL via Express backend proxy
@@ -104,9 +105,12 @@ const areBossesSimilar = (bosses: { name: string }[]): boolean => {
   });
 };
 
-export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang }) => {
+export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, showTabs = false }) => {
   const posterRef = useRef<HTMLDivElement>(null);
-  const [activeSlide, setActiveSlide] = useState<number>(1); // 1 = Raid Rotation, 2 = Raid Hour, 3 = Top Counters
+  const [activeSlide, setActiveSlide] = useState<number>(() => {
+    if (event.eventType === 'raid-hour') return 2; // 2 = Raid Hour
+    return 1; // 1 = Raid Rotation
+  });
   const [selectedBossIndex, setSelectedBossIndex] = useState<number>(0);
   const [downloading, setDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
@@ -340,67 +344,51 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
   return (
     <div className="raid-infographic-wrapper">
       {/* Slide Navigation & Boss Selector Toolbar */}
-      <div className="raid-carousel-toolbar">
-        {!isCombined && bossesList.length > 1 && (
-          <div className="boss-switcher-tabs flex-row">
-            <span className="boss-switcher-label">Select Pokémon:</span>
-            {bossesList.map((b, idx) => (
+      {(showTabs || (!isCombined && bossesList.length > 1)) && (
+        <div className="raid-carousel-toolbar">
+          {!isCombined && bossesList.length > 1 && (
+            <div className="boss-switcher-tabs flex-row">
+              <span className="boss-switcher-label">Select Pokémon:</span>
+              {bossesList.map((b, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className={`boss-tab-btn ${selectedBossIndex === idx ? 'active' : ''}`}
+                  onClick={() => setSelectedBossIndex(idx)}
+                >
+                  {getPokemonName(b.name, 'en')}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {showTabs && (
+            <div className="slide-tabs flex-row">
               <button
-                key={idx}
                 type="button"
-                className={`boss-tab-btn ${selectedBossIndex === idx ? 'active' : ''}`}
-                onClick={() => setSelectedBossIndex(idx)}
+                className={`slide-tab-btn ${activeSlide === 1 ? 'active' : ''}`}
+                onClick={() => setActiveSlide(1)}
               >
-                {getPokemonName(b.name, 'en')}
+                1. Raid Rotation
               </button>
-            ))}
-          </div>
-        )}
-
-        <div className="slide-tabs flex-row">
-          <button
-            type="button"
-            className={`slide-tab-btn ${activeSlide === 1 ? 'active' : ''}`}
-            onClick={() => setActiveSlide(1)}
-          >
-            1. Raid Rotation
-          </button>
-          <button
-            type="button"
-            className={`slide-tab-btn ${activeSlide === 2 ? 'active' : ''}`}
-            onClick={() => setActiveSlide(2)}
-          >
-            2. Raid Hour
-          </button>
-          <button
-            type="button"
-            className={`slide-tab-btn ${activeSlide === 3 ? 'active' : ''}`}
-            onClick={() => setActiveSlide(3)}
-          >
-            3. Top Counters
-          </button>
+              <button
+                type="button"
+                className={`slide-tab-btn ${activeSlide === 2 ? 'active' : ''}`}
+                onClick={() => setActiveSlide(2)}
+              >
+                2. Raid Hour
+              </button>
+              <button
+                type="button"
+                className={`slide-tab-btn ${activeSlide === 3 ? 'active' : ''}`}
+                onClick={() => setActiveSlide(3)}
+              >
+                3. Top Counters
+              </button>
+            </div>
+          )}
         </div>
-
-        <div className="download-actions-flex">
-          <button 
-            className={`raid-download-btn ${downloadSuccess ? 'success' : ''}`}
-            onClick={handleDownloadCurrent}
-            disabled={downloading}
-          >
-            <Download size={15} />
-            {downloadSuccess ? 'Saved PNG!' : `Download Infographic ${activeSlide} (4:5)`}
-          </button>
-
-          <button 
-            className="raid-download-btn bulk"
-            onClick={handleDownloadAll}
-            disabled={downloading}
-          >
-            <Layers size={15} />
-            Download All 3 Infographics (PNG Package)
-          </button>
-        </div>
-      </div>
+      )}
 
       {/* 4:5 Aspect Ratio Poster Element */}
       <div className="raid-poster-container-4x5" ref={posterRef}>
@@ -663,6 +651,28 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang })
           </div>
           <span>Pokémon GO Event Tracker</span>
         </div>
+      </div>
+
+      <div className="download-actions-flex" style={{ marginTop: '12px' }}>
+        <button 
+          className={`raid-download-btn ${downloadSuccess ? 'success' : ''}`}
+          onClick={handleDownloadCurrent}
+          disabled={downloading}
+        >
+          <Download size={15} />
+          {downloadSuccess ? (lang === 'cs' ? 'Uloženo!' : 'Saved PNG!') : (lang === 'cs' ? 'Stáhnout Infografiku' : 'Download Infographic')}
+        </button>
+
+        {showTabs && (
+          <button 
+            className="raid-download-btn bulk"
+            onClick={handleDownloadAll}
+            disabled={downloading}
+          >
+            <Layers size={15} />
+            Download All 3 Infographics (PNG Package)
+          </button>
+        )}
       </div>
     </div>
   );

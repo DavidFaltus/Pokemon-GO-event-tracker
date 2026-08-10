@@ -212,24 +212,6 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="ei-wrapper">
-      {/* Download button */}
-      <div className="ei-actions">
-        <button
-          className={`ei-download-btn ${downloadSuccess ? 'success' : ''}`}
-          onClick={handleDownload}
-          disabled={downloading}
-          style={{ background: `linear-gradient(135deg, ${theme.accent}, ${theme.accent}cc)`, boxShadow: `0 4px 14px ${theme.accentGlow}` }}
-        >
-          {downloadSuccess ? (
-            <><Check size={17} />{lang === 'cs' ? 'Uloženo!' : 'Saved!'}</>
-          ) : downloading ? (
-            <><div className="ei-btn-spinner" />{lang === 'cs' ? 'Generuji...' : 'Generating...'}</>
-          ) : (
-            <><Download size={17} />{lang === 'cs' ? 'Stáhnout Infografiku' : 'Download Infographic'}</>
-          )}
-        </button>
-      </div>
-
       {/* Poster */}
       <div
         className="ei-poster"
@@ -432,6 +414,24 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
             {lang === 'cs' ? 'Podrobnosti na pogoevents.app' : 'Full details at pogoevents.app'}
           </div>
         </div>
+      </div>
+
+      {/* Download button */}
+      <div className="ei-actions" style={{ marginTop: '12px' }}>
+        <button
+          className={`ei-download-btn ${downloadSuccess ? 'success' : ''}`}
+          onClick={handleDownload}
+          disabled={downloading}
+          style={{ background: `linear-gradient(135deg, ${theme.accent}, ${theme.accent}cc)`, boxShadow: `0 4px 14px ${theme.accentGlow}` }}
+        >
+          {downloadSuccess ? (
+            <><Check size={17} />{lang === 'cs' ? 'Uloženo!' : 'Saved!'}</>
+          ) : downloading ? (
+            <><div className="ei-btn-spinner" />{lang === 'cs' ? 'Generuji...' : 'Generating...'}</>
+          ) : (
+            <><Download size={17} />{lang === 'cs' ? 'Stáhnout Infografiku' : 'Download Infographic'}</>
+          )}
+        </button>
       </div>
     </div>
   );

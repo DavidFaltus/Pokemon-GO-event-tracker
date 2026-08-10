@@ -431,17 +431,5 @@ import { getPokemonIconUrl, getBasePokemonName } from '../utils/imageResolver';
 
 export function getPokemonImage(name: string): string {
   if (!name) return "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
-  
-  const base = getBasePokemonName(name);
-  const cleanName = base.toLowerCase().trim();
-  const dexId = POKEMON_DEX_IDS[cleanName];
-  if (dexId) {
-    return `https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/Pokemon/pokemon_icon_${dexId}_00.png`;
-  }
-  for (const [key, val] of Object.entries(POKEMON_DEX_IDS)) {
-    if (cleanName.includes(key)) {
-      return `https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/Pokemon/pokemon_icon_${val}_00.png`;
-    }
-  }
-  return getPokemonIconUrl(base || name);
+  return getPokemonIconUrl(name);
 }

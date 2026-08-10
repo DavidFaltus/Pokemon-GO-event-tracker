@@ -153,31 +153,6 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
 
   return (
     <div className="spotlight-infographic-wrapper">
-      <div className="spotlight-infographic-actions">
-        <button 
-          className={`spotlight-download-btn ${downloadSuccess ? 'success' : ''}`}
-          onClick={handleDownload}
-          disabled={downloading}
-        >
-          {downloadSuccess ? (
-            <>
-              <Check size={18} />
-              Saved PNG!
-            </>
-          ) : downloading ? (
-            <>
-              <div className="btn-spinner"></div>
-              Generating Image (4:5)...
-            </>
-          ) : (
-            <>
-              <Download size={18} />
-              Download Infographic (4:5)
-            </>
-          )}
-        </button>
-      </div>
-
       <div className="spotlight-poster-container" ref={posterRef}>
         <div className="spotlight-poster-glow-top"></div>
 
@@ -270,6 +245,31 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
           </div>
           <span>Pokémon GO Event Tracker</span>
         </div>
+      </div>
+
+      <div className="spotlight-infographic-actions" style={{ marginTop: '12px' }}>
+        <button 
+          className={`spotlight-download-btn ${downloadSuccess ? 'success' : ''}`}
+          onClick={handleDownload}
+          disabled={downloading}
+        >
+          {downloadSuccess ? (
+            <>
+              <Check size={18} />
+              Saved PNG!
+            </>
+          ) : downloading ? (
+            <>
+              <div className="btn-spinner"></div>
+              Generating Image (4:5)...
+            </>
+          ) : (
+            <>
+              <Download size={18} />
+              Download Infographic (4:5)
+            </>
+          )}
+        </button>
       </div>
     </div>
   );

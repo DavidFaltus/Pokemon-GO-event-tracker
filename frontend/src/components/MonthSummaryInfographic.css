@@ -305,10 +305,46 @@
 .weekly-timeline-grid.days-count-4 .event-visual-icon,
 .weekly-timeline-grid.days-count-5 .event-visual-icon { width: 40px; height: 40px; }
 
-.weekly-day-row.event-community-day { border-left: 3px solid #10b981; }
-.weekly-day-row.event-raid-hour, .weekly-day-row.event-pokemon-spotlight-hour { border-left: 3px solid #f97316; }
-.weekly-day-row.event-raid-battles, .weekly-day-row.event-raid-day { border-left: 3px solid #3b82f6; }
-.weekly-day-row.event-max-mondays { border-left: 3px solid #ef4444; }
+.weekly-day-row.event-community-day {
+  border-left: 4px solid #10b981 !important;
+  box-shadow: -2px 0 10px rgba(16, 185, 129, 0.25);
+}
+.weekly-day-row.event-pokemon-spotlight-hour {
+  border-left: 4px solid #f97316 !important;
+  box-shadow: -2px 0 10px rgba(249, 115, 22, 0.25);
+}
+.weekly-day-row.event-raid-hour, 
+.weekly-day-row.event-raid-battles, 
+.weekly-day-row.event-raid-day {
+  border-left: 4px solid #3b82f6 !important;
+  box-shadow: -2px 0 10px rgba(59, 130, 246, 0.25);
+}
+.weekly-day-row.event-max-mondays, 
+.weekly-day-row.event-max-monday,
+.weekly-day-row.event-dynamax {
+  border-left: 4px solid #ef4444 !important;
+  box-shadow: -2px 0 12px rgba(239, 68, 68, 0.35);
+}
+.weekly-day-row.event-ticket-event {
+  border-left: 4px solid #eab308 !important;
+  box-shadow: -2px 0 10px rgba(234, 179, 8, 0.25);
+}
+
+.weekly-day-row.event-max-mondays .event-badge-type,
+.weekly-day-row.event-max-monday .event-badge-type,
+.weekly-day-row.event-dynamax .event-badge-type {
+  color: #f87171;
+}
+.weekly-day-row.event-raid-hour .event-badge-type,
+.weekly-day-row.event-raid-battles .event-badge-type {
+  color: #60a5fa;
+}
+.weekly-day-row.event-pokemon-spotlight-hour .event-badge-type {
+  color: #fb923c;
+}
+.weekly-day-row.event-community-day .event-badge-type {
+  color: #34d399;
+}
 
 .day-info {
   display: flex;

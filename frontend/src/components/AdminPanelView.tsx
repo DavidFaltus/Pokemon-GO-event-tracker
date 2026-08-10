@@ -1911,7 +1911,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
                           return <MaxInfographic event={socialSelectedEvent} lang={lang} />;
                         }
                         if (type === 'raid-battles' || type === 'raid-day' || type === 'shadow-raid' || type === 'mega-raid' || type === 'raid-hour') {
-                          return <RaidInfographic event={socialSelectedEvent} lang={lang} />;
+                          return <RaidInfographic event={socialSelectedEvent} lang={lang} showTabs={true} />;
                         }
                         if (type === 'team-go-rocket' || nameLower.includes('rocket')) {
                           return <RocketInfographic event={socialSelectedEvent} lang={lang} />;

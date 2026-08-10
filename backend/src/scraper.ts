@@ -1558,24 +1558,20 @@ export async function scrapeEvents(): Promise<EventData[]> {
   return response.data;
 }
 
-async function scrapeLeekDuckEventDetails(eventID: string, link: string): Promise<SpecialEventDetails | null> {
-  const response = await axios.get(link, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    }
-  });
-  
-  const html = response.data;
+/**
+ * Pure parser for LeekDuck event detail HTML.
+ */
+export function parseLeekDuckHtml(html: string, eventID: string = 'event'): SpecialEventDetails {
   const $ = cheerio.load(html);
   
-  // Find official pokemongolive.com link on the page
+  // Find official pokemongolive.com or pokemongo.com link on the page
   let officialLink: string | undefined;
   $('a').each((_, aEl) => {
     const href = $(aEl).attr('href');
     if (href) {
-      if (href.includes('pokemongolive.com/post') || href.includes('pokemongolive.com/news') || href.includes('pokemongolive.com/en/post') || href.includes('pokemongolive.com/en/news')) {
+      if (href.includes('pokemongolive.com/post') || href.includes('pokemongolive.com/news') || href.includes('pokemongolive.com/en/post') || href.includes('pokemongolive.com/en/news') || href.includes('pokemongo.com/en/news') || href.includes('pokemongo.com/news')) {
         officialLink = href;
-      } else if (href.includes('pokemongolive.com') && !officialLink) {
+      } else if ((href.includes('pokemongolive.com') || href.includes('pokemongo.com')) && !officialLink) {
         officialLink = href;
       } else if (href.includes('nianticlabs.com') && !officialLink) {
         officialLink = href;
@@ -1632,19 +1628,21 @@ async function scrapeLeekDuckEventDetails(eventID: string, link: string): Promis
   // Parse Headings and Lists
   $('h2, h3').each((_, heading) => {
     const title = $(heading).text().toLowerCase() || '';
-    let sibling = $(heading).next();
+    const sectionElements = $(heading).nextUntil('h2, h3');
+    
     let description = '';
+    sectionElements.filter('p').each((_, p) => {
+      description += $(p).text().trim() + ' ';
+    });
 
-    while (sibling.length && sibling[0].tagName !== 'UL' && !['H2', 'H3'].includes(sibling[0].tagName)) {
-      if (sibling[0].tagName === 'P') {
-        description += sibling.text().trim() + ' ';
-      }
-      sibling = sibling.next();
+    let ulList = sectionElements.filter('ul.pkmn-list-flex');
+    if (!ulList.length) {
+      ulList = sectionElements.find('ul.pkmn-list-flex');
     }
 
-    if (sibling.length && sibling[0].tagName === 'UL' && sibling.hasClass('pkmn-list-flex')) {
+    if (ulList.length) {
       const contents: any[] = [];
-      sibling.find('.pkmn-list-item').each((_, item) => {
+      ulList.find('.pkmn-list-item').each((_, item) => {
         const name = $(item).find('.pkmn-name').text().trim();
         const img = $(item).find('img');
         const imgEl = $(item).find('.pkmn-list-img img').length ? $(item).find('.pkmn-list-img img') : img;
@@ -1717,18 +1715,26 @@ async function scrapeLeekDuckEventDetails(eventID: string, link: string): Promis
     }
   });
 
-  if (officialLink || bonuses.length > 0 || debuts.length > 0 || spawns.length > 0 || eggs.length > 0 || research.length > 0) {
-    return {
-      eventID,
-      officialLink,
-      bonuses: bonuses.length > 0 ? bonuses : undefined,
-      debuts: debuts.length > 0 ? debuts : undefined,
-      spawns: spawns.length > 0 ? spawns : undefined,
-      eggs: eggs.length > 0 ? eggs : undefined,
-      research: research.length > 0 ? research : undefined
-    };
-  }
-  return null;
+  return {
+    eventID,
+    officialLink,
+    bonuses: bonuses.length > 0 ? bonuses : undefined,
+    debuts: debuts.length > 0 ? debuts : undefined,
+    spawns: spawns.length > 0 ? spawns : undefined,
+    eggs: eggs.length > 0 ? eggs : undefined,
+    research: research.length > 0 ? research : undefined
+  };
+}
+
+async function scrapeLeekDuckEventDetails(eventID: string, link: string): Promise<SpecialEventDetails | null> {
+  const response = await axios.get(link, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)'
+    },
+    timeout: 12000
+  });
+  
+  return parseLeekDuckHtml(response.data, eventID);
 }
 
 // ==========================================
@@ -1751,8 +1757,6 @@ function bonusTextToIcon(text: string): string {
   return '🎁';
 }
 
-
-
 // ==========================================
 // 3c. News Listing Crawler & Matchers
 // ==========================================
@@ -1765,39 +1769,68 @@ export interface NianticArticle {
 let newsListingCache: NianticArticle[] | null = null;
 let newsListingFetchedAt = 0;
 
+/**
+ * Pure parser for Niantic news HTML (supports pokemongolive.com & pokemongo.com).
+ */
+export function parseNianticNewsHtml(html: string): NianticArticle[] {
+  const $ = cheerio.load(html);
+  
+  const articles = $('a')
+    .map((_, a) => {
+      const href = $(a).attr('href') || '';
+      const text = $(a).find('h3, h2, h4, .title').length 
+        ? $(a).find('h3, h2, h4, .title').text().trim()
+        : $(a).text().trim();
+      return { href, title: text };
+    })
+    .get()
+    .filter(item => item.href.includes('/post/') || item.href.includes('/news/'))
+    .map(item => {
+      const titleClean = item.title.replace(/^[A-Za-z]{3}\s+\d{1,2},\s+\d{4}/, '').trim();
+      let fullUrl = item.href;
+      if (!fullUrl.startsWith('http')) {
+        fullUrl = `https://pokemongolive.com${item.href}`;
+      }
+      return {
+        href: fullUrl,
+        title: titleClean
+      };
+    })
+    .filter(item => item.title.length > 5);
+
+  return articles;
+}
+
 export async function scrapeNianticNewsListing(): Promise<NianticArticle[]> {
-  console.log('[Niantic] Fetching news listing from https://pokemongolive.com/en/news/...');
-  try {
-    const response = await axios.get('https://pokemongolive.com/en/news/', {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)' },
-      timeout: 15000
-    });
+  console.log('[Niantic] Fetching news listing from official Niantic news hubs...');
+  const urls = [
+    'https://pokemongolive.com/en/news/',
+    'https://pokemongo.com/en/news/'
+  ];
 
-    const $ = cheerio.load(response.data);
-    
-    const articles = $('a')
-      .map((_, a) => {
-        const href = $(a).attr('href') || '';
-        const text = $(a).text().trim() || '';
-        return { href, title: text };
-      })
-      .get()
-      .filter(item => item.href.includes('/post/') || item.href.includes('/news/'))
-      .map(item => {
-        const titleClean = item.title.replace(/^[A-Za-z]{3}\s+\d{1,2},\s+\d{4}/, '').trim();
-        return {
-          href: item.href.startsWith('http') ? item.href : `https://pokemongolive.com${item.href}`,
-          title: titleClean
-        };
-      })
-      .filter(item => item.title.length > 5);
+  const allArticles: NianticArticle[] = [];
+  const seenHrefs = new Set<string>();
 
-    console.log(`[Niantic] Successfully indexed ${articles.length} news articles from listing page`);
-    return articles;
-  } catch (err: any) {
-    console.error('[Niantic] Failed to parse news listing:', err.message);
-    return [];
+  for (const url of urls) {
+    try {
+      const response = await axios.get(url, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)' },
+        timeout: 12000
+      });
+      const parsed = parseNianticNewsHtml(response.data);
+      for (const art of parsed) {
+        if (!seenHrefs.has(art.href)) {
+          seenHrefs.add(art.href);
+          allArticles.push(art);
+        }
+      }
+    } catch (err: any) {
+      console.warn(`[Niantic] Could not fetch listing from ${url}: ${err.message}`);
+    }
   }
+
+  console.log(`[Niantic] Successfully indexed ${allArticles.length} news articles from official news hubs`);
+  return allArticles;
 }
 
 export async function getNianticNewsListing(): Promise<NianticArticle[]> {

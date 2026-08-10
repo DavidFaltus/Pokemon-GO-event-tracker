@@ -216,11 +216,19 @@ export const generateWeeklyTimeline = (
         const type = ev.eventType;
         const nameLower = ev.name.toLowerCase();
         
-        if (type === 'community-day' || type === 'go-fest' || type === 'wild-area') return 100;
+        if (type === 'community-day' || type === 'go-fest' || type === 'wild-area' || nameLower.includes('community day')) return 100;
         if (type === 'raid-day' || type === 'hatch-day' || type === 'research-day') return 90;
-        if (type === 'raid-hour' || type === 'pokemon-spotlight-hour' || type === 'max-mondays') return 80;
+        if (
+          type === 'max-mondays' || 
+          type === 'max-monday' || 
+          nameLower.includes('max monday') || 
+          nameLower.includes('dynamax') || 
+          nameLower.includes('gigantamax') || 
+          type.startsWith('max-')
+        ) return 85;
+        if (type === 'raid-hour' || type === 'pokemon-spotlight-hour' || nameLower.includes('spotlight hour') || nameLower.includes('raid hour')) return 80;
         if (type === 'ticket-event' || nameLower.includes('ticket') || nameLower.includes('pass')) return 30;
-        if (type.includes('raid')) return 70;
+        if (type.includes('raid') || nameLower.includes('raid')) return 70;
         if (type === 'other-event' || type === 'season') return 10;
         return 50;
       };

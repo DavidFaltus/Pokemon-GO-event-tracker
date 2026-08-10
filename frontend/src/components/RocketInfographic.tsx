@@ -105,31 +105,6 @@ export const RocketInfographic: React.FC<RocketInfographicProps> = ({ event, lan
 
   return (
     <div className="rocket-infographic-wrapper">
-      <div className="rocket-infographic-actions">
-        <button 
-          className={`rocket-download-btn ${downloadSuccess ? 'success' : ''}`}
-          onClick={handleDownload}
-          disabled={downloading}
-        >
-          {downloadSuccess ? (
-            <>
-              <Check size={18} />
-              {lang === 'cs' ? 'Uloženo!' : 'Saved!'}
-            </>
-          ) : downloading ? (
-            <>
-              <div className="btn-spinner"></div>
-              {lang === 'cs' ? 'Generuji obrázek...' : 'Generating image...'}
-            </>
-          ) : (
-            <>
-              <Download size={18} />
-              {lang === 'cs' ? 'Stáhnout Infografiku' : 'Download Infographic'}
-            </>
-          )}
-        </button>
-      </div>
-
       <div className="rocket-poster-container" ref={posterRef}>
         <div className="rocket-poster-glow-top"></div>
 
@@ -204,6 +179,31 @@ export const RocketInfographic: React.FC<RocketInfographicProps> = ({ event, lan
             <span>pogoevents.app</span>
           </div>
         </div>
+      </div>
+
+      <div className="rocket-infographic-actions" style={{ marginTop: '12px' }}>
+        <button 
+          className={`rocket-download-btn ${downloadSuccess ? 'success' : ''}`}
+          onClick={handleDownload}
+          disabled={downloading}
+        >
+          {downloadSuccess ? (
+            <>
+              <Check size={18} />
+              {lang === 'cs' ? 'Uloženo!' : 'Saved!'}
+            </>
+          ) : downloading ? (
+            <>
+              <div className="btn-spinner"></div>
+              {lang === 'cs' ? 'Generuji obrázek...' : 'Generating image...'}
+            </>
+          ) : (
+            <>
+              <Download size={18} />
+              {lang === 'cs' ? 'Stáhnout Infografiku' : 'Download Infographic'}
+            </>
+          )}
+        </button>
       </div>
     </div>
   );

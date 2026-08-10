@@ -73,6 +73,27 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
     setViewDate(new Date(now.getFullYear(), now.getMonth(), 1));
   };
 
+  // Helper to get event category color class
+  const getEventColorClass = (eventType: string, eventName: string = ''): string => {
+    const cleanType = (eventType || '').toLowerCase();
+    const nameLower = (eventName || '').toLowerCase();
+    if (
+      cleanType.includes('max-monday') ||
+      cleanType.includes('max-mondays') ||
+      cleanType.includes('dynamax') ||
+      nameLower.includes('dynamax') ||
+      nameLower.includes('max monday')
+    ) {
+      return 'max-monday';
+    }
+    if (cleanType.includes('community-day')) return 'community-day';
+    if (cleanType.includes('spotlight-hour')) return 'spotlight-hour';
+    if (cleanType.includes('raid-hour')) return 'raid-hour';
+    if (cleanType.includes('raid-battles')) return 'raid-battles';
+    if (cleanType.includes('rocket-takeover')) return 'rocket-takeover';
+    return 'other-event';
+  };
+
   // Helper to extract pokemon icon
   const getEventIcon = (event: EventData): string | null => {
     if (event.eventType === 'pokemon-spotlight-hour' && event.extraData?.spotlight?.image) {
@@ -83,6 +104,13 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
     }
     if ((event.eventType === 'raid-hour' || event.eventType === 'raid-battles') && event.extraData?.raidbattles?.bosses?.[0]) {
       const boss = event.extraData.raidbattles.bosses[0];
+      const bossName = typeof boss === 'string' ? boss : (boss?.name || event.name);
+      const bossImg = typeof boss === 'object' ? boss?.image : undefined;
+      return resolveImage(bossImg, event.eventType, bossName);
+    }
+    const extra = event.extraData as any;
+    if ((event.eventType.includes('max') || event.eventType.includes('dynamax') || event.name.toLowerCase().includes('max monday')) && extra?.maxbattles?.bosses?.[0]) {
+      const boss = extra.maxbattles.bosses[0];
       const bossName = typeof boss === 'string' ? boss : (boss?.name || event.name);
       const bossImg = typeof boss === 'object' ? boss?.image : undefined;
       return resolveImage(bossImg, event.eventType, bossName);
@@ -269,6 +297,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
           <span style={{ color: 'var(--spotlight-blue)', fontWeight: 'bold' }}>● Spotlight</span>
           <span style={{ color: 'var(--raid-orange)', fontWeight: 'bold' }}>● Raids</span>
           <span style={{ color: 'var(--rocket-purple)', fontWeight: 'bold' }}>● Rocket</span>
+          <span style={{ color: '#ef4444', fontWeight: 'bold' }}>● Max Monday</span>
         </div>
       </div>
 
@@ -328,13 +357,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
                   }}
                 >
                   {week.multiLayout.map(({ event, startCol, span, trackIdx }, eIdx) => {
-                    const cleanType = event.eventType.toLowerCase();
-                    let colorClass = 'other-event';
-                    if (cleanType.includes('community-day')) colorClass = 'community-day';
-                    else if (cleanType.includes('spotlight-hour')) colorClass = 'spotlight-hour';
-                    else if (cleanType.includes('raid-hour')) colorClass = 'raid-hour';
-                    else if (cleanType.includes('raid-battles')) colorClass = 'raid-battles';
-                    else if (cleanType.includes('rocket-takeover')) colorClass = 'rocket-takeover';
+                    const colorClass = getEventColorClass(event.eventType, event.name);
 
                     return (
                       <div
@@ -377,13 +400,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
                     >
                       <div className="calendar-day-events-list" style={{ display: 'flex', flexDirection: 'column', gap: '2px', overflow: 'hidden', width: '100%', minWidth: 0 }}>
                         {dayEvents.map((e, idx) => {
-                          const cleanType = e.eventType.toLowerCase();
-                          let colorClass = 'other-event';
-                          if (cleanType.includes('community-day')) colorClass = 'community-day';
-                          else if (cleanType.includes('spotlight-hour')) colorClass = 'spotlight-hour';
-                          else if (cleanType.includes('raid-hour')) colorClass = 'raid-hour';
-                          else if (cleanType.includes('raid-battles')) colorClass = 'raid-battles';
-                          else if (cleanType.includes('rocket-takeover')) colorClass = 'rocket-takeover';
+                          const colorClass = getEventColorClass(e.eventType, e.name);
 
                           return (
                             <div 

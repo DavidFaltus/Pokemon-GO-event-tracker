@@ -1,6 +1,6 @@
 import React from 'react';
 import { Sun, CloudRain, CloudSun, Cloud, Wind, Snowflake, CloudFog } from 'lucide-react';
-import { getPokemonIconUrl, getBasePokemonName } from '../utils/imageResolver';
+import { getPokemonIconUrl, getBasePokemonName, handlePokemonImageError } from '../utils/imageResolver';
 import type { Language } from '../data/translations';
 import { getPokemonName } from '../utils/pokemonTranslator';
 
@@ -243,10 +243,6 @@ export const MoveTypeIcon: React.FC<{ typeStr: string }> = ({ typeStr }) => {
 };
 
 export const CounterItem: React.FC<{ counterStr: string; lang?: Language }> = ({ counterStr, lang = 'en' }) => {
-  const [hasError, setHasError] = React.useState(false);
-
-  if (hasError) return null;
-
   const match = counterStr.match(/^(.*?)\s*\((.*?)\)$/);
   let pokemonName = counterStr;
   let moveName = "";
@@ -298,14 +294,7 @@ export const CounterItem: React.FC<{ counterStr: string; lang?: Language }> = ({
         src={iconUrl} 
         alt={getPokemonName(pokemonName, lang)} 
         onError={(e) => {
-          const img = e.target as HTMLImageElement;
-          const baseName = getBasePokemonName(pokemonName);
-          if (baseName.toLowerCase() !== pokemonName.toLowerCase() && !img.getAttribute('data-fallback-tried')) {
-            img.setAttribute('data-fallback-tried', 'true');
-            img.src = getPokemonIconUrl(baseName);
-          } else {
-            setHasError(true);
-          }
+          handlePokemonImageError(e.target as HTMLImageElement, pokemonName);
         }}
       />
       <div className="counter-pokemon-info">

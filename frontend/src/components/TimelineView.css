@@ -167,6 +167,7 @@
 .event-type-dot.raid-hour { background-color: var(--spotlight-blue); }
 .event-type-dot.raid-battles { background-color: #ef4444; }
 .event-type-dot.rocket-takeover { background-color: #a855f7; }
+.event-type-dot.max-monday, .event-type-dot.max-mondays { background-color: #ef4444; }
 .event-type-dot.other-event { background-color: var(--text-muted); }
 
 /* Absolute positioned bars */
@@ -223,6 +224,13 @@
 .timeline-bar.rocket-takeover {
   background: linear-gradient(135deg, #8b5cf6, #7c3aed);
   border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.timeline-bar.max-monday,
+.timeline-bar.max-mondays {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid #ef4444;
 }
 
 .timeline-bar.other-event {

@@ -250,6 +250,14 @@
   border: 1px solid rgba(168, 85, 247, 0.2);
 }
 
+.calendar-multi-bar.max-monday,
+.calendar-multi-bar.max-mondays {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.2);
+}
+
 .calendar-multi-bar.other-event {
   background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
   border: 1px solid rgba(107, 114, 128, 0.2);
@@ -308,6 +316,13 @@
   color: #c084fc;
   border-color: rgba(168, 85, 247, 0.2);
 }
+.calendar-short-event.max-monday,
+.calendar-short-event.max-mondays {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid #ef4444;
+  box-shadow: 0 0 4px rgba(239, 68, 68, 0.15);
+}
 .calendar-short-event.other-event {
   background-color: rgba(107, 114, 128, 0.08);
   color: #d1d5db;
@@ -331,7 +346,19 @@
 .calendar-short-event.raid-hour .short-event-dot { background-color: #60a5fa; }
 .calendar-short-event.raid-battles .short-event-dot { background-color: #f87171; }
 .calendar-short-event.rocket-takeover .short-event-dot { background-color: #c084fc; }
+.calendar-short-event.max-monday .short-event-dot,
+.calendar-short-event.max-mondays .short-event-dot { background-color: #ef4444; }
 .calendar-short-event.other-event .short-event-dot { background-color: #d1d5db; }
+
+.calendar-short-event.max-monday .short-event-name,
+.calendar-short-event.max-mondays .short-event-name {
+  color: #ef4444;
+}
+
+.calendar-short-event.max-monday .short-event-time,
+.calendar-short-event.max-mondays .short-event-time {
+  color: #ffffff;
+}
 
 .short-event-icon {
   width: 16px;

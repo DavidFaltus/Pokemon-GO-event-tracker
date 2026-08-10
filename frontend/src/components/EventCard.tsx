@@ -736,13 +736,6 @@ export const EventCard: React.FC<EventCardProps> = ({
                   <Calendar size={14} />
                   {t.details_add_to_calendar}
                 </a>
-              {(event.eventType === 'raid-hour' || event.eventType === 'raid-battles' || bosses.length > 0) && (
-                <DirectRaidFilterBox
-                  bossName={(typeof bosses[0] === 'object' ? bosses[0]?.name : bosses[0]) || event.name.replace(/raid\s*(hour|battles|rotation|day)/gi, '').trim()}
-                  lang={lang}
-                  onOpenFilterGenerator={onOpenFilterGenerator}
-                />
-              )}
             </div>
 
             {dynamicLoading && (
@@ -1323,7 +1316,7 @@ export const EventCard: React.FC<EventCardProps> = ({
               </div>
             )}
 
-            {/* TEMPLATE 4: RAID BOSSES & COUNTERS */}
+            {/* TEMPLATE 4: RAID BOSSES */}
             {bosses.length > 0 && (
               <div className="expanded-row raid-bosses-row">
                 <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>
@@ -1366,6 +1359,18 @@ export const EventCard: React.FC<EventCardProps> = ({
               </div>
             )}
 
+            {/* DIRECT RAID FILTER BOX (Placed directly above Recommended Counters) */}
+            {(event.eventType === 'raid-hour' || event.eventType === 'raid-battles' || bosses.length > 0) && (
+              <div className="expanded-row direct-raid-filter-row" style={{ marginTop: '12px', marginBottom: '8px' }}>
+                <DirectRaidFilterBox
+                  bossName={(typeof bosses[0] === 'object' ? bosses[0]?.name : bosses[0]) || event.name.replace(/raid\s*(hour|battles|rotation|day)/gi, '').trim()}
+                  lang={lang}
+                  onOpenFilterGenerator={onOpenFilterGenerator}
+                />
+              </div>
+            )}
+
+            {/* RECOMMENDED COUNTERS */}
             {matchedRaidCounters.length > 0 && (
               <div className="expanded-row raid-counters-row">
                 <h4 style={{ display: 'inline-flex', alignItems: 'center' }}>

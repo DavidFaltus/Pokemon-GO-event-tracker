@@ -181,6 +181,50 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
     );
   };
 
+  const getEventCategoryClass = (item: EventData): string => {
+    const type = item.eventType;
+    const nameLower = item.name.toLowerCase();
+
+    if (type === 'max-mondays' || type === 'max-monday' || type.includes('max') || nameLower.includes('max monday') || nameLower.includes('dynamax') || nameLower.includes('gigantamax')) {
+      return 'event-max-mondays event-dynamax';
+    }
+    if (type === 'raid-hour' || nameLower.includes('raid hour')) {
+      return 'event-raid-hour';
+    }
+    if (type === 'pokemon-spotlight-hour' || nameLower.includes('spotlight hour')) {
+      return 'event-pokemon-spotlight-hour';
+    }
+    if (type === 'community-day' || nameLower.includes('community day')) {
+      return 'event-community-day';
+    }
+    if (type.includes('raid') || nameLower.includes('raid')) {
+      return 'event-raid-battles';
+    }
+    return `event-${type}`;
+  };
+
+  const getEventBadgeLabel = (item: EventData): string => {
+    const type = item.eventType;
+    const nameLower = item.name.toLowerCase();
+
+    if (type === 'max-mondays' || type === 'max-monday' || nameLower.includes('max monday') || nameLower.includes('dynamax') || nameLower.includes('gigantamax')) {
+      return 'DYNAMAX MONDAY';
+    }
+    if (type === 'raid-hour' || nameLower.includes('raid hour')) {
+      return 'RAID HOUR';
+    }
+    if (type === 'pokemon-spotlight-hour' || nameLower.includes('spotlight hour')) {
+      return 'SPOTLIGHT HOUR';
+    }
+    if (type === 'community-day' || nameLower.includes('community day')) {
+      return 'COMMUNITY DAY';
+    }
+    if (type.includes('raid')) {
+      return 'RAID BATTLES';
+    }
+    return type.replace(/-/g, ' ').toUpperCase();
+  };
+
   const handleDownload = async () => {
     if (!posterRef.current || downloading) return;
     setDownloading(true);
@@ -455,7 +499,7 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
                   return (
                     <div 
                       key={idx} 
-                      className={`weekly-day-row event-${day.event?.eventType}`}
+                      className={`weekly-day-row ${getEventCategoryClass(day.event!)}`}
                     >
                       <div className="day-info">
                         <span className="day-name">{day.dayName.slice(0, 3)}</span>
@@ -464,7 +508,7 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
                       
                       <div className="event-info">
                         <div className="event-badge-type">
-                          {day.event?.eventType.replace(/-/g, ' ')}
+                          {getEventBadgeLabel(day.event!)}
                           {eventTime && <span className="event-hours-range"> • {eventTime}</span>}
                         </div>
                         <span className="event-title-text">{cleanEventName(day.event!.name)}</span>

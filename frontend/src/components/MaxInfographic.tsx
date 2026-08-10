@@ -194,31 +194,6 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event }) => {
 
   return (
     <div className="max-infographic-wrapper">
-      <div className="max-infographic-actions">
-        <button 
-          className={`max-download-btn ${downloadSuccess ? 'success' : ''}`}
-          onClick={handleDownload}
-          disabled={downloading}
-        >
-          {downloadSuccess ? (
-            <>
-              <Check size={18} />
-              Saved PNG!
-            </>
-          ) : downloading ? (
-            <>
-              <div className="btn-spinner"></div>
-              Generating Image (4:5)...
-            </>
-          ) : (
-            <>
-              <Download size={18} />
-              Download Infographic (4:5)
-            </>
-          )}
-        </button>
-      </div>
-
       <div className="max-poster-container" ref={posterRef}>
         <div className="max-poster-glow-top"></div>
 
@@ -291,8 +266,8 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event }) => {
                 <img
                   src={
                     mpCost === '800 MP'
-                      ? 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/Items/mp_pack_mulit.png'
-                      : 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/Items/mp_pack.png'
+                      ? 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Items/mp_pack_mulit.png'
+                      : 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Items/mp_pack.png'
                   }
                   alt="MP Pack"
                   className="max-mp-pack-img"
@@ -329,6 +304,31 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event }) => {
           </div>
           <span>Pokémon GO Event Tracker</span>
         </div>
+      </div>
+
+      <div className="max-infographic-actions" style={{ marginTop: '12px' }}>
+        <button 
+          className={`max-download-btn ${downloadSuccess ? 'success' : ''}`}
+          onClick={handleDownload}
+          disabled={downloading}
+        >
+          {downloadSuccess ? (
+            <>
+              <Check size={18} />
+              Saved PNG!
+            </>
+          ) : downloading ? (
+            <>
+              <div className="btn-spinner"></div>
+              Generating Image (4:5)...
+            </>
+          ) : (
+            <>
+              <Download size={18} />
+              Download Infographic (4:5)
+            </>
+          )}
+        </button>
       </div>
     </div>
   );
