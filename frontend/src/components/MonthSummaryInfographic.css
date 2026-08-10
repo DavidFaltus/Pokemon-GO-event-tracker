@@ -1,297 +1,725 @@
 /* MonthSummaryInfographic.css */
-.month-summary-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(8, 12, 20, 0.85);
-  backdrop-filter: blur(8px);
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  overflow-y: auto;
-}
 
-.month-summary-modal-content {
-  background: #0f172a;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
-  max-width: 600px;
-  width: 100%;
-  max-height: 90vh;
+.month-summary-container-inline {
   display: flex;
   flex-direction: column;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-  position: relative;
-  overflow: hidden;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.month-summary-modal-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+/* Toolbar & Controls styling */
+.infographic-toolbar {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  background: rgba(15, 23, 42, 0.95);
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(12px);
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  width: 100%;
+  margin-bottom: 12px;
 }
 
-.month-summary-modal-header h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #fff;
+.toolbar-group {
   display: flex;
-  align-items: center;
   gap: 8px;
 }
 
-.month-summary-modal-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.month-select-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #cbd5e1;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.month-select-btn.active {
-  background: var(--accent-color, #38bdf8);
-  color: #090d16;
-  border-color: var(--accent-color, #38bdf8);
-}
-
-.month-summary-close-btn {
-  background: transparent;
-  border: none;
-  color: #94a3b8;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 6px;
+.weekly-week-selector, .monthly-carousel-controls {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s ease;
-}
-
-.month-summary-close-btn:hover {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.month-summary-modal-body {
-  padding: 20px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.month-summary-poster {
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
   width: 100%;
-  max-width: 520px;
-  aspect-ratio: 4 / 5;
-  background: linear-gradient(135deg, #090d16 0%, #0f172a 50%, #1e1b4b 100%);
+  margin-bottom: 16px;
+}
+
+.selector-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted, #94a3b8);
+  margin-right: 4px;
+}
+
+.carousel-indicator {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  flex: 1;
+}
+
+.month-select-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.month-select-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.month-select-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.month-select-btn.active {
+  background: #38bdf8;
+  color: #0f172a;
+  border-color: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+}
+
+/* Poster Container (Strict Fixed 4:5 Aspect Ratio & Pixels to prevent scaling differences) */
+.month-summary-poster {
+  width: 480px;
+  height: 600px;
+  flex-shrink: 0;
+  flex-grow: 0;
+  background: #090d16;
   border-radius: 16px;
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 24px 20px;
   color: #fff;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   box-sizing: border-box;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  position: relative;
+}
+
+/* Themes backgrounds based on selected category */
+.month-summary-poster::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.15;
+  pointer-events: none;
+  transition: background 0.4s ease;
+  z-index: 1;
+}
+
+.theme-weekly::before {
+  background: radial-gradient(circle at 50% 0%, #38bdf8 0%, transparent 70%);
+}
+
+.theme-green::before {
+  background: radial-gradient(circle at 50% 0%, #10b981 0%, transparent 70%);
+}
+
+.theme-blue::before {
+  background: radial-gradient(circle at 50% 0%, #3b82f6 0%, transparent 70%);
+}
+
+.theme-orange::before {
+  background: radial-gradient(circle at 50% 0%, #f97316 0%, transparent 70%);
+}
+
+.theme-red::before {
+  background: radial-gradient(circle at 50% 0%, #ef4444 0%, transparent 70%);
+}
+
+.theme-gold::before {
+  background: radial-gradient(circle at 50% 0%, #eab308 0%, transparent 70%);
+}
+
+.poster-header, .poster-content, .poster-footer {
+  position: relative;
+  z-index: 2;
 }
 
 /* Poster Header */
 .poster-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   position: relative;
+}
+
+.brand-logo {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.poster-title-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
 }
 
 .poster-header-badge {
   display: inline-block;
-  background: rgba(56, 189, 248, 0.15);
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  color: #38bdf8;
-  padding: 4px 14px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 2px;
 }
+
+.theme-green .poster-header-badge { color: #34d399; }
+.theme-blue .poster-header-badge { color: #60a5fa; }
+.theme-orange .poster-header-badge { color: #fb923c; }
+.theme-red .poster-header-badge { color: #f87171; }
+.theme-gold .poster-header-badge { color: #facc15; }
 
 .poster-header h2 {
-  margin: 4px 0 0 0;
-  font-size: 1.6rem;
+  margin: 0;
+  font-size: 1.3rem;
   font-weight: 900;
-  background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+  letter-spacing: -0.5px;
+  background: linear-gradient(180deg, #fff 0%, #cbd5e1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  letter-spacing: 0.5px;
+  text-align: center;
 }
 
-/* Poster Sections */
-.poster-section {
-  margin-bottom: 20px;
-}
-
-.poster-section-title {
-  font-size: 0.85rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #38bdf8;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 10px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid rgba(56, 189, 248, 0.2);
-}
-
-/* New event list layout */
-.poster-events-list {
+/* Poster Content Area */
+.poster-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-
-/* Each event row: name/date header + pokemon sprites underneath */
-.poster-event-row {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 10px 14px;
-  transition: background 0.2s ease;
-}
-
-.poster-event-row:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-/* Event header: name left, date right on same line */
-.poster-event-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-.poster-event-name {
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: #fff;
-  flex: 1;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  line-height: 1.3;
-}
-
-.poster-event-date {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #fbbf24;
-  text-transform: uppercase;
-  white-space: nowrap;
-  flex-shrink: 0;
-  letter-spacing: 0.3px;
-}
-
-/* Pokémon sprites row - horizontal scrolling list */
-.poster-event-pokemon-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.poster-pokemon-sprite {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  overflow: hidden;
-  transition: transform 0.2s ease, border-color 0.2s ease;
-}
-
-.poster-pokemon-sprite:hover {
-  transform: scale(1.1);
-  border-color: rgba(56, 189, 248, 0.5);
-}
-
-.poster-pokemon-img {
-  width: 34px;
-  height: 34px;
-  object-fit: contain;
+  min-height: 0;
 }
 
 /* Poster Footer */
 .poster-footer {
-  margin-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 500;
+}
+
+.brand-url {
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Weekly Timeline Grid (Dynamic stretching row layout) */
+.weekly-timeline-grid {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-evenly;
+  gap: 8px;
+}
+
+.weekly-day-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 40px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 8px 14px;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.weekly-timeline-grid.days-count-1 .weekly-day-row,
+.weekly-timeline-grid.days-count-2 .weekly-day-row {
+  height: 160px;
+  padding: 18px 22px;
+  grid-template-columns: 100px 1fr 64px;
+}
+
+.weekly-timeline-grid.days-count-1 .day-name,
+.weekly-timeline-grid.days-count-2 .day-name {
+  font-size: 1.25rem;
+}
+
+.weekly-timeline-grid.days-count-1 .event-title-text,
+.weekly-timeline-grid.days-count-2 .event-title-text {
+  font-size: 1.25rem;
+}
+
+.weekly-timeline-grid.days-count-1 .event-visual-icon,
+.weekly-timeline-grid.days-count-2 .event-visual-icon {
+  width: 60px;
+  height: 60px;
+}
+
+.weekly-timeline-grid.days-count-3 .weekly-day-row {
+  height: 110px;
+  padding: 14px 18px;
+  grid-template-columns: 90px 1fr 52px;
+}
+
+.weekly-timeline-grid.days-count-3 .day-name { font-size: 1.1rem; }
+.weekly-timeline-grid.days-count-3 .event-title-text { font-size: 1.1rem; }
+.weekly-timeline-grid.days-count-3 .event-visual-icon { width: 48px; height: 48px; }
+
+.weekly-timeline-grid.days-count-4 .weekly-day-row,
+.weekly-timeline-grid.days-count-5 .weekly-day-row {
+  height: 80px;
+  padding: 10px 14px;
+  grid-template-columns: 85px 1fr 44px;
+}
+
+.weekly-timeline-grid.days-count-4 .day-name,
+.weekly-timeline-grid.days-count-5 .day-name { font-size: 0.95rem; }
+.weekly-timeline-grid.days-count-4 .event-title-text,
+.weekly-timeline-grid.days-count-5 .event-title-text { font-size: 0.95rem; }
+.weekly-timeline-grid.days-count-4 .event-visual-icon,
+.weekly-timeline-grid.days-count-5 .event-visual-icon { width: 40px; height: 40px; }
+
+.weekly-day-row.event-community-day { border-left: 3px solid #10b981; }
+.weekly-day-row.event-raid-hour, .weekly-day-row.event-pokemon-spotlight-hour { border-left: 3px solid #f97316; }
+.weekly-day-row.event-raid-battles, .weekly-day-row.event-raid-day { border-left: 3px solid #3b82f6; }
+.weekly-day-row.event-max-mondays { border-left: 3px solid #ef4444; }
+
+.day-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.day-name {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.day-date {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.event-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 8px;
+  overflow: hidden;
+  line-height: 1.2;
+}
+
+.event-badge-type {
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.4);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  font-size: 0.75rem;
-  color: #64748b;
+  gap: 4px;
 }
 
-.poster-footer-brand {
+.event-hours-range {
+  color: #fbbf24;
+  font-weight: 800;
+}
+
+.event-title-text {
+  font-size: 0.8rem;
   font-weight: 700;
-  color: #38bdf8;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 95%;
 }
 
+.event-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.event-visual-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+/* Monthly Slide Events */
+.monthly-slide-events {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.slide-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.monthly-event-card {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  padding: 8px 12px;
+  gap: 12px;
+  height: 48px;
+  box-sizing: border-box;
+}
+
+.card-image-holder {
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-main-image {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.card-text-holder {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.card-date-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.theme-gold .card-date-badge { color: #facc15; }
+.theme-green .card-date-badge { color: #34d399; }
+.theme-blue .card-date-badge { color: #60a5fa; }
+.theme-orange .card-date-badge { color: #fb923c; }
+.theme-red .card-date-badge { color: #f87171; }
+
+.card-event-name {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spotlight-bonus-subline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #fb923c;
+  margin-top: 2px;
+}
+
+.spotlight-bonus-subline .bonus-icon {
+  font-size: 0.82rem;
+}
+
+/* Dynamic Vertical Spacing when events count is smaller (fill entire poster height) */
+.slide-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-evenly;
+  gap: 10px;
+}
+
+.monthly-event-card {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 10px 14px;
+  gap: 14px;
+  min-height: 52px;
+  box-sizing: border-box;
+}
+
+.slide-list.events-count-2 .monthly-event-card {
+  height: 180px;
+  padding: 20px 24px;
+}
+
+.slide-list.events-count-2 .card-image-holder {
+  width: 110px;
+  height: 110px;
+}
+
+.slide-list.events-count-2 .card-main-image {
+  width: 96px;
+  height: 96px;
+}
+
+.slide-list.events-count-2 .card-event-name {
+  font-size: 1.35rem;
+}
+
+.slide-list.events-count-3 .monthly-event-card {
+  height: 115px;
+  padding: 16px 18px;
+}
+
+.slide-list.events-count-3 .card-image-holder {
+  width: 76px;
+  height: 76px;
+}
+
+.slide-list.events-count-3 .card-main-image {
+  width: 66px;
+  height: 66px;
+}
+
+.slide-list.events-count-3 .card-event-name {
+  font-size: 1.15rem;
+}
+
+.slide-list.events-count-4 .monthly-event-card {
+  height: 85px;
+  padding: 12px 16px;
+}
+
+.slide-list.events-count-4 .card-image-holder {
+  width: 58px;
+  height: 58px;
+}
+
+.slide-list.events-count-4 .card-main-image {
+  width: 50px;
+  height: 50px;
+}
+
+.slide-list.events-count-4 .card-event-name {
+  font-size: 1.02rem;
+}
+
+/* Single Event Detailed Showcase View (Community Day & Go Pass) */
+.single-event-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  height: 100%;
+  padding: 10px 0;
+}
+
+.detail-header-tag, .detail-badge-header {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #34d399;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.detail-pokemon-name, .detail-title {
+  margin: 0 0 6px 0;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.detail-time-badge, .detail-date-pill {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 16px;
+}
+
+.highlight-time {
+  color: #facc15;
+}
+
+/* Pokemon Showcase Sprites Side by Side */
+.pokemon-showcase-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.showcase-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px 18px;
+  position: relative;
+}
+
+.shiny-card {
+  border-color: rgba(250, 204, 21, 0.4);
+  background: rgba(250, 204, 21, 0.05);
+}
+
+.shiny-sparkle-icon {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #facc15;
+  color: #0f172a;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.6);
+}
+
+.showcase-img {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5));
+}
+
+.showcase-label {
+  margin-top: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.detail-bonuses-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.bonus-pill {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+}
+
+/* Monthly Go Pass Grid Layout */
+.go-pass-perks-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.perk-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(250, 204, 21, 0.04);
+  border: 1px solid rgba(250, 204, 21, 0.15);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: left;
+}
+
+.perk-icon {
+  font-size: 1.4rem;
+}
+
+.perk-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.perk-text strong {
+  font-size: 0.75rem;
+  color: #facc15;
+}
+
+.perk-text span {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Download Button styling */
 .download-poster-btn {
   width: 100%;
-  max-width: 520px;
+  max-width: 480px;
   background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%);
   color: #fff;
   border: none;
-  padding: 14px 20px;
-  border-radius: 12px;
-  font-size: 1rem;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.2);
+  margin-top: 12px;
 }
 
 .download-poster-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(56, 189, 248, 0.3);
 }
 
 .download-poster-btn:disabled {
@@ -300,60 +728,24 @@
   transform: none;
 }
 
-/* Poster Empty State */
-.poster-empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px dashed rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  margin: 20px 0;
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-.poster-empty-state p {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #94a3b8;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-/* Mobile Responsiveness */
-@media (max-width: 600px) {
-  .month-summary-modal-overlay {
-    padding: 10px 8px;
-  }
-  .month-summary-modal-header {
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 12px 14px;
-  }
-  .month-summary-modal-header h3 {
-    font-size: 0.95rem;
-  }
-  .month-summary-modal-body {
-    padding: 12px 8px;
-  }
+/* Mobile Scale fallback to keep fixed sizes readable on smaller mobile screens */
+@media (max-width: 520px) {
   .month-summary-poster {
-    padding: 16px 12px;
-  }
-  .poster-event-row {
-    padding: 8px 10px;
-  }
-  .poster-event-name {
-    font-size: 0.82rem;
-  }
-  .poster-pokemon-sprite {
-    width: 36px;
-    height: 36px;
-  }
-  .poster-pokemon-img {
-    width: 30px;
-    height: 30px;
-  }
-  .poster-header h2 {
-    font-size: 1.35rem;
+    transform: scale(0.9);
+    transform-origin: top center;
+    margin-bottom: -60px;
   }
 }

@@ -1,14 +1,14 @@
-Všechny infografiky dělej v poměru 4:5 kvůli možnosti postování na IG, celou ji piš v angličtině
-
-Infografika jednotlivých eventů: 
-Spojit Raid hour, Raid Rotation které mají společné pokemony například Uxie, Mesprit a Azelf
-infografiku rozděl na tři sekce a všechny sekce 
-První sekce: Raid rotation - Obrázek běžného a shiny pokémona, Type Weaknesses pokemona
-Druhá sekce: Raid hour - Rozsah CP které můžeš dostat s tím že vrchní limit bude zlatě označen, Šance na Shiny verzi
-Třetí sekce: Top Counters - Top 6 pokémonů s tím že Top 1 bude označen jako Top counter, Vedle counterů dej jejcih typy
+Obě infografiky budou směřovat na sociální sítě IG a TikTok tudíž je stav v poměru 4:5, vzhledem se inspiruj u již existujících infografik, veškeré infografiky budou v anglickém jazyce
 
 Měsíční přehledy:
-Rozdělit celou infografiku na více menších podle typů eventu, Spotlight hour, Raid hour, ...
+Rozdělit celou infografiku na více menších podle typů eventu, Spotlight hour, Raid hour a další. Vynechej z toho Ultra League eventy.
+Zohledni tam každoměsíční Go pass nejlépe pro něj vymezit samostatný slide
+Rozdělení bude i v rámci barevného spracování, dynamax = červený, Raid hour/raid rotation = modrý, Spotlight hour = žluto oranžový, comunity day = zelený
+
+Týdenní přehledy:
+Ukaž tam hlavní eventy, spotlight hour, raid hour, comunity days a vyjímečné eventy
+Nejlépe na jeden slide, každý event jeden řádek s tím že budou označeny datem a dnem v týdnu
+Maximálně dej jeden event na den
 
 
 
