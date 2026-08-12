@@ -143,3 +143,78 @@ export async function savePokemonIconOverrides(overrides: Record<string, string>
     return false;
   }
 }
+
+const RAIDS_FILE_PATH = path.join(__dirname, '..', 'custom_raids.json');
+const RAIDS_FILE_NAME = 'custom_raids.json';
+
+export interface CustomRaidBoss {
+  id?: string;
+  name: string;
+  tier: '1' | '3' | '5' | 'mega' | 'shadow-1' | 'shadow-3' | 'shadow-5';
+  image?: string;
+  canBeShiny?: boolean;
+  cpRange?: string;
+  boostedCpRange?: string;
+  weatherBoosts?: string[];
+  types?: string[];
+  isDeleted?: boolean;
+  isCustom?: boolean;
+  playersRecommended?: string;
+  difficultyTier?: 'solo' | 'duo' | 'trio' | 'group' | 'hard-group';
+  difficultyNotes?: { cs: string; en: string };
+  pokebattlerUrl?: string;
+}
+
+export async function loadCustomRaidBosses(): Promise<CustomRaidBoss[]> {
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(RAIDS_FILE_NAME);
+      const [exists] = await file.exists();
+      if (exists) {
+        const [content] = await file.download();
+        return JSON.parse(content.toString());
+      }
+      return [];
+    } catch (err: any) {
+      console.error('Failed to load custom raids from GCS:', err.message);
+    }
+  }
+
+  try {
+    if (fs.existsSync(RAIDS_FILE_PATH)) {
+      const content = fs.readFileSync(RAIDS_FILE_PATH, 'utf-8');
+      return JSON.parse(content);
+    }
+  } catch (err) {
+    console.error('Failed to load custom raids locally:', err);
+  }
+  return [];
+}
+
+export async function saveCustomRaidBosses(raids: CustomRaidBoss[]): Promise<boolean> {
+  const dataStr = JSON.stringify(raids, null, 2);
+
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(RAIDS_FILE_NAME);
+      await file.save(dataStr, {
+        contentType: 'application/json',
+        resumable: false
+      });
+      return true;
+    } catch (err: any) {
+      console.error('Failed to save custom raids to GCS:', err.message);
+    }
+  }
+
+  try {
+    fs.writeFileSync(RAIDS_FILE_PATH, dataStr, 'utf-8');
+    return true;
+  } catch (err) {
+    console.error('Failed to save custom raids locally:', err);
+    return false;
+  }
+}
+

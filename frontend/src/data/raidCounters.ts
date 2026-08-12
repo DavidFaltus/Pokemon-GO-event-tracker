@@ -9,6 +9,10 @@ export interface RaidCounters {
   minBoostedCp: number;
   maxBoostedCp: number; // 100% IV boosted CP
   weatherBoosts: string[];
+  playersRecommended?: string;
+  difficultyTier?: 'solo' | 'duo' | 'trio' | 'group' | 'hard-group';
+  difficultyNotes?: { cs: string; en: string };
+  pokebattlerUrl?: string;
 }
 
 export const raidCountersDb: Record<string, RaidCounters> = {
@@ -112,13 +116,103 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     bossName: "Mega Rayquaza",
     weaknesses: ["Ice (2x)", "Dragon", "Rock", "Fairy"],
     megaCounters: ["Mega Gardevoir", "Mega Glalie", "Mega Latios"],
-    advancedCounters: ["Mamoswine (Avalanche)", "Baxcalibur (Avalanche)", "Galarian Darmanitan (Avalanche)", "Kyurem (Glaciate)"],
+    advancedCounters: ["White Kyurem (Ice Burn)", "Mamoswine (Avalanche)", "Baxcalibur (Avalanche)", "Galarian Darmanitan (Avalanche)", "Kyurem (Glaciate)"],
     budgetCounters: ["Glaceon (Avalanche)", "Weavile (Avalanche)", "Dragonite (Outrage)", "Sylveon (Dazzling Gleam)"],
     minCp: 2102,
     maxCp: 2191, // Catches standard Rayquaza
     minBoostedCp: 2627,
     maxBoostedCp: 2739,
     weatherBoosts: ["Větrno (Windy)"]
+  },
+  "rayquaza": {
+    bossName: "Rayquaza",
+    weaknesses: ["Ice (2x)", "Dragon", "Rock", "Fairy"],
+    megaCounters: ["Mega Gardevoir", "Mega Glalie", "Mega Rayquaza"],
+    advancedCounters: ["White Kyurem (Ice Burn)", "Shadow Mamoswine (Avalanche)", "Baxcalibur (Avalanche)", "Black Kyurem (Freeze Shock)", "Kyurem (Glaciate)"],
+    budgetCounters: ["Mamoswine (Avalanche)", "Glaceon (Avalanche)", "Weavile (Avalanche)", "Dragonite (Outrage)"],
+    minCp: 2102,
+    maxCp: 2194,
+    minBoostedCp: 2628,
+    maxBoostedCp: 2743,
+    weatherBoosts: ["Větrno (Windy)"],
+    playersRecommended: "1–2 hráči (Duo)",
+    difficultyTier: "duo",
+    difficultyNotes: {
+      cs: "Rayquaza má 4x slabost na Led! Dva hráči s White Kyurem, Shadow Mamoswine nebo Glaceonem ji bleskově porazí.",
+      en: "Rayquaza has a 4x weakness to Ice! Duoable with White Kyurem, Shadow Mamoswine, or Glaceon."
+    }
+  },
+  "groudon": {
+    bossName: "Groudon",
+    weaknesses: ["Water", "Grass", "Ice"],
+    megaCounters: ["Primal Kyogre", "Mega Swampert", "Mega Sceptile", "Mega Blastoise", "Mega Rayquaza"],
+    advancedCounters: ["White Kyurem (Ice Burn)", "Kyogre (Origin Pulse)", "Shadow Mamoswine (Avalanche)", "Baxcalibur (Avalanche)", "Shadow Kyogre (Origin Pulse)", "Black Kyurem (Freeze Shock)", "Kartana (Razor Leaf)"],
+    budgetCounters: ["Mamoswine (Avalanche)", "Glaceon (Avalanche)", "Weavile (Avalanche)", "Swampert (Hydro Cannon)", "Roserade (Grass Knot)"],
+    minCp: 2267,
+    maxCp: 2351,
+    minBoostedCp: 2834,
+    maxBoostedCp: 2939,
+    weatherBoosts: ["Slunečno (Sunny)"],
+    playersRecommended: "1–2 hráči (Duo)",
+    difficultyTier: "duo",
+    difficultyNotes: {
+      cs: "Groudon je slabý na Vodu, Trávu a Led. Dva hráči se silnými ledovými týmy (White Kyurem, Shadow Mamoswine) nebo vodními týmy ho snadno porazí.",
+      en: "Groudon is weak to Water, Grass, and Ice. Easily duoable with top Ice (White Kyurem, Shadow Mamoswine) or Water teams."
+    }
+  },
+  "primal groudon": {
+    bossName: "Primal Groudon",
+    weaknesses: ["Water (4x)", "Ground"],
+    megaCounters: ["Primal Kyogre", "Mega Swampert", "Mega Blastoise", "Mega Gyarados"],
+    advancedCounters: ["White Kyurem (Ice Burn)", "Kyogre (Origin Pulse)", "Shadow Kyogre (Origin Pulse)", "Shadow Feraligatr (Hydro Cannon)", "Shadow Swampert (Hydro Cannon)", "Black Kyurem (Freeze Shock)"],
+    budgetCounters: ["Swampert (Hydro Cannon)", "Kingdra (Hydro Pump)", "Samurott (Hydro Cannon)", "Gyarados (Waterfall)"],
+    minCp: 2267,
+    maxCp: 2351,
+    minBoostedCp: 2834,
+    maxBoostedCp: 2939,
+    weatherBoosts: ["Slunečno (Sunny)", "Jasno (Clear)"],
+    playersRecommended: "4–6+ hráčů",
+    difficultyTier: "hard-group",
+    difficultyNotes: {
+      cs: "Primal Groudon má obří 4x slabost na Vodu! Vyžaduje Primal Kyogre / Mega Swampert a silný vodní/ledový tým.",
+      en: "Primal Groudon has a massive 4x weakness to Water! Requires Primal Kyogre / Mega Swampert and strong Water/Ice counters."
+    }
+  },
+  "kyogre": {
+    bossName: "Kyogre",
+    weaknesses: ["Electric", "Grass"],
+    megaCounters: ["Mega Rayquaza", "Mega Sceptile", "Mega Manectric", "Mega Ampharos"],
+    advancedCounters: ["Kartana (Razor Leaf)", "Zekrom (Fusion Bolt)", "Xurkitree (Discharge)", "Shadow Raikou (Wild Charge)", "Shadow Zapdos (Thunderbolt)", "Shadow Magnezone"],
+    budgetCounters: ["Roserade (Grass Knot)", "Magnezone (Wild Charge)", "Raikou (Wild Charge)", "Zapdos (Thunderbolt)", "Meowscarada (Flower Trick)"],
+    minCp: 2267,
+    maxCp: 2351,
+    minBoostedCp: 2834,
+    maxBoostedCp: 2939,
+    weatherBoosts: ["Deštivo (Rainy)"],
+    playersRecommended: "2–3 hráči",
+    difficultyTier: "trio",
+    difficultyNotes: {
+      cs: "Kyogre je těžký úderník! Doporučujeme 2–3 hráče s Kartanou, Zekromem nebo Mega Sceptile/Rayquaza.",
+      en: "Kyogre hits very hard! Recommend 2–3 players with Kartana, Zekrom, or Mega Sceptile/Rayquaza."
+    }
+  },
+  "primal kyogre": {
+    bossName: "Primal Kyogre",
+    weaknesses: ["Electric", "Grass"],
+    megaCounters: ["Mega Rayquaza", "Mega Sceptile", "Mega Manectric"],
+    advancedCounters: ["Kartana (Razor Leaf)", "Zekrom (Fusion Bolt)", "Xurkitree (Discharge)", "Shadow Raikou (Wild Charge)", "Shadow Electivire"],
+    budgetCounters: ["Roserade (Grass Knot)", "Magnezone (Wild Charge)", "Raikou (Wild Charge)", "Meowscarada (Flower Trick)"],
+    minCp: 2267,
+    maxCp: 2351,
+    minBoostedCp: 2834,
+    maxBoostedCp: 2939,
+    weatherBoosts: ["Deštivo (Rainy)"],
+    playersRecommended: "5–8+ hráčů",
+    difficultyTier: "hard-group",
+    difficultyNotes: {
+      cs: "Jeden z nejtěžších raidů ve hře! Doporučujeme 5–8+ hráčů s Kartanou a Mega Rayquaza / Mega Sceptile.",
+      en: "One of the toughest raids in the game! Recommend 5–8+ players with Kartana and Mega Rayquaza / Sceptile."
+    }
   },
   "mega gardevoir": {
     bossName: "Mega Gardevoir",

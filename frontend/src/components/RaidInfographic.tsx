@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
-import { Download, Sparkles, Clock, Calendar, Check, ShieldCheck, Swords, Shield, Trophy, Layers, Zap } from 'lucide-react';
+import { Download, Sparkles, Clock, Calendar, Check, ShieldCheck, Swords, Shield, Trophy, Layers, Zap, Users } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
 import { resolveImage, handlePokemonImageError, getBasePokemonNames } from '../utils/imageResolver';
@@ -13,6 +13,8 @@ import { WeatherIcon } from './CounterItem';
 import { pokemonRankings } from '../data/pokemonRankings';
 import { API_BASE_URL } from '../config';
 import { formatEventDateRange } from './MaxInfographic';
+import { getPokemonTypesByName, getWeaknessesForPokemon } from '../utils/pokemonCountersHelper';
+import { getBossDifficultyInfo } from './RaidDifficultyBox';
 import './RaidInfographic.css';
 
 interface RaidInfographicProps {
@@ -76,31 +78,15 @@ export const TypeIconOnly: React.FC<{ typeStr: string }> = ({ typeStr }) => {
   );
 };
 
-// Helper to find Pokemon types by name for counter type badges
-const getPokemonTypesByName = (name: string): string[] => {
-  const clean = name.replace(/^(Mega|Shadow|Primal)\s+/i, '').replace(/\s*\([^)]*\)/g, '').trim().toLowerCase();
-  const found = pokemonRankings.find(p => p.name.toLowerCase() === clean || p.name.toLowerCase().includes(clean));
-  if (found && found.types && found.types.length > 0) return found.types;
-
-  if (name.includes('Gengar') || name.includes('Banette') || name.includes('Giratina') || name.includes('Chandelure') || name.includes('Gholdengo')) return ['Ghost'];
-  if (name.includes('Tyranitar') || name.includes('Darkrai') || name.includes('Hydreigon') || name.includes('Weavile') || name.includes('Houndoom') || name.includes('Yveltal')) return ['Dark'];
-  if (name.includes('Mewtwo') || name.includes('Alakazam') || name.includes('Gardevoir')) return ['Psychic'];
-  if (name.includes('Rayquaza') || name.includes('Garchomp') || name.includes('Salamence') || name.includes('Dragonite')) return ['Dragon'];
-  if (name.includes('Charizard') || name.includes('Reshiram') || name.includes('Moltres') || name.includes('Heatran')) return ['Fire'];
-  if (name.includes('Kyogre') || name.includes('Swampert') || name.includes('Gyarados')) return ['Water'];
-  if (name.includes('Lucario') || name.includes('Conkeldurr') || name.includes('Machamp') || name.includes('Terrakion')) return ['Fighting'];
-  return ['Normal'];
-};
-
 // Check if all featured bosses share the same primary type & weaknesses (e.g. Uxie, Mesprit, Azelf)
 const areBossesSimilar = (bosses: { name: string }[]): boolean => {
   if (bosses.length <= 1) return true;
   const firstTypes = getPokemonTypesByName(bosses[0].name).sort().join(',');
-  const firstWeaknesses = (findRaidCounters(bosses[0].name)?.weaknesses || []).sort().join(',');
+  const firstWeaknesses = getWeaknessesForPokemon(bosses[0].name).sort().join(',');
 
   return bosses.every(b => {
     const bTypes = getPokemonTypesByName(b.name).sort().join(',');
-    const bWeaknesses = (findRaidCounters(b.name)?.weaknesses || []).sort().join(',');
+    const bWeaknesses = getWeaknessesForPokemon(b.name).sort().join(',');
     return bTypes === firstTypes && bWeaknesses === firstWeaknesses;
   });
 };
@@ -167,12 +153,23 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
 
   // Retrieve counter data & stats from raidCounters DB
   const countersData = findRaidCounters(primaryBossName);
-  const weaknessesList = countersData?.weaknesses || ['Ghost', 'Dark', 'Bug'];
+  const weaknessesList = (countersData?.weaknesses && countersData.weaknesses.length > 0) 
+    ? countersData.weaknesses 
+    : getWeaknessesForPokemon(primaryBossName);
   const minCp = countersData?.minCp || 1669;
   const maxCp = countersData?.maxCp || 1747;
   const minBoostedCp = countersData?.minBoostedCp || 2087;
   const maxBoostedCp = countersData?.maxBoostedCp || 2184;
   const weatherBoostsList = countersData?.weatherBoosts || ['Windy'];
+
+  const diffInfo = getBossDifficultyInfo(
+    primaryBossName,
+    (activeBoss as any)?.tier || '5',
+    countersData?.playersRecommended,
+    countersData?.difficultyTier,
+    countersData?.difficultyNotes,
+    lang
+  );
 
   // Primary Boss Element Types for Title Badges
   const primaryBossTypes = getPokemonTypesByName(primaryBossName);
@@ -512,16 +509,30 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
               })}
             </div>
 
-            {/* Type Weaknesses Centered Box */}
-            <div className="slide1-weakness-card centered">
-              <div className="weakness-header centered">
-                <Zap size={14} style={{ color: '#f87171' }} />
-                <span>TYPE WEAKNESSES</span>
+            {/* Info Cards Row: Recommended Party & Type Weaknesses */}
+            <div className="slide1-info-cards-flex">
+              <div className="slide1-weakness-card centered">
+                <div className="weakness-header centered">
+                  <Users size={14} style={{ color: '#38bdf8' }} />
+                  <span>{lang === 'cs' ? 'DOPORUČENÁ SKUPINA' : 'RECOMMENDED PARTY'}</span>
+                </div>
+                <div className="type-badges-row centered">
+                  <span className={`diff-infographic-pill tier-${diffInfo.difficultyTier}`}>
+                    {diffInfo.recLabel}
+                  </span>
+                </div>
               </div>
-              <div className="type-badges-row centered">
-                {weaknessesList.map((w) => (
-                  <TypeBadge key={w} typeStr={w} lang="en" />
-                ))}
+
+              <div className="slide1-weakness-card centered">
+                <div className="weakness-header centered">
+                  <Zap size={14} style={{ color: '#f87171' }} />
+                  <span>{lang === 'cs' ? 'TYPOVÉ SLABOSTI' : 'TYPE WEAKNESSES'}</span>
+                </div>
+                <div className="type-badges-row centered">
+                  {weaknessesList.map((w) => (
+                    <TypeBadge key={w} typeStr={w} lang={lang} />
+                  ))}
+                </div>
               </div>
             </div>
           </div>

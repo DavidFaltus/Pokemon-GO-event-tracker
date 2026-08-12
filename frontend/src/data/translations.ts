@@ -4,6 +4,7 @@ export const translations = {
   cs: {
     // Nav
     tabs_events: "Události",
+    tabs_guides: "Průvodce",
     tabs_raid: "Raid",
     tabs_rocket: "Rocket",
     tabs_ditto: "Ditto",
@@ -212,6 +213,7 @@ export const translations = {
   en: {
     // Nav
     tabs_events: "Events",
+    tabs_guides: "Guides",
     tabs_raid: "Raids",
     tabs_rocket: "Rocket",
     tabs_ditto: "Ditto",
@@ -421,6 +423,7 @@ export const translations = {
   ja: {
     // Nav
     tabs_events: "イベント",
+    tabs_guides: "ガイド",
     tabs_raid: "レイド",
     tabs_rocket: "ロケット団",
     tabs_ditto: "メタモン",
@@ -631,6 +634,7 @@ export const translations = {
   ru: {
     // Nav
     tabs_events: "События",
+    tabs_guides: "Гайды",
     tabs_raid: "Рейды",
     tabs_rocket: "Ракета",
     tabs_ditto: "Метаморф",

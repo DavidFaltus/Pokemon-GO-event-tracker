@@ -480,7 +480,7 @@ const generateSocialCaption = (event: EventData, lang: Language): string => {
 // Main AdminPanelView component
 // ============================================================
 
-type AdminTab = 'events' | 'social' | 'icons' | 'scraper' | 'import' | 'cache';
+type AdminTab = 'events' | 'raids' | 'social' | 'icons' | 'scraper' | 'import' | 'cache';
 
 export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -490,6 +490,24 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   const [successMsg, setSuccessMsg] = useState<string>('');
   const [adminTab, setAdminTab] = useState<AdminTab>('events');
   const imageFileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Raid management state
+  const [liveRaidBosses, setLiveRaidBosses] = useState<any[]>([]);
+  const [raidOverrides, setRaidOverrides] = useState<any[]>([]);
+  const [raidsLoading, setRaidsLoading] = useState<boolean>(false);
+  const [raidsRefreshing, setRaidsRefreshing] = useState<boolean>(false);
+  const [raidMsg, setRaidMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Add Custom Raid modal state
+  const [showRaidModal, setShowRaidModal] = useState<boolean>(false);
+  const [raidFormName, setRaidFormName] = useState<string>('');
+  const [raidFormTier, setRaidFormTier] = useState<string>('5');
+  const [raidFormCanBeShiny, setRaidFormCanBeShiny] = useState<boolean>(true);
+  const [raidFormCpRange, setRaidFormCpRange] = useState<string>('');
+  const [raidFormBoostedCpRange, setRaidFormBoostedCpRange] = useState<string>('');
+  const [raidFormWeather, setRaidFormWeather] = useState<string>('');
+  const [raidFormTypes, setRaidFormTypes] = useState<string>('');
+  const [raidFormPlayers, setRaidFormPlayers] = useState<string>('');
 
   // Social Media tab state
   const [socialSubTab, setSocialSubTab] = useState<'single' | 'summary'>('single');
@@ -662,19 +680,167 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     }
   }, []);
 
+  const fetchRaidData = useCallback(async () => {
+    setRaidsLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/raids`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setLiveRaidBosses(data.live || []);
+        setRaidOverrides(data.overrides || []);
+      }
+    } catch (err: any) {
+      setRaidMsg({ type: 'error', text: err.message });
+    } finally {
+      setRaidsLoading(false);
+    }
+  }, [token]);
+
   useEffect(() => {
     if (isLoggedIn) {
       fetchScraperStatus();
       fetchCacheStats();
       fetchIconOverrides();
+      fetchRaidData();
     }
-  }, [isLoggedIn, fetchScraperStatus, fetchCacheStats, fetchIconOverrides]);
+  }, [isLoggedIn, fetchScraperStatus, fetchCacheStats, fetchIconOverrides, fetchRaidData]);
 
   useEffect(() => {
     if (adminTab === 'scraper' && isLoggedIn) fetchScraperStatus();
     if (adminTab === 'cache' && isLoggedIn) fetchCacheStats();
     if (adminTab === 'icons' && isLoggedIn) fetchIconOverrides();
-  }, [adminTab, isLoggedIn, fetchScraperStatus, fetchCacheStats, fetchIconOverrides]);
+    if (adminTab === 'raids' && isLoggedIn) fetchRaidData();
+  }, [adminTab, isLoggedIn, fetchScraperStatus, fetchCacheStats, fetchIconOverrides, fetchRaidData]);
+
+  const handleRefreshRaids = async () => {
+    setRaidsRefreshing(true);
+    setRaidMsg(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/raids/refresh`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setLiveRaidBosses(data.live || []);
+        setRaidMsg({ type: 'success', text: lang === 'cs' ? 'Raid bossové byli úspěšně aktualizováni!' : 'Raid bosses successfully refreshed!' });
+      } else {
+        setRaidMsg({ type: 'error', text: data.error || 'Failed to refresh raids' });
+      }
+    } catch (err: any) {
+      setRaidMsg({ type: 'error', text: err.message });
+    } finally {
+      setRaidsRefreshing(false);
+    }
+  };
+
+  const handleToggleHideRaid = async (boss: any, isCurrentlyDeleted: boolean) => {
+    setRaidMsg(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/raids/override`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: boss.name,
+          tier: boss.tier,
+          image: boss.image,
+          canBeShiny: boss.canBeShiny,
+          cpRange: boss.cpRange,
+          boostedCpRange: boss.boostedCpRange,
+          weatherBoosts: boss.weatherBoosts,
+          types: boss.types,
+          isDeleted: !isCurrentlyDeleted,
+          isCustom: false
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setLiveRaidBosses(data.live || []);
+        setRaidOverrides(data.overrides || []);
+        setRaidMsg({
+          type: 'success',
+          text: !isCurrentlyDeleted
+            ? (lang === 'cs' ? `Boss "${boss.name}" byl skryt.` : `Boss "${boss.name}" hidden.`)
+            : (lang === 'cs' ? `Boss "${boss.name}" byl opět zobrazen.` : `Boss "${boss.name}" restored.`)
+        });
+      } else {
+        setRaidMsg({ type: 'error', text: data.error || 'Operation failed' });
+      }
+    } catch (err: any) {
+      setRaidMsg({ type: 'error', text: err.message });
+    }
+  };
+
+  const handleDeleteRaidOverride = async (name: string, tier: string) => {
+    setRaidMsg(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/raids/override/${encodeURIComponent(name)}/${encodeURIComponent(tier)}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setLiveRaidBosses(data.live || []);
+        setRaidOverrides(data.overrides || []);
+        setRaidMsg({ type: 'success', text: lang === 'cs' ? 'Override byl odstraněn.' : 'Override removed.' });
+      }
+    } catch (err: any) {
+      setRaidMsg({ type: 'error', text: err.message });
+    }
+  };
+
+  const handleSaveCustomRaid = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!raidFormName.trim()) return;
+
+    setRaidMsg(null);
+    try {
+      const weatherArray = raidFormWeather.split(',').map(s => s.trim()).filter(Boolean);
+      const typesArray = raidFormTypes.split(',').map(s => s.trim()).filter(Boolean);
+
+      const res = await fetch(`${API_BASE_URL}/api/admin/raids/override`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: raidFormName.trim(),
+          tier: raidFormTier,
+          canBeShiny: raidFormCanBeShiny,
+          cpRange: raidFormCpRange.trim() || undefined,
+          boostedCpRange: raidFormBoostedCpRange.trim() || undefined,
+          weatherBoosts: weatherArray.length > 0 ? weatherArray : undefined,
+          types: typesArray.length > 0 ? typesArray : undefined,
+          playersRecommended: raidFormPlayers.trim() || undefined,
+          isDeleted: false,
+          isCustom: true
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setLiveRaidBosses(data.live || []);
+        setRaidOverrides(data.overrides || []);
+        setShowRaidModal(false);
+        setRaidFormName('');
+        setRaidFormCpRange('');
+        setRaidFormBoostedCpRange('');
+        setRaidFormWeather('');
+        setRaidFormTypes('');
+        setRaidFormPlayers('');
+        setRaidMsg({ type: 'success', text: lang === 'cs' ? `Raid boss "${raidFormName}" byl přidán!` : `Raid boss "${raidFormName}" added!` });
+      } else {
+        setRaidMsg({ type: 'error', text: data.error || 'Failed to save custom raid boss' });
+      }
+    } catch (err: any) {
+      setRaidMsg({ type: 'error', text: err.message });
+    }
+  };
 
   const handleSaveIconOverrides = async (updatedMap?: Record<string, string>) => {
     const mapToSave = updatedMap || iconOverrides;
@@ -1262,6 +1428,9 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
         <button className={`admin-nav-btn ${adminTab === 'events' ? 'active' : ''}`} onClick={() => setAdminTab('events')}>
           <Edit size={15} />{lang === 'cs' ? 'Události' : 'Events'}
         </button>
+        <button className={`admin-nav-btn ${adminTab === 'raids' ? 'active' : ''}`} onClick={() => setAdminTab('raids')}>
+          <Swords size={15} />{lang === 'cs' ? 'Správa Raidů' : 'Raid Bosses'}
+        </button>
         <button className={`admin-nav-btn ${adminTab === 'social' ? 'active' : ''}`} onClick={() => setAdminTab('social')}>
           <Share2 size={15} />{lang === 'cs' ? 'TikTok & IG Hub' : 'TikTok & IG Hub'}
         </button>
@@ -1278,6 +1447,337 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
           <Server size={15} />{lang === 'cs' ? 'Cache' : 'Cache'}
         </button>
       </div>
+
+      {/* ===== TAB: RAIDS ===== */}
+      {adminTab === 'raids' && (
+        <div className="admin-raids-layout" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Action Header */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.03)', padding: '16px 20px', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Swords size={20} style={{ color: '#a855f7' }} />
+                {lang === 'cs' ? 'Správa Raid Bossů & Rotací' : 'Raid Boss & Rotation Management'}
+              </h2>
+              <p style={{ margin: '4px 0 0 0', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                {lang === 'cs'
+                  ? 'Zde můžete okamžitě obnovit aktuální raid lineup, skrýt libovolného bosse nebo ručně přidat nového.'
+                  : 'Manage active raid bosses, force refresh rotations, or override current lineups.'}
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                className="admin-btn btn-secondary"
+                onClick={handleRefreshRaids}
+                disabled={raidsRefreshing}
+                title={lang === 'cs' ? 'Vynutit okamžitý re-scrape a pročištění keše raidů' : 'Force fresh scrape & clear raid cache'}
+              >
+                <RefreshCw size={15} className={raidsRefreshing ? 'spin' : ''} />
+                {lang === 'cs' ? 'Pročistit & Obnovit Raidy' : 'Refresh & Clear Raids'}
+              </button>
+              <button
+                className="admin-btn btn-primary"
+                onClick={() => setShowRaidModal(true)}
+              >
+                <Plus size={15} />
+                {lang === 'cs' ? 'Přidat Raid Bosse' : 'Add Raid Boss'}
+              </button>
+            </div>
+          </div>
+
+          {/* Status Message */}
+          {raidMsg && (
+            <div className={`status-alert ${raidMsg.type}`} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 16px', borderRadius: '12px', background: raidMsg.type === 'success' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)', border: raidMsg.type === 'success' ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)', color: raidMsg.type === 'success' ? '#4ade80' : '#f87171', fontSize: '0.85rem' }}>
+              {raidMsg.type === 'success' ? <CheckCircle size={16} /> : <AlertTriangle size={16} />}
+              <span>{raidMsg.text}</span>
+            </div>
+          )}
+
+          {raidsLoading ? (
+            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+              <RefreshCw size={24} className="spin" style={{ margin: '0 auto 12px auto' }} />
+              <p>{lang === 'cs' ? 'Načítání raid bossů...' : 'Loading raid bosses...'}</p>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              {/* Live Active Raid Bosses */}
+              <div>
+                <h3 style={{ fontSize: '1rem', margin: '0 0 12px 0', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Zap size={16} style={{ color: '#facc15' }} />
+                  {lang === 'cs' ? 'Aktuálně Zobrazovaní Raid Bossové' : 'Currently Active Raid Bosses'}
+                  <span style={{ fontSize: '0.75rem', background: 'rgba(168,85,247,0.2)', color: '#c084fc', padding: '2px 8px', borderRadius: '12px' }}>
+                    {liveRaidBosses.length}
+                  </span>
+                </h3>
+
+                {liveRaidBosses.length === 0 ? (
+                  <div style={{ padding: '24px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                    {lang === 'cs' ? 'Žádní raid bossové nebyly nalezeni. Klikněte na tlačítko Obnovit Raidy.' : 'No active raid bosses found. Click Refresh & Clear Raids.'}
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
+                    {liveRaidBosses.map((boss: any, idx: number) => {
+                      const iconUrl = boss.image || getPokemonIconUrl(boss.name);
+                      return (
+                        <div
+                          key={`${boss.name}-${boss.tier}-${idx}`}
+                          style={{
+                            background: 'rgba(20, 24, 36, 0.75)',
+                            border: '1px solid var(--border-color)',
+                            borderRadius: '16px',
+                            padding: '14px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'space-between',
+                            gap: '10px',
+                            backdropFilter: 'blur(12px)'
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.3)', borderRadius: '12px', padding: '4px' }}>
+                              <img
+                                src={iconUrl}
+                                alt={boss.name}
+                                style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                                onError={(e) => { (e.target as HTMLImageElement).src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png'; }}
+                              />
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                                <span style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '0.95rem' }}>{boss.name}</span>
+                                {boss.canBeShiny && (
+                                  <span title="Shiny available" style={{ fontSize: '0.75rem' }}>✨</span>
+                                )}
+                              </div>
+                              <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
+                                <span style={{ fontSize: '0.7rem', fontWeight: 700, padding: '1px 7px', borderRadius: '6px', background: boss.tier === 'mega' ? 'linear-gradient(135deg, #ec4899, #8b5cf6)' : boss.tier.includes('shadow') ? 'linear-gradient(135deg, #7c3aed, #4c1d95)' : 'rgba(56, 189, 248, 0.2)', color: boss.tier === 'mega' || boss.tier.includes('shadow') ? '#fff' : '#38bdf8' }}>
+                                  Tier {String(boss.tier).toUpperCase()}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {(boss.cpRange || boss.boostedCpRange) && (
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', background: 'rgba(0,0,0,0.2)', padding: '6px 10px', borderRadius: '8px' }}>
+                              {boss.cpRange && <div><strong>CP:</strong> {boss.cpRange}</div>}
+                              {boss.boostedCpRange && <div><strong>Weather Boosted:</strong> {boss.boostedCpRange}</div>}
+                            </div>
+                          )}
+
+                          <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                            <button
+                              className="admin-btn btn-secondary"
+                              onClick={() => handleToggleHideRaid(boss, false)}
+                              style={{ flex: 1, padding: '6px 10px', fontSize: '0.78rem' }}
+                              title={lang === 'cs' ? 'Skrýt tohoto bosse z aplikace' : 'Hide this boss from app'}
+                            >
+                              <EyeOff size={13} />
+                              {lang === 'cs' ? 'Skrýt' : 'Hide'}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Custom Overrides & Blacklisted Bosses */}
+              {raidOverrides.length > 0 && (
+                <div>
+                  <h3 style={{ fontSize: '1rem', margin: '16px 0 12px 0', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <EyeOff size={16} style={{ color: '#ef4444' }} />
+                    {lang === 'cs' ? 'Vlastní Úpravy a Skrytí (Blacklist)' : 'Custom Overrides & Hidden Bosses'}
+                  </h3>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
+                    {raidOverrides.map((override: any, idx: number) => (
+                      <div
+                        key={`override-${override.name}-${override.tier}-${idx}`}
+                        style={{
+                          background: override.isDeleted ? 'rgba(239, 68, 68, 0.08)' : 'rgba(168, 85, 247, 0.08)',
+                          border: override.isDeleted ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(168, 85, 247, 0.3)',
+                          borderRadius: '16px',
+                          padding: '14px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          gap: '10px'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <img
+                            src={override.image || getPokemonIconUrl(override.name)}
+                            alt={override.name}
+                            style={{ width: '36px', height: '36px', objectFit: 'contain' }}
+                            onError={(e) => { (e.target as HTMLImageElement).src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png'; }}
+                          />
+                          <div>
+                            <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--text-primary)' }}>{override.name}</div>
+                            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                              Tier: {override.tier} • {override.isDeleted ? (lang === 'cs' ? 'SKRYTÝ' : 'HIDDEN') : (lang === 'cs' ? 'VLASTNÍ' : 'CUSTOM')}
+                            </div>
+                          </div>
+                        </div>
+
+                        <button
+                          className="admin-btn btn-danger"
+                          onClick={() => handleDeleteRaidOverride(override.name, override.tier)}
+                          style={{ padding: '6px 10px', fontSize: '0.75rem' }}
+                          title={lang === 'cs' ? 'Odstranit toto pravidlo' : 'Remove rule'}
+                        >
+                          <Trash2 size={13} />
+                          {lang === 'cs' ? 'Smazat' : 'Delete'}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Add Custom Raid Boss Modal */}
+          {showRaidModal && (
+            <div className="admin-modal-overlay" style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+              <div style={{ background: 'var(--bg-card, #0f172a)', border: '1px solid var(--border-color)', borderRadius: '20px', padding: '24px', width: '100%', maxWidth: '460px', boxShadow: '0 20px 50px rgba(0,0,0,0.5)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Plus size={18} style={{ color: '#a855f7' }} />
+                    {lang === 'cs' ? 'Přidat Vlastního Raid Bosse' : 'Add Custom Raid Boss'}
+                  </h3>
+                  <button onClick={() => setShowRaidModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <form onSubmit={handleSaveCustomRaid} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                      {lang === 'cs' ? 'Jméno Pokémona *' : 'Pokémon Name *'}
+                    </label>
+                    <input
+                      type="text"
+                      className="admin-password-input"
+                      value={raidFormName}
+                      onChange={(e) => setRaidFormName(e.target.value)}
+                      placeholder="e.g. Rayquaza, Necrozma"
+                      required
+                    />
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                        Tier *
+                      </label>
+                      <select
+                        className="admin-password-input"
+                        value={raidFormTier}
+                        onChange={(e) => setRaidFormTier(e.target.value)}
+                      >
+                        <option value="1">Tier 1</option>
+                        <option value="3">Tier 3</option>
+                        <option value="5">Tier 5 (Legendary)</option>
+                        <option value="mega">Mega Raid</option>
+                        <option value="shadow-1">Shadow 1-Star</option>
+                        <option value="shadow-3">Shadow 3-Star</option>
+                        <option value="shadow-5">Shadow 5-Star</option>
+                      </select>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '20px' }}>
+                      <input
+                        type="checkbox"
+                        id="canBeShinyCheck"
+                        checked={raidFormCanBeShiny}
+                        onChange={(e) => setRaidFormCanBeShiny(e.target.checked)}
+                      />
+                      <label htmlFor="canBeShinyCheck" style={{ fontSize: '0.85rem', color: 'var(--text-primary)', cursor: 'pointer' }}>
+                        Shiny ✨
+                      </label>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                        CP Range (Normální)
+                      </label>
+                      <input
+                        type="text"
+                        className="admin-password-input"
+                        value={raidFormCpRange}
+                        onChange={(e) => setRaidFormCpRange(e.target.value)}
+                        placeholder="e.g. 2100 - 2195"
+                      />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                        CP Range (Boosted)
+                      </label>
+                      <input
+                        type="text"
+                        className="admin-password-input"
+                        value={raidFormBoostedCpRange}
+                        onChange={(e) => setRaidFormBoostedCpRange(e.target.value)}
+                        placeholder="e.g. 2625 - 2744"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                      Počasí (Weather Boosts, oddělené čárkou)
+                    </label>
+                    <input
+                      type="text"
+                      className="admin-password-input"
+                      value={raidFormWeather}
+                      onChange={(e) => setRaidFormWeather(e.target.value)}
+                      placeholder="e.g. Windy, Dragon"
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                      Typy (Types, oddělené čárkou)
+                    </label>
+                    <input
+                      type="text"
+                      className="admin-password-input"
+                      value={raidFormTypes}
+                      onChange={(e) => setRaidFormTypes(e.target.value)}
+                      placeholder="e.g. Dragon, Flying"
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
+                      {lang === 'cs' ? 'Doporučený počet hráčů (volitelné)' : 'Recommended Players (optional)'}
+                    </label>
+                    <input
+                      type="text"
+                      className="admin-password-input"
+                      value={raidFormPlayers}
+                      onChange={(e) => setRaidFormPlayers(e.target.value)}
+                      placeholder="e.g. 1-2 hráči (Duo), 3-5 hráčů"
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+                    <button type="button" className="admin-btn btn-secondary" onClick={() => setShowRaidModal(false)}>
+                      {lang === 'cs' ? 'Zrušit' : 'Cancel'}
+                    </button>
+                    <button type="submit" className="admin-btn btn-primary">
+                      <Save size={15} />
+                      {lang === 'cs' ? 'Uložit Raid Bosse' : 'Save Raid Boss'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ===== TAB: EVENTS ===== */}
       {adminTab === 'events' && (

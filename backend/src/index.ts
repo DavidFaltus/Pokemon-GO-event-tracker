@@ -8,7 +8,7 @@ import {
   scrapeEvents,
   scrapeEventDetails,
 } from './scraper';
-import { loadCustomEvents, saveCustomEvents, CustomEvent, loadPokemonIconOverrides, savePokemonIconOverrides } from './storage';
+import { loadCustomEvents, saveCustomEvents, CustomEvent, loadPokemonIconOverrides, savePokemonIconOverrides, loadCustomRaidBosses, saveCustomRaidBosses, CustomRaidBoss } from './storage';
 import { generateBotHtml } from './ssr';
 
 // Simple in-memory rate limiter
@@ -468,7 +468,39 @@ async function getRaidBossesList(forceNoCache: boolean = false): Promise<any[]> 
 
   const events = await getEnrichedEventsList(false).catch(() => []);
   const { scrapeRaidBosses } = await import('./scraper');
-  const data = await scrapeRaidBosses(events);
+  let data = await scrapeRaidBosses(events);
+
+  // Apply custom raid overrides & blacklists from storage
+  const customRaids = await loadCustomRaidBosses().catch(() => []);
+  if (customRaids.length > 0) {
+    const deletedKeys = new Set(
+      customRaids
+        .filter(c => c.isDeleted)
+        .map(c => `${c.name.toLowerCase()}-${c.tier}`)
+    );
+
+    // Filter out blacklisted/deleted bosses
+    data = data.filter(b => !deletedKeys.has(`${b.name.toLowerCase()}-${b.tier}`));
+
+    // Add custom added bosses
+    for (const custom of customRaids.filter(c => c.isCustom && !c.isDeleted)) {
+      const exists = data.some(b => b.tier === custom.tier && b.name.toLowerCase() === custom.name.toLowerCase());
+      if (!exists) {
+        data.push({
+          name: custom.name,
+          tier: custom.tier,
+          image: custom.image || `https://img.pokemondb.net/sprites/home/normal/${custom.name.toLowerCase().replace(/\s+/g, '-')}.png`,
+          canBeShiny: custom.canBeShiny ?? true,
+          cpRange: custom.cpRange,
+          boostedCpRange: custom.boostedCpRange,
+          weatherBoosts: custom.weatherBoosts,
+          types: custom.types,
+          counters: undefined
+        } as any);
+      }
+    }
+  }
+
   setToCache(cacheKey, data, 1 * 60 * 60 * 1000);
   return data;
 }
@@ -738,6 +770,84 @@ app.post('/api/admin/pokemon-icons', requireAuth, async (req, res) => {
     } else {
       res.status(500).json({ error: 'Failed to save icon overrides' });
     }
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get all raid bosses & custom overrides (admin only)
+app.get('/api/admin/raids', requireAuth, async (req, res) => {
+  try {
+    const live = await getRaidBossesList(false);
+    const overrides = await loadCustomRaidBosses();
+    res.json({ live, overrides });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Create or update raid boss override / blacklist (admin only)
+app.post('/api/admin/raids/override', requireAuth, async (req, res) => {
+  try {
+    const { name, tier, image, canBeShiny, cpRange, boostedCpRange, weatherBoosts, types, isDeleted, isCustom } = req.body;
+    if (!name || !tier) {
+      return res.status(400).json({ error: 'Name and Tier are required' });
+    }
+
+    const current = await loadCustomRaidBosses();
+    const existingIdx = current.findIndex(c => c.name.toLowerCase() === name.toLowerCase() && c.tier === tier);
+
+    const newBoss: CustomRaidBoss = {
+      id: existingIdx >= 0 ? current[existingIdx].id : `custom-raid-${Date.now()}`,
+      name: name.trim(),
+      tier,
+      image,
+      canBeShiny,
+      cpRange,
+      boostedCpRange,
+      weatherBoosts,
+      types,
+      isDeleted: Boolean(isDeleted),
+      isCustom: isCustom !== undefined ? Boolean(isCustom) : true
+    };
+
+    if (existingIdx >= 0) {
+      current[existingIdx] = newBoss;
+    } else {
+      current.push(newBoss);
+    }
+
+    await saveCustomRaidBosses(current);
+    deleteFromCache('raid_bosses');
+    const updatedLive = await getRaidBossesList(true);
+
+    res.json({ success: true, live: updatedLive, overrides: current });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Remove custom raid override or un-blacklist (admin only)
+app.delete('/api/admin/raids/override/:name/:tier', requireAuth, async (req, res) => {
+  try {
+    const { name, tier } = req.params;
+    let current = await loadCustomRaidBosses();
+    current = current.filter(c => !(c.name.toLowerCase() === name.toLowerCase() && c.tier === tier));
+    await saveCustomRaidBosses(current);
+    deleteFromCache('raid_bosses');
+    const updatedLive = await getRaidBossesList(true);
+    res.json({ success: true, live: updatedLive, overrides: current });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Force refresh & re-scrape raid bosses (admin only)
+app.post('/api/admin/raids/refresh', requireAuth, async (req, res) => {
+  try {
+    deleteFromCache('raid_bosses');
+    const updatedLive = await getRaidBossesList(true);
+    res.json({ success: true, message: 'Raid bosses refreshed successfully', live: updatedLive });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }

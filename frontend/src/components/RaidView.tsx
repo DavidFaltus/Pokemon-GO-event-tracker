@@ -8,12 +8,13 @@ import { TypeBadge } from './EventCard';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import type { EventData } from './EventCard';
 import { API_BASE_URL } from '../config';
-import { Sparkles, Trophy } from 'lucide-react';
+import { Sparkles, Trophy, BookOpen, ChevronRight } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
 import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
 import { findRaidCounters } from '../data/raidCounters';
 import { resolveImage, handlePokemonImageError, SHADOW_ICON_URL, MEGA_ICON_URL, PRIMAL_ICON_URL, handleShadowIconError, handleMegaIconError, handlePrimalIconError } from '../utils/imageResolver';
 import { DirectRaidFilterBox } from './DirectRaidFilterBox';
+import { RaidDifficultyBox } from './RaidDifficultyBox';
 import { detectUserRegion, isPokemonInUserRegion, getRegionalInfo } from '../utils/regionalHelper';
 
 const ShadowIcon: React.FC<{ className?: string; style?: React.CSSProperties }> = ({ className, style }) => (
@@ -107,6 +108,7 @@ interface RaidViewProps {
   events?: EventData[]; // Left for compatibility
   lang: Language;
   onOpenFilterGenerator?: (bossName?: string) => void;
+  onOpenGuide?: (slug: string) => void;
 }
 
 interface RaidBoss {
@@ -169,7 +171,7 @@ export const REGIONAL_POKEMON: Record<string, RegionalInfo> = {
 type FilterTier = 'all' | '5' | 'mega' | '3' | '1';
 type RegionFilter = 'all' | 'EMEA' | 'Asia' | 'Americas';
 
-export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator }) => {
+export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator, onOpenGuide }) => {
   const [activeFilter, setActiveFilter] = useState<FilterTier>('all');
   const [expandedBoss, setExpandedBoss] = useState<string | null>(null);
   const [inlineBossName, setInlineBossName] = useState<string | null>(null);
@@ -345,6 +347,17 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator 
     <div className="raid-boss-expanded-details">
       <div className="expanded-divider"></div>
       
+      {/* Raid Difficulty & Pokebattler Box (PLACED ABOVE WEAKNESSES AND COUNTERS) */}
+      <RaidDifficultyBox
+        bossName={boss.name}
+        tier={boss.tier}
+        playersRecommended={boss.playersRecommended || counters?.playersRecommended}
+        difficultyTier={boss.difficultyTier || counters?.difficultyTier}
+        difficultyNotes={boss.difficultyNotes || counters?.difficultyNotes}
+        pokebattlerUrl={boss.pokebattlerUrl || counters?.pokebattlerUrl}
+        lang={lang}
+      />
+
       {counters ? (
         <div className="raid-boss-counters-card no-border" style={{ paddingBottom: 0 }}>
           <div className="counters-boss-header pad-none">
@@ -391,6 +404,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator 
           </p>
         </div>
       )}
+
       {/* Direct copyable filter for recommended raid counters */}
       <DirectRaidFilterBox bossName={boss.name} lang={lang} onOpenFilterGenerator={onOpenFilterGenerator} />
     </div>

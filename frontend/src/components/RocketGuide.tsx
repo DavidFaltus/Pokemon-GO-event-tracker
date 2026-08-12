@@ -8,7 +8,7 @@ import { TypeBadge } from './EventCard';
 import { CounterItem } from './CounterItem';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { API_BASE_URL } from '../config';
-import { Zap, Users, Gift, Flame, Swords, Shield, MessageSquare, Gem, Moon, Glasses, Trophy } from 'lucide-react';
+import { Zap, Users, Gift, Flame, Swords, Shield, MessageSquare, Gem, Moon, Glasses, Trophy, BookOpen, ChevronRight } from 'lucide-react';
 import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
 import { resolveImage, getPokemonIconUrl, handlePokemonImageError, SHADOW_ICON_URL, handleShadowIconError } from '../utils/imageResolver';
 
@@ -81,6 +81,7 @@ const getLeaderIcon = (name: string, size = 16) => {
 
 interface RocketGuideProps {
   lang: Language;
+  onOpenGuide?: (slug: string) => void;
 }
 
 interface LineupPokemon {
@@ -189,7 +190,7 @@ const getGruntPhrase = (grunt: GruntData, lang: Language): string => {
   return lang === 'cs' ? grunt.phraseCs : grunt.phraseEn;
 };
 
-export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
+export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, onOpenGuide }) => {
   const [mode, setMode] = useState<ModeType>('leaders');
   const [selectedLeader, setSelectedLeader] = useState<string>('Giovanni');
   
@@ -363,6 +364,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang }) => {
     <div className="rocket-guide">
       <h1 className="tab-seo-title">{t.tabs_rocket}</h1>
       <p className="tab-seo-description">{(t as any).seo_rocket_desc}</p>
+
       {/* Mode Switcher */}
       <div className="mode-switcher">
         <button 

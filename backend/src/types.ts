@@ -72,6 +72,10 @@ export interface RaidCounters {
   minBoostedCp: number;
   maxBoostedCp: number;
   weatherBoosts: string[];
+  playersRecommended?: string;
+  difficultyTier?: 'solo' | 'duo' | 'trio' | 'group' | 'hard-group';
+  difficultyNotes?: { cs: string; en: string };
+  pokebattlerUrl?: string;
 }
 
 export interface ScrapedRaidBoss {
@@ -84,6 +88,10 @@ export interface ScrapedRaidBoss {
   weatherBoosts?: string[];
   types?: string[];
   counters?: RaidCounters | null;
+  playersRecommended?: string;
+  difficultyTier?: 'solo' | 'duo' | 'trio' | 'group' | 'hard-group';
+  difficultyNotes?: { cs: string; en: string };
+  pokebattlerUrl?: string;
 }
 
 export interface RocketMember {

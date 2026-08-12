@@ -1,5 +1,6 @@
 import { pokemonRankings } from '../data/pokemonRankings';
 import type { PokemonRankData, MoveData } from '../data/pokemonRankings';
+import { findRaidCounters } from '../data/raidCounters';
 
 // ─── LEGACY / ELITE TM MOVES ────────────────────────────────────────────────
 export const LEGACY_MOVES = new Set<string>([
@@ -511,4 +512,22 @@ export function getTopCountersFilterString(bossName: string, includeMoves: boole
   parts.push(uniqueIds.join(','));
 
   return parts.join('&');
+}
+
+/**
+ * Resolves accurate type weaknesses for any raid boss or Pokemon name.
+ * Uses raidCountersDb if present, otherwise calculates weaknesses dynamically from the Pokemon's types.
+ */
+export function getWeaknessesForPokemon(bossName: string): string[] {
+  if (!bossName) return ['Ghost', 'Dark', 'Bug'];
+  const matched = findRaidCounters(bossName);
+  if (matched && matched.weaknesses && matched.weaknesses.length > 0) {
+    return matched.weaknesses;
+  }
+  const types = getPokemonTypesByName(bossName);
+  const counterInfos = getCounterTypes(types);
+  if (counterInfos && counterInfos.length > 0) {
+    return counterInfos.map(c => c.multiplier >= 2 ? `${c.type} (2x)` : c.type);
+  }
+  return ['Ghost', 'Dark', 'Bug'];
 }

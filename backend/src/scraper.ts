@@ -513,10 +513,10 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     weatherBoosts: ["Deštivo (Rainy)"]
   },
   "groudon": {
-    bossName: "Groudon / Primal Groudon",
+    bossName: "Groudon",
     weaknesses: ["Water", "Grass", "Ice"],
-    megaCounters: ["Primal Kyogre", "Mega Swampert", "Mega Sceptile"],
-    advancedCounters: ["Kyogre (Origin Pulse)", "Kartana (Leaf Blade)", "Zarude (Power Whip)", "Baxcalibur (Avalanche)"],
+    megaCounters: ["Primal Kyogre", "Mega Swampert", "Mega Sceptile", "Mega Blastoise"],
+    advancedCounters: ["White Kyurem (Ice Burn)", "Kyogre (Origin Pulse)", "Shadow Mamoswine (Avalanche)", "Baxcalibur (Avalanche)", "Kartana (Razor Leaf)", "Black Kyurem (Freeze Shock)"],
     budgetCounters: ["Swampert (Hydro Cannon)", "Gyarados (Hydro Pump)", "Glaceon (Avalanche)", "Mamoswine (Avalanche)"],
     minCp: 2260,
     maxCp: 2351,
@@ -528,7 +528,7 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     bossName: "Rayquaza",
     weaknesses: ["Ice (2x)", "Dragon", "Rock", "Fairy"],
     megaCounters: ["Mega Glalie", "Mega Gardevoir", "Mega Abomasnow"],
-    advancedCounters: ["Mamoswine (Avalanche)", "Baxcalibur (Avalanche)", "Galarian Darmanitan (Avalanche)", "Kyurem (Glaciate)"],
+    advancedCounters: ["White Kyurem (Ice Burn)", "Mamoswine (Avalanche)", "Baxcalibur (Avalanche)", "Galarian Darmanitan (Avalanche)", "Black Kyurem (Freeze Shock)", "Kyurem (Glaciate)"],
     budgetCounters: ["Glaceon (Avalanche)", "Weavile (Avalanche)", "Dragonite (Outrage)", "Sylveon (Dazzling Gleam)"],
     minCp: 2102,
     maxCp: 2191,
@@ -2057,99 +2057,100 @@ export async function scrapePoGOHubRaidBosses(): Promise<ScrapedRaidBoss[]> {
 }
 
 export async function scrapeRaidBosses(scrapedEvents?: EventData[]): Promise<ScrapedRaidBoss[]> {
+  const bosses: ScrapedRaidBoss[] = [];
+
   // 1. Try Pokémon GO Hub first (up-to-date live source for all raid tiers)
   const pogoHubBosses = await scrapePoGOHubRaidBosses();
   if (pogoHubBosses.length >= 5) {
-    return pogoHubBosses;
+    bosses.push(...pogoHubBosses);
+  } else {
+    // 2. Fallback to LeekDuck
+    console.log('[scrapeRaidBosses] PoGO Hub returned incomplete data, falling back to LeekDuck...');
+    const url = 'https://leekduck.com/raid-bosses/';
+    let html = '';
+    try {
+      const response = await axios.get(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+      });
+      html = response.data;
+    } catch (err: any) {
+      console.warn(`[scrapeRaidBosses] Failed to fetch LeekDuck raid bosses page: ${err.message}`);
+    }
+    
+    const $ = cheerio.load(html || '<div></div>');
+
+    // Helper to parse card
+    const parseCard = (cardEl: any, tier: ScrapedRaidBoss['tier']) => {
+      const card = $(cardEl);
+      const name = card.find('.identity .name').text().trim();
+      if (!name) return;
+
+      const image = card.find('.boss-img img').attr('src') || '';
+      const canBeShiny = card.find('.shiny-icon').length > 0;
+      
+      // CP range (CP 429 - 470)
+      let cpRange = card.find('.cp-range').text().replace(/CP\s*/i, '').trim();
+      
+      // Boosted CP range
+      let boostedCpRange = card.find('.boosted-cp-row .boosted-cp').text().replace(/CP\s*/i, '').trim();
+      
+      // Weather Boosts
+      const weatherBoosts: string[] = [];
+      card.find('.weather-boosted span.weather-pill .label').each((_, label) => {
+        weatherBoosts.push($(label).text().trim());
+      });
+      
+      // Types
+      const types: string[] = [];
+      card.find('.boss-type span').each((_, typeSpan) => {
+        const typeText = $(typeSpan).find('.type-label').text().trim();
+        if (typeText) types.push(typeText);
+      });
+
+      const matchedCounters = findRaidCounters(name, types, cpRange, boostedCpRange, weatherBoosts);
+
+      bosses.push({
+        name,
+        tier,
+        image,
+        canBeShiny,
+        cpRange: cpRange || undefined,
+        boostedCpRange: boostedCpRange || undefined,
+        weatherBoosts: weatherBoosts.length ? weatherBoosts : undefined,
+        types: types.length ? types : undefined,
+        counters: matchedCounters
+      });
+    };
+
+    // Parse Regular Raids
+    $('.raid-bosses .tier').each((_, tierEl) => {
+      const tierHeader = $(tierEl).find('h2.header').text().trim().toLowerCase();
+      let tier: ScrapedRaidBoss['tier'] = '1';
+      if (tierHeader.includes('5-star')) tier = '5';
+      else if (tierHeader.includes('mega')) tier = 'mega';
+      else if (tierHeader.includes('3-star')) tier = '3';
+      else if (tierHeader.includes('1-star')) tier = '1';
+
+      $(tierEl).find('.card').each((_, cardEl) => {
+        parseCard(cardEl, tier);
+      });
+    });
+
+    // Parse Shadow Raids
+    $('.shadow-raid-bosses .tier').each((_, tierEl) => {
+      const tierHeader = $(tierEl).find('h2.header').text().trim().toLowerCase();
+      let tier: ScrapedRaidBoss['tier'] = 'shadow-1';
+      if (tierHeader.includes('5-star')) tier = 'shadow-5';
+      else if (tierHeader.includes('3-star')) tier = 'shadow-3';
+      else if (tierHeader.includes('1-star')) tier = 'shadow-1';
+
+      $(tierEl).find('.card').each((_, cardEl) => {
+        parseCard(cardEl, tier);
+      });
+    });
   }
-
-  // 2. Fallback to LeekDuck
-  console.log('[scrapeRaidBosses] PoGO Hub returned incomplete data, falling back to LeekDuck...');
-  const url = 'https://leekduck.com/raid-bosses/';
-  let html = '';
-  try {
-    const response = await axios.get(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-      }
-    });
-    html = response.data;
-  } catch (err: any) {
-    console.warn(`[scrapeRaidBosses] Failed to fetch LeekDuck raid bosses page: ${err.message}`);
-  }
-  
-  const $ = cheerio.load(html || '<div></div>');
-  const bosses: ScrapedRaidBoss[] = [];
-
-  // Helper to parse card
-  const parseCard = (cardEl: any, tier: ScrapedRaidBoss['tier']) => {
-    const card = $(cardEl);
-    const name = card.find('.identity .name').text().trim();
-    if (!name) return;
-
-    const image = card.find('.boss-img img').attr('src') || '';
-    const canBeShiny = card.find('.shiny-icon').length > 0;
-    
-    // CP range (CP 429 - 470)
-    let cpRange = card.find('.cp-range').text().replace(/CP\s*/i, '').trim();
-    
-    // Boosted CP range
-    let boostedCpRange = card.find('.boosted-cp-row .boosted-cp').text().replace(/CP\s*/i, '').trim();
-    
-    // Weather Boosts
-    const weatherBoosts: string[] = [];
-    card.find('.weather-boosted span.weather-pill .label').each((_, label) => {
-      weatherBoosts.push($(label).text().trim());
-    });
-    
-    // Types
-    const types: string[] = [];
-    card.find('.boss-type span').each((_, typeSpan) => {
-      const typeText = $(typeSpan).find('.type-label').text().trim();
-      if (typeText) types.push(typeText);
-    });
-
-    const matchedCounters = findRaidCounters(name, types, cpRange, boostedCpRange, weatherBoosts);
-
-    bosses.push({
-      name,
-      tier,
-      image,
-      canBeShiny,
-      cpRange: cpRange || undefined,
-      boostedCpRange: boostedCpRange || undefined,
-      weatherBoosts: weatherBoosts.length ? weatherBoosts : undefined,
-      types: types.length ? types : undefined,
-      counters: matchedCounters
-    });
-  };
-
-  // 1. Parse Regular Raids
-  $('.raid-bosses .tier').each((_, tierEl) => {
-    const tierHeader = $(tierEl).find('h2.header').text().trim().toLowerCase();
-    let tier: ScrapedRaidBoss['tier'] = '1';
-    if (tierHeader.includes('5-star')) tier = '5';
-    else if (tierHeader.includes('mega')) tier = 'mega';
-    else if (tierHeader.includes('3-star')) tier = '3';
-    else if (tierHeader.includes('1-star')) tier = '1';
-
-    $(tierEl).find('.card').each((_, cardEl) => {
-      parseCard(cardEl, tier);
-    });
-  });
-
-  // 2. Parse Shadow Raids
-  $('.shadow-raid-bosses .tier').each((_, tierEl) => {
-    const tierHeader = $(tierEl).find('h2.header').text().trim().toLowerCase();
-    let tier: ScrapedRaidBoss['tier'] = 'shadow-1';
-    if (tierHeader.includes('5-star')) tier = 'shadow-5';
-    else if (tierHeader.includes('3-star')) tier = 'shadow-3';
-    else if (tierHeader.includes('1-star')) tier = 'shadow-1';
-
-    $(tierEl).find('.card').each((_, cardEl) => {
-      parseCard(cardEl, tier);
-    });
-  });
 
   // 3. Smart Sync with Active Raid Events (removes stale ended bosses & inserts current active bosses)
   try {
@@ -2260,7 +2261,160 @@ export async function scrapeRaidBosses(scrapedEvents?: EventData[]): Promise<Scr
     }
   }
 
+  // D. Enrich with Player Difficulty Estimator & Pokebattler URL
+  for (const boss of finalBosses) {
+    const diff = calculateRaidDifficulty(boss.name, boss.tier, boss.counters);
+    boss.playersRecommended = boss.playersRecommended || diff.playersRecommended;
+    boss.difficultyTier = boss.difficultyTier || diff.difficultyTier;
+    boss.difficultyNotes = boss.difficultyNotes || diff.difficultyNotes;
+    boss.pokebattlerUrl = boss.pokebattlerUrl || diff.pokebattlerUrl;
+    if (boss.counters) {
+      boss.counters.playersRecommended = boss.counters.playersRecommended || diff.playersRecommended;
+      boss.counters.difficultyTier = boss.counters.difficultyTier || diff.difficultyTier;
+      boss.counters.difficultyNotes = boss.counters.difficultyNotes || diff.difficultyNotes;
+      boss.counters.pokebattlerUrl = boss.counters.pokebattlerUrl || diff.pokebattlerUrl;
+    }
+  }
+
   return finalBosses;
+}
+
+export function calculateRaidDifficulty(
+  bossName: string,
+  tier: ScrapedRaidBoss['tier'],
+  counters?: RaidCounters | null
+): {
+  playersRecommended: string;
+  difficultyTier: 'solo' | 'duo' | 'trio' | 'group' | 'hard-group';
+  difficultyNotes: { cs: string; en: string };
+  pokebattlerUrl: string;
+} {
+  const cleanName = bossName.trim().toUpperCase().replace(/[^A-Z0-9]/g, '_');
+  let levelParam = 'RAID_LEVEL_5';
+  if (tier === '1') levelParam = 'RAID_LEVEL_1';
+  else if (tier === '3') levelParam = 'RAID_LEVEL_3';
+  else if (tier === 'mega') levelParam = 'RAID_LEVEL_MEGA';
+  else if (tier === 'shadow-1') levelParam = 'RAID_LEVEL_SHADOW_1';
+  else if (tier === 'shadow-3') levelParam = 'RAID_LEVEL_SHADOW_3';
+  else if (tier === 'shadow-5') levelParam = 'RAID_LEVEL_SHADOW_5';
+
+  const pokebattlerUrl = `https://www.pokebattler.com/raids/defenders/${cleanName}/levels/${levelParam}/attackers/levels/40/strategies/CINEMATIC_ATTACK_WHEN_POSSIBLE/DEFENSE_RANDOM_MC`;
+  const lower = bossName.toLowerCase().trim();
+
+  // Tier 1 & Shadow Tier 1
+  if (tier === '1' || tier === 'shadow-1') {
+    return {
+      playersRecommended: '1 hráč (Solo)',
+      difficultyTier: 'solo',
+      difficultyNotes: {
+        cs: 'Velmi snadný raid. Zvládne 1 hráč s jakýmikoliv běžnými pokémony.',
+        en: 'Very easy raid. Can be soloed by 1 player with any standard Pokémon.'
+      },
+      pokebattlerUrl
+    };
+  }
+
+  // Tier 3 & Shadow Tier 3
+  if (tier === '3' || tier === 'shadow-3') {
+    if (lower.includes('shuckle') || lower.includes('blissey')) {
+      return {
+        playersRecommended: '2–3 hráči',
+        difficultyTier: 'trio',
+        difficultyNotes: {
+          cs: 'Nezvykle vysoká obrana! Pro sólo vyžaduje špičkové pokémony na úrovni 40+.',
+          en: 'Unusually high Defense! Requires top-tier Level 40+ counters for solo attempts.'
+        },
+        pokebattlerUrl
+      };
+    }
+    return {
+      playersRecommended: '1 hráč (Solo)',
+      difficultyTier: 'solo',
+      difficultyNotes: {
+        cs: 'Vhodné pro 1 hráče s doporučenými countery na úrovni 30+.',
+        en: 'Soloable by 1 player using recommended counters at Level 30+.'
+      },
+      pokebattlerUrl
+    };
+  }
+
+  // 1. Extreme Raids (Primal, Mega Rayquaza, Mega Latios/Latias, Shadow Lugia, Shadow Mewtwo)
+  if (lower.includes('primal') || lower.includes('shadow lugia') || lower.includes('shadow mewtwo') || lower.includes('mega rayquaza') || lower.includes('mega latios') || lower.includes('mega latias')) {
+    return {
+      playersRecommended: '5+ hráčů',
+      difficultyTier: 'hard-group',
+      difficultyNotes: {
+        cs: 'Extrémně obtížný raid! Vyžaduje alespoň 5–8 hráčů s nejlepšími Mega evolucemi, Purified Gems a Party Play.',
+        en: 'Extremely difficult raid! Recommend at least 5–8 players with Megas, Purified Gems, and Party Play.'
+      },
+      pokebattlerUrl
+    };
+  }
+
+  // 2. High Defense / Tank Legendaries (Regis, Deoxys-Defense, Lugia, Cresselia)
+  if (lower.includes('registeel') || lower.includes('regirock') || lower.includes('regice') || lower.includes('regigigas') || lower.includes('deoxys') || lower.includes('cresselia') || lower.includes('lugia') || lower.includes('armored mewtwo')) {
+    return {
+      playersRecommended: '3–5 hráčů',
+      difficultyTier: 'group',
+      difficultyNotes: {
+        cs: 'Vysoká obrana (Defense stat)! Doporučujeme skupinu 3–5 hráčů s countery L35+.',
+        en: 'High Defense stat! Recommend a group of 3–5 players with L35+ counters.'
+      },
+      pokebattlerUrl
+    };
+  }
+
+  // 3. 4x Weakness 5-Star Bosses (Kartana, Rayquaza, Genesect, Heatran, Landorus, Guzzlord, Nihilego, Terrakion, Virizion, Moltres, Articuno)
+  const is4xWeakness = lower.includes('kartana') || lower.includes('rayquaza') || lower.includes('landorus') || lower.includes('genesect') || lower.includes('heatran') || lower.includes('guzzlord') || lower.includes('nihilego') || lower.includes('terrakion') || lower.includes('virizion') || lower.includes('moltres') || lower.includes('articuno') || lower.includes('ho-oh');
+
+  if (is4xWeakness) {
+    return {
+      playersRecommended: '1–2 hráči (Duo)',
+      difficultyTier: 'duo',
+      difficultyNotes: {
+        cs: 'Tento boss má 4x typovou slabost! Dva hráči s countery L35+ ho porazí s velkou časovou rezervou. Pro pokročilé sólo vyžaduje Mega evoluce.',
+        en: 'This boss has a 4x type weakness! Duoable with L35+ counters with plenty of time remaining.'
+      },
+      pokebattlerUrl
+    };
+  }
+
+  // 4. Shadow 5-Star Raids (Raikou, Entei, Suicune, Zapdos etc.)
+  if (tier === 'shadow-5' || lower.includes('shadow raikou') || lower.includes('shadow entei') || lower.includes('shadow suicune') || lower.includes('shadow zapdos')) {
+    return {
+      playersRecommended: '2–3 hráči (Trio)',
+      difficultyTier: 'trio',
+      difficultyNotes: {
+        cs: 'Tento Shadow 5* raid je zvládnutelný ve 3 lidech (případně ve 2 se silnými Mega countery a Purified Gems).',
+        en: 'This Shadow 5* raid is manageable with 3 players (or 2 with strong Megas and Purified Gems).'
+      },
+      pokebattlerUrl
+    };
+  }
+
+  // 5. Regular Mega Raids (Mega Charizard, Mega Lucario, Mega Gardevoir, Mega Tyranitar, Mega Swampert, Mega Gengar etc.)
+  if (tier === 'mega') {
+    return {
+      playersRecommended: '2–3 hráči',
+      difficultyTier: 'trio',
+      difficultyNotes: {
+        cs: 'Zvládnutelné ve 2–3 hráčích se silnými countery a Mega evolucemi.',
+        en: 'Manageable with 2–3 players using strong counters and Megas.'
+      },
+      pokebattlerUrl
+    };
+  }
+
+  // 6. Standard 5-Star Legendary Raids (Xerneas, Yveltal, Dialga, Palkia, Reshiram, Zekrom, Kyurem, Giratina, Darkrai, Mewtwo, Kyogre, Groudon)
+  return {
+    playersRecommended: '2–3 hráči',
+    difficultyTier: 'trio',
+    difficultyNotes: {
+      cs: 'Zvládnutelné ve 2–3 hráčích se silnými typovými countery L35+ a Mega evolucemi (ve 3-4 pro jistotu).',
+      en: 'Manageable with 2–3 players using strong L35+ counters and Megas (3-4 for safety).'
+    },
+    pokebattlerUrl
+  };
 }
 
 export async function scrapeRocketLineups(): Promise<{

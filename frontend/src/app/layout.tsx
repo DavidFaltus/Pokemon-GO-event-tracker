@@ -61,6 +61,12 @@ export default function RootLayout({
         <link rel="preconnect" href="https://img.pokemondb.net" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
         <link rel="dns-prefetch" href="https://cdn.leekduck.com" />
+        {/* Google AdSense - native async script to avoid data-nscript attribute warning from next/script */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8800056915088711"
+          crossOrigin="anonymous"
+        ></script>
       </head>
       <body className={outfit.className}>
         {/* Google Tag (gtag.js) - afterInteractive loads analytics early without blocking initial render */}
@@ -78,12 +84,6 @@ export default function RootLayout({
             gtag('config', 'G-MKGYZSS7GK');
           `}
         </Script>
-        {/* Google AdSense - lazyOnload strategy to prevent render-blocking on page load */}
-        <Script
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8800056915088711"
-          strategy="lazyOnload"
-          crossOrigin="anonymous"
-        />
         <div id="root">
           <NavigatorProvider>
             {children}

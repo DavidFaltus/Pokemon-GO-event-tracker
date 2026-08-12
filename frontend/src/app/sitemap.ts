@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { API_BASE_URL } from '@/config';
+import { GUIDES_DATA } from '@/data/guidesData';
 
 export const dynamic = 'force-static';
 
@@ -38,6 +39,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 1.0,
       },
       {
+        url: `${baseUrl}/${lang}/guides`,
+        lastModified: new Date(),
+        changeFrequency: 'daily',
+        priority: 0.9,
+      },
+      {
         url: `${baseUrl}/${lang}/raids`,
         lastModified: new Date(),
         changeFrequency: 'daily',
@@ -74,6 +81,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
       }
     );
+
+    // Guide detail pages
+    GUIDES_DATA.forEach((guide) => {
+      routes.push({
+        url: `${baseUrl}/${lang}/guides/${guide.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly',
+        priority: 0.85,
+      });
+    });
 
     // Event detail pages
     eventSlugs.forEach((slug) => {

@@ -1346,8 +1346,8 @@ export const pokemonRankings: PokemonRankData[] = [
     name: "Black Kyurem",
     pokedexId: 646,
     types: ["Dragon","Ice"],
-    attack: 246, defense: 170, stamina: 245, maxCp: 4041, pveScore: 87, dps: 25.15,
-    bestFastMove: { name: "Shadow Claw", type: "Ghost" },
+    attack: 310, defense: 201, stamina: 245, maxCp: 5206, pveScore: 99, dps: 32.26,
+    bestFastMove: { name: "Dragon Tail", type: "Dragon" },
     bestChargedMove: { name: "Freeze Shock", type: "Ice" }
   },
   {
@@ -1564,8 +1564,8 @@ export const pokemonRankings: PokemonRankData[] = [
     name: "White Kyurem",
     pokedexId: 646,
     types: ["Dragon","Ice"],
-    attack: 246, defense: 170, stamina: 245, maxCp: 4041, pveScore: 78, dps: 22.37,
-    bestFastMove: { name: "Steel Wing", type: "Steel" },
+    attack: 310, defense: 201, stamina: 245, maxCp: 5206, pveScore: 100, dps: 35.54,
+    bestFastMove: { name: "Ice Fang", type: "Ice" },
     bestChargedMove: { name: "Ice Burn", type: "Ice" }
   },
   {

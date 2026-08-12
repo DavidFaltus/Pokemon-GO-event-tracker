@@ -15,6 +15,7 @@ import { resolveImage, handlePokemonImageError, getBasePokemonName, getBasePokem
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { getRegionalInfo } from '../utils/regionalHelper';
 import { DirectRaidFilterBox } from './DirectRaidFilterBox';
+import { RaidDifficultyBox } from './RaidDifficultyBox';
 import { CommunityDayInfographic } from './CommunityDayInfographic';
 import { SpotlightInfographic } from './SpotlightInfographic';
 import { RaidInfographic } from './RaidInfographic';
@@ -1379,6 +1380,16 @@ export const EventCard: React.FC<EventCardProps> = ({
                 </h4>
                 {matchedRaidCounters.map(counters => (
                   <div key={counters.bossName} className="raid-boss-counters-card">
+                    {/* Player Difficulty & Pokebattler link (PLACED ABOVE WEAKNESSES AND COUNTERS) */}
+                    <RaidDifficultyBox
+                      bossName={counters.bossName}
+                      playersRecommended={counters.playersRecommended}
+                      difficultyTier={counters.difficultyTier}
+                      difficultyNotes={counters.difficultyNotes}
+                      pokebattlerUrl={counters.pokebattlerUrl}
+                      lang={lang}
+                    />
+
                     <div className="counters-boss-header">
                       <h5>{getPokemonName(counters.bossName, lang)}</h5>
                       <div className="weakness-list">

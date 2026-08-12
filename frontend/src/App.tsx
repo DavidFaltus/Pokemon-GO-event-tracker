@@ -14,7 +14,9 @@ import { API_BASE_URL } from './config';
 import { AdContainer } from './components/AdContainer';
 import { setPokemonIconOverrides } from './utils/imageResolver';
 import { useAppNavigate } from './hooks/useAppNavigate';
-import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy, Filter, LayoutList } from 'lucide-react';
+import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy, Filter, LayoutList, BookOpen } from 'lucide-react';
+import { Footer } from './components/Footer';
+import { LegalModals, type LegalModalType } from './components/LegalModals';
 
 // Lazy-loaded tabs - loaded only when user navigates to them (reduces initial bundle ~40%)
 const RaidView = lazy(() => import('./components/RaidView').then(m => ({ default: m.RaidView })));
@@ -25,51 +27,12 @@ const PokemonRankingsView = lazy(() => import('./components/PokemonRankingsView'
 const FilterGeneratorView = lazy(() => import('./components/FilterGeneratorView').then(m => ({ default: m.FilterGeneratorView })));
 const AdminPanelView = lazy(() => import('./components/AdminPanelView').then(m => ({ default: m.AdminPanelView })));
 const MonthSummaryInfographic = lazy(() => import('./components/MonthSummaryInfographic').then(m => ({ default: m.MonthSummaryInfographic })));
+import { PokeballLogo } from './components/PokeballLogo';
+
+const GuidesView = lazy(() => import('./components/GuidesView').then(m => ({ default: m.GuidesView })));
 
 
-type TabType = 'events' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin';
-
-const PokeballLogo = ({ size = 24 }: { size?: number }) => {
-  const uid = 'pbl';
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 100 100"
-      width={size}
-      height={size}
-      style={{ flexShrink: 0, marginRight: '8px' }}
-      aria-label="PoGo Events logo"
-    >
-      <defs>
-        <linearGradient id={`${uid}-top`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#ff4d4d" />
-          <stop offset="100%" stopColor="#ef4444" />
-        </linearGradient>
-        <linearGradient id={`${uid}-bot`} x1="0%" y1="100%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#ffffff" />
-          <stop offset="100%" stopColor="#cbd5e1" />
-        </linearGradient>
-        <filter id={`${uid}-glow`} x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="2.5" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-        <clipPath id={`${uid}-clip`}>
-          <circle cx="50" cy="50" r="42" />
-        </clipPath>
-      </defs>
-      <circle cx="50" cy="50" r="46" stroke="#ef4444" strokeWidth="1.5" strokeOpacity="0.5" fill="none" filter={`url(#${uid}-glow)`} />
-      <circle cx="50" cy="50" r="42" fill={`url(#${uid}-bot)`} stroke="#0f172a" strokeWidth="1.5" />
-      <g clipPath={`url(#${uid}-clip)`}>
-        <path d="M 8,50 A 42,42 0 0,1 92,50 Z" fill={`url(#${uid}-top)`} />
-      </g>
-      <line x1="8" y1="50" x2="92" y2="50" stroke="#090d16" strokeWidth="5.5" />
-      <circle cx="50" cy="50" r="14" fill="#090d16" />
-      <circle cx="50" cy="50" r="10" fill="#ffffff" stroke="#38bdf8" strokeWidth="2" />
-      <circle cx="50" cy="50" r="4.5" fill="#38bdf8" filter={`url(#${uid}-glow)`} />
-      <circle cx="50" cy="50" r="3" fill="#ffffff" />
-    </svg>
-  );
-};
+type TabType = 'events' | 'guides' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin';
 
 
 // Calculate difference between target timezone and browser local timezone
@@ -297,6 +260,7 @@ const getTabFromUrlPath = (pathname: string): TabType => {
     : segments;
   const first = tabSegments[0] || '';
   if (first === 'admin') return 'admin';
+  if (first === 'guides' || first === 'guide' || first === 'pruvodce') return 'guides';
   if (first === 'raids' || first === 'raid') return 'raid';
   if (first === 'rocket') return 'rocket';
   if (first === 'rankings' || first === 'ranking') return 'ranking';
@@ -319,6 +283,7 @@ const getUrlPathForTab = (tab: TabType, l: Language, eventID?: string | null): s
     return `${prefix}/events/${eventID}`;
   }
   switch (tab) {
+    case 'guides': return `${prefix}/guides`;
     case 'raid': return `${prefix}/raids`;
     case 'rocket': return `${prefix}/rocket`;
     case 'ranking': return `${prefix}/rankings`;
@@ -333,6 +298,7 @@ const getUrlPathForTab = (tab: TabType, l: Language, eventID?: string | null): s
 
 const TAB_TITLES: Record<TabType, Record<string, string>> = {
   events: { cs: 'Události', en: 'Events', ja: 'イベント', ru: 'События' },
+  guides: { cs: 'Průvodce & Články', en: 'Guides & Articles', ja: 'ガイド & 記事', ru: 'Гайды и Статьи' },
   raid: { cs: 'Raid Bossi', en: 'Raid Bosses', ja: 'レイドボス', ru: 'Рейд-боссы' },
   rocket: { cs: 'Team GO Rocket', en: 'Team GO Rocket', ja: 'Team GO Rocket', ru: 'Team GO Rocket' },
   ditto: { cs: 'Ditto Přestrojení', en: 'Ditto Disguises', ja: 'メタモン変装', ru: 'Маскировки Дитто' },
@@ -365,10 +331,11 @@ const updateHeadMeta = (tab: TabType, lang: string, eventId?: string | null): vo
   link.href = canonicalUrl;
 };
 
-function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?: TabType } = {}) {
+function App({ initialLang, initialTab, initialArticleSlug }: { initialLang?: Language; initialTab?: TabType; initialArticleSlug?: string } = {}) {
   const [activeTab, setActiveTab] = useState<TabType>(initialTab || 'events');
   const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
   const [lang, setLang] = useState<Language>(initialLang || 'en');
+  const [legalModal, setLegalModal] = useState<LegalModalType>(null);
   const navigate = useAppNavigate();
   // Set to true once AdSense approves the website to restore ad placements
   const ENABLE_ADS = false;
@@ -1038,7 +1005,7 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
             <span className="nav-icon"><Calendar size={20} /></span>
             <span className="nav-text">{t.tabs_events}</span>
           </a>
-          
+
           <a 
             href={getUrlPathForTab('raid', lang)} 
             className={`sidebar-nav-item ${activeTab === 'raid' ? 'active' : ''}`} 
@@ -1091,6 +1058,15 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
           >
             <span className="nav-icon"><Filter size={20} /></span>
             <span className="nav-text">{t.tabs_filter}</span>
+          </a>
+
+          <a 
+            href={getUrlPathForTab('guides', lang)} 
+            className={`sidebar-nav-item ${activeTab === 'guides' ? 'active' : ''}`} 
+            onClick={(e) => { e.preventDefault(); changeTab('guides'); }}
+          >
+            <span className="nav-icon"><BookOpen size={20} /></span>
+            <span className="nav-text">{t.tabs_guides}</span>
           </a>
 
           <a 
@@ -1363,15 +1339,21 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
                 )}
 
 
+                {activeTab === 'guides' && (
+                  <div className="tab-content guides-tab">
+                    <GuidesView lang={lang} initialArticleSlug={initialArticleSlug} />
+                  </div>
+                )}
+
                 {activeTab === 'raid' && (
                   <div className="tab-content raid-tab">
-                    <RaidView events={getAdjustedEvents()} lang={lang} onOpenFilterGenerator={handleOpenFilterGenerator} />
+                    <RaidView events={getAdjustedEvents()} lang={lang} onOpenFilterGenerator={handleOpenFilterGenerator} onOpenGuide={() => changeTab('guides')} />
                   </div>
                 )}
 
                 {activeTab === 'rocket' && (
                   <div className="tab-content rocket-tab">
-                    <RocketGuide lang={lang} />
+                    <RocketGuide lang={lang} onOpenGuide={() => changeTab('guides')} />
                   </div>
                 )}
 
@@ -1420,6 +1402,9 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
                     <AdminPanelView lang={lang} onBack={() => setActiveTab('events')} />
                   </div>
                 )}
+
+                {/* Global Footer (Rendered at bottom of scrollable main container) */}
+                <Footer lang={lang} onOpenTab={changeTab} onOpenLegalModal={setLegalModal} />
               </>
               </Suspense>
             )}
@@ -1439,47 +1424,49 @@ function App({ initialLang, initialTab }: { initialLang?: Language; initialTab?:
           )}
         </div>
 
-        {/* Mobile Bottom Navigation Bar (Hidden on Desktop) */}
+        {/* Mobile Bottom Navigation Bar (Fixed to bottom) */}
         <nav className="bottom-nav">
           <a href={getUrlPathForTab('events', lang)} className={`nav-item ${activeTab === 'events' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('events'); }}>
-            <span className="nav-icon"><Calendar size={20} /></span>
+            <span className="nav-icon"><Calendar size={18} /></span>
             <span className="nav-text">{t.tabs_events}</span>
           </a>
-          
+
           <a href={getUrlPathForTab('raid', lang)} className={`nav-item ${activeTab === 'raid' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('raid'); }}>
-            <span className="nav-icon"><Swords size={20} /></span>
+            <span className="nav-icon"><Swords size={18} /></span>
             <span className="nav-text">{t.tabs_raid}</span>
           </a>
 
           <a href={getUrlPathForTab('rocket', lang)} className={`nav-item ${activeTab === 'rocket' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('rocket'); }}>
-            <span className="nav-icon"><Shield size={20} /></span>
+            <span className="nav-icon"><Shield size={18} /></span>
             <span className="nav-text">{t.tabs_rocket}</span>
           </a>
 
           <a href={getUrlPathForTab('ditto', lang)} className={`nav-item ${activeTab === 'ditto' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('ditto'); }}>
-            <span className="nav-icon"><Sparkles size={20} /></span>
+            <span className="nav-icon"><Sparkles size={18} /></span>
             <span className="nav-text">{t.tabs_ditto}</span>
           </a>
 
           <a href={getUrlPathForTab('eggs', lang)} className={`nav-item ${activeTab === 'eggs' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('eggs'); }}>
-            <span className="nav-icon"><Egg size={20} /></span>
+            <span className="nav-icon"><Egg size={18} /></span>
             <span className="nav-text">{t.tabs_eggs}</span>
           </a>
 
           <a href={getUrlPathForTab('ranking', lang)} className={`nav-item ${activeTab === 'ranking' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('ranking'); }}>
-            <span className="nav-icon"><Trophy size={20} /></span>
+            <span className="nav-icon"><Trophy size={18} /></span>
             <span className="nav-text">{t.tabs_ranking}</span>
           </a>
 
-          <a 
-            href={getUrlPathForTab('filter', lang)}
-            className={`nav-item ${activeTab === 'filter' ? 'active' : ''}`} 
-            onClick={(e) => { e.preventDefault(); changeTab('filter'); }}
-          >
-            <span className="nav-icon"><Filter size={20} /></span>
-            <span className="nav-text">{t.tabs_filter}</span>
+          <a href={getUrlPathForTab('filter', lang)} className={`nav-item ${activeTab === 'filter' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('filter'); }}>
+            <span className="nav-icon"><Filter size={18} /></span>
+            <span className="nav-text">
+              <span className="full-filter-label">{t.tabs_filter}</span>
+              <span className="short-filter-label">Filter</span>
+            </span>
           </a>
         </nav>
+
+        {/* Legal Modals (About, Privacy, Terms, Disclaimer, Contact) */}
+        <LegalModals modalType={legalModal} lang={lang} onClose={() => setLegalModal(null)} />
       </div>
     </div>
   );
