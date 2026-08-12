@@ -30,6 +30,51 @@ const EggIcon = ({ size = 16 }: { size?: number }) => (
   </svg>
 );
 
+export function shouldDisableExternalLinks(event?: EventData | null): boolean {
+  if (!event) return false;
+  const type = (event.eventType || '').toLowerCase();
+  const id = (event.eventID || '').toLowerCase();
+  const name = (event.name || '').toLowerCase();
+
+  const disabledTypes = [
+    'raid-hour',
+    'raid-battles',
+    'raid-rotation',
+    'raid-day',
+    'raid-weekend',
+    'pokemon-spotlight-hour',
+    'spotlight-hour',
+    'max-monday',
+    'max-mondays',
+    'dynamax-monday',
+    'dynamax-mondays',
+    'go-battle-league',
+    'pvp',
+    'pvp-event'
+  ];
+
+  if (disabledTypes.includes(type)) return true;
+
+  const disabledKeywords = [
+    'raid hour',
+    'raid rotation',
+    'spotlight hour',
+    'dynamax monday',
+    'max monday',
+    'great league',
+    'master league',
+    'ultra league',
+    'little cup',
+    'single type cup'
+  ];
+
+  if (disabledKeywords.some(kw => id.includes(kw) || name.includes(kw))) {
+    return true;
+  }
+
+  return false;
+}
+
 export interface EventData {
   eventID: string;
   name: string;
@@ -689,10 +734,11 @@ export const EventCard: React.FC<EventCardProps> = ({
   }, [isExpanded, useInline]);
 
   const renderExpandedDetails = () => {
+    const isLinkDisabled = shouldDisableExternalLinks(event);
     const officialTarget = event.officialLink || (showOfficial && officialUrl !== event.link ? officialUrl : '');
-    const hasOfficial = Boolean(officialTarget);
-    const secondaryTarget = event.secondaryLink || (!hasOfficial ? event.link : '');
-    const hasSecondary = Boolean(secondaryTarget && secondaryTarget !== officialTarget);
+    const hasOfficial = !isLinkDisabled && Boolean(officialTarget);
+    const secondaryTarget = event.secondaryLink || (!hasOfficial && !isLinkDisabled ? event.link : '');
+    const hasSecondary = !isLinkDisabled && Boolean(secondaryTarget && secondaryTarget !== officialTarget);
 
     return (
       <CardErrorBoundary fallbackMessage={lang === 'cs' ? 'Chyba při zobrazení detailu události' : 'Error rendering event details'}>
@@ -870,17 +916,33 @@ export const EventCard: React.FC<EventCardProps> = ({
                         <div className="cd-spawns-section">
                           <h5>{t.details_spawns}</h5>
                           <div className="cd-spawns-flex">
-                            <div className="cd-spawn-card">
-                              <img 
-                                src={resolveImage(dexImage, event.eventType, featuredPokemon)} 
-                                alt={featuredPokemon} 
-                                className="cd-spawn-img" 
-                                onError={(e) => {
-                                  handlePokemonImageError(e.target as HTMLImageElement, featuredPokemon);
-                                }}
-                              />
-                              <span className="cd-spawn-name">{featuredPokemon}</span>
-                              <span className="shiny-badge-mini">✨ Shiny Rate ~1:25</span>
+                            <div className="cd-spawn-card-pair">
+                              <div className="cd-spawn-sprite-item">
+                                <img 
+                                  src={resolveImage(dexImage, event.eventType, featuredPokemon, false)} 
+                                  alt={featuredPokemon} 
+                                  className="cd-spawn-img" 
+                                  onError={(e) => {
+                                    handlePokemonImageError(e.target as HTMLImageElement, featuredPokemon, false);
+                                  }}
+                                />
+                                <span className="cd-sprite-tag normal">Normal</span>
+                              </div>
+                              <div className="cd-spawn-sprite-item">
+                                <img 
+                                  src={resolveImage(dexImage, event.eventType, featuredPokemon, true)} 
+                                  alt={`${featuredPokemon} Shiny`} 
+                                  className="cd-spawn-img shiny-glow" 
+                                  onError={(e) => {
+                                    handlePokemonImageError(e.target as HTMLImageElement, featuredPokemon, true);
+                                  }}
+                                />
+                                <span className="cd-sprite-tag shiny">✨ Shiny</span>
+                              </div>
+                              <div className="cd-spawn-info-meta">
+                                <span className="cd-spawn-name">{getPokemonName(featuredPokemon, lang)}</span>
+                                <span className="shiny-badge-mini">✨ Shiny Rate ~1:25</span>
+                              </div>
                             </div>
                             {cd?.shinies && cd.shinies.length > 0 && (
                               <div className="cd-shiny-family">
@@ -1502,13 +1564,17 @@ export const EventCard: React.FC<EventCardProps> = ({
               {getEventTypeLabel(event.eventType)}
             </span>
             <h3 className="event-title">
-              <a 
-                href={`/${lang}/events/${event.eventID}`} 
-                onClick={(e) => { e.preventDefault(); handleCardClick(); }}
-                style={{ color: 'inherit', textDecoration: 'none' }}
-              >
-                {event.name}
-              </a>
+              {shouldDisableExternalLinks(event) ? (
+                <span style={{ color: 'inherit' }}>{event.name}</span>
+              ) : (
+                <a 
+                  href={`/${lang}/events/${event.eventID}`} 
+                  onClick={(e) => { e.preventDefault(); handleCardClick(); }}
+                  style={{ color: 'inherit', textDecoration: 'none' }}
+                >
+                  {event.name}
+                </a>
+              )}
             </h3>
             <div className="event-time-info">
               <span className="time-date" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
@@ -1559,12 +1625,16 @@ export const EventCard: React.FC<EventCardProps> = ({
                   {getEventTypeLabel(event.eventType)}
                 </span>
                 <h3 className="event-title">
-                  <a 
-                    href={`/${lang}/events/${event.eventID}`} 
-                    style={{ color: 'inherit', textDecoration: 'none' }}
-                  >
-                    {event.name}
-                  </a>
+                  {shouldDisableExternalLinks(event) ? (
+                    <span style={{ color: 'inherit' }}>{event.name}</span>
+                  ) : (
+                    <a 
+                      href={`/${lang}/events/${event.eventID}`} 
+                      style={{ color: 'inherit', textDecoration: 'none' }}
+                    >
+                      {event.name}
+                    </a>
+                  )}
                 </h3>
                 <div className="event-time-info">
                   <span className="time-date" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>

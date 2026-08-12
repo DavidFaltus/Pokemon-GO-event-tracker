@@ -994,10 +994,43 @@ body.light-mode .modal-close-btn {
   width: 90px;
 }
 
+.cd-spawn-card-pair {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+.cd-spawn-sprite-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.cd-spawn-info-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 4px;
+}
+
 .cd-spawn-img {
-  width: 50px;
-  height: 50px;
+  width: 55px;
+  height: 55px;
   object-fit: contain;
+}
+
+.cd-spawn-img.shiny-glow {
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.6));
 }
 
 .cd-spawn-name {

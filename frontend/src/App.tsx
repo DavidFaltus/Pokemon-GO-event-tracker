@@ -15,7 +15,7 @@ import { AdContainer } from './components/AdContainer';
 import { setPokemonIconOverrides } from './utils/imageResolver';
 import { useAppNavigate } from './hooks/useAppNavigate';
 import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy, Filter, LayoutList, BookOpen } from 'lucide-react';
-import { Footer } from './components/Footer';
+import { Footer, InstagramLogo, TikTokLogo } from './components/Footer';
 import { LegalModals, type LegalModalType } from './components/LegalModals';
 
 // Lazy-loaded tabs - loaded only when user navigates to them (reduces initial bundle ~40%)
@@ -1119,23 +1119,33 @@ function App({ initialLang, initialTab, initialArticleSlug }: { initialLang?: La
               Leek Duck
             </a>.
           </p>
-          <a 
-            href="/privacy-policy.html" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            style={{ 
-              fontSize: '11px', 
-              color: 'var(--text-muted)', 
-              textDecoration: 'underline',
-              transition: 'color 0.2s',
-              fontWeight: '600',
-              marginTop: '4px'
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.color = 'var(--accent-color)')}
-            onMouseOut={(e) => (e.currentTarget.style.color = 'var(--text-muted)')}
-          >
-            {lang === 'cs' ? 'Ochrana soukromí & Právní info' : 'Privacy Policy & Disclaimer'}
-          </a>
+          <div className="sidebar-social-flex" style={{ display: 'flex', gap: '10px', marginTop: '8px', justifyContent: 'center', alignItems: 'center' }}>
+            <a 
+              href="https://www.instagram.com/pogoevents/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              title="Instagram @pogoevents"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#cbd5e1', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s' }}
+              onMouseOver={(e) => (e.currentTarget.style.color = '#38bdf8')}
+              onMouseOut={(e) => (e.currentTarget.style.color = '#cbd5e1')}
+            >
+              <InstagramLogo size={13} color="#ffffff" />
+              <span>Instagram</span>
+            </a>
+            <span style={{ color: 'var(--border-color)', fontSize: '10px' }}>•</span>
+            <a 
+              href="https://www.tiktok.com/@pogoevents2?lang=en" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              title="TikTok @pogoevents2"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#cbd5e1', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s' }}
+              onMouseOver={(e) => (e.currentTarget.style.color = '#38bdf8')}
+              onMouseOut={(e) => (e.currentTarget.style.color = '#cbd5e1')}
+            >
+              <TikTokLogo size={13} color="#ffffff" />
+              <span>TikTok</span>
+            </a>
+          </div>
         </div>
       </aside>
 

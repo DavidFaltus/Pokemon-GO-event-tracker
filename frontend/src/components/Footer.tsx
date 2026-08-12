@@ -11,6 +11,20 @@ interface FooterProps {
   onOpenLegalModal: (type: LegalModalType) => void;
 }
 
+export const InstagramLogo = ({ size = 15, color = '#ffffff' }: { size?: number; color?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, display: 'inline-block', verticalAlign: 'middle' }}>
+    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+    <circle cx="17.5" cy="6.5" r="1" fill={color}/>
+  </svg>
+);
+
+export const TikTokLogo = ({ size = 15, color = '#ffffff' }: { size?: number; color?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={color} style={{ flexShrink: 0, display: 'inline-block', verticalAlign: 'middle' }}>
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .56.04.82.11V9.32a6.33 6.33 0 0 0-1-.08 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V9.05a8.27 8.27 0 0 0 4.96 1.63V7.23a4.85 4.85 0 0 1-1-.54z"/>
+  </svg>
+);
+
 export const Footer: React.FC<FooterProps> = ({ lang, onOpenTab, onOpenLegalModal }) => {
   const getTranslation = (key: string) => {
     const labels: Record<string, Record<Language, string>> = {
@@ -74,17 +88,11 @@ export const Footer: React.FC<FooterProps> = ({ lang, onOpenTab, onOpenLegalModa
         ja: "レイドカウンター戦略",
         ru: "Стратегии в рейдах"
       },
-      guideSpotlight: {
-        cs: "Spotlight & Community Day",
-        en: "Spotlight & Community Day",
-        ja: "スポットライト & コミュニティデイ",
-        ru: "Spotlight и День сообщества"
-      },
-      legal: {
-        cs: "Informace & Právo",
-        en: "Legal & About",
-        ja: "法的情報 & 概要",
-        ru: "Правовая информация"
+      socials: {
+        cs: "Sledujte Nás",
+        en: "Follow Us",
+        ja: "フォローする",
+        ru: "Мы в соцсетях"
       },
       about: {
         cs: "O projektu",
@@ -98,24 +106,6 @@ export const Footer: React.FC<FooterProps> = ({ lang, onOpenTab, onOpenLegalModa
         ja: "プライバシーポリシー",
         ru: "Конфиденциальность"
       },
-      terms: {
-        cs: "Podmínky použití",
-        en: "Terms of Service",
-        ja: "利用規約",
-        ru: "Условия использования"
-      },
-      disclaimer: {
-        cs: "Právní doložka",
-        en: "Trademark Disclaimer",
-        ja: "免責事項",
-        ru: "Отказ от ответственности"
-      },
-      contact: {
-        cs: "Kontakt & Podpora",
-        en: "Contact & Support",
-        ja: "お問い合わせ",
-        ru: "Контакты"
-      },
       tagline: {
         cs: "Vytvořeno s vášní pro trenéry po celém světě.",
         en: "Built with passion for trainers worldwide.",
@@ -123,7 +113,7 @@ export const Footer: React.FC<FooterProps> = ({ lang, onOpenTab, onOpenLegalModa
         ru: "Создано с любовью для тренеров по всему миру."
       },
       copyrightNotice: {
-        cs: "© 2026 PoGo Events. Neoficiální fanouškovská komunitní aplikace. Všechna práva k ochranným známkám Pokémon náleží společním Nintendo, Game Freak & Niantic, Inc.",
+        cs: "© 2026 PoGo Events. Neoficiální fanouškovská komunitní aplikace. Všechna práva k ochranným známkám Pokémon náleží společnostem Nintendo, Game Freak & Niantic, Inc.",
         en: "© 2026 PoGo Events. Unofficial fan application. Pokémon and Pokémon character names are trademarks of Nintendo, Game Freak & Niantic, Inc.",
         ja: "© 2026 PoGo Events. 非公式ファンアプリケーション。Pokémonおよびポケモンキャラクター名は任天堂、ゲームフリーク、Niantic, Inc.の商標です。",
         ru: "© 2026 PoGo Events. Неофициальное фан-приложение. Торговые марки Pokémon принадлежат Nintendo, Game Freak и Niantic, Inc."
@@ -161,19 +151,39 @@ export const Footer: React.FC<FooterProps> = ({ lang, onOpenTab, onOpenLegalModa
               <li><button onClick={() => onOpenTab('guides')}><BookOpen size={13} style={{ display: 'inline', marginRight: '4px' }} />{getTranslation('allGuides')}</button></li>
               <li><button onClick={() => onOpenTab('guides')}>{getTranslation('guideRocket')}</button></li>
               <li><button onClick={() => onOpenTab('guides')}>{getTranslation('guideRaid')}</button></li>
-              <li><button onClick={() => onOpenTab('guides')}>{getTranslation('guideSpotlight')}</button></li>
             </ul>
           </div>
 
           <div className="footer-column">
-            <h4>{getTranslation('legal')}</h4>
+            <h4>{getTranslation('socials')}</h4>
             <ul>
-              <li><button onClick={() => onOpenLegalModal('about')}>{getTranslation('about')}</button></li>
-              <li><button onClick={() => onOpenLegalModal('privacy')}>{getTranslation('privacy')}</button></li>
-              <li><button onClick={() => onOpenLegalModal('terms')}>{getTranslation('terms')}</button></li>
-              <li><button onClick={() => onOpenLegalModal('disclaimer')}>{getTranslation('disclaimer')}</button></li>
-              <li><button onClick={() => onOpenLegalModal('contact')}>{getTranslation('contact')}</button></li>
+              <li>
+                <a 
+                  href="https://www.instagram.com/pogoevents/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="social-tab-link"
+                >
+                  <InstagramLogo size={14} color="#ffffff" />
+                  <span>Instagram</span>
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://www.tiktok.com/@pogoevents2?lang=en" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="social-tab-link"
+                >
+                  <TikTokLogo size={14} color="#ffffff" />
+                  <span>TikTok</span>
+                </a>
+              </li>
             </ul>
+            <div className="footer-sub-legal" style={{ marginTop: '10px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <button onClick={() => onOpenLegalModal('privacy')} style={{ fontSize: '0.75rem', opacity: 0.7 }}>{getTranslation('privacy')}</button>
+              <button onClick={() => onOpenLegalModal('about')} style={{ fontSize: '0.75rem', opacity: 0.7 }}>{getTranslation('about')}</button>
+            </div>
           </div>
         </div>
 

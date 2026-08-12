@@ -92,6 +92,33 @@
   color: #38bdf8;
 }
 
+.social-tab-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.social-tab-link svg {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  opacity: 0.9;
+}
+
+.social-tab-link:hover {
+  color: #38bdf8;
+}
+
+.social-tab-link:hover svg {
+  transform: scale(1.15);
+  opacity: 1;
+}
+
 .footer-bottom {
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   padding-top: 12px;
