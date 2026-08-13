@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { API_BASE_URL } from '@/config';
 import { GUIDES_DATA } from '@/data/guidesData';
+import { pokemonRankings } from '@/data/pokemonRankings';
 
 export const dynamic = 'force-static';
 
@@ -28,6 +29,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   const routes: MetadataRoute.Sitemap = [];
+
+  // Unique Pokedex IDs for Pokemon detail pages
+  const uniquePokedexIds = Array.from(new Set(pokemonRankings.map((p) => p.pokedexId)));
 
   // Static section URLs for each language
   languages.forEach((lang) => {
@@ -99,6 +103,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: new Date(),
         changeFrequency: 'daily',
         priority: 0.7,
+      });
+    });
+
+    // Pokemon detail & ranking pages
+    uniquePokedexIds.forEach((id) => {
+      routes.push({
+        url: `${baseUrl}/${lang}/pokemon/${id}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly',
+        priority: 0.75,
       });
     });
   });
