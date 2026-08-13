@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import App from '@/App';
+import { RaidView } from '@/components/RaidView';
 import type { Language } from '@/data/translations';
 
 export const revalidate = 300;
@@ -36,5 +36,5 @@ export default async function RaidsPage({ params }: PageProps) {
   const unwrappedParams = await params;
   const lang = unwrappedParams.lang || 'cs';
 
-  return <App initialLang={lang} initialTab="raid" />;
+  return <RaidView lang={lang} />;
 }

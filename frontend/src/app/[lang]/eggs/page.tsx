@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import App from '@/App';
+import { DittoEggsView } from '@/components/DittoEggsView';
 import type { Language } from '@/data/translations';
 
 export const revalidate = 300;
@@ -14,29 +14,27 @@ export function generateStaticParams() {
 }
 
 interface PageProps {
-  params: Promise<{ lang: string }>;
+  params: Promise<{ lang: Language }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const unwrappedParams = await params;
-  const rawLang = unwrappedParams.lang || 'cs';
-  const isCzech = rawLang === 'cs';
+  const lang = unwrappedParams.lang || 'cs';
+  const isCzech = lang === 'cs';
 
   return {
     title: isCzech
-      ? 'Obsah Vajíček & Líhnutí (2km, 5km, 7km, 10km, 12km) | Pokémon GO Event Tracker'
-      : 'Egg Hatch Chart & Pool | Pokémon GO Event Tracker',
+      ? 'Egg Hatch Distance Pool (2km, 5km, 7km, 10km, 12km) | Pokémon GO Event Tracker'
+      : 'Egg Hatch Distance Pool | Pokémon GO Event Tracker',
     description: isCzech
-      ? 'Aktuální seznam Pokémonů líhnoucích se z 2km, 5km, 7km, 10km a 12km vajíček v této sezóně.'
-      : 'Current egg hatch pools for 2km, 5km, 7km, 10km, and 12km eggs in Pokémon GO.',
+      ? 'Přehled všech Pokémonů, které lze aktuálně vylíhnout z 2km, 5km, 7km, 10km a 12km vajec.'
+      : 'Complete list of Pokémon currently hatching from 2km, 5km, 7km, 10km, and 12km eggs in Pokémon GO.',
   };
 }
 
 export default async function EggsPage({ params }: PageProps) {
   const unwrappedParams = await params;
-  const rawLang = unwrappedParams.lang || 'cs';
-  const validLanguages: Language[] = ['cs', 'en', 'ja', 'ru'];
-  const lang: Language = validLanguages.includes(rawLang as Language) ? (rawLang as Language) : 'cs';
+  const lang = unwrappedParams.lang || 'cs';
 
-  return <App initialLang={lang} initialTab="eggs" />;
+  return <DittoEggsView lang={lang} mode="eggs" />;
 }

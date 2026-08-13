@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import App from '@/App';
+import { FilterGeneratorView } from '@/components/FilterGeneratorView';
 import type { Language } from '@/data/translations';
 
 export const revalidate = 300;
@@ -14,29 +14,27 @@ export function generateStaticParams() {
 }
 
 interface PageProps {
-  params: Promise<{ lang: string }>;
+  params: Promise<{ lang: Language }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const unwrappedParams = await params;
-  const rawLang = unwrappedParams.lang || 'cs';
-  const isCzech = rawLang === 'cs';
+  const lang = unwrappedParams.lang || 'cs';
+  const isCzech = lang === 'cs';
 
   return {
     title: isCzech
-      ? 'Filter generator pro Pokémon GO | Pokémon GO Event Tracker'
-      : 'Pokémon GO Search Filter Generator | Pokémon GO Event Tracker',
+      ? 'Search String Generátor (In-game filtry) | Pokémon GO Event Tracker'
+      : 'In-Game Search String Generator | Pokémon GO Event Tracker',
     description: isCzech
-      ? 'Vygenerujte si vyhledávací filtr s nejlepšími countery pro jakékoliv Pokémon GO raid bossy.'
-      : 'Generate search filter with top counters for any Pokémon GO raid bosses.',
+      ? 'Generátor vyhledávacích řetězců pro IV, Trash, Raidy a Trashing přímo do Pokémon GO.'
+      : 'Search string generator for IVs, Trashing, and Raids directly inside Pokémon GO.',
   };
 }
 
 export default async function FilterPage({ params }: PageProps) {
   const unwrappedParams = await params;
-  const rawLang = unwrappedParams.lang || 'cs';
-  const validLanguages: Language[] = ['cs', 'en', 'ja', 'ru'];
-  const lang: Language = validLanguages.includes(rawLang as Language) ? (rawLang as Language) : 'cs';
+  const lang = unwrappedParams.lang || 'cs';
 
-  return <App initialLang={lang} initialTab="filter" />;
+  return <FilterGeneratorView lang={lang} />;
 }

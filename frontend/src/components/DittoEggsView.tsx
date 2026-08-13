@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import './DittoEggsView.css';
 import { translations } from '../data/translations';

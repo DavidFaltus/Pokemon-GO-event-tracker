@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useMemo } from 'react';
 import './FilterGeneratorView.css';
 import type { Language } from '../data/translations';

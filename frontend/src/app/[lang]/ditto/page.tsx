@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import App from '@/App';
+import { DittoEggsView } from '@/components/DittoEggsView';
 import type { Language } from '@/data/translations';
 
 export const revalidate = 300;
@@ -14,29 +14,27 @@ export function generateStaticParams() {
 }
 
 interface PageProps {
-  params: Promise<{ lang: string }>;
+  params: Promise<{ lang: Language }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const unwrappedParams = await params;
-  const rawLang = unwrappedParams.lang || 'cs';
-  const isCzech = rawLang === 'cs';
+  const lang = unwrappedParams.lang || 'cs';
+  const isCzech = lang === 'cs';
 
   return {
     title: isCzech
-      ? 'Ditto Převleky a Maskování | Pokémon GO Event Tracker'
-      : 'Ditto Disguises & Spawns Guide | Pokémon GO Event Tracker',
+      ? 'Ditto Disguises (Aktuální maskování) | Pokémon GO Event Tracker'
+      : 'Current Ditto Disguises | Pokémon GO Event Tracker',
     description: isCzech
-      ? 'Aktuální přehled Pokémonů, za které se Ditto maskuje v divočině v této sezóně.'
-      : 'Current list of wild Pokémon Ditto disguises as during this season.',
+      ? 'Seznam všech Pokémonů, v které se může Ditto aktuálně maskovat na divoko.'
+      : 'List of all wild Pokémon that Ditto can currently disguise as in Pokémon GO.',
   };
 }
 
 export default async function DittoPage({ params }: PageProps) {
   const unwrappedParams = await params;
-  const rawLang = unwrappedParams.lang || 'cs';
-  const validLanguages: Language[] = ['cs', 'en', 'ja', 'ru'];
-  const lang: Language = validLanguages.includes(rawLang as Language) ? (rawLang as Language) : 'cs';
+  const lang = unwrappedParams.lang || 'cs';
 
-  return <App initialLang={lang} initialTab="ditto" />;
+  return <DittoEggsView lang={lang} mode="ditto" />;
 }

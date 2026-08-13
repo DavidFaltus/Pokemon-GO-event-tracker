@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import App from '@/App';
+import { RocketGuide } from '@/components/RocketGuide';
 import type { Language } from '@/data/translations';
 
 export const revalidate = 300;
@@ -36,5 +36,5 @@ export default async function RocketPage({ params }: PageProps) {
   const unwrappedParams = await params;
   const lang = unwrappedParams.lang || 'cs';
 
-  return <App initialLang={lang} initialTab="rocket" />;
+  return <RocketGuide lang={lang} />;
 }

@@ -1238,6 +1238,17 @@ body.light-mode .nav-item.active {
     max-width: 100%;
     min-height: 100vh;
     margin: 0;
+    align-items: flex-start;
+  }
+
+  .main-content-wrapper {
+    flex: 1 1 0%;
+    min-width: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    box-sizing: border-box;
   }
 
   /* Left Sidebar Navigation */
@@ -1245,6 +1256,9 @@ body.light-mode .nav-item.active {
     display: flex;
     flex-direction: column;
     width: 280px;
+    min-width: 280px;
+    max-width: 280px;
+    flex-shrink: 0;
     background-color: var(--bg-card);
     border-right: 1px solid var(--border-color);
     padding: 24px 20px;
@@ -1252,6 +1266,7 @@ body.light-mode .nav-item.active {
     position: sticky;
     top: 0;
     z-index: 100;
+    box-sizing: border-box;
   }
 
   .sidebar-logo {

@@ -372,6 +372,19 @@ function App({ initialLang, initialTab, initialArticleSlug }: { initialLang?: La
     safeLocalStorage.setItem('pogo_tracker_view_mode', viewMode);
   }, [viewMode]);
 
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
+
+  useEffect(() => {
+    if (initialLang) {
+      setLang(initialLang);
+      safeLocalStorage.setItem('pogo_tracker_lang', initialLang);
+    }
+  }, [initialLang]);
+
   // Synchronize language, tab and event ID from URL on mount & popstate
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -390,17 +403,6 @@ function App({ initialLang, initialTab, initialArticleSlug }: { initialLang?: La
     const urlEventId = getEventIdFromUrlPath(path);
     if (urlEventId) {
       setExpandedEventId(urlEventId);
-    }
-
-    const isCapacitor = !!(window as any).Capacitor || 
-                        window.location.protocol === 'capacitor:' || 
-                        window.location.protocol === 'file:';
-
-    if (!isCapacitor) {
-      const canonicalPath = getUrlPathForTab(urlTab || activeTab, resolvedLang, urlEventId);
-      if (window.location.pathname !== canonicalPath) {
-        navigate.replace(canonicalPath);
-      }
     }
 
     // Set initial page title, <html lang> and canonical meta on mount
@@ -928,556 +930,220 @@ function App({ initialLang, initialTab, initialArticleSlug }: { initialLang?: La
   };
 
   return (
-    <div className="web-app-layout">
-      {/* Desktop Left Sidebar Navigation */}
-      <aside className="desktop-sidebar">
-        <div className="sidebar-logo">
-          <PokeballLogo size={28} />
-          <h1>PoGo Events</h1>
-        </div>
-        <div className="sidebar-stats">
-          {/* Scraper status: last update time */}
-          {scraperStatus.lastScrapedAt && (
-            <span
-              title={scraperStatus.isRunning
-                ? (lang === 'cs' ? 'Stahování dat...' : 'Fetching data...')
-                : (lang === 'cs' ? `Příští aktualizace: ${new Date(scraperStatus.nextScrapeAt || '').toLocaleTimeString(lang === 'cs' ? 'cs-CZ' : 'en-US', { hour: '2-digit', minute: '2-digit' })}` : `Next update: ${new Date(scraperStatus.nextScrapeAt || '').toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`)}
-              style={{
-                fontSize: '10px',
-                color: 'var(--text-muted)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                marginTop: '2px'
-              }}
-            >
-              {scraperStatus.isRunning ? (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{
-                    width: '6px', height: '6px', borderRadius: '50%',
-                    background: 'var(--accent-color)',
-                    animation: 'pulse 1.5s ease-in-out infinite'
-                  }} />
-                  {lang === 'cs' ? 'Aktualizuji...' : 'Updating...'}
-                </span>
-              ) : (
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                  <Clock size={10} />
-                  {lang === 'cs' ? 'Aktualizováno: ' : 'Updated: '}
-                  {new Date(scraperStatus.lastScrapedAt).toLocaleTimeString(
-                    lang === 'cs' ? 'cs-CZ' : 'en-US',
-                    { hour: '2-digit', minute: '2-digit' }
-                  )}
-                </span>
-              )}
-            </span>
-          )}
-          <div className="sidebar-lang-switcher" style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
-            {(['cs', 'en', 'ja', 'ru'] as Language[]).map(l => (
-              <button
-                key={l}
-                className={`lang-btn ${lang === l ? 'active' : ''}`}
-                onClick={() => handleSetLang(l)}
-                style={{
-                  padding: '2px 7px',
-                  fontSize: '10px',
-                  fontWeight: 'bold',
-                  borderRadius: '5px',
-                  border: '1px solid var(--border-color)',
-                  background: lang === l ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)',
-                  color: lang === l ? '#000' : 'var(--text-muted)',
-                  cursor: 'pointer',
-                  textTransform: 'uppercase',
-                  transition: 'all 0.2s ease'
-                }}
-              >
-                {l}
-              </button>
-            ))}
+    <div className="content-layout-wrapper">
+      <main className="app-main">
+        {loading ? (
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>{t.loading_text}</p>
           </div>
-        </div>
-        <nav className="sidebar-nav">
-          <a 
-            href={getUrlPathForTab('events', lang)} 
-            className={`sidebar-nav-item ${activeTab === 'events' ? 'active' : ''}`} 
-            onClick={(e) => { e.preventDefault(); changeTab('events'); }}
-          >
-            <span className="nav-icon"><Calendar size={20} /></span>
-            <span className="nav-text">{t.tabs_events}</span>
-          </a>
-
-          <a 
-            href={getUrlPathForTab('raid', lang)} 
-            className={`sidebar-nav-item ${activeTab === 'raid' ? 'active' : ''}`} 
-            onClick={(e) => { e.preventDefault(); changeTab('raid'); }}
-          >
-            <span className="nav-icon"><Swords size={20} /></span>
-            <span className="nav-text">{t.tabs_raid}</span>
-          </a>
-
-          <a 
-            href={getUrlPathForTab('rocket', lang)} 
-            className={`sidebar-nav-item ${activeTab === 'rocket' ? 'active' : ''}`} 
-            onClick={(e) => { e.preventDefault(); changeTab('rocket'); }}
-          >
-            <span className="nav-icon"><Shield size={20} /></span>
-            <span className="nav-text">{t.tabs_rocket}</span>
-          </a>
-
-          <a 
-            href={getUrlPathForTab('ditto', lang)} 
-            className={`sidebar-nav-item ${activeTab === 'ditto' ? 'active' : ''}`} 
-            onClick={(e) => { e.preventDefault(); changeTab('ditto'); }}
-          >
-            <span className="nav-icon"><Sparkles size={20} /></span>
-            <span className="nav-text">{t.tabs_ditto}</span>
-          </a>
-
-          <a 
-            href={getUrlPathForTab('eggs', lang)} 
-            className={`sidebar-nav-item ${activeTab === 'eggs' ? 'active' : ''}`} 
-            onClick={(e) => { e.preventDefault(); changeTab('eggs'); }}
-          >
-            <span className="nav-icon"><Egg size={20} /></span>
-            <span className="nav-text">{t.tabs_eggs}</span>
-          </a>
-
-          <a 
-            href={getUrlPathForTab('ranking', lang)} 
-            className={`sidebar-nav-item ${activeTab === 'ranking' ? 'active' : ''}`} 
-            onClick={(e) => { e.preventDefault(); changeTab('ranking'); }}
-          >
-            <span className="nav-icon"><Trophy size={20} /></span>
-            <span className="nav-text">{t.tabs_ranking}</span>
-          </a>
-
-          <a 
-            href={getUrlPathForTab('filter', lang)} 
-            className={`sidebar-nav-item ${activeTab === 'filter' ? 'active' : ''}`} 
-            onClick={(e) => { e.preventDefault(); changeTab('filter'); }}
-          >
-            <span className="nav-icon"><Filter size={20} /></span>
-            <span className="nav-text">{t.tabs_filter}</span>
-          </a>
-
-          <a 
-            href={getUrlPathForTab('guides', lang)} 
-            className={`sidebar-nav-item ${activeTab === 'guides' ? 'active' : ''}`} 
-            onClick={(e) => { e.preventDefault(); changeTab('guides'); }}
-          >
-            <span className="nav-icon"><BookOpen size={20} /></span>
-            <span className="nav-text">{t.tabs_guides}</span>
-          </a>
-
-          <a 
-            href={getUrlPathForTab('settings', lang)} 
-            className={`sidebar-nav-item settings-item ${activeTab === 'settings' ? 'active' : ''}`} 
-            onClick={(e) => { e.preventDefault(); changeTab('settings'); }}
-            style={{ marginTop: '28px' }}
-          >
-            <span className="nav-icon"><Settings size={20} /></span>
-            <span className="nav-text">{t.tabs_settings}</span>
-          </a>
-        </nav>
-        
-        {/* Sidebar Native Ad Placeholder */}
-        {showAds && (
-          <div className="sidebar-ad-container">
-            <AdContainer type="inline" slot="9193535711" lang={lang} />
-          </div>
-        )}
-
-        {/* Desktop Sidebar Footer */}
-        <div 
-          className="sidebar-footer" 
-          style={{ 
-            marginTop: 'auto', 
-            paddingTop: '16px', 
-            borderTop: '1px solid var(--border-color)', 
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px'
-          }}
-        >
-          <p style={{ fontSize: '10px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.4' }}>
-            {lang === 'cs' 
-              ? 'Tato aplikace je neoficiální fanouškovský projekt. Nemá žádné přidružení ke společnostmi Niantic, Nintendo nebo The Pokémon Company.' 
-              : 'This app is an unofficial fan project and has no affiliation with Niantic, Nintendo, or The Pokémon Company.'
-            }
-          </p>
-          <p style={{ fontSize: '10px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.4' }}>
-            {lang === 'cs' ? 'Data událostí poskytuje ' : 'Event data powered by '}{' '}
-            <a 
-              href="https://leekduck.com" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              style={{ color: 'var(--accent-color)', fontWeight: 'bold', textDecoration: 'none' }}
-              onMouseOver={(e) => (e.currentTarget.style.textDecoration = 'underline')}
-              onMouseOut={(e) => (e.currentTarget.style.textDecoration = 'none')}
-            >
-              Leek Duck
-            </a>.
-          </p>
-          <div className="sidebar-social-flex" style={{ display: 'flex', gap: '10px', marginTop: '8px', justifyContent: 'center', alignItems: 'center' }}>
-            <a 
-              href="https://www.instagram.com/pogoevents/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              title="Instagram @pogoevents"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#cbd5e1', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s' }}
-              onMouseOver={(e) => (e.currentTarget.style.color = '#38bdf8')}
-              onMouseOut={(e) => (e.currentTarget.style.color = '#cbd5e1')}
-            >
-              <InstagramLogo size={13} color="#ffffff" />
-              <span>Instagram</span>
-            </a>
-            <span style={{ color: 'var(--border-color)', fontSize: '10px' }}>•</span>
-            <a 
-              href="https://www.tiktok.com/@pogoevents2?lang=en" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              title="TikTok @pogoevents2"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#cbd5e1', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s' }}
-              onMouseOver={(e) => (e.currentTarget.style.color = '#38bdf8')}
-              onMouseOut={(e) => (e.currentTarget.style.color = '#cbd5e1')}
-            >
-              <TikTokLogo size={13} color="#ffffff" />
-              <span>TikTok</span>
-            </a>
-          </div>
-        </div>
-      </aside>
-
-      {/* Main Container */}
-      <div className="app-container">
-        {/* Mobile Top Header (Hidden on Desktop) */}
-        <header className="app-header">
-          <div className="header-logo-section">
-            <PokeballLogo size={24} />
-            <h1>PoGo Events</h1>
-          </div>
-          <div className="header-stats" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {/* Scraper status in mobile header */}
-            {scraperStatus.lastScrapedAt && (
-              <span style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
-                {scraperStatus.isRunning ? (
-                  <>
-                    <span style={{
-                      width: '6px', height: '6px', borderRadius: '50%',
-                      background: 'var(--accent-color)',
-                      animation: 'pulse 1.5s ease-in-out infinite',
-                      flexShrink: 0
-                    }} />
-                    {lang === 'cs' ? 'Aktualizuji...' : 'Updating...'}
-                  </>
-                ) : (
-                  <>
-                    <Clock size={10} />
-                    {new Date(scraperStatus.lastScrapedAt).toLocaleTimeString(
-                      lang === 'cs' ? 'cs-CZ' : 'en-US',
-                      { hour: '2-digit', minute: '2-digit' }
-                    )}
-                  </>
-                )}
-              </span>
-            )}
-            <div className="mobile-lang-switcher" style={{ display: 'flex', gap: '3px', marginRight: '2px' }}>
-              {(['cs', 'en', 'ja', 'ru'] as Language[]).map(l => (
-                <button
-                  key={l}
-                  className={`lang-btn ${lang === l ? 'active' : ''}`}
-                  onClick={() => handleSetLang(l)}
-                  style={{
-                    padding: '2px 5px',
-                    fontSize: '10px',
-                    fontWeight: 'bold',
-                    borderRadius: '4px',
-                    border: '1px solid var(--border-color)',
-                    background: lang === l ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)',
-                    color: lang === l ? '#000' : 'var(--text-muted)',
-                    cursor: 'pointer',
-                    textTransform: 'uppercase',
-                    transition: 'all 0.2s ease'
-                  }}
-                >
-                  {l}
-                </button>
-              ))}
-            </div>
-            <button 
-              className={`header-settings-btn ${activeTab === 'settings' ? 'active' : ''}`} 
-              onClick={() => changeTab('settings')}
-              aria-label={t.tabs_settings}
-              title={t.tabs_settings}
-            >
-              <Settings size={18} />
-            </button>
-          </div>
-        </header>
-
-        {/* Content Layout Wrapper for splitting Main Content and Ads Sidebar */}
-        <div className="content-layout-wrapper">
-          <main className="app-main">
-            {loading ? (
-              <div className="loading-container">
-                <div className="spinner"></div>
-                <p>{t.loading_text}</p>
-              </div>
-            ) : (
-              <Suspense fallback={<div className="loading-container"><div className="spinner"></div></div>}>
-              <>
-                {activeTab === 'events' && (
-                  <div className="tab-content events-tab">
-                    <div className="events-header-bar">
-                      <div className="events-header-text">
-                        <h1 className="tab-seo-title">{t.tabs_events}</h1>
-                        <p className="tab-seo-description">{t.seo_events_desc}</p>
-                      </div>
-                      <div className="events-view-switcher" role="radiogroup" aria-label={t.settings_layout_title}>
-                        <button 
-                          className={`view-switch-btn ${viewMode === 'list' ? 'active' : ''}`}
-                          onClick={() => setViewMode('list')}
-                          title={t.settings_layout_list}
-                          aria-label={t.settings_layout_list}
-                        >
-                          <LayoutList size={14} />
-                          <span>{t.view_mode_list}</span>
-                        </button>
-                        <button 
-                          className={`view-switch-btn ${viewMode === 'timeline' ? 'active' : ''}`}
-                          onClick={() => setViewMode('timeline')}
-                          title={t.settings_layout_timeline}
-                          aria-label={t.settings_layout_timeline}
-                        >
-                          <Calendar size={14} />
-                          <span>{t.view_mode_timeline}</span>
-                        </button>
-                      </div>
+        ) : (
+          <Suspense fallback={<div className="loading-container"><div className="spinner"></div></div>}>
+            <>
+              {activeTab === 'events' && (
+                <div className="tab-content events-tab">
+                  <div className="events-header-bar">
+                    <div className="events-header-text">
+                      <h1 className="tab-seo-title">{t.tabs_events}</h1>
+                      <p className="tab-seo-description">{t.seo_events_desc}</p>
                     </div>
-                    {/* Active / Upcoming / Next Month Summary Status Tabs (Split in thirds) */}
-                    {viewMode !== 'timeline' && (
-                      <div className="status-tabs-container">
-                        <button 
-                          className={`status-tab-btn ${statusFilter === 'active' ? 'active' : ''}`}
-                          onClick={() => setStatusFilter('active')}
-                        >
-                          <Play size={14} fill="currentColor" stroke="none" />
-                          {lang === 'cs' ? 'Probíhá' : 'Active'}
-                        </button>
-                        <button 
-                          className={`status-tab-btn ${statusFilter === 'upcoming' ? 'active' : ''}`}
-                          onClick={() => setStatusFilter('upcoming')}
-                        >
-                          <Clock size={14} />
-                          {lang === 'cs' ? 'Připravuje se' : 'Upcoming'}
-                        </button>
-                        <button 
-                          className="status-tab-btn infographic-tab-btn"
-                          onClick={() => {
-                            setMonthSummaryInitialOffset(0);
-                            setShowMonthSummary(true);
-                          }}
-                          title={lang === 'cs' ? 'Zobrazit souhrnnou infografiku na tento měsíc' : 'View this month summary infographic'}
-                        >
-                          <Sparkles size={14} />
-                          {lang === 'cs' ? 'Souhrn na tento měsíc' : lang === 'ja' ? '今月のサマリー' : lang === 'ru' ? 'Сводка на этот месяц' : 'This Month Summary'}
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Event Category Filters - Only shown if specific sub-categories exist */}
-                    {viewMode !== 'timeline' && showFilterPills && (
-                      <div className="filter-pill-container" style={{ marginTop: '12px' }}>
-                        <button className={`filter-pill ${filterType === 'all' ? 'active' : ''}`} onClick={() => setFilterType('all')}>{t.filter_all}</button>
-                        {hasCommunityDay && (
-                          <button className={`filter-pill ${filterType === 'community-day' ? 'active' : ''}`} onClick={() => setFilterType('community-day')}>{t.filter_cd}</button>
-                        )}
-                        {hasSpotlightHour && (
-                          <button className={`filter-pill ${filterType === 'pokemon-spotlight-hour' ? 'active' : ''}`} onClick={() => setFilterType('pokemon-spotlight-hour')}>{t.filter_spotlight}</button>
-                        )}
-                        {hasRaidHour && (
-                          <button className={`filter-pill ${filterType === 'raid-hour' ? 'active' : ''}`} onClick={() => setFilterType('raid-hour')}>{t.filter_raid_hour}</button>
-                        )}
-                        {hasOtherCategory && (
-                          <button className={`filter-pill ${filterType === 'other' ? 'active' : ''}`} onClick={() => setFilterType('other')}>{t.filter_other}</button>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Event Feed List or Timeline */}
-                    {viewMode === 'timeline' ? (
-                      <TimelineView 
-                        events={getAdjustedEvents().filter(e => isEventVisible(e.eventType))} 
-                        lang={lang} 
-                        timezone={timezone} 
-                      />
-                    ) : (
-                      <div className="events-feed-list">
-                        {getFilteredEvents().length === 0 ? (
-                          <div className="empty-feed">
-                            <p>{t.details_empty_category}</p>
-                          </div>
-                        ) : (
-                          getFilteredEvents().map((event, index) => (
-                            <EventCard 
-                              key={event.eventID} 
-                              event={event} 
-                              lang={lang} 
-                              timezone={timezone} 
-                              defaultExpanded={event.eventID === expandedEventId}
-                              priority={index === 0}
-                              onOpenFilterGenerator={handleOpenFilterGenerator}
-                              onToggleExpand={handleEventToggleExpand}
-                            />
-                          ))
-                        )}
-                      </div>
-                    )}
+                    <div className="events-view-switcher" role="radiogroup" aria-label={t.settings_layout_title}>
+                      <button 
+                        className={`view-switch-btn ${viewMode === 'list' ? 'active' : ''}`}
+                        onClick={() => setViewMode('list')}
+                        title={t.settings_layout_list}
+                        aria-label={t.settings_layout_list}
+                      >
+                        <LayoutList size={14} />
+                        <span>{t.view_mode_list}</span>
+                      </button>
+                      <button 
+                        className={`view-switch-btn ${viewMode === 'timeline' ? 'active' : ''}`}
+                        onClick={() => setViewMode('timeline')}
+                        title={t.settings_layout_timeline}
+                        aria-label={t.settings_layout_timeline}
+                      >
+                        <Calendar size={14} />
+                        <span>{t.view_mode_timeline}</span>
+                      </button>
+                    </div>
                   </div>
-                )}
+                  {/* Active / Upcoming / Next Month Summary Status Tabs (Split in thirds) */}
+                  {viewMode !== 'timeline' && (
+                    <div className="status-tabs-container">
+                      <button 
+                        className={`status-tab-btn ${statusFilter === 'active' ? 'active' : ''}`}
+                        onClick={() => setStatusFilter('active')}
+                      >
+                        <Play size={14} fill="currentColor" stroke="none" />
+                        {lang === 'cs' ? 'Probíhá' : 'Active'}
+                      </button>
+                      <button 
+                        className={`status-tab-btn ${statusFilter === 'upcoming' ? 'active' : ''}`}
+                        onClick={() => setStatusFilter('upcoming')}
+                      >
+                        <Clock size={14} />
+                        {lang === 'cs' ? 'Připravuje se' : 'Upcoming'}
+                      </button>
+                      <button 
+                        className="status-tab-btn infographic-tab-btn"
+                        onClick={() => {
+                          setMonthSummaryInitialOffset(0);
+                          setShowMonthSummary(true);
+                        }}
+                        title={lang === 'cs' ? 'Zobrazit souhrnnou infografiku na tento měsíc' : 'View this month summary infographic'}
+                      >
+                        <Sparkles size={14} />
+                        {lang === 'cs' ? 'Souhrn na tento měsíc' : lang === 'ja' ? '今月のサマリー' : lang === 'ru' ? 'Сводка на этот месяц' : 'This Month Summary'}
+                      </button>
+                    </div>
+                  )}
 
-                {showMonthSummary && (
-                  <Suspense fallback={null}>
-                    <MonthSummaryInfographic
-                      events={getAdjustedEvents()}
-                      lang={lang}
-                      initialOffset={monthSummaryInitialOffset}
-                      onClose={() => setShowMonthSummary(false)}
-                    />
-                  </Suspense>
-                )}
+                  {/* Event Category Filters - Only shown if specific sub-categories exist */}
+                  {viewMode !== 'timeline' && showFilterPills && (
+                    <div className="filter-pill-container" style={{ marginTop: '12px' }}>
+                      <button className={`filter-pill ${filterType === 'all' ? 'active' : ''}`} onClick={() => setFilterType('all')}>{t.filter_all}</button>
+                      {hasCommunityDay && (
+                        <button className={`filter-pill ${filterType === 'community-day' ? 'active' : ''}`} onClick={() => setFilterType('community-day')}>{t.filter_cd}</button>
+                      )}
+                      {hasSpotlightHour && (
+                        <button className={`filter-pill ${filterType === 'pokemon-spotlight-hour' ? 'active' : ''}`} onClick={() => setFilterType('pokemon-spotlight-hour')}>{t.filter_spotlight}</button>
+                      )}
+                      {hasRaidHour && (
+                        <button className={`filter-pill ${filterType === 'raid-hour' ? 'active' : ''}`} onClick={() => setFilterType('raid-hour')}>{t.filter_raid_hour}</button>
+                      )}
+                      {hasOtherCategory && (
+                        <button className={`filter-pill ${filterType === 'other' ? 'active' : ''}`} onClick={() => setFilterType('other')}>{t.filter_other}</button>
+                      )}
+                    </div>
+                  )}
 
-
-                {activeTab === 'guides' && (
-                  <div className="tab-content guides-tab">
-                    <GuidesView lang={lang} initialArticleSlug={initialArticleSlug} />
-                  </div>
-                )}
-
-                {activeTab === 'raid' && (
-                  <div className="tab-content raid-tab">
-                    <RaidView events={getAdjustedEvents()} lang={lang} onOpenFilterGenerator={handleOpenFilterGenerator} onOpenGuide={() => changeTab('guides')} />
-                  </div>
-                )}
-
-                {activeTab === 'rocket' && (
-                  <div className="tab-content rocket-tab">
-                    <RocketGuide lang={lang} onOpenGuide={() => changeTab('guides')} />
-                  </div>
-                )}
-
-                {activeTab === 'ditto' && (
-                  <div className="tab-content ditto-tab">
-                    <DittoEggsView lang={lang} mode="ditto" />
-                  </div>
-                )}
-
-                {activeTab === 'eggs' && (
-                  <div className="tab-content eggs-tab">
-                    <DittoEggsView lang={lang} mode="eggs" />
-                  </div>
-                )}
-
-                {activeTab === 'ranking' && (
-                  <div className="tab-content ranking-tab">
-                    <PokemonRankingsView lang={lang} />
-                  </div>
-                )}
-
-                {activeTab === 'settings' && (
-                  <div className="tab-content settings-tab">
-                    <NotificationSettings 
-                      notificationsHook={notificationsHook} 
+                  {/* Event Feed List or Timeline */}
+                  {viewMode === 'timeline' ? (
+                    <TimelineView 
+                      events={getAdjustedEvents().filter(e => isEventVisible(e.eventType))} 
                       lang={lang} 
-                      setLang={handleSetLang}
-                      timezone={timezone}
-                      setTimezone={setTimezone}
-                      visibleEvents={visibleEvents}
-                      toggleVisibleEvent={toggleVisibleEvent}
-                      viewMode={viewMode}
-                      setViewMode={setViewMode}
-                      theme={theme}
-                      setTheme={setTheme}
+                      timezone={timezone} 
                     />
-                  </div>
-                )}
+                  ) : (
+                    <div className="events-feed-list">
+                      {getFilteredEvents().length === 0 ? (
+                        <div className="empty-feed">
+                          <p>{t.details_empty_category}</p>
+                        </div>
+                      ) : (
+                        getFilteredEvents().map((event, index) => (
+                          <EventCard 
+                            key={event.eventID} 
+                            event={event} 
+                            lang={lang} 
+                            timezone={timezone} 
+                            defaultExpanded={event.eventID === expandedEventId}
+                            priority={index === 0}
+                            onOpenFilterGenerator={handleOpenFilterGenerator}
+                            onToggleExpand={handleEventToggleExpand}
+                          />
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
-                {activeTab === 'filter' && (
-                  <FilterGeneratorView lang={lang} initialRaidBoss={filterModalInitialBoss} />
-                )}
+              {showMonthSummary && (
+                <Suspense fallback={null}>
+                  <MonthSummaryInfographic
+                    events={getAdjustedEvents()}
+                    lang={lang}
+                    initialOffset={monthSummaryInitialOffset}
+                    onClose={() => setShowMonthSummary(false)}
+                  />
+                </Suspense>
+              )}
 
-                {activeTab === 'admin' && (
-                  <div className="tab-content admin-tab">
-                    <AdminPanelView lang={lang} onBack={() => setActiveTab('events')} />
-                  </div>
-                )}
+              {activeTab === 'guides' && (
+                <div className="tab-content guides-tab">
+                  <GuidesView lang={lang} initialArticleSlug={initialArticleSlug} />
+                </div>
+              )}
 
-                {/* Global Footer (Rendered at bottom of scrollable main container) */}
-                <Footer lang={lang} onOpenTab={changeTab} onOpenLegalModal={setLegalModal} />
-              </>
-              </Suspense>
-            )}
-          </main>
+              {activeTab === 'raid' && (
+                <div className="tab-content raid-tab">
+                  <RaidView events={getAdjustedEvents()} lang={lang} onOpenFilterGenerator={handleOpenFilterGenerator} onOpenGuide={() => changeTab('guides')} />
+                </div>
+              )}
 
-          {/* Desktop Right Sidebar (Rendered only when ads are enabled) */}
-          {showAds && (
-            <aside className="desktop-right-sidebar">
-              <div className="sidebar-widget-container">
-                <AdContainer type="sidebar" slot="4561558504" lang={lang} />
-              </div>
+              {activeTab === 'rocket' && (
+                <div className="tab-content rocket-tab">
+                  <RocketGuide lang={lang} onOpenGuide={() => changeTab('guides')} />
+                </div>
+              )}
 
-              <div className="sidebar-widget-container">
-                <AdContainer type="rectangle" slot="3032854416" lang={lang} />
-              </div>
-            </aside>
-          )}
-        </div>
+              {activeTab === 'ditto' && (
+                <div className="tab-content ditto-tab">
+                  <DittoEggsView lang={lang} mode="ditto" />
+                </div>
+              )}
 
-        {/* Mobile Bottom Navigation Bar (Fixed to bottom) */}
-        <nav className="bottom-nav">
-          <a href={getUrlPathForTab('events', lang)} className={`nav-item ${activeTab === 'events' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('events'); }}>
-            <span className="nav-icon"><Calendar size={18} /></span>
-            <span className="nav-text">{t.tabs_events}</span>
-          </a>
+              {activeTab === 'eggs' && (
+                <div className="tab-content eggs-tab">
+                  <DittoEggsView lang={lang} mode="eggs" />
+                </div>
+              )}
 
-          <a href={getUrlPathForTab('raid', lang)} className={`nav-item ${activeTab === 'raid' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('raid'); }}>
-            <span className="nav-icon"><Swords size={18} /></span>
-            <span className="nav-text">{t.tabs_raid}</span>
-          </a>
+              {activeTab === 'ranking' && (
+                <div className="tab-content ranking-tab">
+                  <PokemonRankingsView lang={lang} />
+                </div>
+              )}
 
-          <a href={getUrlPathForTab('rocket', lang)} className={`nav-item ${activeTab === 'rocket' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('rocket'); }}>
-            <span className="nav-icon"><Shield size={18} /></span>
-            <span className="nav-text">{t.tabs_rocket}</span>
-          </a>
+              {activeTab === 'settings' && (
+                <div className="tab-content settings-tab">
+                  <NotificationSettings 
+                    notificationsHook={notificationsHook} 
+                    lang={lang} 
+                    setLang={handleSetLang}
+                    timezone={timezone}
+                    setTimezone={setTimezone}
+                    visibleEvents={visibleEvents}
+                    toggleVisibleEvent={toggleVisibleEvent}
+                    viewMode={viewMode}
+                    setViewMode={setViewMode}
+                    theme={theme}
+                    setTheme={setTheme}
+                  />
+                </div>
+              )}
 
-          <a href={getUrlPathForTab('ditto', lang)} className={`nav-item ${activeTab === 'ditto' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('ditto'); }}>
-            <span className="nav-icon"><Sparkles size={18} /></span>
-            <span className="nav-text">{t.tabs_ditto}</span>
-          </a>
+              {activeTab === 'filter' && (
+                <FilterGeneratorView lang={lang} initialRaidBoss={filterModalInitialBoss} />
+              )}
 
-          <a href={getUrlPathForTab('eggs', lang)} className={`nav-item ${activeTab === 'eggs' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('eggs'); }}>
-            <span className="nav-icon"><Egg size={18} /></span>
-            <span className="nav-text">{t.tabs_eggs}</span>
-          </a>
+              {activeTab === 'admin' && (
+                <div className="tab-content admin-tab">
+                  <AdminPanelView lang={lang} onBack={() => setActiveTab('events')} />
+                </div>
+              )}
+            </>
+          </Suspense>
+        )}
+      </main>
 
-          <a href={getUrlPathForTab('ranking', lang)} className={`nav-item ${activeTab === 'ranking' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('ranking'); }}>
-            <span className="nav-icon"><Trophy size={18} /></span>
-            <span className="nav-text">{t.tabs_ranking}</span>
-          </a>
+      {/* Desktop Right Sidebar (Rendered only when ads are enabled) */}
+      {showAds && (
+        <aside className="desktop-right-sidebar">
+          <div className="sidebar-widget-container">
+            <AdContainer type="sidebar" slot="4561558504" lang={lang} />
+          </div>
 
-          <a href={getUrlPathForTab('filter', lang)} className={`nav-item ${activeTab === 'filter' ? 'active' : ''}`} onClick={(e) => { e.preventDefault(); changeTab('filter'); }}>
-            <span className="nav-icon"><Filter size={18} /></span>
-            <span className="nav-text">
-              <span className="full-filter-label">{t.tabs_filter}</span>
-              <span className="short-filter-label">Filter</span>
-            </span>
-          </a>
-        </nav>
+          <div className="sidebar-widget-container">
+            <AdContainer type="rectangle" slot="3032854416" lang={lang} />
+          </div>
+        </aside>
+      )}
 
-        {/* Legal Modals (About, Privacy, Terms, Disclaimer, Contact) */}
-        <LegalModals modalType={legalModal} lang={lang} onClose={() => setLegalModal(null)} />
-      </div>
+      {/* Legal Modals */}
+      <LegalModals modalType={legalModal} lang={lang} onClose={() => setLegalModal(null)} />
     </div>
   );
 }
