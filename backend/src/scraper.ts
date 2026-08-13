@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { EventData, SpecialEventDetails, ScrapedRaidBoss, RocketMember, GruntData, RaidCounters } from './types';
+import { loadEventDetailsCache, saveEventDetailsCache, loadVerifiedImagesCache, saveVerifiedImagesCache } from './storage';
 
 // ==========================================
 // 1. Static Databases (Meta & Counters)
@@ -1887,30 +1888,267 @@ export function matchSlugToTitle(slug: string, articleTitle: string, articleUrl:
 }
 
 // ==========================================
-// 3d. Orchestrator: Niantic → Leek Duck Fallback
+// 3d. Hybrid Multi-Source Orchestrator & Photo Verifier
 // ==========================================
 
-export async function scrapeEventDetails(eventID: string, link: string, name?: string): Promise<SpecialEventDetails | null> {
-  if (!link) {
-    console.warn(`[scrapeEventDetails] No link provided for event ${eventID}`);
-    return null;
+let verifiedImagesMemoryCache: Record<string, string> = {};
+
+export async function verifyAndResolveImageOnBackend(
+  url: string | undefined, 
+  eventType?: string, 
+  pokemonName?: string, 
+  canBeShiny?: boolean
+): Promise<string> {
+  if (!verifiedImagesMemoryCache || Object.keys(verifiedImagesMemoryCache).length === 0) {
+    verifiedImagesMemoryCache = await loadVerifiedImagesCache().catch(() => ({}));
   }
 
-  // 1. Always scrape details from Leek Duck
-  let leekResult: SpecialEventDetails | null = null;
+  const cacheKey = `${url || ''}_${pokemonName || ''}_${canBeShiny ? 'shiny' : 'normal'}`;
+  if (verifiedImagesMemoryCache[cacheKey]) {
+    return verifiedImagesMemoryCache[cacheKey];
+  }
+
+  let finalUrl = url || '';
+
+  if (!finalUrl || finalUrl.includes('placeholder') || finalUrl.includes('undefined') || finalUrl.includes('null')) {
+    if (pokemonName) {
+      finalUrl = getPokemonIconUrl(pokemonName);
+    } else {
+      finalUrl = 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=1080&auto=format&fit=crop&q=80';
+    }
+  }
+
+  if (finalUrl.startsWith('http') && !finalUrl.includes('githubusercontent.com') && !finalUrl.includes('pokemondb.net')) {
+    try {
+      const res = await axios.head(finalUrl, { timeout: 2500 });
+      if (res.status !== 200) {
+        if (pokemonName) finalUrl = getPokemonIconUrl(pokemonName);
+      }
+    } catch (e) {
+      if (pokemonName) {
+        finalUrl = getPokemonIconUrl(pokemonName);
+      }
+    }
+  }
+
+  verifiedImagesMemoryCache[cacheKey] = finalUrl;
+  saveVerifiedImagesCache(verifiedImagesMemoryCache).catch(() => {});
+  return finalUrl;
+}
+
+export async function scrapePoGOHubEventDetails(eventName: string): Promise<SpecialEventDetails | null> {
+  if (!eventName) return null;
+
   try {
-    leekResult = await scrapeLeekDuckEventDetails(eventID, link);
-  } catch (err: any) {
-    console.error(`[scrapeEventDetails] Leek Duck scraping failed for ${eventID}: ${err.message}`);
-  }
+    const cleanSearch = eventName.replace(/community\s*day/gi, '').replace(/spotlight\s*hour/gi, '').trim();
+    const searchUrl = `https://pokemongohub.net/?s=${encodeURIComponent(cleanSearch)}`;
+    
+    const searchRes = await axios.get(searchUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)'
+      },
+      timeout: 8000
+    });
 
-  if (!leekResult) {
+    const $search = cheerio.load(searchRes.data);
+    const articleLink = $search('article.post a, h2.entry-title a, .post-title a').first().attr('href');
+
+    if (!articleLink) {
+      return null;
+    }
+
+    const articleRes = await axios.get(articleLink, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)'
+      },
+      timeout: 8000
+    });
+
+    const $ = cheerio.load(articleRes.data);
+    const bonuses: any[] = [];
+    const debuts: any[] = [];
+    const spawns: any[] = [];
+    const eggs: any[] = [];
+    const research: any[] = [];
+
+    $('.event-bonuses li, ul.bonuses-list li, .entry-content ul li').each((_, li) => {
+      const text = $(li).text().trim();
+      if (text.length > 5 && text.length < 150 && (text.includes('XP') || text.includes('Candy') || text.includes('Stardust') || text.includes('Trade') || text.includes('Pass') || text.includes('Egg') || text.includes('Hatch') || text.includes('Lure') || text.includes('Incense'))) {
+        bonuses.push({
+          text: { cs: translateTextToCs(text), en: text },
+          icon: bonusTextToIcon(text)
+        });
+      }
+    });
+
+    $('.entry-content img').each((_, img) => {
+      const alt = $(img).attr('alt') || '';
+      const src = $(img).attr('src') || '';
+      if (alt && alt.length > 2 && !alt.toLowerCase().includes('logo') && !alt.toLowerCase().includes('banner')) {
+        const isShiny = alt.toLowerCase().includes('shiny');
+        const cleanName = alt.replace(/shiny/gi, '').replace(/sprite/gi, '').trim();
+        if (cleanName) {
+          spawns.push({
+            name: cleanName,
+            image: src || getPokemonIconUrl(cleanName),
+            isShinyAvailable: isShiny,
+            isHighPriority: false
+          });
+        }
+      }
+    });
+
+    return {
+      eventID: eventName.toLowerCase().replace(/\s+/g, '-'),
+      officialLink: articleLink,
+      bonuses,
+      debuts,
+      spawns,
+      eggs,
+      research,
+      sourcesMerged: ['PoGOHub']
+    };
+  } catch (err: any) {
+    console.warn(`[scrapePoGOHubEventDetails] Failed for "${eventName}": ${err.message}`);
     return null;
   }
+}
 
-  // 2. Try to find/match the official pokemongolive.com link
-  let officialLink: string | undefined = leekResult.officialLink;
+export async function mergeEventDetails(
+  eventID: string,
+  leekData: SpecialEventDetails | null,
+  pogoHubData: SpecialEventDetails | null,
+  officialLink?: string
+): Promise<SpecialEventDetails> {
+  const merged: SpecialEventDetails = {
+    eventID,
+    officialLink: officialLink || leekData?.officialLink || pogoHubData?.officialLink,
+    bonuses: [],
+    debuts: [],
+    spawns: [],
+    eggs: [],
+    research: [],
+    raids: [],
+    sourcesMerged: []
+  };
 
+  const sources: string[] = [];
+  if (leekData) sources.push('LeekDuck');
+  if (pogoHubData) sources.push('PoGOHub');
+  if (officialLink) sources.push('NianticOfficial');
+  merged.sourcesMerged = sources;
+
+  const bonusMap = new Map<string, any>();
+  const addBonus = (b: any) => {
+    const key = (b.text?.en || b.text?.cs || '').toLowerCase().trim();
+    if (key && !bonusMap.has(key)) {
+      bonusMap.set(key, b);
+    }
+  };
+  (leekData?.bonuses || []).forEach(addBonus);
+  (pogoHubData?.bonuses || []).forEach(addBonus);
+  merged.bonuses = Array.from(bonusMap.values());
+
+  const debutMap = new Map<string, any>();
+  const addDebut = (d: any) => {
+    const key = (d.name || '').toLowerCase().trim();
+    if (key && !debutMap.has(key)) {
+      debutMap.set(key, d);
+    }
+  };
+  (leekData?.debuts || []).forEach(addDebut);
+  (pogoHubData?.debuts || []).forEach(addDebut);
+  merged.debuts = Array.from(debutMap.values());
+
+  const spawnMap = new Map<string, any>();
+  const addSpawn = (s: any) => {
+    const key = (s.name || '').toLowerCase().trim();
+    if (key) {
+      if (!spawnMap.has(key)) {
+        spawnMap.set(key, s);
+      } else {
+        const existing = spawnMap.get(key);
+        if (!existing.isShinyAvailable && s.isShinyAvailable) {
+          existing.isShinyAvailable = true;
+        }
+      }
+    }
+  };
+  (leekData?.spawns || []).forEach(addSpawn);
+  (pogoHubData?.spawns || []).forEach(addSpawn);
+  merged.spawns = Array.from(spawnMap.values());
+
+  merged.eggs = leekData?.eggs || pogoHubData?.eggs || [];
+
+  const researchMap = new Map<string, any>();
+  const addResearch = (r: any) => {
+    const key = (r.task?.en || r.reward || '').toLowerCase().trim();
+    if (key && !researchMap.has(key)) {
+      researchMap.set(key, r);
+    }
+  };
+  (leekData?.research || []).forEach(addResearch);
+  (pogoHubData?.research || []).forEach(addResearch);
+  merged.research = Array.from(researchMap.values());
+
+  if (merged.debuts) {
+    for (const d of merged.debuts) {
+      d.image = await verifyAndResolveImageOnBackend(d.image, 'event', d.name);
+    }
+  }
+  if (merged.spawns) {
+    for (const s of merged.spawns) {
+      s.image = await verifyAndResolveImageOnBackend(s.image, 'event', s.name, s.isShinyAvailable);
+    }
+  }
+  if (merged.eggs) {
+    for (const group of merged.eggs) {
+      for (const e of group.contents || []) {
+        e.image = await verifyAndResolveImageOnBackend(e.image, 'egg', e.name, e.isShinyAvailable);
+      }
+    }
+  }
+  if (merged.research) {
+    for (const r of merged.research) {
+      r.image = await verifyAndResolveImageOnBackend(r.image, 'research', r.reward, r.isShinyAvailable);
+    }
+  }
+
+  return merged;
+}
+
+export async function scrapeEventDetails(
+  eventID: string, 
+  link: string, 
+  name?: string,
+  forceRescrape: boolean = false
+): Promise<SpecialEventDetails | null> {
+  if (!eventID) return null;
+
+  const cacheMap: Record<string, any> = await loadEventDetailsCache().catch(() => ({}));
+  if (!forceRescrape && cacheMap[eventID] && cacheMap[eventID].updatedAt && (Date.now() - cacheMap[eventID].updatedAt < 24 * 3600 * 1000)) {
+    return cacheMap[eventID].details;
+  }
+
+  let leekResult: SpecialEventDetails | null = null;
+  if (link) {
+    try {
+      leekResult = await scrapeLeekDuckEventDetails(eventID, link);
+    } catch (err: any) {
+      console.error(`[scrapeEventDetails] Leek Duck scraping failed for ${eventID}: ${err.message}`);
+    }
+  }
+
+  let pogoHubResult: SpecialEventDetails | null = null;
+  if (name || eventID) {
+    try {
+      pogoHubResult = await scrapePoGOHubEventDetails(name || eventID);
+    } catch (err: any) {
+      console.warn(`[scrapeEventDetails] PoGO Hub scraping failed for ${eventID}: ${err.message}`);
+    }
+  }
+
+  let officialLink: string | undefined = leekResult?.officialLink;
   if (!officialLink) {
     try {
       const articles = await getNianticNewsListing();
@@ -1919,25 +2157,27 @@ export async function scrapeEventDetails(eventID: string, link: string, name?: s
       if (name) {
         matchedArticle = articles.find(art => matchEventToArticle(name, art.title));
       }
-
       if (!matchedArticle) {
         matchedArticle = articles.find(art => matchSlugToTitle(eventID, art.title, art.href));
       }
 
       if (matchedArticle) {
         officialLink = matchedArticle.href;
-        console.log(`[scrapeEventDetails] Found matched official Niantic article for ${eventID}: ${officialLink}`);
       }
     } catch (err: any) {
       console.warn(`[scrapeEventDetails] Niantic listing matching failed for ${eventID}: ${err.message}`);
     }
   }
 
-  if (officialLink) {
-    leekResult.officialLink = officialLink;
-  }
+  const mergedDetails = await mergeEventDetails(eventID, leekResult, pogoHubResult, officialLink);
 
-  return leekResult;
+  cacheMap[eventID] = {
+    details: mergedDetails,
+    updatedAt: Date.now()
+  };
+  saveEventDetailsCache(cacheMap).catch(() => {});
+
+  return mergedDetails;
 }
 
 function getPokemonIconUrl(name: string): string {

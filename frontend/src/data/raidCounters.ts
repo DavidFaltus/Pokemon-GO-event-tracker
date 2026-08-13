@@ -9,7 +9,7 @@ export interface RaidCounters {
   minBoostedCp: number;
   maxBoostedCp: number; // 100% IV boosted CP
   weatherBoosts: string[];
-  playersRecommended?: string;
+  playersRecommended?: string | { cs: string; en: string; ja?: string; ru?: string };
   difficultyTier?: 'solo' | 'duo' | 'trio' | 'group' | 'hard-group';
   difficultyNotes?: { cs: string; en: string };
   pokebattlerUrl?: string;
@@ -153,11 +153,14 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     minBoostedCp: 2834,
     maxBoostedCp: 2939,
     weatherBoosts: ["Slunečno (Sunny)"],
-    playersRecommended: "1–2 hráči (Duo)",
-    difficultyTier: "duo",
+    playersRecommended: {
+      cs: "2–3 hráči (Trio)",
+      en: "2–3 Players (Trio)"
+    },
+    difficultyTier: "trio",
     difficultyNotes: {
-      cs: "Groudon je slabý na Vodu, Trávu a Led. Dva hráči se silnými ledovými týmy (White Kyurem, Shadow Mamoswine) nebo vodními týmy ho snadno porazí.",
-      en: "Groudon is weak to Water, Grass, and Ice. Easily duoable with top Ice (White Kyurem, Shadow Mamoswine) or Water teams."
+      cs: "Groudon je slabý na Vodu, Trávu a Led. 2–3 hráči se silnými ledovými týmy (White Kyurem, Shadow Mamoswine) nebo vodními týmy ho porazí.",
+      en: "Groudon is weak to Water, Grass, and Ice. Requires 2–3 players with top Ice (White Kyurem, Shadow Mamoswine) or Water teams."
     }
   },
   "primal groudon": {
@@ -171,11 +174,14 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     minBoostedCp: 2834,
     maxBoostedCp: 2939,
     weatherBoosts: ["Slunečno (Sunny)", "Jasno (Clear)"],
-    playersRecommended: "4–6+ hráčů",
+    playersRecommended: {
+      cs: "4–6+ hráčů (Skupina)",
+      en: "4–6+ Players (Group)"
+    },
     difficultyTier: "hard-group",
     difficultyNotes: {
-      cs: "Primal Groudon má obří 4x slabost na Vodu! Vyžaduje Primal Kyogre / Mega Swampert a silný vodní/ledový tým.",
-      en: "Primal Groudon has a massive 4x weakness to Water! Requires Primal Kyogre / Mega Swampert and strong Water/Ice counters."
+      cs: "Primal Groudon má obří 4x slabost na Vodu! Vyžaduje 4–6+ hráčů s Primal Kyogre / Mega Swampert a silný vodní/ledový tým.",
+      en: "Primal Groudon has a massive 4x weakness to Water! Requires 4–6+ players with Primal Kyogre / Mega Swampert and strong Water/Ice counters."
     }
   },
   "kyogre": {
@@ -189,7 +195,10 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     minBoostedCp: 2834,
     maxBoostedCp: 2939,
     weatherBoosts: ["Deštivo (Rainy)"],
-    playersRecommended: "2–3 hráči",
+    playersRecommended: {
+      cs: "2–3 hráči (Trio)",
+      en: "2–3 Players (Trio)"
+    },
     difficultyTier: "trio",
     difficultyNotes: {
       cs: "Kyogre je těžký úderník! Doporučujeme 2–3 hráče s Kartanou, Zekromem nebo Mega Sceptile/Rayquaza.",
@@ -207,7 +216,10 @@ export const raidCountersDb: Record<string, RaidCounters> = {
     minBoostedCp: 2834,
     maxBoostedCp: 2939,
     weatherBoosts: ["Deštivo (Rainy)"],
-    playersRecommended: "5–8+ hráčů",
+    playersRecommended: {
+      cs: "5–8+ hráčů (Velká skupina)",
+      en: "5–8+ Players (Group)"
+    },
     difficultyTier: "hard-group",
     difficultyNotes: {
       cs: "Jeden z nejtěžších raidů ve hře! Doporučujeme 5–8+ hráčů s Kartanou a Mega Rayquaza / Mega Sceptile.",

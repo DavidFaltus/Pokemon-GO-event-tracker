@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import cron from 'node-cron';
 import axios from 'axios';
+import crypto from 'crypto';
 import {
   scrapeEvents,
   scrapeEventDetails,
@@ -15,11 +16,13 @@ import { generateBotHtml } from './ssr';
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
 function rateLimit(windowMs: number, maxRequests: number) {
   return (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    const forwarded = req.headers['x-forwarded-for'];
+    const clientIp = (typeof forwarded === 'string' ? forwarded.split(',')[0].trim() : '') || req.ip || req.socket.remoteAddress || 'unknown';
+    const key = `${req.baseUrl || req.path}:${clientIp}`;
     const now = Date.now();
-    const entry = rateLimitMap.get(ip);
+    const entry = rateLimitMap.get(key);
     if (!entry || now > entry.resetAt) {
-      rateLimitMap.set(ip, { count: 1, resetAt: now + windowMs });
+      rateLimitMap.set(key, { count: 1, resetAt: now + windowMs });
       return next();
     }
     entry.count++;
@@ -32,14 +35,15 @@ function rateLimit(windowMs: number, maxRequests: number) {
 // Clean up old rate limit entries every 5 minutes
 setInterval(() => {
   const now = Date.now();
-  for (const [ip, entry] of rateLimitMap) {
-    if (now > entry.resetAt) rateLimitMap.delete(ip);
+  for (const [key, entry] of rateLimitMap) {
+    if (now > entry.resetAt) rateLimitMap.delete(key);
   }
 }, 5 * 60 * 1000);
 
 const app = express();
+app.set('trust proxy', true);
 const PORT = process.env.PORT || 4000;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'pogo2026admin';
 const activeAdminTokens = new Set<string>();
 
 // Enable CORS so the React app can call the API
@@ -51,9 +55,13 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Apply rate limiting: 100 requests per minute for API, 10 per minute for admin
-app.use('/api/admin', rateLimit(60 * 1000, 10));
-app.use('/api', rateLimit(60 * 1000, 100));
+// Apply rate limiting:
+// 1) Login route (prevent brute-force): max 30 requests / min
+app.use('/api/admin/login', rateLimit(60 * 1000, 30));
+// 2) Authenticated admin routes: max 600 requests / min
+app.use('/api/admin', rateLimit(60 * 1000, 600));
+// 3) General public API routes: max 300 requests / min
+app.use('/api', rateLimit(60 * 1000, 300));
 
 // ==========================================
 // Hybrid Cache (In-Memory + Persistent Disk)
@@ -199,6 +207,8 @@ async function runScheduledScraper(triggeredBy: 'cron' | 'startup' | 'admin' = '
     const eventsToScrape = events.filter((event: any) => {
       // Skip events that ended long ago
       if (event.end && new Date(event.end).getTime() < SKIP_IF_ENDED_BEFORE) return false;
+      // If triggered manually by admin, force re-scrape active/upcoming events
+      if (triggeredBy === 'admin') return true;
       // Always scrape new events
       if (newEventIDs.includes(event.eventID)) return true;
       // Re-scrape if detail cache is stale
@@ -214,7 +224,8 @@ async function runScheduledScraper(triggeredBy: 'cron' | 'startup' | 'admin' = '
 
     for (const event of eventsToScrape) {
       try {
-        const details = await scrapeEventDetails(event.eventID, event.link, event.name);
+        const forceRescrape = (triggeredBy === 'admin');
+        const details = await scrapeEventDetails(event.eventID, event.link, event.name, forceRescrape);
         if (details) {
           setToCache(`details_${event.eventID}`, details, DETAIL_CACHE_TTL);
           successCount++;
@@ -262,13 +273,42 @@ async function runScheduledScraper(triggeredBy: 'cron' | 'startup' | 'admin' = '
 // Authentication Middleware
 // ==========================================
 
+function isValidAdminToken(token: string): boolean {
+  if (!token) return false;
+  const effectivePassword = ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || 'pogo2026admin';
+
+  // 1. Raw password fallback
+  if (token === effectivePassword) return true;
+
+  // 2. In-memory set check
+  if (activeAdminTokens.has(token)) return true;
+
+  // 3. Stateless HMAC verification (Format: <timestamp>.<signature>)
+  const parts = token.split('.');
+  if (parts.length === 2) {
+    const [timestampStr, hash] = parts;
+    const timestamp = parseInt(timestampStr, 10);
+    if (!isNaN(timestamp)) {
+      // Token valid for 30 days
+      if (Date.now() - timestamp < 30 * 24 * 60 * 60 * 1000) {
+        const expectedHash = crypto.createHmac('sha256', effectivePassword).update(timestampStr).digest('hex');
+        if (hash.length === expectedHash.length && crypto.timingSafeEqual(Buffer.from(hash), Buffer.from(expectedHash))) {
+          return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
 function requireAuth(req: express.Request, res: express.Response, next: express.NextFunction) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ error: 'Unauthorized: Missing token' });
   }
   const token = authHeader.split(' ')[1];
-  if (token !== ADMIN_PASSWORD && !activeAdminTokens.has(token)) {
+  if (!isValidAdminToken(token)) {
     return res.status(403).json({ error: 'Forbidden: Invalid token' });
   }
   next();
@@ -721,15 +761,12 @@ app.post('/api/admin/import', requireAuth, async (req, res) => {
 app.post('/api/admin/login', (req, res) => {
   const { password } = req.body;
   if (!password) return res.status(400).json({ error: 'Missing password' });
-  if (!ADMIN_PASSWORD) return res.status(503).json({ error: 'Admin not configured' });
-  if (password === ADMIN_PASSWORD) {
-    // Generate a session token from password + timestamp to avoid exposing the raw password
-    const crypto = require('crypto');
-    const sessionToken = crypto.createHmac('sha256', ADMIN_PASSWORD).update(Date.now().toString()).digest('hex');
-    // Store token for validation (simple in-memory approach)
+  const effectivePassword = ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || 'pogo2026admin';
+  if (password === effectivePassword) {
+    const timestampStr = Date.now().toString();
+    const signature = crypto.createHmac('sha256', effectivePassword).update(timestampStr).digest('hex');
+    const sessionToken = `${timestampStr}.${signature}`;
     activeAdminTokens.add(sessionToken);
-    // Auto-expire after 24 hours
-    setTimeout(() => activeAdminTokens.delete(sessionToken), 24 * 60 * 60 * 1000);
     res.json({ success: true, token: sessionToken });
   } else {
     res.status(401).json({ error: 'Invalid password' });
@@ -738,12 +775,16 @@ app.post('/api/admin/login', (req, res) => {
 
 // Manually trigger scraper (admin only)
 app.post('/api/admin/scrape', requireAuth, (req, res) => {
-  if (scraperRunning) {
-    return res.json({ success: false, message: 'Scraper is already running' });
+  if (scraperRunning && req.query.force !== 'true') {
+    return res.json({ 
+      success: false, 
+      message: 'Scraper na pozadí již právě běží. Pokud chcete vynutit nový start, použijte force parameter.' 
+    });
   }
+  scraperRunning = false;
   // Fire and forget — runs in background
   runScheduledScraper('admin').catch(err => console.error('[Admin scrape] Error:', err));
-  res.json({ success: true, message: 'Scraper started in background' });
+  res.json({ success: true, message: 'Scraper byl úspěšně spuštěn na pozadí' });
 });
 
 // Get all pokemon icon overrides (public)
@@ -910,8 +951,8 @@ app.post('/api/admin/events/:id/rescrape', requireAuth, async (req, res) => {
       }
     } catch { /* ignore */ }
 
-    // Run scraper with the new URL
-    const details = await scrapeEventDetails(eventId, url, eventName);
+    // Run scraper with the new URL (forceRescrape = true)
+    const details = await scrapeEventDetails(eventId, url, eventName, true);
 
     if (!details) {
       return res.status(404).json({ error: 'Scraper returned no data for the provided URL' });

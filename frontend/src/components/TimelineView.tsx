@@ -36,10 +36,10 @@ const MONTH_NAMES: { [key in Language]: string[] } = {
 };
 
 const WEEKDAY_NAMES: { [key in Language]: string[] } = {
-  cs: ['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'],
-  en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-  ja: ['日', '月', '火', '水', '木', '金', '土'],
-  ru: ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб']
+  cs: ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'],
+  en: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  ja: ['月', '火', '水', '木', '金', '土', '日'],
+  ru: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
 };
 
 export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezone }) => {
@@ -126,12 +126,13 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
     return `${hours}:${minutes}`;
   };
 
-  // 2. Build the 6-week (42 days) calendar grid starting on Sunday
+  // 2. Build the 6-week (42 days) calendar grid starting on Monday
   const weeks = useMemo(() => {
     const firstDay = new Date(year, month, 1);
-    const startOffset = firstDay.getDay(); // 0 = Sunday, 1 = Monday ...
+    const dayOfWeek = firstDay.getDay();
+    const startOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // 0 = Monday, 6 = Sunday
     
-    // First Sunday of the grid
+    // First Monday of the grid
     const gridStart = new Date(year, month, 1 - startOffset);
     const tempDate = new Date(gridStart);
     

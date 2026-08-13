@@ -43,6 +43,7 @@ export interface SpecialEventDetails {
   eggs?: SpecialEventEgg[];
   research?: SpecialEventResearch[];
   debuts?: { name: LocalizedString; image: string; description: LocalizedString }[];
+  sourcesMerged?: string[];
 }
 
 export const SPECIAL_EVENTS_DATABASE: Record<string, SpecialEventDetails> = {

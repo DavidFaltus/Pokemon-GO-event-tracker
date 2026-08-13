@@ -218,3 +218,114 @@ export async function saveCustomRaidBosses(raids: CustomRaidBoss[]): Promise<boo
   }
 }
 
+// ─── EVENT DETAILS & VERIFIED IMAGES PERSISTENT CACHE ───────────────
+const DETAILS_FILE_PATH = path.join(__dirname, '..', 'event_details_cache.json');
+const DETAILS_FILE_NAME = 'event_details_cache.json';
+
+const IMAGES_FILE_PATH = path.join(__dirname, '..', 'verified_images_cache.json');
+const IMAGES_FILE_NAME = 'verified_images_cache.json';
+
+export async function loadEventDetailsCache(): Promise<Record<string, any>> {
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(DETAILS_FILE_NAME);
+      const [exists] = await file.exists();
+      if (exists) {
+        const [content] = await file.download();
+        return JSON.parse(content.toString());
+      }
+    } catch (err: any) {
+      console.error('Failed to load event details cache from GCS:', err.message);
+    }
+  }
+
+  try {
+    if (fs.existsSync(DETAILS_FILE_PATH)) {
+      const content = fs.readFileSync(DETAILS_FILE_PATH, 'utf-8');
+      return JSON.parse(content);
+    }
+  } catch (err) {
+    console.error('Failed to load event details cache locally:', err);
+  }
+  return {};
+}
+
+export async function saveEventDetailsCache(detailsMap: Record<string, any>): Promise<boolean> {
+  const dataStr = JSON.stringify(detailsMap, null, 2);
+
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(DETAILS_FILE_NAME);
+      await file.save(dataStr, {
+        contentType: 'application/json',
+        resumable: false
+      });
+      return true;
+    } catch (err: any) {
+      console.error('Failed to save event details cache to GCS:', err.message);
+    }
+  }
+
+  try {
+    fs.writeFileSync(DETAILS_FILE_PATH, dataStr, 'utf-8');
+    return true;
+  } catch (err) {
+    console.error('Failed to save event details cache locally:', err);
+    return false;
+  }
+}
+
+export async function loadVerifiedImagesCache(): Promise<Record<string, string>> {
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(IMAGES_FILE_NAME);
+      const [exists] = await file.exists();
+      if (exists) {
+        const [content] = await file.download();
+        return JSON.parse(content.toString());
+      }
+    } catch (err: any) {
+      console.error('Failed to load verified images cache from GCS:', err.message);
+    }
+  }
+
+  try {
+    if (fs.existsSync(IMAGES_FILE_PATH)) {
+      const content = fs.readFileSync(IMAGES_FILE_PATH, 'utf-8');
+      return JSON.parse(content);
+    }
+  } catch (err) {
+    console.error('Failed to load verified images cache locally:', err);
+  }
+  return {};
+}
+
+export async function saveVerifiedImagesCache(imagesMap: Record<string, string>): Promise<boolean> {
+  const dataStr = JSON.stringify(imagesMap, null, 2);
+
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(IMAGES_FILE_NAME);
+      await file.save(dataStr, {
+        contentType: 'application/json',
+        resumable: false
+      });
+      return true;
+    } catch (err: any) {
+      console.error('Failed to save verified images cache to GCS:', err.message);
+    }
+  }
+
+  try {
+    fs.writeFileSync(IMAGES_FILE_PATH, dataStr, 'utf-8');
+    return true;
+  } catch (err) {
+    console.error('Failed to save verified images cache locally:', err);
+    return false;
+  }
+}
+

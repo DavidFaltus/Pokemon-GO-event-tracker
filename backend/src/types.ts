@@ -59,6 +59,15 @@ export interface SpecialEventDetails {
     image: string;
     isShinyAvailable: boolean;
   }[];
+  raids?: {
+    tier: string;
+    list: {
+      name: string;
+      image: string;
+      canBeShiny: boolean;
+    }[];
+  }[];
+  sourcesMerged?: string[];
 }
 
 export interface RaidCounters {

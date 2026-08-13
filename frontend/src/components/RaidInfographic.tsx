@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
-import { Download, Sparkles, Clock, Calendar, Check, ShieldCheck, Swords, Shield, Trophy, Layers, Zap, Users } from 'lucide-react';
+import { Download, Sparkles, Clock, Calendar, Check, ShieldCheck, Swords, Shield, Trophy, Layers, Zap, Users, User, AlertTriangle } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
 import { resolveImage, handlePokemonImageError, getBasePokemonNames } from '../utils/imageResolver';
@@ -162,12 +162,14 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
   const maxBoostedCp = countersData?.maxBoostedCp || 2184;
   const weatherBoostsList = countersData?.weatherBoosts || ['Windy'];
 
+  const bossTier = (activeBoss as any)?.tier || (event.eventType?.includes('mega') ? 'mega' : event.eventType?.includes('shadow') ? 'shadow-5' : '5');
+
   const diffInfo = getBossDifficultyInfo(
     primaryBossName,
-    (activeBoss as any)?.tier || '5',
-    countersData?.playersRecommended,
-    countersData?.difficultyTier,
-    countersData?.difficultyNotes,
+    bossTier,
+    (activeBoss as any)?.playersRecommended || countersData?.playersRecommended,
+    (activeBoss as any)?.difficultyTier || countersData?.difficultyTier,
+    (activeBoss as any)?.difficultyNotes || countersData?.difficultyNotes,
     lang
   );
 
@@ -513,11 +515,24 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
             <div className="slide1-info-cards-flex">
               <div className="slide1-weakness-card centered">
                 <div className="weakness-header centered">
-                  <Users size={14} style={{ color: '#38bdf8' }} />
+                  {diffInfo.difficultyTier === 'solo' ? (
+                    <User size={14} style={{ color: '#4ade80' }} />
+                  ) : diffInfo.difficultyTier === 'hard-group' ? (
+                    <AlertTriangle size={14} style={{ color: '#f87171' }} />
+                  ) : (
+                    <Users size={14} style={{ color: '#38bdf8' }} />
+                  )}
                   <span>{lang === 'cs' ? 'DOPORUČENÁ SKUPINA' : 'RECOMMENDED PARTY'}</span>
                 </div>
                 <div className="type-badges-row centered">
                   <span className={`diff-infographic-pill tier-${diffInfo.difficultyTier}`}>
+                    {diffInfo.difficultyTier === 'solo' ? (
+                      <User size={12} />
+                    ) : diffInfo.difficultyTier === 'hard-group' ? (
+                      <AlertTriangle size={12} />
+                    ) : (
+                      <Users size={12} />
+                    )}
                     {diffInfo.recLabel}
                   </span>
                 </div>

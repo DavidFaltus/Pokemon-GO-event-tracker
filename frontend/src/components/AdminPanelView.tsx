@@ -639,6 +639,10 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
       if (resAdmin.ok) {
         const overrides = await resAdmin.json();
         setCustomOverrides(overrides);
+      } else if (resAdmin.status === 401 || resAdmin.status === 403) {
+        localStorage.removeItem('pogo_admin_token');
+        setToken('');
+        setIsLoggedIn(false);
       }
     } catch {
       /* silent fallback when offline/backend restarting */
@@ -1149,22 +1153,26 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     URL.revokeObjectURL(url);
   };
 
-  const handleTriggerScraper = async () => {
+  const handleTriggerScraper = async (force: boolean = false) => {
     setScraperRunning(true);
     setError(''); setSuccessMsg('');
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/scrape`, {
+      const res = await fetch(`${API_BASE_URL}/api/admin/scrape${force ? '?force=true' : ''}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      if (res.status === 401) {
+        setError(lang === 'cs' ? 'Relace vypršela. Prosím přihlaste se znovu.' : 'Session expired. Please log in again.');
+        return;
+      }
       const data = await res.json();
       if (res.ok && data.success) {
         setSuccessMsg(lang === 'cs' ? 'Scraper spuštěn na pozadí!' : 'Scraper started in background!');
         setTimeout(fetchScraperStatus, 3000);
       } else {
-        setError(data.message || 'Failed to start scraper');
+        setError(data.message || (lang === 'cs' ? 'Chyba při spuštění scraperu' : 'Failed to start scraper'));
       }
-    } catch { setError('Network error'); }
+    } catch { setError(lang === 'cs' ? 'Chyba sítě při připojení k serveru' : 'Network error'); }
     finally { setScraperRunning(false); }
   };
 
@@ -2761,11 +2769,19 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
               {error && <div className="admin-form-error"><AlertTriangle size={14} /><span>{error}</span></div>}
               <button
                 className="admin-btn btn-primary scraper-trigger-btn"
-                onClick={handleTriggerScraper}
+                onClick={() => handleTriggerScraper(false)}
                 disabled={scraperRunning || scraperStatus?.isRunning}
               >
                 <RefreshCw size={16} className={scraperRunning ? 'spin-icon' : ''} />
                 {scraperRunning ? (lang === 'cs' ? 'Spouštím...' : 'Starting...') : (lang === 'cs' ? 'Spustit Scraper nyní' : 'Run Scraper Now')}
+              </button>
+              <button
+                className="admin-btn btn-secondary"
+                onClick={() => handleTriggerScraper(true)}
+                disabled={scraperRunning}
+                title={lang === 'cs' ? 'Vynutit opětovný sběr všech eventů' : 'Force re-scraping all events'}
+              >
+                ⚡ {lang === 'cs' ? 'Vynutit nový start' : 'Force Re-scrape'}
               </button>
               <button className="admin-btn btn-secondary" onClick={fetchScraperStatus}>
                 {lang === 'cs' ? 'Obnovit stav' : 'Refresh Status'}
