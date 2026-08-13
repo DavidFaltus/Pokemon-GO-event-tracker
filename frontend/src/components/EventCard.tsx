@@ -9,7 +9,7 @@ import type { Language } from '../data/translations';
 import { getSpecialEventDetails, getPokemonImage } from '../data/specialEvents';
 import { findPokemonMeta } from '../data/pokemonMeta';
 import { useDynamicEventDetails } from '../hooks/useDynamicEventDetails';
-import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Flame, RefreshCw, Plus, Check, Image as ImageIcon, LayoutList } from 'lucide-react';
+import { Calendar, ExternalLink, Star, Sparkles, Gift, Leaf, Search, Swords, Flame, RefreshCw, Plus, Check, Image as ImageIcon, LayoutList, Share2 } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
 import { resolveImage, handlePokemonImageError, getBasePokemonName, getBasePokemonNames, getPokemonIconUrl } from '../utils/imageResolver';
 import { getPokemonName } from '../utils/pokemonTranslator';
@@ -291,6 +291,39 @@ export const EventCard: React.FC<EventCardProps> = ({
   const [officialUrl, setOfficialUrl] = useState<string>('');
   const [showOfficial, setShowOfficial] = useState<boolean>(false);
   const [, setShowLeekDuck] = useState<boolean>(true);
+  const [copied, setCopied] = useState<boolean>(false);
+
+  const handleCopyLink = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = typeof window !== 'undefined'
+      ? `${window.location.origin}/${lang}/events/${event.eventID}`
+      : `https://pogoevents.app/${lang}/events/${event.eventID}`;
+
+    const copySuccess = () => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(copySuccess).catch(() => {
+        const input = document.createElement('input');
+        input.value = url;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        copySuccess();
+      });
+    } else {
+      const input = document.createElement('input');
+      input.value = url;
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      copySuccess();
+    }
+  };
 
   const t = translations[lang] || translations.cs;
 
@@ -756,6 +789,17 @@ export const EventCard: React.FC<EventCardProps> = ({
                   <Calendar size={14} />
                   {t.details_add_to_calendar}
                 </a>
+                <button 
+                  onClick={handleCopyLink} 
+                  className="share-event-link-btn"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                  title={lang === 'cs' ? 'Kopírovat přímý odkaz na událost' : 'Copy direct link to event'}
+                >
+                  {copied ? <Check size={14} style={{ color: '#10b981' }} /> : <Share2 size={14} />}
+                  {copied 
+                    ? (lang === 'cs' ? 'Zkopírováno!' : lang === 'ja' ? 'コピーしました！' : lang === 'ru' ? 'Скопировано!' : 'Copied!') 
+                    : (lang === 'cs' ? 'Sdílet odkaz' : lang === 'ja' ? 'リンクを共有' : lang === 'ru' ? 'Поделиться' : 'Share Link')}
+                </button>
             </div>
 
             {dynamicLoading && (
@@ -805,6 +849,8 @@ export const EventCard: React.FC<EventCardProps> = ({
     <>
       <div 
         ref={cardRef}
+        id={`event-card-${event.eventID}`}
+        data-event-id={event.eventID}
         className={`event-card status-${status} type-${event.eventType} ${isExpanded && useInline ? 'expanded-inline' : ''}`}
         onClick={handleCardClick}
         style={{ cursor: 'pointer' }}

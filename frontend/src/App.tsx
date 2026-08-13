@@ -263,7 +263,7 @@ const getTabFromUrlPath = (pathname: string): TabType => {
   if (first === 'guides' || first === 'guide' || first === 'pruvodce') return 'guides';
   if (first === 'raids' || first === 'raid') return 'raid';
   if (first === 'rocket') return 'rocket';
-  if (first === 'rankings' || first === 'ranking') return 'ranking';
+  if (first === 'rankings' || first === 'ranking' || first === 'pokemon') return 'ranking';
   if (first === 'ditto') return 'ditto';
   if (first === 'eggs') return 'eggs';
   if (first === 'filter') return 'filter';
@@ -276,11 +276,19 @@ const getEventIdFromUrlPath = (pathname: string): string | null => {
   return match && match[1] ? match[1] : null;
 };
 
-const getUrlPathForTab = (tab: TabType, l: Language, eventID?: string | null): string => {
+const getPokemonSearchFromUrlPath = (pathname: string): string | null => {
+  const match = pathname.toLowerCase().match(/\/pokemon\/([^/]+)/);
+  return match && match[1] ? decodeURIComponent(match[1]) : null;
+};
+
+const getUrlPathForTab = (tab: TabType, l: Language, eventID?: string | null, pokemonSearch?: string | null): string => {
   if (tab === 'admin') return '/admin';
   const prefix = `/${l}`;
   if (tab === 'events' && eventID) {
     return `${prefix}/events/${eventID}`;
+  }
+  if (tab === 'ranking' && pokemonSearch) {
+    return `${prefix}/pokemon/${pokemonSearch}`;
   }
   switch (tab) {
     case 'guides': return `${prefix}/guides`;
@@ -331,9 +339,10 @@ const updateHeadMeta = (tab: TabType, lang: string, eventId?: string | null): vo
   link.href = canonicalUrl;
 };
 
-function App({ initialLang, initialTab, initialArticleSlug }: { initialLang?: Language; initialTab?: TabType; initialArticleSlug?: string } = {}) {
+function App({ initialLang, initialTab, initialArticleSlug, initialEventId, initialPokemonSearch }: { initialLang?: Language; initialTab?: TabType; initialArticleSlug?: string; initialEventId?: string; initialPokemonSearch?: string } = {}) {
   const [activeTab, setActiveTab] = useState<TabType>(initialTab || 'events');
-  const [expandedEventId, setExpandedEventId] = useState<string | null>(null);
+  const [expandedEventId, setExpandedEventId] = useState<string | null>(initialEventId || null);
+  const [pokemonSearch, setPokemonSearch] = useState<string | null>(initialPokemonSearch || null);
   const [lang, setLang] = useState<Language>(initialLang || 'en');
   const [legalModal, setLegalModal] = useState<LegalModalType>(null);
   const navigate = useAppNavigate();
@@ -356,6 +365,32 @@ function App({ initialLang, initialTab, initialArticleSlug }: { initialLang?: La
     isRunning: boolean;
     totalEvents: number;
   }>({ lastScrapedAt: null, nextScrapeAt: null, isRunning: false, totalEvents: 0 });
+
+  // Sync status filter & scroll to target event when expandedEventId is specified
+  useEffect(() => {
+    if (!expandedEventId || loading || events.length === 0) return;
+
+    const targetEvent = events.find(e => e.eventID === expandedEventId);
+    if (targetEvent) {
+      const now = new Date();
+      const isUpcoming = now < new Date(targetEvent.start);
+      if (isUpcoming && statusFilter !== 'upcoming') {
+        setStatusFilter('upcoming');
+      } else if (!isUpcoming && statusFilter !== 'active') {
+        setStatusFilter('active');
+      }
+    }
+
+    const timer = setTimeout(() => {
+      const el = document.getElementById(`event-card-${expandedEventId}`) ||
+                 document.querySelector(`[data-event-id="${expandedEventId}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [expandedEventId, events, loading]);
 
   useEffect(() => {
     trackGAEvent('switch_tab', 'Navigation', activeTab);
@@ -400,9 +435,26 @@ function App({ initialLang, initialTab, initialArticleSlug }: { initialLang?: La
       setActiveTab(urlTab);
     }
 
-    const urlEventId = getEventIdFromUrlPath(path);
+    const urlEventId = getEventIdFromUrlPath(path) || initialEventId;
     if (urlEventId) {
       setExpandedEventId(urlEventId);
+    }
+
+    const urlPokemonSearch = getPokemonSearchFromUrlPath(path) || initialPokemonSearch;
+    if (urlPokemonSearch) {
+      setPokemonSearch(urlPokemonSearch);
+    }
+
+    const isCapacitor = !!(window as any).Capacitor || 
+                        window.location.protocol === 'capacitor:' || 
+                        window.location.protocol === 'file:';
+
+    // Automatically redirect root URL '/' or '/index.html' to canonical language route (e.g. '/en/events' or '/cs/events')
+    if (!isCapacitor && (path === '/' || path === '' || path === '/index.html' || path === '/app.html')) {
+      const targetPath = getUrlPathForTab(urlTab || activeTab, resolvedLang, urlEventId);
+      if (window.location.pathname !== targetPath) {
+        navigate.replace(targetPath);
+      }
     }
 
     // Set initial page title, <html lang> and canonical meta on mount
@@ -415,6 +467,9 @@ function App({ initialLang, initialTab, initialArticleSlug }: { initialLang?: La
     setActiveTab(newTab);
     if (newTab !== 'events') {
       setExpandedEventId(null);
+    }
+    if (newTab !== 'ranking') {
+      setPokemonSearch(null);
     }
     if (typeof window !== 'undefined') {
       const isCapacitor = !!(window as any).Capacitor || 
@@ -1093,7 +1148,25 @@ function App({ initialLang, initialTab, initialArticleSlug }: { initialLang?: La
 
               {activeTab === 'ranking' && (
                 <div className="tab-content ranking-tab">
-                  <PokemonRankingsView lang={lang} />
+                  <PokemonRankingsView 
+                    lang={lang} 
+                    initialSearchQuery={pokemonSearch || initialPokemonSearch || ''}
+                    onSearchChange={(query) => {
+                      const newSearch = query.trim() || null;
+                      setPokemonSearch(newSearch);
+                      if (typeof window !== 'undefined') {
+                        const isCapacitor = !!(window as any).Capacitor || 
+                                            window.location.protocol === 'capacitor:' || 
+                                            window.location.protocol === 'file:';
+                        if (!isCapacitor) {
+                          const targetPath = getUrlPathForTab('ranking', lang, null, newSearch);
+                          if (window.location.pathname !== targetPath) {
+                            navigate.replace(targetPath);
+                          }
+                        }
+                      }
+                    }}
+                  />
                 </div>
               )}
 

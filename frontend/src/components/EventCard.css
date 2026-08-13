@@ -463,6 +463,33 @@ body.light-mode .modal-close-btn {
   transform: scale(0.98);
 }
 
+.share-event-link-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.share-event-link-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+.share-event-link-btn:active {
+  transform: scale(0.98);
+}
+
 /* Rocket Tab Mode Switcher and Grunts Guide Styling */
 .mode-switcher {
   display: flex;

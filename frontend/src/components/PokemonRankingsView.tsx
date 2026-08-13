@@ -63,6 +63,8 @@ const MoveTypeBadgeWithIcon: React.FC<{ type: string }> = ({ type }) => {
 
 interface PokemonRankingsViewProps {
   lang: Language;
+  initialSearchQuery?: string;
+  onSearchChange?: (query: string) => void;
 }
 
 const ALL_TYPES = [
@@ -71,13 +73,24 @@ const ALL_TYPES = [
   "Rock", "Ghost", "Dragon", "Dark", "Steel", "Fairy"
 ];
 
-export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }) => {
+export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, initialSearchQuery, onSearchChange }) => {
   const t = translations[lang] || translations.cs;
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [expandedPokes, setExpandedPokes] = useState<Set<string>>(new Set());
   const [rankingMode, setRankingMode] = useState<'er' | 'basic'>('basic');
   const [visibleCount, setVisibleCount] = useState(40);
+
+  useEffect(() => {
+    if (initialSearchQuery !== undefined && initialSearchQuery !== searchQuery) {
+      setSearchQuery(initialSearchQuery);
+    }
+  }, [initialSearchQuery]);
+
+  const handleSearchChange = (val: string) => {
+    setSearchQuery(val);
+    onSearchChange?.(val);
+  };
 
   useEffect(() => {
     setVisibleCount(40);
@@ -168,6 +181,22 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
     return result.sort(dynamicSortFn);
   }, [searchQuery, selectedType, dynamicSortFn]);
 
+  // Auto-expand matching Pokemon when search query is active
+  useEffect(() => {
+    if (searchQuery.trim() && filteredRankings.length > 0) {
+      const firstPoke = filteredRankings[0];
+      const key = getPokeKey(firstPoke);
+      setExpandedPokes(prev => {
+        if (!prev.has(key)) {
+          const next = new Set(prev);
+          next.add(key);
+          return next;
+        }
+        return prev;
+      });
+    }
+  }, [searchQuery, filteredRankings, getPokeKey]);
+
   return (
     <div className="pokemon-rankings-container">
       <p className="tab-seo-description">{(t as any).seo_ranking_desc}</p>
@@ -205,7 +234,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang }
             className="ranking-search-input"
             placeholder={t.ranking_search_placeholder}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
           />
         </div>
 

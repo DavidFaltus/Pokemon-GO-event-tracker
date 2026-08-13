@@ -24,7 +24,7 @@ const getTabFromSlug = (slug?: string[]): TabType | undefined => {
   const first = slug[0].toLowerCase();
   if (first === 'raids' || first === 'raid') return 'raid';
   if (first === 'rocket') return 'rocket';
-  if (first === 'rankings' || first === 'ranking') return 'ranking';
+  if (first === 'rankings' || first === 'ranking' || first === 'pokemon') return 'ranking';
   if (first === 'ditto') return 'ditto';
   if (first === 'eggs') return 'eggs';
   if (first === 'filter') return 'filter';
@@ -43,6 +43,9 @@ export default async function CatchAllLangPage({ params }: PageProps) {
   const validLanguages: Language[] = ['cs', 'en', 'ja', 'ru'];
   const lang: Language = validLanguages.includes(rawLang as Language) ? (rawLang as Language) : 'en';
   const tab = getTabFromSlug(unwrappedParams.slug);
+  const pokemonSearch = unwrappedParams.slug && unwrappedParams.slug[0]?.toLowerCase() === 'pokemon' && unwrappedParams.slug[1]
+    ? unwrappedParams.slug[1]
+    : undefined;
 
-  return <App initialLang={lang} initialTab={tab} />;
+  return <App initialLang={lang} initialTab={tab} initialPokemonSearch={pokemonSearch} />;
 }

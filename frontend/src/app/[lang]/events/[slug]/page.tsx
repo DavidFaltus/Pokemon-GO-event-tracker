@@ -110,7 +110,7 @@ export default async function EventPage({ params }: EventPageProps) {
   const event = await fetchEventDetails(slug);
 
   if (!event) {
-    return <App initialLang={validLang} />;
+    return <App initialLang={validLang} initialEventId={slug} />;
   }
 
   const title = event.name;
@@ -144,7 +144,7 @@ export default async function EventPage({ params }: EventPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <App initialLang={validLang} />
+      <App initialLang={validLang} initialEventId={slug} />
     </>
   );
 }
