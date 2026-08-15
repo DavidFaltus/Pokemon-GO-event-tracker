@@ -3,11 +3,13 @@ import { toPng } from 'html-to-image';
 import { Download, Sparkles, Clock, Calendar, Check, ShieldCheck, Gift, Leaf, Search, Star, Egg } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
-import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError, fetchImageAsBase64 } from '../utils/imageResolver';
+import { getFontEmbedCSS, disableTextClipping } from '../utils/exportPoster';
 import { getPokemonName } from '../utils/pokemonTranslator';
-import { API_BASE_URL } from '../config';
 import { formatEventDateRange } from './MaxInfographic';
 import { getLocalizedText } from './EventCard';
+import { useInfographicEditor } from '../hooks/useInfographicEditor';
+import { EditableText, EditableImage, EditToolbar } from './InfographicEditable';
 import './EventInfographic.css';
 
 interface EventInfographicProps {
@@ -16,26 +18,8 @@ interface EventInfographicProps {
   timezone?: string;
   /** Merged special-event details (bonuses, spawns, eggs, research, debuts) */
   specialDetails?: any;
+  isAdmin?: boolean;
 }
-
-// Converts image URL to Base64 via backend proxy (same pattern as other infographics)
-const fetchImageAsBase64 = async (url: string): Promise<string> => {
-  if (!url || url.startsWith('data:')) return url;
-  try {
-    const proxyUrl = `${API_BASE_URL}/api/proxy-image?url=${encodeURIComponent(url)}`;
-    const res = await fetch(proxyUrl);
-    if (!res.ok) return url;
-    const blob = await res.blob();
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve((reader.result as string) || url);
-      reader.onerror = () => resolve(url);
-      reader.readAsDataURL(blob);
-    });
-  } catch {
-    return url;
-  }
-};
 
 // ── Per event-type theming ─────────────────────────────────────────────────────
 interface EventTheme {
@@ -120,10 +104,12 @@ const EggSvg = ({ size = 16 }: { size?: number }) => (
 );
 
 // ── Main Component ─────────────────────────────────────────────────────────────
-export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang, specialDetails }) => {
+export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang, specialDetails, isAdmin = false }) => {
   const posterRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+
+  const editor = useInfographicEditor(event.eventID, 'event');
 
   const theme = getEventTheme(event.eventType, event.name);
   const { dateStr, timeStr, isMultiDay } = formatEventDateRange(event.start, event.end, lang);
@@ -136,25 +122,26 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
   const research: any[] = extraData?.research || specialDetails?.research || [];
   const debuts: any[] = extraData?.debuts || specialDetails?.debuts || [];
   const communitydaySpawns: any[] = extraData?.communityday?.spawns || [];
-  const raidBosses: any[] = extraData?.raidbattles?.bosses || [];
 
   const allSpawns = spawns.length > 0 ? spawns : communitydaySpawns;
 
-  // Featured Pokémon — first spawn, first debut, or extracted from name
-  const featured =
-    allSpawns[0] ||
-    (debuts[0] ? { name: typeof debuts[0].name === 'object' ? debuts[0].name.en : debuts[0].name, image: debuts[0].image } : null) ||
-    (raidBosses[0] ? { name: raidBosses[0].name, image: raidBosses[0].image } : null) ||
-    null;
+  const displaySpawns = editor.getListOverride('spawns', allSpawns);
+  const displayBonuses = editor.getListOverride('bonuses', bonuses);
+  const displayEggs = editor.getListOverride('eggs', eggs);
+  const displayResearch = editor.getListOverride('research', research);
+  const displayDebuts = editor.getListOverride('debuts', debuts);
 
-  const hasFeatured = !!featured;
-  const totalSections = [allSpawns.length > 0, bonuses.length > 0, eggs.length > 0, research.length > 0, debuts.length > 0].filter(Boolean).length;
+  const totalSections = [displaySpawns.length > 0, displayBonuses.length > 0, displayEggs.length > 0, displayResearch.length > 0, displayDebuts.length > 0].filter(Boolean).length;
 
   // ── Download ──────────────────────────────────────────────────────────────
   const handleDownload = async () => {
     if (!posterRef.current || downloading) return;
     setDownloading(true);
+    editor.setIsExporting(true);
+    await new Promise(r => setTimeout(r, 100)); // allow render to hide edit UI
+
     const originalSrcs: { img: HTMLImageElement; origSrc: string }[] = [];
+    let restoreClipping: (() => void) | null = null;
     try {
       const imgs = Array.from(posterRef.current.querySelectorAll('img'));
       await Promise.all(
@@ -163,29 +150,71 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
           if (origSrc && !origSrc.startsWith('data:')) {
             originalSrcs.push({ img, origSrc });
             try {
-              const b64 = await fetchImageAsBase64(origSrc);
-              if (b64.startsWith('data:')) img.src = b64;
-            } catch { /* ignore */ }
+              const b64 = await fetchImageAsBase64(origSrc, img);
+              if (b64 && b64.startsWith('data:')) {
+                img.src = b64;
+              } else {
+                img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+              }
+            } catch {
+              img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+            }
           }
         })
       );
+      if (typeof document !== 'undefined' && (document as any).fonts) {
+        await (document as any).fonts.ready;
+      }
+      if (!posterRef.current) return;
+
+      if (posterRef.current) {
+        restoreClipping = disableTextClipping(posterRef.current);
+      }
+      const fontEmbedCSS = await getFontEmbedCSS();
+      const rect = posterRef.current.getBoundingClientRect();
+      const w = Math.round(rect.width) || posterRef.current.offsetWidth || 720;
+      const h = Math.round(rect.height) || posterRef.current.offsetHeight || 650;
       const dataUrl = await toPng(posterRef.current, {
         cacheBust: false,
-        skipFonts: true,
+        skipFonts: !fontEmbedCSS,
+        fontEmbedCSS: fontEmbedCSS || undefined,
+        width: w,
+        height: h,
+        canvasWidth: w * 2,
+        canvasHeight: h * 2,
         pixelRatio: 2,
         backgroundColor: '#0d1117',
+        style: {
+          width: `${w}px`,
+          height: `${h}px`,
+          maxWidth: `${w}px`,
+          minWidth: `${w}px`,
+          fontFamily: "'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          margin: '0',
+          transform: 'none',
+        }
       });
       const link = document.createElement('a');
       link.download = `pogo_event_${event.eventID}.png`;
       link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
+      setTimeout(() => {
+        if (link.parentNode) {
+          link.parentNode.removeChild(link);
+        }
+      }, 500);
       setDownloadSuccess(true);
       setTimeout(() => setDownloadSuccess(false), 3000);
     } catch (err) {
       console.error('EventInfographic: download failed', err);
     } finally {
       originalSrcs.forEach(({ img, origSrc }) => { img.src = origSrc; });
+      if (restoreClipping) {
+        restoreClipping();
+      }
       setDownloading(false);
+      editor.setIsExporting(false);
     }
   };
 
@@ -209,15 +238,27 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
     return b.icon || '🎁';
   };
 
+  const isEditing = isAdmin && editor.isEditing;
+
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="ei-wrapper">
       {/* Poster */}
       <div
-        className="ei-poster"
+        className={`ei-poster ${editor.isExporting ? 'is-exporting' : ''}`}
         ref={posterRef}
         style={{ borderColor: `${theme.accent}55` }}
       >
+        {isAdmin && (
+          <EditToolbar 
+            isEditing={editor.isEditing} 
+            onToggleEdit={() => editor.setIsEditing(!editor.isEditing)} 
+            hasOverrides={editor.hasOverrides} 
+            onReset={editor.resetAll} 
+            lang={lang} 
+          />
+        )}
+
         {/* Glow */}
         <div className="ei-glow-top" style={{ background: `radial-gradient(circle, ${theme.accentGlow} 0%, transparent 70%)` }} />
 
@@ -225,97 +266,111 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
         <div className="ei-header">
           <div className="ei-badge" style={{ background: theme.badge, color: theme.accent, borderColor: `${theme.accent}55` }}>
             {theme.icon}
-            <span>{theme.badgeLabel(lang)}</span>
+            <span>
+              <EditableText
+                value={editor.getTextOverride('badgeLabel', theme.badgeLabel(lang))}
+                onChange={(v) => editor.setTextOverride('badgeLabel', v)}
+                isEditing={isEditing}
+              />
+            </span>
           </div>
           <h2 className="ei-title" style={{ backgroundImage: `linear-gradient(135deg, #ffffff 30%, ${theme.accent} 100%)` }}>
-            {typeof event.name === 'object' ? getLocalizedText(event.name, lang) : event.name}
+            <EditableText
+              value={editor.getTextOverride('title', typeof event.name === 'object' ? getLocalizedText(event.name, lang) : event.name)}
+              onChange={(v) => editor.setTextOverride('title', v)}
+              isEditing={isEditing}
+            />
           </h2>
           <div className="ei-time-bar">
-            <div className="ei-time-item"><Calendar size={14} /><span>{dateStr}</span></div>
+            <div className="ei-time-item"><Calendar size={14} /><span><EditableText value={editor.getTextOverride('date', dateStr)} onChange={(v) => editor.setTextOverride('date', v)} isEditing={isEditing} /></span></div>
             {!isMultiDay && timeStr && (
-              <><div className="ei-time-sep">•</div><div className="ei-time-item"><Clock size={14} /><span>{timeStr}</span></div></>
+              <><div className="ei-time-sep">•</div><div className="ei-time-item"><Clock size={14} /><span><EditableText value={editor.getTextOverride('time', timeStr)} onChange={(v) => editor.setTextOverride('time', v)} isEditing={isEditing} /></span></div></>
             )}
           </div>
         </div>
 
         {/* ── Body ── */}
-        <div className={`ei-body ${hasFeatured ? 'has-featured' : ''} sections-${totalSections}`}>
-
-          {/* Featured Pokémon panel */}
-          {hasFeatured && (
-            <div className="ei-featured-card" style={{ borderColor: `${theme.accent}40`, background: `linear-gradient(135deg, rgba(13,17,23,0.95), ${theme.accentLight})` }}>
-              <div className="ei-featured-halo" style={{ background: `radial-gradient(circle, ${theme.accentGlow} 0%, transparent 70%)` }} />
-              <img
-                src={resolveImage(featured.image, event.eventType, getPokeName(featured))}
-                alt={getPokeName(featured)}
-                className="ei-featured-img"
-                onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, getPokeName(featured))}
-              />
-              <div className="ei-featured-name">{getPokemonName(getPokeName(featured), lang)}</div>
-              {featured.isShinyAvailable && (
-                <div className="ei-shiny-chip" style={{ color: theme.accent, borderColor: `${theme.accent}55`, background: theme.accentLight }}>
-                  <Sparkles size={11} />✨ Shiny
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Right column — sections */}
+        <div className={`ei-body sections-${totalSections}`}>
+          {/* Main sections grid */}
           <div className="ei-sections">
 
             {/* Spawns */}
-            {allSpawns.length > 0 && (
+            {displaySpawns.length > 0 && (
               <div className="ei-section">
                 <div className="ei-section-title" style={{ color: theme.accent }}>
                   <Leaf size={13} />
-                  <span>{lang === 'cs' ? 'Výskyt Pokémonů' : 'Featured Spawns'}</span>
+                  <span>
+                    <EditableText value={editor.getTextOverride('spawnsTitle', lang === 'cs' ? 'Výskyt Pokémonů' : 'Featured Spawns')} onChange={(v) => editor.setTextOverride('spawnsTitle', v)} isEditing={editor.isEditing} />
+                  </span>
                 </div>
                 <div className="ei-spawns-grid">
-                  {allSpawns.slice(0, 12).map((s: any, i: number) => {
+                  {displaySpawns.slice(0, 12).map((s: any, i: number) => {
                     const name = getPokeName(s);
                     return (
                       <div key={i} className="ei-spawn-item">
-                        <img
-                          src={resolveImage(s?.image, event.eventType, name)}
+                        {editor.isEditing && (
+                          <button className="ei-remove-item-btn" onClick={() => editor.removeListItem('spawns', allSpawns, i)}>×</button>
+                        )}
+                        <EditableImage
+                          src={editor.getImageOverride(`spawnImage-${i}`, resolveImage(s?.image, event.eventType, name))}
                           alt={name}
+                          onChange={(url) => editor.setImageOverride(`spawnImage-${i}`, url)}
+                          isEditing={editor.isEditing}
                           className="ei-spawn-img"
                           onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, name)}
+                          pokemonName={name}
                         />
-                        <span className="ei-spawn-name">{getPokemonName(name, lang)}</span>
+                        <span className="ei-spawn-name">
+                          <EditableText value={editor.getTextOverride(`spawnName-${i}`, getPokemonName(name, lang))} onChange={(v) => editor.setTextOverride(`spawnName-${i}`, v)} isEditing={editor.isEditing} />
+                        </span>
                         {s?.isShinyAvailable && <span className="ei-shiny-dot">✨</span>}
                       </div>
                     );
                   })}
+                  {editor.isEditing && (
+                    <button className="ei-add-item-btn" onClick={() => editor.addListItem('spawns', allSpawns, { name: 'New Spawn' })}>+</button>
+                  )}
                 </div>
               </div>
             )}
 
             {/* Egg pool */}
-            {eggs.length > 0 && (
+            {displayEggs.length > 0 && (
               <div className="ei-section">
                 <div className="ei-section-title" style={{ color: theme.accent }}>
                   <EggSvg size={13} />
-                  <span>{lang === 'cs' ? 'Líhnutí Vajíček' : 'Egg Hatches'}</span>
+                  <span>
+                    <EditableText value={editor.getTextOverride('eggsTitle', lang === 'cs' ? 'Líhnutí Vajíček' : 'Egg Hatches')} onChange={(v) => editor.setTextOverride('eggsTitle', v)} isEditing={editor.isEditing} />
+                  </span>
                 </div>
-                {eggs.map((egg: any, ei: number) => {
+                {displayEggs.map((egg: any, ei: number) => {
                   const dist = typeof egg?.distance === 'string' ? egg.distance : getLocalizedText(egg?.distance, lang);
                   return (
                     <div key={ei} className="ei-egg-group">
                       <div className="ei-egg-label" style={{ color: theme.accent }}>
-                        <EggSvg size={11} />{dist}
+                        <EggSvg size={11} />
+                        <EditableText value={editor.getTextOverride(`eggDist-${ei}`, dist)} onChange={(v) => editor.setTextOverride(`eggDist-${ei}`, v)} isEditing={editor.isEditing} />
+                        {editor.isEditing && (
+                          <button className="ei-remove-item-btn" style={{ marginLeft: 8 }} onClick={() => editor.removeListItem('eggs', eggs, ei)}>×</button>
+                        )}
                       </div>
                       <div className="ei-spawns-grid">
                         {(egg.contents || []).slice(0, 8).map((p: any, pi: number) => {
                           const name = typeof p === 'string' ? p : getPokeName(p);
                           return (
                             <div key={pi} className="ei-spawn-item">
-                              <img
-                                src={resolveImage(p?.image, event.eventType, name)}
+                              <EditableImage
+                                src={editor.getImageOverride(`eggImage-${ei}-${pi}`, resolveImage(p?.image, event.eventType, name))}
                                 alt={name}
+                                onChange={(url) => editor.setImageOverride(`eggImage-${ei}-${pi}`, url)}
+                                isEditing={editor.isEditing}
                                 className="ei-spawn-img"
                                 onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, name)}
+                                pokemonName={name}
                               />
-                              <span className="ei-spawn-name">{getPokemonName(name, lang)}</span>
+                              <span className="ei-spawn-name">
+                                <EditableText value={editor.getTextOverride(`eggName-${ei}-${pi}`, getPokemonName(name, lang))} onChange={(v) => editor.setTextOverride(`eggName-${ei}-${pi}`, v)} isEditing={editor.isEditing} />
+                              </span>
                               {p?.isShinyAvailable && <span className="ei-shiny-dot">✨</span>}
                             </div>
                           );
@@ -324,78 +379,120 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
                     </div>
                   );
                 })}
+                {editor.isEditing && (
+                  <button className="ei-add-item-btn" onClick={() => editor.addListItem('eggs', eggs, { distance: '5 km', contents: [] })}>+</button>
+                )}
               </div>
             )}
 
             {/* Bonuses */}
-            {bonuses.length > 0 && (
+            {displayBonuses.length > 0 && (
               <div className="ei-section">
                 <div className="ei-section-title" style={{ color: theme.accent }}>
                   <Gift size={13} />
-                  <span>{lang === 'cs' ? 'Aktivní Bonusy' : 'Active Bonuses'}</span>
+                  <span>
+                    <EditableText value={editor.getTextOverride('bonusesTitle', lang === 'cs' ? 'Aktivní Bonusy' : 'Active Bonuses')} onChange={(v) => editor.setTextOverride('bonusesTitle', v)} isEditing={editor.isEditing} />
+                  </span>
                 </div>
                 <div className="ei-bonuses-list">
-                  {bonuses.slice(0, 8).map((b: any, bi: number) => (
+                  {displayBonuses.slice(0, 8).map((b: any, bi: number) => (
                     <div key={bi} className="ei-bonus-row" style={{ borderColor: `${theme.accent}30` }}>
-                      <span className="ei-bonus-icon">{getBonusIcon(b)}</span>
-                      <span className="ei-bonus-text">{getBonusText(b)}</span>
+                      {editor.isEditing && (
+                        <button className="ei-remove-item-btn" onClick={() => editor.removeListItem('bonuses', bonuses, bi)}>×</button>
+                      )}
+                      <span className="ei-bonus-icon">
+                        <EditableText value={editor.getTextOverride(`bonusIcon-${bi}`, getBonusIcon(b))} onChange={(v) => editor.setTextOverride(`bonusIcon-${bi}`, v)} isEditing={editor.isEditing} />
+                      </span>
+                      <span className="ei-bonus-text">
+                        <EditableText value={editor.getTextOverride(`bonus-${bi}`, getBonusText(b))} onChange={(v) => editor.setTextOverride(`bonus-${bi}`, v)} isEditing={editor.isEditing} multiline={true} />
+                      </span>
                     </div>
                   ))}
+                  {editor.isEditing && (
+                    <button className="ei-add-item-btn" onClick={() => editor.addListItem('bonuses', bonuses, { text: 'New Bonus', icon: '🎁' })}>+</button>
+                  )}
                 </div>
               </div>
             )}
 
             {/* Research */}
-            {research.length > 0 && (
+            {displayResearch.length > 0 && (
               <div className="ei-section">
                 <div className="ei-section-title" style={{ color: theme.accent }}>
                   <Search size={13} />
-                  <span>{lang === 'cs' ? 'Výzkumné úkoly' : 'Field Research'}</span>
+                  <span>
+                    <EditableText value={editor.getTextOverride('researchTitle', lang === 'cs' ? 'Výzkumné úkoly' : 'Field Research')} onChange={(v) => editor.setTextOverride('researchTitle', v)} isEditing={editor.isEditing} />
+                  </span>
                 </div>
                 <div className="ei-research-list">
-                  {research.slice(0, 5).map((r: any, ri: number) => {
+                  {displayResearch.slice(0, 5).map((r: any, ri: number) => {
                     const taskText = getLocalizedText(r?.task || r?.text || r, lang);
                     const rewardText = r?.reward ? getLocalizedText(r.reward?.text || r.reward, lang) : '';
                     return (
                       <div key={ri} className="ei-research-row" style={{ borderColor: `${theme.accent}30` }}>
-                        <span className="ei-research-task">{taskText}</span>
-                        {rewardText && <span className="ei-research-reward">→ {rewardText}</span>}
+                        {editor.isEditing && (
+                          <button className="ei-remove-item-btn" onClick={() => editor.removeListItem('research', research, ri)}>×</button>
+                        )}
+                        <span className="ei-research-task">
+                          <EditableText value={editor.getTextOverride(`researchTask-${ri}`, taskText)} onChange={(v) => editor.setTextOverride(`researchTask-${ri}`, v)} isEditing={editor.isEditing} multiline={true} />
+                        </span>
+                        {(rewardText || editor.isEditing) && (
+                          <span className="ei-research-reward">→ 
+                            <EditableText value={editor.getTextOverride(`researchReward-${ri}`, rewardText)} onChange={(v) => editor.setTextOverride(`researchReward-${ri}`, v)} isEditing={editor.isEditing} />
+                          </span>
+                        )}
                       </div>
                     );
                   })}
+                  {editor.isEditing && (
+                    <button className="ei-add-item-btn" onClick={() => editor.addListItem('research', research, { text: 'New Task', reward: { text: 'Reward' } })}>+</button>
+                  )}
                 </div>
               </div>
             )}
 
             {/* Debuts */}
-            {debuts.length > 0 && (
+            {displayDebuts.length > 0 && (
               <div className="ei-section">
                 <div className="ei-section-title" style={{ color: theme.accent }}>
                   <Sparkles size={13} />
-                  <span>{lang === 'cs' ? 'Debuty Pokémonů' : 'Pokémon Debuts'}</span>
+                  <span>
+                    <EditableText value={editor.getTextOverride('debutsTitle', lang === 'cs' ? 'Debuty Pokémonů' : 'Pokémon Debuts')} onChange={(v) => editor.setTextOverride('debutsTitle', v)} isEditing={editor.isEditing} />
+                  </span>
                 </div>
                 <div className="ei-spawns-grid">
-                  {debuts.slice(0, 6).map((d: any, di: number) => {
+                  {displayDebuts.slice(0, 6).map((d: any, di: number) => {
                     const name = typeof d?.name === 'object' ? (d.name.en || d.name.cs) : (d?.name || '');
                     return (
                       <div key={di} className="ei-spawn-item">
-                        <img
-                          src={resolveImage(d?.image, event.eventType, name)}
+                        {editor.isEditing && (
+                          <button className="ei-remove-item-btn" onClick={() => editor.removeListItem('debuts', debuts, di)}>×</button>
+                        )}
+                        <EditableImage
+                          src={editor.getImageOverride(`debutImage-${di}`, resolveImage(d?.image, event.eventType, name))}
                           alt={name}
+                          onChange={(url) => editor.setImageOverride(`debutImage-${di}`, url)}
+                          isEditing={editor.isEditing}
                           className="ei-spawn-img"
                           onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, name)}
+                          pokemonName={name}
                         />
-                        <span className="ei-spawn-name">{getPokemonName(name, lang)}</span>
+                        <span className="ei-spawn-name">
+                          <EditableText value={editor.getTextOverride(`debutName-${di}`, getPokemonName(name, lang))} onChange={(v) => editor.setTextOverride(`debutName-${di}`, v)} isEditing={editor.isEditing} />
+                        </span>
                         <span className="ei-new-badge" style={{ background: theme.accentLight, color: theme.accent }}>NEW</span>
                       </div>
                     );
                   })}
+                  {editor.isEditing && (
+                    <button className="ei-add-item-btn" onClick={() => editor.addListItem('debuts', debuts, { name: 'New Debut' })}>+</button>
+                  )}
                 </div>
               </div>
             )}
 
             {/* Fallback — no data yet */}
-            {allSpawns.length === 0 && bonuses.length === 0 && eggs.length === 0 && research.length === 0 && debuts.length === 0 && (
+            {displaySpawns.length === 0 && displayBonuses.length === 0 && displayEggs.length === 0 && displayResearch.length === 0 && displayDebuts.length === 0 && (
               <div className="ei-no-data">
                 <Sparkles size={28} style={{ color: theme.accent, opacity: 0.5 }} />
                 <p>{lang === 'cs' ? 'Detaily budou brzy k dispozici.' : 'Details will be available soon.'}</p>
@@ -408,10 +505,12 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
         <div className="ei-footer">
           <div className="ei-footer-brand" style={{ color: theme.accent }}>
             <ShieldCheck size={15} />
-            <span>pogoevents.app</span>
+            <span>
+              <EditableText value={editor.getTextOverride('footerBrand', 'pogoevents.app')} onChange={(v) => editor.setTextOverride('footerBrand', v)} isEditing={editor.isEditing} />
+            </span>
           </div>
           <div className="ei-footer-tip">
-            {lang === 'cs' ? 'Podrobnosti na pogoevents.app' : 'Full details at pogoevents.app'}
+            <EditableText value={editor.getTextOverride('footerTip', lang === 'cs' ? 'Podrobnosti na pogoevents.app' : 'Full details at pogoevents.app')} onChange={(v) => editor.setTextOverride('footerTip', v)} isEditing={editor.isEditing} />
           </div>
         </div>
       </div>

@@ -989,5 +989,298 @@
     },
     "isDeleted": false,
     "isCustom": false
+  },
+  {
+    "eventID": "august-communityday2026",
+    "name": "Nickit Community Day",
+    "eventType": "community-day",
+    "heading": "Community Day",
+    "link": "https://pokemongolive.com/news/communityday-august-2026-nickit",
+    "officialLink": "https://pokemongolive.com/news/communityday-august-2026-nickit",
+    "secondaryLink": "",
+    "image": "https://cdn.leekduck.com/assets/img/events/article-images/2026/2026-08-16-august-communityday2026/nickit-august-cd-2026.jpg",
+    "icon": "",
+    "start": "2026-08-16T12:00:00.000Z",
+    "end": "2026-08-16T15:00:00.000Z",
+    "extraData": {
+      "eventID": "august-communityday2026",
+      "officialLink": "https://pokemongolive.com/news/communityday-august-2026-nickit",
+      "bonuses": [
+        {
+          "text": {
+            "cs": "Zvýšený výskyt pokémonů",
+            "en": "Increased Spawns"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "3× Stardust za chycení",
+            "en": "3x Catch Stardust"
+          },
+          "icon": "✨"
+        },
+        {
+          "text": {
+            "cs": "Incense trvá 3 hodiny",
+            "en": "3-hour Incense"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Lure moduly trvají 1 hodinu*",
+            "en": "1-hour Lures*"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "2× bonbóny (Candy) za chytání",
+            "en": "2x Catch Candy"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "2x Chance to receive Candy XL from catching Pokémon",
+            "en": "2x Chance to receive Candy XL from catching Pokémon"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "1 dodatečný Special Trade can be made for a maximum of two for the day*",
+            "en": "One additional Special Trade can be made for a maximum of two for the day*"
+          },
+          "icon": "🤝"
+        },
+        {
+          "text": {
+            "cs": "O 50 % méně Stardustu za tradování*",
+            "en": "Trades made will require 50% less Stardust*"
+          },
+          "icon": "✨"
+        }
+      ],
+      "debuts": [],
+      "spawns": [
+        {
+          "name": "Nickit",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm827.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        }
+      ],
+      "eggs": [],
+      "research": [
+        {
+          "task": {
+            "cs": "Catch 3 Nickit",
+            "en": "Catch 3 Nickit"
+          },
+          "reward": "NickitGreat Ball ×5Ultra Ball ×2Pinap Berry ×2Stardust ×500",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons_crop/pm827.icon.png",
+          "isShinyAvailable": true
+        },
+        {
+          "task": {
+            "cs": "Catch 5 Pokemon while in a Party",
+            "en": "Catch 5 Pokemon while in a Party"
+          },
+          "reward": "Nickit",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons_crop/pm827.icon.png",
+          "isShinyAvailable": true
+        },
+        {
+          "task": {
+            "cs": "Catch 50 Pokemon",
+            "en": "Catch 50 Pokemon"
+          },
+          "reward": "Nickit",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons_crop/pm827.icon.png",
+          "isShinyAvailable": true
+        }
+      ],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ],
+      "rawDescription": "Community Day",
+      "iconUrl": ""
+    },
+    "isDeleted": false,
+    "isCustom": false
+  },
+  {
+    "eventID": "water-festival-2026",
+    "name": "Ultra Unlock: Water Festival",
+    "eventType": "event",
+    "heading": "Event",
+    "link": "https://pokemongo.com/store",
+    "officialLink": "",
+    "secondaryLink": "",
+    "image": "https://cdn.leekduck.com/assets/img/events/article-images/2026/2026-08-18-water-festival-2026/water-festival-2026.jpg?v2",
+    "icon": "",
+    "start": "2026-08-18T08:00:00.000Z",
+    "end": "2026-08-24T18:00:00.000Z",
+    "extraData": {
+      "eventID": "water-festival-2026",
+      "officialLink": "https://pokemongo.com/store",
+      "bonuses": [
+        {
+          "text": {
+            "cs": "Rainy Lure Modules will attract Arrokuda",
+            "en": "Rainy Lure Modules will attract Arrokuda"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Increased chance to encounter Shiny Ducklett and Shiny Dewpider",
+            "en": "Increased chance to encounter Shiny Ducklett and Shiny Dewpider"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "2× XP for catching Pokémon.",
+            "en": "2× XP for catching Pokémon."
+          },
+          "icon": "⚡"
+        },
+        {
+          "text": {
+            "cs": "3× Stardust for catching Pokémon.",
+            "en": "3× Stardust for catching Pokémon."
+          },
+          "icon": "✨"
+        },
+        {
+          "text": {
+            "cs": "3× XP for catching Pokémon.",
+            "en": "3× XP for catching Pokémon."
+          },
+          "icon": "⚡"
+        },
+        {
+          "text": {
+            "cs": "4× Stardust for catching Pokémon.",
+            "en": "4× Stardust for catching Pokémon."
+          },
+          "icon": "✨"
+        },
+        {
+          "text": {
+            "cs": "4× XP for catching Pokémon.",
+            "en": "4× XP for catching Pokémon."
+          },
+          "icon": "⚡"
+        },
+        {
+          "text": {
+            "cs": "5× Stardust for catching Pokémon.",
+            "en": "5× Stardust for catching Pokémon."
+          },
+          "icon": "✨"
+        },
+        {
+          "text": {
+            "cs": "2× Candy for catching Pokémon",
+            "en": "2× Candy for catching Pokémon"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "1/2 Egg Hatch Distance when Eggs are placed in an Incubator during the event period",
+            "en": "1/2 Egg Hatch Distance when Eggs are placed in an Incubator during the event period"
+          },
+          "icon": "🥚"
+        }
+      ],
+      "debuts": [
+        {
+          "name": "Cramorant",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/poke_capture_0845_000_mf_n_00000000_f_n.png",
+          "description": {
+            "cs": "The following Pokémon first discovered in the Galar region will make their Pokémon GO debuts! Cramorant, the Gulp Pokémon, will make its Pokémon GO debut in Eggs, the GO Pass, and GO Battle League reward encounters. Cramorant will be able to change form in battle, unleashing new possibilities for you and your battle team.* Arrokuda, the Rush Pokémon, and Barraskewda, the Skewer Pokémon, will make their Pokémon GO debuts in Field Research task rewards and via the GO Pass and Rainy Lure Modules.",
+            "en": "The following Pokémon first discovered in the Galar region will make their Pokémon GO debuts! Cramorant, the Gulp Pokémon, will make its Pokémon GO debut in Eggs, the GO Pass, and GO Battle League reward encounters. Cramorant will be able to change form in battle, unleashing new possibilities for you and your battle team.* Arrokuda, the Rush Pokémon, and Barraskewda, the Skewer Pokémon, will make their Pokémon GO debuts in Field Research task rewards and via the GO Pass and Rainy Lure Modules."
+          }
+        },
+        {
+          "name": "Arrokuda",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/poke_capture_0846_000_mf_n_00000000_f_n.png",
+          "description": {
+            "cs": "The following Pokémon first discovered in the Galar region will make their Pokémon GO debuts! Cramorant, the Gulp Pokémon, will make its Pokémon GO debut in Eggs, the GO Pass, and GO Battle League reward encounters. Cramorant will be able to change form in battle, unleashing new possibilities for you and your battle team.* Arrokuda, the Rush Pokémon, and Barraskewda, the Skewer Pokémon, will make their Pokémon GO debuts in Field Research task rewards and via the GO Pass and Rainy Lure Modules.",
+            "en": "The following Pokémon first discovered in the Galar region will make their Pokémon GO debuts! Cramorant, the Gulp Pokémon, will make its Pokémon GO debut in Eggs, the GO Pass, and GO Battle League reward encounters. Cramorant will be able to change form in battle, unleashing new possibilities for you and your battle team.* Arrokuda, the Rush Pokémon, and Barraskewda, the Skewer Pokémon, will make their Pokémon GO debuts in Field Research task rewards and via the GO Pass and Rainy Lure Modules."
+          }
+        },
+        {
+          "name": "Barraskewda",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/poke_capture_0847_000_mf_n_00000000_f_n.png",
+          "description": {
+            "cs": "The following Pokémon first discovered in the Galar region will make their Pokémon GO debuts! Cramorant, the Gulp Pokémon, will make its Pokémon GO debut in Eggs, the GO Pass, and GO Battle League reward encounters. Cramorant will be able to change form in battle, unleashing new possibilities for you and your battle team.* Arrokuda, the Rush Pokémon, and Barraskewda, the Skewer Pokémon, will make their Pokémon GO debuts in Field Research task rewards and via the GO Pass and Rainy Lure Modules.",
+            "en": "The following Pokémon first discovered in the Galar region will make their Pokémon GO debuts! Cramorant, the Gulp Pokémon, will make its Pokémon GO debut in Eggs, the GO Pass, and GO Battle League reward encounters. Cramorant will be able to change form in battle, unleashing new possibilities for you and your battle team.* Arrokuda, the Rush Pokémon, and Barraskewda, the Skewer Pokémon, will make their Pokémon GO debuts in Field Research task rewards and via the GO Pass and Rainy Lure Modules."
+          }
+        }
+      ],
+      "spawns": [
+        {
+          "name": "Psyduck",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_054_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Goldeen",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_118_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Mareanie",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm747.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Wimpod",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm767.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Feebas",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_349_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Clamperl",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_366_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Wiglett",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/poke_capture_0960_000_mf_n_00000000_f_n.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        }
+      ],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ],
+      "rawDescription": "Event",
+      "iconUrl": ""
+    },
+    "isDeleted": false,
+    "isCustom": false
   }
 ]

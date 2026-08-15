@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pokémon GO Tracker - Instagram Stories & Highlight Covers (JPG)</title>
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --accent-sky: #38bdf8;
+      --accent-indigo: #818cf8;
+      --accent-emerald: #10b981;
+      --accent-amber: #f97316;
+      --accent-blue: #3b82f6;
+      --accent-red: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: radial-gradient(circle at 50% 0%, #172033 0%, #090d16 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 40px 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+    }
+
+    .stories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-bottom: 50px;
+    }
+
+    .covers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 50px;
+    }
+
+    .asset-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .asset-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.65);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .asset-img-holder {
+      width: 100%;
+      background: #090d16;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .story-card .asset-img-holder {
+      aspect-ratio: 9 / 16;
+    }
+
+    .cover-card .asset-img-holder {
+      aspect-ratio: 1 / 1;
+    }
+
+    .asset-img-holder img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .asset-card:hover .asset-img-holder img {
+      transform: scale(1.02);
+    }
+
+    .asset-info {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex-grow: 1;
+      justify-content: space-between;
+    }
+
+    .asset-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .asset-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .asset-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      text-decoration: none;
+      border: 1px solid var(--border-color);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .btn-download:hover {
+      background: var(--accent-sky);
+      color: #090d16;
+      border-color: var(--accent-sky);
+    }
+
+    /* Badges */
+    .badge-weekly { color: var(--accent-sky); background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); }
+    .badge-monthly { color: var(--accent-indigo); background: rgba(129, 140, 248, 0.15); border: 1px solid rgba(129, 140, 248, 0.3); }
+    .badge-community { color: var(--accent-emerald); background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-spotlight { color: var(--accent-amber); background: rgba(249, 115, 22, 0.15); border: 1px solid rgba(249, 115, 22, 0.3); }
+    .badge-raids { color: var(--accent-blue); background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); }
+    .badge-special { color: var(--accent-red); background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📱 Instagram Stories & Highlight Covers (JPG)</h1>
+      <p>Všech 12 grafik ve 100% JPG formátu. Sjednocený minimalistický dark glassmorphism design s jedním týdnem (Weekly) a jedním měsícem (Monthly).</p>
+    </header>
+
+    <!-- SECTION 1: 9:16 STORIES -->
+    <h2 class="section-title">🎬 1. Úvodní Instagram Stories (Formát 9:16 – 1080×1920 JPG)</h2>
+    <div class="stories-grid">
+      <!-- 1. Weekly Lineup -->
+      <div class="asset-card story-card">
+        <div class="asset-img-holder">
+          <img src="story_weekly_lineup.jpg" alt="Weekly Lineup Story">
+        </div>
+        <div class="asset-info">
+          <div class="asset-header">
+            <span class="asset-name">Weekly Lineup</span>
+            <span class="asset-badge badge-weekly">1 Týden (Cyan)</span>
+          </div>
+          <a href="story_weekly_lineup.jpg" download="story_weekly_lineup.jpg" class="btn-download">Stáhnout JPG (1080×1920)</a>
+        </div>
+      </div>
+
+      <!-- 2. Monthly Lineup -->
+      <div class="asset-card story-card">
+        <div class="asset-img-holder">
+          <img src="story_monthly_lineup.jpg" alt="Monthly Lineup Story">
+        </div>
+        <div class="asset-info">
+          <div class="asset-header">
+            <span class="asset-name">Monthly Lineup</span>
+            <span class="asset-badge badge-monthly">1 Měsíc (Indigo)</span>
+          </div>
+          <a href="story_monthly_lineup.jpg" download="story_monthly_lineup.jpg" class="btn-download">Stáhnout JPG (1080×1920)</a>
+        </div>
+      </div>
+
+      <!-- 3. Community Days -->
+      <div class="asset-card story-card">
+        <div class="asset-img-holder">
+          <img src="story_community_days.jpg" alt="Community Days Story">
+        </div>
+        <div class="asset-info">
+          <div class="asset-header">
+            <span class="asset-name">Community Days</span>
+            <span class="asset-badge badge-community">Green</span>
+          </div>
+          <a href="story_community_days.jpg" download="story_community_days.jpg" class="btn-download">Stáhnout JPG (1080×1920)</a>
+        </div>
+      </div>
+
+      <!-- 4. Spotlight Hour -->
+      <div class="asset-card story-card">
+        <div class="asset-img-holder">
+          <img src="story_spotlight_hour.jpg" alt="Spotlight Hour Story">
+        </div>
+        <div class="asset-info">
+          <div class="asset-header">
+            <span class="asset-name">Spotlight Hour</span>
+            <span class="asset-badge badge-spotlight">Orange</span>
+          </div>
+          <a href="story_spotlight_hour.jpg" download="story_spotlight_hour.jpg" class="btn-download">Stáhnout JPG (1080×1920)</a>
+        </div>
+      </div>
+
+      <!-- 5. Raid Rotation -->
+      <div class="asset-card story-card">
+        <div class="asset-img-holder">
+          <img src="story_raid_rotation.jpg" alt="Raid Rotation Story">
+        </div>
+        <div class="asset-info">
+          <div class="asset-header">
+            <span class="asset-name">Raid Rotation</span>
+            <span class="asset-badge badge-raids">Blue</span>
+          </div>
+          <a href="story_raid_rotation.jpg" download="story_raid_rotation.jpg" class="btn-download">Stáhnout JPG (1080×1920)</a>
+        </div>
+      </div>
+
+      <!-- 6. Special Events -->
+      <div class="asset-card story-card">
+        <div class="asset-img-holder">
+          <img src="story_special_events.jpg" alt="Special Events Story">
+        </div>
+        <div class="asset-info">
+          <div class="asset-header">
+            <span class="asset-name">Special Events</span>
+            <span class="asset-badge badge-special">Red</span>
+          </div>
+          <a href="story_special_events.jpg" download="story_special_events.jpg" class="btn-download">Stáhnout JPG (1080×1920)</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: 1:1 HIGHLIGHT COVERS -->
+    <h2 class="section-title">🔘 2. Náhledy Výběrů / Highlights (Formát 1:1 – 1080×1080 JPG)</h2>
+    <div class="covers-grid">
+      <!-- 1. Weekly Cover -->
+      <div class="asset-card cover-card">
+        <div class="asset-img-holder">
+          <img src="cover_weekly_lineup.jpg" alt="Weekly Cover">
+        </div>
+        <div class="asset-info">
+          <div class="asset-header">
+            <span class="asset-name">Weekly</span>
+            <span class="asset-badge badge-weekly">1:1 JPG</span>
+          </div>
+          <a href="cover_weekly_lineup.jpg" download="cover_weekly_lineup.jpg" class="btn-download">Stáhnout JPG</a>
+        </div>
+      </div>
+
+      <!-- 2. Monthly Cover -->
+      <div class="asset-card cover-card">
+        <div class="asset-img-holder">
+          <img src="cover_monthly_lineup.jpg" alt="Monthly Cover">
+        </div>
+        <div class="asset-info">
+          <div class="asset-header">
+            <span class="asset-name">Monthly</span>
+            <span class="asset-badge badge-monthly">1:1 JPG</span>
+          </div>
+          <a href="cover_monthly_lineup.jpg" download="cover_monthly_lineup.jpg" class="btn-download">Stáhnout JPG</a>
+        </div>
+      </div>
+
+      <!-- 3. Community Cover -->
+      <div class="asset-card cover-card">
+        <div class="asset-img-holder">
+          <img src="cover_community_days.jpg" alt="Community Cover">
+        </div>
+        <div class="asset-info">
+          <div class="asset-header">
+            <span class="asset-name">Community</span>
+            <span class="asset-badge badge-community">1:1 JPG</span>
+          </div>
+          <a href="cover_community_days.jpg" download="cover_community_days.jpg" class="btn-download">Stáhnout JPG</a>
+        </div>
+      </div>
+
+      <!-- 4. Spotlight Cover -->
+      <div class="asset-card cover-card">
+        <div class="asset-img-holder">
+          <img src="cover_spotlight_hour.jpg" alt="Spotlight Cover">
+        </div>
+        <div class="asset-info">
+          <div class="asset-header">
+            <span class="asset-name">Spotlight</span>
+            <span class="asset-badge badge-spotlight">1:1 JPG</span>
+          </div>
+          <a href="cover_spotlight_hour.jpg" download="cover_spotlight_hour.jpg" class="btn-download">Stáhnout JPG</a>
+        </div>
+      </div>
+
+      <!-- 5. Raids Cover -->
+      <div class="asset-card cover-card">
+        <div class="asset-img-holder">
+          <img src="cover_raid_rotation.jpg" alt="Raids Cover">
+        </div>
+        <div class="asset-info">
+          <div class="asset-header">
+            <span class="asset-name">Raids</span>
+            <span class="asset-badge badge-raids">1:1 JPG</span>
+          </div>
+          <a href="cover_raid_rotation.jpg" download="cover_raid_rotation.jpg" class="btn-download">Stáhnout JPG</a>
+        </div>
+      </div>
+
+      <!-- 6. Events Cover -->
+      <div class="asset-card cover-card">
+        <div class="asset-img-holder">
+          <img src="cover_special_events.jpg" alt="Events Cover">
+        </div>
+        <div class="asset-info">
+          <div class="asset-header">
+            <span class="asset-name">Events</span>
+            <span class="asset-badge badge-special">1:1 JPG</span>
+          </div>
+          <a href="cover_special_events.jpg" download="cover_special_events.jpg" class="btn-download">Stáhnout JPG</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

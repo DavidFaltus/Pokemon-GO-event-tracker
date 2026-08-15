@@ -3,36 +3,20 @@ import { toPng } from 'html-to-image';
 import { Download, Sparkles, Clock, Calendar, Zap, Check, ShieldCheck, Activity } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
-import { resolveImage, handlePokemonImageError, getBasePokemonNames } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError, getBasePokemonNames, fetchImageAsBase64 } from '../utils/imageResolver';
 import { getPokemonImage } from '../data/specialEvents';
 import { getPokemonName } from '../utils/pokemonTranslator';
-import { API_BASE_URL } from '../config';
+import { useInfographicEditor } from '../hooks/useInfographicEditor';
+import { EditableText, EditableImage, EditToolbar } from './InfographicEditable';
+import { getFontEmbedCSS, disableTextClipping } from '../utils/exportPoster';
 import './MaxInfographic.css';
 
 interface MaxInfographicProps {
   event: EventData;
   lang: Language;
   timezone?: string;
+  isAdmin?: boolean;
 }
-
-// Converts image URL to Base64 Data URL via Express backend proxy
-const fetchImageAsBase64 = async (url: string): Promise<string> => {
-  if (!url || url.startsWith('data:')) return url;
-  try {
-    const proxyUrl = `${API_BASE_URL}/api/proxy-image?url=${encodeURIComponent(url)}`;
-    const res = await fetch(proxyUrl);
-    if (!res.ok) return url;
-    const blob = await res.blob();
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve((reader.result as string) || url);
-      reader.onerror = () => resolve(url);
-      reader.readAsDataURL(blob);
-    });
-  } catch {
-    return url;
-  }
-};
 
 // Formats date & time range for single day and multi-day events
 export function formatEventDateRange(startInput: string | Date, endInput: string | Date, lang: Language) {
@@ -43,33 +27,44 @@ export function formatEventDateRange(startInput: string | Date, endInput: string
                     start.getMonth() === end.getMonth() &&
                     start.getDate() === end.getDate();
 
-  const locale = 'en-US';
+  const isMultiDay = !isSameDay;
 
+  const monthNamesEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const monthNamesCs = ['led', 'úno', 'bře', 'dub', 'kvě', 'čvn', 'čvc', 'srp', 'zář', 'říj', 'lis', 'pro'];
+  const months = lang === 'cs' ? monthNamesCs : monthNamesEn;
+
+  const startDay = start.getDate();
+  const startMonth = months[start.getMonth()];
+  const endDay = end.getDate();
+  const endMonth = months[end.getMonth()];
+
+  let dateStr = "";
   if (isSameDay) {
-    const dateStr = start.toLocaleDateString(locale, {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-    const timeStr = `${start.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })} - ${end.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}`;
-    return { dateStr, timeStr, isMultiDay: false };
+    const dayOfWeekEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][start.getDay()];
+    const dayOfWeekCs = ['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'][start.getDay()];
+    const dow = lang === 'cs' ? dayOfWeekCs : dayOfWeekEn;
+    dateStr = `${dow}, ${startDay} ${startMonth} ${start.getFullYear()}`;
   } else {
-    const startDateStr = start.toLocaleDateString(locale, {
-      month: 'short',
-      day: 'numeric'
-    });
-    const endDateStr = end.toLocaleDateString(locale, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-    const startTimeStr = start.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
-    const endTimeStr = end.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
-
-    const dateStr = `${startDateStr} (${startTimeStr}) — ${endDateStr} (${endTimeStr})`;
-    return { dateStr, timeStr: '', isMultiDay: true };
+    if (start.getMonth() === end.getMonth()) {
+      dateStr = `${startDay} – ${endDay} ${startMonth} ${start.getFullYear()}`;
+    } else {
+      dateStr = `${startDay} ${startMonth} – ${endDay} ${endMonth} ${start.getFullYear()}`;
+    }
   }
+
+  // Format Hours cleanly (e.g., 6:00 PM – 7:00 PM)
+  const formatTimePart = (d: Date) => {
+    let hrs = d.getHours();
+    const mins = d.getMinutes().toString().padStart(2, '0');
+    const ampm = hrs >= 12 ? 'PM' : 'AM';
+    hrs = hrs % 12;
+    hrs = hrs ? hrs : 12;
+    return `${hrs}:${mins} ${ampm}`;
+  };
+
+  const timeStr = `${formatTimePart(start)} – ${formatTimePart(end)}`;
+
+  return { dateStr, timeStr, isMultiDay };
 }
 
 // Calculate Max Particle (MP) Costs by Tier based on exact user specification:
@@ -97,10 +92,12 @@ export function getMaxBattleXpReward(eventName: string, isGigantamax: boolean): 
   return '10,000 XP';
 }
 
-export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event }) => {
+export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, isAdmin = false }) => {
+  const editor = useInfographicEditor(event.eventID, 'max');
   const posterRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const isEditing = isAdmin && editor.isEditing;
 
   // Extract Max Boss details
   let bossName = "";
@@ -147,8 +144,12 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event }) => {
   const handleDownload = async () => {
     if (!posterRef.current || downloading) return;
     setDownloading(true);
+    editor.setIsExporting(true);
+    await new Promise(r => setTimeout(r, 120));
+    if (!posterRef.current) return;
 
     const originalSrcs: { img: HTMLImageElement; origSrc: string }[] = [];
+    let restoreClipping: (() => void) | null = null;
 
     try {
       const imgs = Array.from(posterRef.current.querySelectorAll('img'));
@@ -159,26 +160,62 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event }) => {
           if (origSrc && !origSrc.startsWith('data:')) {
             originalSrcs.push({ img, origSrc });
             try {
-              const base64 = await fetchImageAsBase64(origSrc);
+              const base64 = await fetchImageAsBase64(origSrc, img);
               if (base64 && base64.startsWith('data:')) {
                 img.src = base64;
+              } else {
+                img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
               }
-            } catch (e) {}
+            } catch {
+              img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+            }
           }
         })
       );
 
+      if (typeof document !== 'undefined' && (document as any).fonts) {
+        await (document as any).fonts.ready;
+      }
+      if (!posterRef.current) return;
+
+      if (posterRef.current) {
+        restoreClipping = disableTextClipping(posterRef.current);
+      }
+      const fontEmbedCSS = await getFontEmbedCSS();
+      const rect = posterRef.current.getBoundingClientRect();
+      const w = Math.round(rect.width) || posterRef.current.offsetWidth || 480;
+      const h = Math.round(rect.height) || posterRef.current.offsetHeight || 600;
       const dataUrl = await toPng(posterRef.current, { 
         cacheBust: false,
-        skipFonts: true,
+        skipFonts: !fontEmbedCSS,
+        fontEmbedCSS: fontEmbedCSS || undefined,
+        width: w,
+        height: h,
+        canvasWidth: w * 2,
+        canvasHeight: h * 2,
         pixelRatio: 2,
-        backgroundColor: '#0d1117'
+        backgroundColor: '#0d1117',
+        style: {
+          width: `${w}px`,
+          height: `${h}px`,
+          maxWidth: `${w}px`,
+          minWidth: `${w}px`,
+          fontFamily: "'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          margin: '0',
+          transform: 'none',
+        }
       });
 
       const link = document.createElement('a');
       link.download = `pogo_max_${bossName.toLowerCase()}_4x5.png`;
       link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
+      setTimeout(() => {
+        if (link.parentNode) {
+          link.parentNode.removeChild(link);
+        }
+      }, 500);
 
       setDownloadSuccess(true);
       setTimeout(() => setDownloadSuccess(false), 3000);
@@ -188,38 +225,68 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event }) => {
       originalSrcs.forEach(({ img, origSrc }) => {
         img.src = origSrc;
       });
+      if (restoreClipping) {
+        restoreClipping();
+      }
       setDownloading(false);
+      editor.setIsExporting(false);
     }
   };
 
   return (
     <div className="max-infographic-wrapper">
-      <div className="max-poster-container" ref={posterRef}>
+      <div className={`max-poster-container ${editor.isExporting ? 'is-exporting' : ''}`} ref={posterRef}>
+        {isAdmin && (
+          <EditToolbar 
+            isEditing={editor.isEditing} 
+            onToggleEdit={() => editor.setIsEditing(!editor.isEditing)} 
+            hasOverrides={editor.hasOverrides} 
+            onReset={editor.resetAll} 
+            lang={'en'} 
+          />
+        )}
         <div className="max-poster-glow-top"></div>
 
         {/* Header */}
         <div className="max-poster-header">
           <div className="max-poster-badge">
             <Activity size={14} className="max-icon-pulse" />
-            <span>
-              {isGigantamax ? 'GIGANTAMAX BATTLE' : 
-               event.eventType === 'max-monday' || event.name.toLowerCase().includes('monday') ? 'MAX MONDAY' : 
-               'DYNAMAX MAX BATTLE'}
-            </span>
+            <EditableText 
+              value={editor.getTextOverride('badgeText', isGigantamax ? 'GIGANTAMAX BATTLE' : event.eventType === 'max-monday' || event.name.toLowerCase().includes('monday') ? 'MAX MONDAY' : 'DYNAMAX MAX BATTLE')} 
+              onChange={(v) => editor.setTextOverride('badgeText', v)} 
+              isEditing={isEditing} 
+              as="span" 
+            />
           </div>
-          <h2 className="max-poster-title">{getPokemonName(bossName, 'en')}</h2>
+          <EditableText 
+            value={editor.getTextOverride('title', getPokemonName(bossName, 'en'))} 
+            onChange={(v) => editor.setTextOverride('title', v)} 
+            isEditing={isEditing} 
+            as="h2" 
+            className="max-poster-title" 
+          />
           
           <div className="max-poster-time-bar">
             <div className="max-time-item">
               <Calendar size={14} />
-              <span>{dateStr}</span>
+              <EditableText 
+                value={editor.getTextOverride('dateStr', dateStr)} 
+                onChange={(v) => editor.setTextOverride('dateStr', v)} 
+                isEditing={editor.isEditing} 
+                as="span" 
+              />
             </div>
             {!isMultiDay && timeStr && (
               <>
                 <div className="max-time-divider">•</div>
                 <div className="max-time-item">
                   <Clock size={14} />
-                  <span>{timeStr}</span>
+                  <EditableText 
+                    value={editor.getTextOverride('timeStr', timeStr)} 
+                    onChange={(v) => editor.setTextOverride('timeStr', v)} 
+                    isEditing={editor.isEditing} 
+                    as="span" 
+                  />
                 </div>
               </>
             )}
@@ -232,23 +299,39 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event }) => {
           <div className="max-poke-showcase">
             <div className="max-sprites-pair">
               <div className="max-sprite-box">
-                <img 
-                  src={resolveImage(pokemonImg, event.eventType, bossName, false)} 
+                <EditableImage 
+                  src={editor.getImageOverride('normalSprite', resolveImage(pokemonImg, event.eventType, bossName, false))} 
                   alt={bossName} 
+                  onChange={(url) => editor.setImageOverride('normalSprite', url)} 
+                  isEditing={editor.isEditing} 
                   className="max-poke-sprite"
                   onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, bossName, false)}
+                  pokemonName={bossName}
                 />
-                <span className="sprite-tag">Normal</span>
+                <EditableText 
+                  value={editor.getTextOverride('normalTag', 'Normal')} 
+                  onChange={(v) => editor.setTextOverride('normalTag', v)} 
+                  isEditing={editor.isEditing} 
+                  className="sprite-tag" 
+                />
               </div>
               {canBeShiny && (
                 <div className="max-sprite-box">
-                  <img 
-                    src={resolveImage(pokemonImg, event.eventType, bossName, true)} 
+                  <EditableImage 
+                    src={editor.getImageOverride('shinySprite', resolveImage(pokemonImg, event.eventType, bossName, true))} 
                     alt={`${bossName} Shiny`} 
+                    onChange={(url) => editor.setImageOverride('shinySprite', url)} 
+                    isEditing={editor.isEditing} 
                     className="max-poke-sprite shiny-glow"
                     onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, bossName, true)}
+                    pokemonName={bossName}
                   />
-                  <span className="sprite-tag shiny">✨ Shiny</span>
+                  <EditableText 
+                    value={editor.getTextOverride('shinyTag', '✨ Shiny')} 
+                    onChange={(v) => editor.setTextOverride('shinyTag', v)} 
+                    isEditing={editor.isEditing} 
+                    className="sprite-tag shiny" 
+                  />
                 </div>
               )}
             </div>
@@ -258,30 +341,53 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event }) => {
           <div className="max-details-box">
             <div className="max-details-header">
               <Zap size={16} />
-              <span>POWER SPOT & MAX PARTICLES</span>
+              <EditableText 
+                value={editor.getTextOverride('detailsHeader', 'POWER SPOT & MAX PARTICLES')} 
+                onChange={(v) => editor.setTextOverride('detailsHeader', v)} 
+                isEditing={editor.isEditing} 
+                as="span" 
+              />
             </div>
 
             <div className="max-details-row">
               <div className="max-detail-item">
-                <img
-                  src={
-                    mpCost === '800 MP'
-                      ? 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Items/mp_pack_mulit.png'
-                      : 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Items/mp_pack.png'
-                  }
+                <EditableImage
+                  src={editor.getImageOverride('mpPackImg', mpCost === '800 MP' ? 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Items/mp_pack_mulit.png' : 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Items/mp_pack.png')}
                   alt="MP Pack"
+                  onChange={(url) => editor.setImageOverride('mpPackImg', url)}
+                  isEditing={editor.isEditing}
                   className="max-mp-pack-img"
                 />
                 <div>
-                  <span className="max-detail-label">MP COST:</span>
-                  <span className="max-detail-val">{mpCost}</span>
+                  <EditableText 
+                    value={editor.getTextOverride('mpCostLabel', 'MP COST:')} 
+                    onChange={(v) => editor.setTextOverride('mpCostLabel', v)} 
+                    isEditing={editor.isEditing} 
+                    className="max-detail-label" 
+                  />
+                  <EditableText 
+                    value={editor.getTextOverride('mpCostVal', mpCost)} 
+                    onChange={(v) => editor.setTextOverride('mpCostVal', v)} 
+                    isEditing={editor.isEditing} 
+                    className="max-detail-val" 
+                  />
                 </div>
               </div>
 
               <div className="max-detail-item highlight">
                 <div>
-                  <span className="max-detail-label highlight">XP REWARD:</span>
-                  <span className="max-detail-val highlight">{xpReward}</span>
+                  <EditableText 
+                    value={editor.getTextOverride('xpRewardLabel', 'XP REWARD:')} 
+                    onChange={(v) => editor.setTextOverride('xpRewardLabel', v)} 
+                    isEditing={editor.isEditing} 
+                    className="max-detail-label highlight" 
+                  />
+                  <EditableText 
+                    value={editor.getTextOverride('xpRewardVal', xpReward)} 
+                    onChange={(v) => editor.setTextOverride('xpRewardVal', v)} 
+                    isEditing={editor.isEditing} 
+                    className="max-detail-val highlight" 
+                  />
                 </div>
               </div>
             </div>
@@ -290,9 +396,12 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event }) => {
           {/* 3. Shiny Rate Card (Single line horizontal box) */}
           <div className="max-shiny-rate-card">
             <Sparkles size={15} style={{ color: '#f472b6' }} />
-            <span>
-              SHINY RATE: <strong>{canBeShiny ? '~1 in 500 (0.2% Chance) ✨' : 'Not Available 🚫'}</strong>
-            </span>
+            <EditableText 
+              value={editor.getTextOverride('shinyRateText', canBeShiny ? 'SHINY RATE: ~1 in 500 (0.2% Chance) ✨' : 'SHINY RATE: Not Available 🚫')} 
+              onChange={(v) => editor.setTextOverride('shinyRateText', v)} 
+              isEditing={editor.isEditing} 
+              as="span" 
+            />
           </div>
         </div>
 
@@ -300,9 +409,19 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event }) => {
         <div className="max-poster-footer">
           <div className="max-footer-left">
             <ShieldCheck size={16} className="max-shield-icon" />
-            <span>pogoevents.app</span>
+            <EditableText 
+              value={editor.getTextOverride('footerLeft', 'pogoevents.app')} 
+              onChange={(v) => editor.setTextOverride('footerLeft', v)} 
+              isEditing={editor.isEditing} 
+              as="span" 
+            />
           </div>
-          <span>Pokémon GO Event Tracker</span>
+          <EditableText 
+            value={editor.getTextOverride('footerRight', 'Pokémon GO Event Tracker')} 
+            onChange={(v) => editor.setTextOverride('footerRight', v)} 
+            isEditing={editor.isEditing} 
+            as="span" 
+          />
         </div>
       </div>
 

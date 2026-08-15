@@ -1,0 +1,2344 @@
+{
+  "august-communityday2026": {
+    "details": {
+      "eventID": "august-communityday2026",
+      "officialLink": "https://pokemongolive.com/news/communityday-august-2026-nickit",
+      "bonuses": [
+        {
+          "text": {
+            "cs": "Zvýšený výskyt pokémonů",
+            "en": "Increased Spawns"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "3× Stardust za chycení",
+            "en": "3x Catch Stardust"
+          },
+          "icon": "✨"
+        },
+        {
+          "text": {
+            "cs": "Incense trvá 3 hodiny",
+            "en": "3-hour Incense"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Lure moduly trvají 1 hodinu*",
+            "en": "1-hour Lures*"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "2× bonbóny (Candy) za chytání",
+            "en": "2x Catch Candy"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "2x Chance to receive Candy XL from catching Pokémon",
+            "en": "2x Chance to receive Candy XL from catching Pokémon"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "1 dodatečný Special Trade can be made for a maximum of two for the day*",
+            "en": "One additional Special Trade can be made for a maximum of two for the day*"
+          },
+          "icon": "🤝"
+        },
+        {
+          "text": {
+            "cs": "O 50 % méně Stardustu za tradování*",
+            "en": "Trades made will require 50% less Stardust*"
+          },
+          "icon": "✨"
+        }
+      ],
+      "debuts": [],
+      "spawns": [
+        {
+          "name": "Nickit",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm827.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        }
+      ],
+      "eggs": [],
+      "research": [
+        {
+          "task": {
+            "cs": "Catch 3 Nickit",
+            "en": "Catch 3 Nickit"
+          },
+          "reward": "NickitGreat Ball ×5Ultra Ball ×2Pinap Berry ×2Stardust ×500",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons_crop/pm827.icon.png",
+          "isShinyAvailable": true
+        },
+        {
+          "task": {
+            "cs": "Catch 5 Pokemon while in a Party",
+            "en": "Catch 5 Pokemon while in a Party"
+          },
+          "reward": "Nickit",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons_crop/pm827.icon.png",
+          "isShinyAvailable": true
+        },
+        {
+          "task": {
+            "cs": "Catch 50 Pokemon",
+            "en": "Catch 50 Pokemon"
+          },
+          "reward": "Nickit",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons_crop/pm827.icon.png",
+          "isShinyAvailable": true
+        }
+      ],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808391021
+  },
+  "choose-your-path-venom-and-vines-2026": {
+    "details": {
+      "eventID": "choose-your-path-venom-and-vines-2026",
+      "bonuses": [
+        {
+          "text": {
+            "cs": "Explore (PokéStops): 5× XP for spinning PokéStops",
+            "en": "Explore (PokéStops): 5× XP for spinning PokéStops"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Catch (XP): 1.5× XP for catching Pokémon with Nice Throws or better",
+            "en": "Catch (XP): 1.5× XP for catching Pokémon with Nice Throws or better"
+          },
+          "icon": "⚡"
+        },
+        {
+          "text": {
+            "cs": "Battle (Raids): An additional 5,000 XP for completing raids",
+            "en": "Battle (Raids): An additional 5,000 XP for completing raids"
+          },
+          "icon": "⚡"
+        },
+        {
+          "text": {
+            "cs": "Explore (Hatch): 1/2 Egg Hatch Distance bonus",
+            "en": "Explore (Hatch): 1/2 Egg Hatch Distance bonus"
+          },
+          "icon": "🥚"
+        },
+        {
+          "text": {
+            "cs": "Catch (Candy): Additional Candy for catching Pokémon with Nice Throws or better",
+            "en": "Catch (Candy): Additional Candy for catching Pokémon with Nice Throws or better"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "Battle (Team GO Rocket): Extra Mysterious Components from Team GO Rocket Grunts",
+            "en": "Battle (Team GO Rocket): Extra Mysterious Components from Team GO Rocket Grunts"
+          },
+          "icon": "🎈"
+        }
+      ],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [
+        {
+          "task": {
+            "cs": "Defeat a Team GO Rocket Grunt",
+            "en": "Defeat a Team GO Rocket Grunt"
+          },
+          "reward": "VenonatFomantis",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons_crop/pokemon_icon_048_00.png",
+          "isShinyAvailable": true
+        },
+        {
+          "task": {
+            "cs": "Make 5 Nice Throws",
+            "en": "Make 5 Nice Throws"
+          },
+          "reward": "VenonatFomantis",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons_crop/pokemon_icon_048_00.png",
+          "isShinyAvailable": true
+        },
+        {
+          "task": {
+            "cs": "Explore 1 km",
+            "en": "Explore 1 km"
+          },
+          "reward": "VenonatFomantis",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons_crop/pokemon_icon_048_00.png",
+          "isShinyAvailable": true
+        }
+      ],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808394497
+  },
+  "max-mondays-2026-08-17": {
+    "details": {
+      "eventID": "max-mondays-2026-08-17",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808398057
+  },
+  "gbl-forever-forward_master-league_evolution-cup-great-league-edition": {
+    "details": {
+      "eventID": "gbl-forever-forward_master-league_evolution-cup-great-league-edition",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808401308
+  },
+  "groudon-in-5-star-raid-battles-august-2026": {
+    "details": {
+      "eventID": "groudon-in-5-star-raid-battles-august-2026",
+      "officialLink": "https://pokemongolive.com/news/starmie-super-mega-raid-day-2026",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808405649
+  },
+  "mega-garchomp-in-mega-raids-august-2026": {
+    "details": {
+      "eventID": "mega-garchomp-in-mega-raids-august-2026",
+      "officialLink": "https://pokemongolive.com/news/gofest2026-mega-finale-incoming",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808409197
+  },
+  "raidhour20260819": {
+    "details": {
+      "eventID": "raidhour20260819",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808412886
+  },
+  "pokemonspotlighthour2026-08-20": {
+    "details": {
+      "eventID": "pokemonspotlighthour2026-08-20",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [
+        {
+          "name": "Magikarp",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_129_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        }
+      ],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808416534
+  },
+  "starmie-super-mega-raid-day-2026": {
+    "details": {
+      "eventID": "starmie-super-mega-raid-day-2026",
+      "officialLink": "https://pokemongo.com/news/mega-evolution-2026-update",
+      "bonuses": [
+        {
+          "text": {
+            "cs": "An additional 5,000 XP from all raids",
+            "en": "An additional 5,000 XP from all raids"
+          },
+          "icon": "⚡"
+        },
+        {
+          "text": {
+            "cs": "Increased chance to get Rare Candy XL from Raidové souboje",
+            "en": "Increased chance to get Rare Candy XL from Raid Battles"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "Limit na Remote Raidy navýšen na 20 from Friday, August 21, at 2:00 p.m. to Saturday, August 22, 2026, at 8:00 p.m. PDT",
+            "en": "Remote Raid Pass limit increased to 20 from Friday, August 21, at 2:00 p.m. to Saturday, August 22, 2026, at 8:00 p.m. PDT"
+          },
+          "icon": "🎟️"
+        },
+        {
+          "text": {
+            "cs": "Receive up to six free Raid Passes from spinning Gym Photo Discs",
+            "en": "Receive up to six free Raid Passes from spinning Gym Photo Discs"
+          },
+          "icon": "🎟️"
+        },
+        {
+          "text": {
+            "cs": "Zvýšená šance na setkání se Shiny Starmie from Super Mega Raids",
+            "en": "Increased chance of encountering Shiny Starmie from Super Mega Raids"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Starmie caught from Super Mega Raids will have Mega Level 1 unlocked",
+            "en": "Starmie caught from Super Mega Raids will have Mega Level 1 unlocked"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Receive up to 14 Raid Passes from spinning Gym Photo Discs",
+            "en": "Receive up to 14 Raid Passes from spinning Gym Photo Discs"
+          },
+          "icon": "🎟️"
+        },
+        {
+          "text": {
+            "cs": "An even greater chance to get Rare Candy XL from Raidové souboje",
+            "en": "An even greater chance to get Rare Candy XL from Raid Battles"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "Guaranteed Rare Candy XL for successfully catching Starmie from raids",
+            "en": "Guaranteed Rare Candy XL for successfully catching Starmie from raids"
+          },
+          "icon": "🍬"
+        }
+      ],
+      "debuts": [
+        {
+          "name": "Mega Starmie",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/Mega Starmie.png",
+          "description": {
+            "cs": "The following Pokémon will make its Pokémon GO debut in Super Mega Raids!",
+            "en": "The following Pokémon will make its Pokémon GO debut in Super Mega Raids!"
+          }
+        }
+      ],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808420187
+  },
+  "water-festival-2026": {
+    "details": {
+      "eventID": "water-festival-2026",
+      "officialLink": "https://pokemongo.com/store",
+      "bonuses": [
+        {
+          "text": {
+            "cs": "Rainy Lure Modules will attract Arrokuda",
+            "en": "Rainy Lure Modules will attract Arrokuda"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Increased chance to encounter Shiny Ducklett and Shiny Dewpider",
+            "en": "Increased chance to encounter Shiny Ducklett and Shiny Dewpider"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "2× XP for catching Pokémon.",
+            "en": "2× XP for catching Pokémon."
+          },
+          "icon": "⚡"
+        },
+        {
+          "text": {
+            "cs": "3× Stardust for catching Pokémon.",
+            "en": "3× Stardust for catching Pokémon."
+          },
+          "icon": "✨"
+        },
+        {
+          "text": {
+            "cs": "3× XP for catching Pokémon.",
+            "en": "3× XP for catching Pokémon."
+          },
+          "icon": "⚡"
+        },
+        {
+          "text": {
+            "cs": "4× Stardust for catching Pokémon.",
+            "en": "4× Stardust for catching Pokémon."
+          },
+          "icon": "✨"
+        },
+        {
+          "text": {
+            "cs": "4× XP for catching Pokémon.",
+            "en": "4× XP for catching Pokémon."
+          },
+          "icon": "⚡"
+        },
+        {
+          "text": {
+            "cs": "5× Stardust for catching Pokémon.",
+            "en": "5× Stardust for catching Pokémon."
+          },
+          "icon": "✨"
+        },
+        {
+          "text": {
+            "cs": "2× Candy for catching Pokémon",
+            "en": "2× Candy for catching Pokémon"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "1/2 Egg Hatch Distance when Eggs are placed in an Incubator during the event period",
+            "en": "1/2 Egg Hatch Distance when Eggs are placed in an Incubator during the event period"
+          },
+          "icon": "🥚"
+        }
+      ],
+      "debuts": [
+        {
+          "name": "Cramorant",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/poke_capture_0845_000_mf_n_00000000_f_n.png",
+          "description": {
+            "cs": "The following Pokémon first discovered in the Galar region will make their Pokémon GO debuts! Cramorant, the Gulp Pokémon, will make its Pokémon GO debut in Eggs, the GO Pass, and GO Battle League reward encounters. Cramorant will be able to change form in battle, unleashing new possibilities for you and your battle team.* Arrokuda, the Rush Pokémon, and Barraskewda, the Skewer Pokémon, will make their Pokémon GO debuts in Field Research task rewards and via the GO Pass and Rainy Lure Modules.",
+            "en": "The following Pokémon first discovered in the Galar region will make their Pokémon GO debuts! Cramorant, the Gulp Pokémon, will make its Pokémon GO debut in Eggs, the GO Pass, and GO Battle League reward encounters. Cramorant will be able to change form in battle, unleashing new possibilities for you and your battle team.* Arrokuda, the Rush Pokémon, and Barraskewda, the Skewer Pokémon, will make their Pokémon GO debuts in Field Research task rewards and via the GO Pass and Rainy Lure Modules."
+          }
+        },
+        {
+          "name": "Arrokuda",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/poke_capture_0846_000_mf_n_00000000_f_n.png",
+          "description": {
+            "cs": "The following Pokémon first discovered in the Galar region will make their Pokémon GO debuts! Cramorant, the Gulp Pokémon, will make its Pokémon GO debut in Eggs, the GO Pass, and GO Battle League reward encounters. Cramorant will be able to change form in battle, unleashing new possibilities for you and your battle team.* Arrokuda, the Rush Pokémon, and Barraskewda, the Skewer Pokémon, will make their Pokémon GO debuts in Field Research task rewards and via the GO Pass and Rainy Lure Modules.",
+            "en": "The following Pokémon first discovered in the Galar region will make their Pokémon GO debuts! Cramorant, the Gulp Pokémon, will make its Pokémon GO debut in Eggs, the GO Pass, and GO Battle League reward encounters. Cramorant will be able to change form in battle, unleashing new possibilities for you and your battle team.* Arrokuda, the Rush Pokémon, and Barraskewda, the Skewer Pokémon, will make their Pokémon GO debuts in Field Research task rewards and via the GO Pass and Rainy Lure Modules."
+          }
+        },
+        {
+          "name": "Barraskewda",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/poke_capture_0847_000_mf_n_00000000_f_n.png",
+          "description": {
+            "cs": "The following Pokémon first discovered in the Galar region will make their Pokémon GO debuts! Cramorant, the Gulp Pokémon, will make its Pokémon GO debut in Eggs, the GO Pass, and GO Battle League reward encounters. Cramorant will be able to change form in battle, unleashing new possibilities for you and your battle team.* Arrokuda, the Rush Pokémon, and Barraskewda, the Skewer Pokémon, will make their Pokémon GO debuts in Field Research task rewards and via the GO Pass and Rainy Lure Modules.",
+            "en": "The following Pokémon first discovered in the Galar region will make their Pokémon GO debuts! Cramorant, the Gulp Pokémon, will make its Pokémon GO debut in Eggs, the GO Pass, and GO Battle League reward encounters. Cramorant will be able to change form in battle, unleashing new possibilities for you and your battle team.* Arrokuda, the Rush Pokémon, and Barraskewda, the Skewer Pokémon, will make their Pokémon GO debuts in Field Research task rewards and via the GO Pass and Rainy Lure Modules."
+          }
+        }
+      ],
+      "spawns": [
+        {
+          "name": "Psyduck",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_054_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Goldeen",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_118_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Mareanie",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm747.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Wimpod",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm767.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Feebas",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_349_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Clamperl",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_366_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Wiglett",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/poke_capture_0960_000_mf_n_00000000_f_n.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        }
+      ],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808425323
+  },
+  "max-mondays-2026-08-24": {
+    "details": {
+      "eventID": "max-mondays-2026-08-24",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808428682
+  },
+  "gbl-forever-forward_great-league_scroll-cup-great-league-edition": {
+    "details": {
+      "eventID": "gbl-forever-forward_great-league_scroll-cup-great-league-edition",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808431946
+  },
+  "lunala-in-5-star-raid-battles-august-2026": {
+    "details": {
+      "eventID": "lunala-in-5-star-raid-battles-august-2026",
+      "officialLink": "https://pokemongolive.com/news/starmie-super-mega-raid-day-2026",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808435182
+  },
+  "mega-swampert-in-mega-raids-august-2026": {
+    "details": {
+      "eventID": "mega-swampert-in-mega-raids-august-2026",
+      "officialLink": "https://pokemongolive.com/news/gofest2026-mega-finale-incoming",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808438518
+  },
+  "raidhour20260826": {
+    "details": {
+      "eventID": "raidhour20260826",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808442053
+  },
+  "pokemonspotlighthour2026-08-27": {
+    "details": {
+      "eventID": "pokemonspotlighthour2026-08-27",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [
+        {
+          "name": "Mankey",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_056_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        }
+      ],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808445639
+  },
+  "pokemon-world-championships-2026-timed-research-twitch-drops": {
+    "details": {
+      "eventID": "pokemon-world-championships-2026-timed-research-twitch-drops",
+      "officialLink": "https://store.pokemongolive.com/offer-redemption",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808448963
+  },
+  "pokemon-xp-2026-worlds": {
+    "details": {
+      "eventID": "pokemon-xp-2026-worlds",
+      "officialLink": "https://pokemongolive.com/news/world-championships-event-2026",
+      "bonuses": [
+        {
+          "text": {
+            "cs": "The maximum number of sets you can play per day will increase from five to 15—for a total of 75 battles.",
+            "en": "The maximum number of sets you can play per day will increase from five to 15—for a total of 75 battles."
+          },
+          "icon": "🎟️"
+        },
+        {
+          "text": {
+            "cs": "Pokémon encountered via GO Battle League rewards will have a wider variance of Attack, Defense, and HP.",
+            "en": "Pokémon encountered via GO Battle League rewards will have a wider variance of Attack, Defense, and HP."
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "2× Stardust for catching Pokémon.",
+            "en": "2× Stardust for catching Pokémon."
+          },
+          "icon": "✨"
+        },
+        {
+          "text": {
+            "cs": "An additional 3,000 XP from raids.",
+            "en": "An additional 3,000 XP from raids."
+          },
+          "icon": "⚡"
+        },
+        {
+          "text": {
+            "cs": "Receive up to two additional free Raid Passes from spinning Gym Photo Discs.",
+            "en": "Receive up to two additional free Raid Passes from spinning Gym Photo Discs."
+          },
+          "icon": "🎟️"
+        }
+      ],
+      "debuts": [
+        {
+          "name": "Pikachu wearing a Cosmog-themed spacesuit",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm25.fPXP_2026.icon.png",
+          "description": {
+            "cs": "New costumed Pokémon will appear during this event!",
+            "en": "New costumed Pokémon will appear during this event!"
+          }
+        },
+        {
+          "name": "World Championships 2026 Pikachu",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm25.fWCS_2026.icon.png",
+          "description": {
+            "cs": "New costumed Pokémon will appear during this event!",
+            "en": "New costumed Pokémon will appear during this event!"
+          }
+        },
+        {
+          "name": "Alolan Sandshrew",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_027_61.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Alolan Sandslash",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_028_61.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Mankey",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_056_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Primeape",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_057_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Lickitung",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_108_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Totodile",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_158_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Croconaw",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_159_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Feraligatr",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_160_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Wooper",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_194_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Quagsire",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_195_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Ralts",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_280_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Kirlia",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_281_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Gardevoir",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_282_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Spheal",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_363_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Sealeo",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_364_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Walrein",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_365_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Beldum",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_374_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Metang",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_375_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Metagross",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_376_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Lickilicky",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_463_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Togetic",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_176_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Togekiss",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_468_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Gallade",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_475_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Deino",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_633_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Zweilous",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_634_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Hydreigon",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_635_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Froakie",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_656_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Frogadier",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_657_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Greninja",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_658_00.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Rowlet",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm722.icon.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Dartrix",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm723.icon.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Decidueye",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm724.icon.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Litten",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm725.icon.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Torracat",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm726.icon.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Incineroar",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm727.icon.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Sobble",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm816.icon.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Drizzile",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm817.icon.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Inteleon",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm818.icon.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Rookidee",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm821.icon.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Corvisquire",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm822.icon.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Corviknight",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm823.icon.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        },
+        {
+          "name": "Annihilape",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm979.icon.png",
+          "description": {
+            "cs": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist.",
+            "en": "Certain Pokémon caught or evolved during the event will know a featured attack! Alolan Sandslash Alolan Sandslash will know the Fast Attack Shadow Claw. Primeape Primeape will know the Charged Attack Rage Fist. Lickitung Lickitung will know the Charged Attack Body Slam. Feraligatr Feraligatr will know the Charged Attack Hydro Cannon. Quagsire Quagsire will know the Charged Attack Aqua Tail. Gardevoir Gardevoir will know the Charged Attack Synchronoise. Walrein Walrein will know the Fast Attack Powder Snow. Walrein will know the Charged Attack Icicle Spear. Metagross Metagross will know the Charged Attack Meteor Mash. Lickilicky Lickilicky will know the Charged Attack Body Slam. Togekiss Togekiss will know the Charged Attack Aura Sphere. Gallade Gallade will know the Charged Attack Synchronoise. Hydreigon Hydreigon will know the Charged Attack Brutal Swing. Greninja Greninja will know the Charged Attack Hydro Cannon. Decidueye Decidueye will know the Charged Attack Frenzy Plant. Incineroar Incineroar will know the Charged Attack Blast Burn. Inteleon Inteleon will know the Charged Attack Hydro Cannon. Corviknight Corviknight will know the Charged Attack Air Cutter. Annihilape Annihilape will know the Charged Attack Rage Fist."
+          }
+        }
+      ],
+      "spawns": [
+        {
+          "name": "Deino",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_633_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Togetic",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_176_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Beldum",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_374_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": true
+        }
+      ],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808460545
+  },
+  "max-mondays-2026-08-31": {
+    "details": {
+      "eventID": "max-mondays-2026-08-31",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808463902
+  },
+  "gbl-forever-forward_great-league_ultra-league_master-league-split-3": {
+    "details": {
+      "eventID": "gbl-forever-forward_great-league_ultra-league_master-league-split-3",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808467307
+  },
+  "raidhour20260902": {
+    "details": {
+      "eventID": "raidhour20260902",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808470707
+  },
+  "mega-ascension": {
+    "details": {
+      "eventID": "mega-ascension",
+      "officialLink": "https://store.pokemongo.com/",
+      "bonuses": [
+        {
+          "text": {
+            "cs": "Remote Raid Pass limit increased to 30 from Monday, August 31, to Friday, September 4, 2026",
+            "en": "Remote Raid Pass limit increased to 30 from Monday, August 31, to Friday, September 4, 2026"
+          },
+          "icon": "🎟️"
+        }
+      ],
+      "debuts": [],
+      "spawns": [
+        {
+          "name": "Pikachu",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_025_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Bellsprout",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_069_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Staryu",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_120_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Dratini",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_147_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Skarmory",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_227_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Chespin",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_650_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Fennekin",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_653_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Froakie",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_656_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Inkay",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_686_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Falinks",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm870.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        }
+      ],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808475722
+  },
+  "pokemon-go-fest-2026-mega-finale": {
+    "details": {
+      "eventID": "pokemon-go-fest-2026-mega-finale",
+      "officialLink": "https://pokemongo.com/find-your-community",
+      "bonuses": [
+        {
+          "text": {
+            "cs": "No limit on Remote Raids from Saturday, September 5, to Sunday, September 6, 2026",
+            "en": "No limit on Remote Raids from Saturday, September 5, to Sunday, September 6, 2026"
+          },
+          "icon": "🎟️"
+        },
+        {
+          "text": {
+            "cs": "All Mega-Evolved Pokémon will receive an extra CP boost from Saturday, September 5, to Sunday, September 6, 2026",
+            "en": "All Mega-Evolved Pokémon will receive an extra CP boost from Saturday, September 5, to Sunday, September 6, 2026"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Bonus Candy, Candy XL, and XP from Mega Raids",
+            "en": "Bonus Candy, Candy XL, and XP from Mega Raids"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "Zvýšená šance na setkání se Shiny Pokémon from certain Mega Raids and event Pokémon encounters",
+            "en": "Increased chance of encountering Shiny Pokémon from certain Mega Raids and event Pokémon encounters"
+          },
+          "icon": "🎁"
+        }
+      ],
+      "debuts": [],
+      "spawns": [
+        {
+          "name": "Chespin",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_650_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Fennekin",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_653_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Froakie",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_656_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Weedle",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_013_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Bellsprout",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_069_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Scyther",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_123_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Pinsir",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_127_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Roselia",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_315_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Snover",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_459_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Venipede",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_543_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Skiddo",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm672.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Abra",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_063_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Slowpoke",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_079_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Staryu",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_120_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Ralts",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_280_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": true
+        },
+        {
+          "name": "Meditite",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_307_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Espurr",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_677_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Binacle",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_688_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Clauncher",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_692_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Gastly",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_092_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": true
+        },
+        {
+          "name": "Houndour",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_228_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Shuppet",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_353_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Zorua",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm570.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Litwick",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_607_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Inkay",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_686_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Phantump",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm708.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Pumpkaboo (Medium)",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm710.fAVERAGE.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Pikachu",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_025_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Mareep",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_179_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Electrike",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_309_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Emolga",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_587_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Tynamo",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_602_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Stunfisk",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_618_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Helioptile",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm694.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Dedenne",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_702_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Onix",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_095_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Skarmory",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_227_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Aron",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_304_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Snorunt",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_361_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Beldum",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_374_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": true
+        },
+        {
+          "name": "Drilbur",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_529_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Amaura",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm698.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Bergmite",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm712.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Machop",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_066_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": true
+        },
+        {
+          "name": "Carvanha",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_318_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Numel",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_322_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Buneary",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_427_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Sandile",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_551_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Scraggy",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_559_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Pancham",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_674_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Falinks",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm870.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Magikarp",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_129_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Aerodactyl",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_142_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Dratini",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_147_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Swablu",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_333_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Bagon",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_371_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": true
+        },
+        {
+          "name": "Fletchling",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_661_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Tyrunt",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm696.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Noibat",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_714_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Clefairy",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_035_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Sableye",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_302_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Mawile",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_303_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Audino",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_531_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Furfrou (Natural)",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm676.fNATURAL.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Spritzee",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_682_00.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        },
+        {
+          "name": "Carbink",
+          "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm703.icon.png",
+          "isShinyAvailable": true,
+          "isHighPriority": false
+        }
+      ],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808489077
+  },
+  "10th-anniversary-celebration": {
+    "details": {
+      "eventID": "10th-anniversary-celebration",
+      "officialLink": "https://pokemongolive.com/news/ultraunlock-10th-anniversary-edition",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808492442
+  },
+  "season-23-forever-forward": {
+    "details": {
+      "eventID": "season-23-forever-forward",
+      "officialLink": "https://pokemongo.com/news/go-battle-league-forever-forward",
+      "bonuses": [
+        {
+          "text": {
+            "cs": "One additional Candy for trading Pokémon",
+            "en": "One additional Candy for trading Pokémon"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "Increased limits on opening, receiving from PokéStop and Gym Photo Discs, and storing Gifts",
+            "en": "Increased limits on opening, receiving from PokéStop and Gym Photo Discs, and storing Gifts"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "2× Daily Adventure Incense duration",
+            "en": "2× Daily Adventure Incense duration"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Increased XP and Stardust from hatching Eggs",
+            "en": "Increased XP and Stardust from hatching Eggs"
+          },
+          "icon": "✨"
+        }
+      ],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [
+        {
+          "distance": "2 km",
+          "contents": [
+            {
+              "name": "Exeggcute",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_102_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Pichu",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_172_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Cleffa",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_173_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Togepi",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_175_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Corphish",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_341_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Wynaut",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_360_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Larvesta",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm636.icon.png",
+              "isShinyAvailable": true
+            }
+          ]
+        },
+        {
+          "distance": "5 km",
+          "contents": [
+            {
+              "name": "Riolu",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_447_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Mantyke",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_458_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Larvesta",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm636.icon.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Snom",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm872.icon.png",
+              "isShinyAvailable": false
+            },
+            {
+              "name": "Indeedee (Male)",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm876.fMALE.icon.png?v2",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Indeedee (Female)",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm876.fFEMALE.icon.png?v2",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Flittle",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm955.icon.png",
+              "isShinyAvailable": false
+            }
+          ]
+        },
+        {
+          "distance": "5 km",
+          "contents": [
+            {
+              "name": "Tyrogue",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_236_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Sableye",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_302_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Budew",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_406_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Chingling",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_433_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Happiny",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_440_00.png",
+              "isShinyAvailable": true
+            }
+          ]
+        },
+        {
+          "distance": "7 km",
+          "contents": [
+            {
+              "name": "Alolan Diglett",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_050_61.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Galarian Meowth",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_052_31.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Alolan Geodude",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_074_61.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Galarian Corsola",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm222.fGALARIAN.icon.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Galarian Zigzagoon",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_263_31.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Galarian Darumaka",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_554_31.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Galarian Stunfisk",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_618_31.png",
+              "isShinyAvailable": false
+            }
+          ]
+        },
+        {
+          "distance": "7 km",
+          "contents": [
+            {
+              "name": "Hisuian Growlithe",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm58.fHISUIAN.icon.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Galarian Slowpoke",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_079_31.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Hisuian Sneasel",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm215.fHISUIAN.icon.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Galarian Corsola",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm222.fGALARIAN.icon.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Basculin (White Striped)",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm550.fWHITE_STRIPED.icon.png",
+              "isShinyAvailable": true
+            }
+          ]
+        },
+        {
+          "distance": "10 km",
+          "contents": [
+            {
+              "name": "Mawile",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_303_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Absol",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_359_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Larvesta",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm636.icon.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Honedge",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_679_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Charcadet",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm935.icon.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Tinkatink",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm957.icon.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Frigibax",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm996.icon.png",
+              "isShinyAvailable": true
+            }
+          ]
+        },
+        {
+          "distance": "10 km",
+          "contents": [
+            {
+              "name": "Bagon",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_371_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Gible",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_443_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Druddigon",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_621_00.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Drampa",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm780.icon.png",
+              "isShinyAvailable": true
+            },
+            {
+              "name": "Toxel",
+              "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm848.icon.png",
+              "isShinyAvailable": true
+            }
+          ]
+        }
+      ],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808502053
+  },
+  "go-pass-august-2026": {
+    "details": {
+      "eventID": "go-pass-august-2026",
+      "officialLink": "https://pokemongolive.com/news/go-pass-august-2026",
+      "bonuses": [
+        {
+          "text": {
+            "cs": "One additional Candy for trading Pokémon",
+            "en": "One additional Candy for trading Pokémon"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "Trainers level 31 and above will receive one guaranteed Candy XL when trading Pokémon",
+            "en": "Trainers level 31 and above will receive one guaranteed Candy XL when trading Pokémon"
+          },
+          "icon": "🍬"
+        },
+        {
+          "text": {
+            "cs": "Open up to 40 Gifts per day",
+            "en": "Open up to 40 Gifts per day"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Receive up to 125 Gifts per day from spinning PokéStop and Gym Photo Discs",
+            "en": "Receive up to 125 Gifts per day from spinning PokéStop and Gym Photo Discs"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Hold 10 more Gifts in your Item Bag",
+            "en": "Hold 10 more Gifts in your Item Bag"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "2× Daily Adventure Incense duration",
+            "en": "2× Daily Adventure Incense duration"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Increased XP and Stardust from hatching Eggs",
+            "en": "Increased XP and Stardust from hatching Eggs"
+          },
+          "icon": "✨"
+        },
+        {
+          "text": {
+            "cs": "One single-use Incubator awarded for your first PokéStop or Gym spin of the day",
+            "en": "One single-use Incubator awarded for your first PokéStop or Gym spin of the day"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Open up to 50 Gifts per day",
+            "en": "Open up to 50 Gifts per day"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Receive up to 150 Gifts per day from spinning PokéStop and Gym Photo Discs",
+            "en": "Receive up to 150 Gifts per day from spinning PokéStop and Gym Photo Discs"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Hold up to 20 more Gifts in your Item Bag",
+            "en": "Hold up to 20 more Gifts in your Item Bag"
+          },
+          "icon": "🎁"
+        }
+      ],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808505337
+  },
+  "gbl-forever-forward_great-league_ultra-league_master-league-mega-edition": {
+    "details": {
+      "eventID": "gbl-forever-forward_great-league_ultra-league_master-league-mega-edition",
+      "officialLink": "https://pokemongolive.com/news/starmie-super-mega-raid-day-2026",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808508556
+  },
+  "shadow-giratina-altered-in-shadow-raids-august-2026": {
+    "details": {
+      "eventID": "shadow-giratina-altered-in-shadow-raids-august-2026",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808511763
+  },
+  "mega-gyarados-in-mega-raids-august-2026": {
+    "details": {
+      "eventID": "mega-gyarados-in-mega-raids-august-2026",
+      "officialLink": "https://pokemongolive.com/news/gofest2026-mega-finale-incoming",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808515072
+  },
+  "regirock-regice-registeel-in-5-star-raid-battles-august-2026": {
+    "details": {
+      "eventID": "regirock-regice-registeel-in-5-star-raid-battles-august-2026",
+      "officialLink": "https://pokemongolive.com/news/starmie-super-mega-raid-day-2026",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808518743
+  },
+  "september-communitydayclassic2026": {
+    "details": {
+      "eventID": "september-communitydayclassic2026",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808522205
+  },
+  "super-mega-raid-day-september-2026": {
+    "details": {
+      "eventID": "super-mega-raid-day-september-2026",
+      "officialLink": "https://pokemongolive.com/news/starmie-super-mega-raid-day-2026",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808525869
+  },
+  "catch-mastery-september-2026": {
+    "details": {
+      "eventID": "catch-mastery-september-2026",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808529249
+  },
+  "lego-pokemon-go-2026": {
+    "details": {
+      "eventID": "lego-pokemon-go-2026",
+      "officialLink": "https://store.pokemongo.com/offer-redemption?passcode=LEGOxPOKEMONGOxBERRIES",
+      "bonuses": [
+        {
+          "text": {
+            "cs": "Razz Berry ×5",
+            "en": "Razz Berry ×5"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Poké Ball ×10",
+            "en": "Poké Ball ×10"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Pinap Berry ×5",
+            "en": "Pinap Berry ×5"
+          },
+          "icon": "🎁"
+        },
+        {
+          "text": {
+            "cs": "Nanab Berry ×5",
+            "en": "Nanab Berry ×5"
+          },
+          "icon": "🎁"
+        }
+      ],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808532525
+  },
+  "max-battle-day-october-2026": {
+    "details": {
+      "eventID": "max-battle-day-october-2026",
+      "officialLink": "https://pokemongolive.com/news/gofest2026-global-update",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808535774
+  },
+  "october-communityday2026": {
+    "details": {
+      "eventID": "october-communityday2026",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808539100
+  },
+  "hatch-day-october-2026": {
+    "details": {
+      "eventID": "hatch-day-october-2026",
+      "officialLink": "https://pokemongolive.com/news/fire-and-ice-hatch-day-2026",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808542380
+  },
+  "max-battle-day-october-24-2026": {
+    "details": {
+      "eventID": "max-battle-day-october-24-2026",
+      "officialLink": "https://pokemongolive.com/news/gofest2026-global-update",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808545568
+  },
+  "super-mega-raid-day-october-2026": {
+    "details": {
+      "eventID": "super-mega-raid-day-october-2026",
+      "officialLink": "https://pokemongolive.com/news/starmie-super-mega-raid-day-2026",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808548799
+  },
+  "november-communityday2026": {
+    "details": {
+      "eventID": "november-communityday2026",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck"
+      ]
+    },
+    "updatedAt": 1786808552061
+  },
+  "super-mega-raid-day-november-2026": {
+    "details": {
+      "eventID": "super-mega-raid-day-november-2026",
+      "officialLink": "https://pokemongolive.com/news/starmie-super-mega-raid-day-2026",
+      "bonuses": [],
+      "debuts": [],
+      "spawns": [],
+      "eggs": [],
+      "research": [],
+      "raids": [],
+      "sourcesMerged": [
+        "LeekDuck",
+        "NianticOfficial"
+      ]
+    },
+    "updatedAt": 1786808555285
+  }
+}

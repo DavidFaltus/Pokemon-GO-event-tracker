@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import './AdminPanelView.css';
 import type { Language } from '../data/translations';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, apiFetch } from '../config';
 import {
   ArrowLeft, Lock, Plus, Trash2, Save, AlertTriangle, CheckCircle,
   EyeOff, Search, Edit, Database, Upload, RefreshCw, Server,
   Image, PackageOpen, ChevronDown, ChevronUp, X, FileJson, Zap,
   Star, Egg, Swords, Gift, Download, FileText, Sparkles, ExternalLink,
-  Share2, Send, Copy, Check
+  Share2, Send, Copy, Check, Filter, Calendar, RotateCcw
 } from 'lucide-react';
 import { EventCard } from './EventCard';
 import type { EventData } from './EventCard';
@@ -460,6 +460,36 @@ const PRESET_BACKGROUNDS = [
   { label: '⚔️ Max Battle', url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=600&auto=format&fit=crop' },
 ];
 
+const MONTH_OPTIONS_CS = [
+  { value: '0', label: 'Leden' },
+  { value: '1', label: 'Únor' },
+  { value: '2', label: 'Březen' },
+  { value: '3', label: 'Duben' },
+  { value: '4', label: 'Květen' },
+  { value: '5', label: 'Červen' },
+  { value: '6', label: 'Červenec' },
+  { value: '7', label: 'Srpen' },
+  { value: '8', label: 'Září' },
+  { value: '9', label: 'Říjen' },
+  { value: '10', label: 'Listopad' },
+  { value: '11', label: 'Prosinec' }
+];
+
+const MONTH_OPTIONS_EN = [
+  { value: '0', label: 'January' },
+  { value: '1', label: 'February' },
+  { value: '2', label: 'March' },
+  { value: '3', label: 'April' },
+  { value: '4', label: 'May' },
+  { value: '5', label: 'June' },
+  { value: '6', label: 'July' },
+  { value: '7', label: 'August' },
+  { value: '8', label: 'September' },
+  { value: '9', label: 'October' },
+  { value: '10', label: 'November' },
+  { value: '11', label: 'December' }
+];
+
 const generateSocialCaption = (event: EventData, lang: Language): string => {
   const nameStr = formatLocalizedString(event.name, lang);
   const typeStr = event.eventType || 'Event';
@@ -512,6 +542,11 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   // Social Media tab state
   const [socialSubTab, setSocialSubTab] = useState<'single' | 'summary'>('single');
   const [socialSelectedEventId, setSocialSelectedEventId] = useState<string>('');
+  const [socialSearchQuery, setSocialSearchQuery] = useState<string>('');
+  const [socialFilterMonth, setSocialFilterMonth] = useState<string>('all');
+  const [socialFilterYear, setSocialFilterYear] = useState<string>('all');
+  const [socialFilterType, setSocialFilterType] = useState<string>('all');
+  const [socialFilterStatus, setSocialFilterStatus] = useState<'all' | 'upcoming' | 'active' | 'past'>('all');
   const [socialWebhookUrl, setSocialWebhookUrl] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('pogo_admin_social_webhook_url') || '';
@@ -599,7 +634,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     e.preventDefault();
     setError('');
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/login`, {
+      const res = await apiFetch('/api/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password })
@@ -627,13 +662,13 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
 
   const fetchAdminData = async (authToken: string) => {
     try {
-      const resPublic = await fetch(`${API_BASE_URL}/api/events`);
+      const resPublic = await apiFetch('/api/events');
       if (resPublic.ok) {
         const eventsData = await resPublic.json();
         setScrapedEvents(eventsData);
       }
 
-      const resAdmin = await fetch(`${API_BASE_URL}/api/admin/events`, {
+      const resAdmin = await apiFetch('/api/admin/events', {
         headers: { 'Authorization': `Bearer ${authToken}` }
       });
       if (resAdmin.ok) {
@@ -651,7 +686,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
 
   const fetchScraperStatus = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/scraper/status`);
+      const res = await apiFetch('/api/scraper/status');
       if (res.ok) setScraperStatus(await res.json());
     } catch { /* silent */ }
   }, []);
@@ -659,7 +694,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   const fetchCacheStats = useCallback(async () => {
     if (!token) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/cache-stats`, {
+      const res = await apiFetch('/api/admin/cache-stats', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) setCacheStats(await res.json());
@@ -669,7 +704,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   const fetchIconOverrides = useCallback(async () => {
     setIconsLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/pokemon-icons`);
+      const res = await apiFetch('/api/pokemon-icons');
       if (res.ok) {
         const data = await res.json();
         if (data && data.overrides) {
@@ -687,7 +722,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   const fetchRaidData = useCallback(async () => {
     setRaidsLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/raids`, {
+      const res = await apiFetch('/api/admin/raids', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -722,7 +757,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     setRaidsRefreshing(true);
     setRaidMsg(null);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/raids/refresh`, {
+      const res = await apiFetch('/api/admin/raids/refresh', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -743,7 +778,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   const handleToggleHideRaid = async (boss: any, isCurrentlyDeleted: boolean) => {
     setRaidMsg(null);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/raids/override`, {
+      const res = await apiFetch('/api/admin/raids/override', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -783,7 +818,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   const handleDeleteRaidOverride = async (name: string, tier: string) => {
     setRaidMsg(null);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/raids/override/${encodeURIComponent(name)}/${encodeURIComponent(tier)}`, {
+      const res = await apiFetch(`/api/admin/raids/override/${encodeURIComponent(name)}/${encodeURIComponent(tier)}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -807,7 +842,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
       const weatherArray = raidFormWeather.split(',').map(s => s.trim()).filter(Boolean);
       const typesArray = raidFormTypes.split(',').map(s => s.trim()).filter(Boolean);
 
-      const res = await fetch(`${API_BASE_URL}/api/admin/raids/override`, {
+      const res = await apiFetch('/api/admin/raids/override', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -851,7 +886,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     setIconsSaving(true);
     setIconsMsg(null);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/pokemon-icons`, {
+      const res = await apiFetch('/api/admin/pokemon-icons', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -955,16 +990,15 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     setFormExtraData(extra);
     setFormExtraDataJson(JSON.stringify(extra, null, 2));
 
-    // Fetch full details asynchronously to populate the form and prevent data loss
     setDetailsLoading(true);
     try {
-      let url = `${API_BASE_URL}/api/events/${activeEvent.eventID}/details`;
+      let url = `/api/events/${activeEvent.eventID}/details`;
       const queryParams = [];
       if (activeEvent.link) queryParams.push(`link=${encodeURIComponent(activeEvent.link)}`);
       if (activeEvent.name) queryParams.push(`name=${encodeURIComponent(activeEvent.name)}`);
       if (queryParams.length > 0) url += `?${queryParams.join('&')}`;
 
-      const res = await fetch(url);
+      const res = await apiFetch(url);
       if (res.ok) {
         const fetchedDetails = await res.json();
         setSelectedEvent(current => {
@@ -1075,12 +1109,12 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
       isCustom: selectedEvent?.isCustom || false
     };
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/events`, {
+      const res = await apiFetch('/api/admin/events', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify(eventPayload)
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({ success: res.ok }));
       if (res.ok && data.success) {
         setSuccessMsg(lang === 'cs' ? 'Událost uložena!' : 'Event saved!');
         localStorage.removeItem('pogo_events_cache');
@@ -1105,11 +1139,11 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     if (!window.confirm(msg)) return;
     setError(''); setSuccessMsg('');
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/events/${selectedEvent.eventID}`, {
+      const res = await apiFetch(`/api/admin/events/${selectedEvent.eventID}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({ success: res.ok }));
       if (res.ok && data.success) {
         setSuccessMsg(lang === 'cs' ? 'Odstraněno!' : 'Deleted!');
         localStorage.removeItem('pogo_events_cache');
@@ -1157,7 +1191,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     setScraperRunning(true);
     setError(''); setSuccessMsg('');
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/scrape${force ? '?force=true' : ''}`, {
+      const res = await apiFetch(`/api/admin/scrape${force ? '?force=true' : ''}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -1165,7 +1199,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
         setError(lang === 'cs' ? 'Relace vypršela. Prosím přihlaste se znovu.' : 'Session expired. Please log in again.');
         return;
       }
-      const data = await res.json();
+      const data = await res.json().catch(() => ({ success: res.ok }));
       if (res.ok && data.success) {
         setSuccessMsg(lang === 'cs' ? 'Scraper spuštěn na pozadí!' : 'Scraper started in background!');
         setTimeout(fetchScraperStatus, 3000);
@@ -1186,12 +1220,12 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     setRescrapeLoading(true);
     setRescrapeMsg(null);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/events/${selectedEvent.eventID}/rescrape`, {
+      const res = await apiFetch(`/api/admin/events/${selectedEvent.eventID}/rescrape`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ url })
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({ error: 'Failed to rescrape' }));
       if (res.ok && data.success) {
         // Update form with freshly scraped extra data
         setFormExtraData(data.details);
@@ -1235,12 +1269,12 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
       const text = await importFile.text();
       const parsed = JSON.parse(text);
       const eventsToImport = Array.isArray(parsed) ? parsed : (parsed.events || [parsed]);
-      const res = await fetch(`${API_BASE_URL}/api/admin/import`, {
+      const res = await apiFetch('/api/admin/import', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ events: eventsToImport, mode: importMode })
       });
-      const result = await res.json();
+      const result = await res.json().catch(() => ({ success: res.ok }));
       if (res.ok && result.success) {
         setImportResult(result);
         localStorage.removeItem('pogo_events_cache');
@@ -1290,6 +1324,71 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     setFormImage(spriteUrl);
     setSuccessMsg(lang === 'cs' ? `Načten sprite pro: ${nameToUse}` : `Loaded sprite for: ${nameToUse}`);
   };
+
+  const socialAvailableYears = useMemo(() => {
+    const years = new Set<string>();
+    scrapedEvents.forEach(e => {
+      if (e.start) {
+        const y = new Date(e.start).getFullYear();
+        if (!isNaN(y)) years.add(y.toString());
+      }
+    });
+    return Array.from(years).sort((a, b) => Number(b) - Number(a));
+  }, [scrapedEvents]);
+
+  const socialAvailableTypes = useMemo(() => {
+    const types = new Set<string>();
+    scrapedEvents.forEach(e => {
+      if (e.eventType) types.add(e.eventType);
+    });
+    return Array.from(types).sort();
+  }, [scrapedEvents]);
+
+  const filteredSocialEvents = useMemo(() => {
+    const now = new Date().getTime();
+    return scrapedEvents.filter(e => {
+      const startDate = new Date(e.start);
+      const endDate = new Date(e.end);
+      const startMs = startDate.getTime();
+      const endMs = endDate.getTime();
+
+      // Year filter
+      if (socialFilterYear && socialFilterYear !== 'all') {
+        if (startDate.getFullYear().toString() !== socialFilterYear) return false;
+      }
+
+      // Month filter (0-11)
+      if (socialFilterMonth && socialFilterMonth !== 'all') {
+        if (startDate.getMonth().toString() !== socialFilterMonth) return false;
+      }
+
+      // Type filter
+      if (socialFilterType && socialFilterType !== 'all') {
+        if (e.eventType !== socialFilterType) return false;
+      }
+
+      // Status filter
+      if (socialFilterStatus === 'upcoming') {
+        if (startMs <= now) return false;
+      } else if (socialFilterStatus === 'active') {
+        if (startMs > now || endMs < now) return false;
+      } else if (socialFilterStatus === 'past') {
+        if (endMs >= now) return false;
+      }
+
+      // Search query
+      if (socialSearchQuery.trim()) {
+        const query = socialSearchQuery.toLowerCase().trim();
+        const name = formatLocalizedString(e.name, lang).toLowerCase();
+        const type = (e.eventType || '').toLowerCase();
+        if (!name.includes(query) && !type.includes(query) && !e.eventID.toLowerCase().includes(query)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [scrapedEvents, socialFilterYear, socialFilterMonth, socialFilterType, socialFilterStatus, socialSearchQuery, lang]);
 
   const socialSelectedEvent = scrapedEvents.find(e => e.eventID === socialSelectedEventId) || null;
 
@@ -2377,19 +2476,166 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
 
             {socialSubTab === 'single' ? (
               <>
-                {/* Select Event */}
+                {/* Search & Filter Controls for Single Event Generation */}
+                <div style={{
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  borderRadius: '14px',
+                  padding: '16px',
+                  marginBottom: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px'
+                }}>
+                  {/* Search bar + Reset button */}
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <div style={{ position: 'relative', flex: 1 }}>
+                      <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                      <input
+                        type="text"
+                        value={socialSearchQuery}
+                        onChange={(e) => setSocialSearchQuery(e.target.value)}
+                        placeholder={lang === 'cs' ? 'Hledat událost podle názvu, Pokémona či typu...' : 'Search event by title, Pokémon or type...'}
+                        className="admin-input"
+                        style={{ width: '100%', paddingLeft: '36px', paddingRight: socialSearchQuery ? '36px' : '12px', boxSizing: 'border-box' }}
+                      />
+                      {socialSearchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => setSocialSearchQuery('')}
+                          style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px' }}
+                        >
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Reset filters button */}
+                    {(socialSearchQuery || socialFilterMonth !== 'all' || socialFilterYear !== 'all' || socialFilterType !== 'all' || socialFilterStatus !== 'all') && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSocialSearchQuery('');
+                          setSocialFilterMonth('all');
+                          setSocialFilterYear('all');
+                          setSocialFilterType('all');
+                          setSocialFilterStatus('all');
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '9px 14px',
+                          background: 'rgba(239, 68, 68, 0.15)',
+                          border: '1px solid rgba(239, 68, 68, 0.3)',
+                          color: '#f87171',
+                          borderRadius: '8px',
+                          fontSize: '0.8rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
+                        <RotateCcw size={13} />
+                        {lang === 'cs' ? 'Reset filtrů' : 'Reset Filters'}
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Filter Selectors: Year, Month, Type, Status */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '10px' }}>
+                    {/* Month Filter */}
+                    <div>
+                      <label style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                        {lang === 'cs' ? '📅 Měsíc:' : '📅 Month:'}
+                      </label>
+                      <select
+                        value={socialFilterMonth}
+                        onChange={(e) => setSocialFilterMonth(e.target.value)}
+                        className="admin-select"
+                        style={{ width: '100%', padding: '7px 10px', fontSize: '0.8rem' }}
+                      >
+                        <option value="all">{lang === 'cs' ? 'Všechny měsíce' : 'All Months'}</option>
+                        {(lang === 'cs' ? MONTH_OPTIONS_CS : MONTH_OPTIONS_EN).map(m => (
+                          <option key={m.value} value={m.value}>{m.label}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Year Filter */}
+                    <div>
+                      <label style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                        {lang === 'cs' ? '🗓️ Rok:' : '🗓️ Year:'}
+                      </label>
+                      <select
+                        value={socialFilterYear}
+                        onChange={(e) => setSocialFilterYear(e.target.value)}
+                        className="admin-select"
+                        style={{ width: '100%', padding: '7px 10px', fontSize: '0.8rem' }}
+                      >
+                        <option value="all">{lang === 'cs' ? 'Všechny roky' : 'All Years'}</option>
+                        {socialAvailableYears.map(y => (
+                          <option key={y} value={y}>{y}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Type Filter */}
+                    <div>
+                      <label style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                        {lang === 'cs' ? '⚡ Typ události:' : '⚡ Event Type:'}
+                      </label>
+                      <select
+                        value={socialFilterType}
+                        onChange={(e) => setSocialFilterType(e.target.value)}
+                        className="admin-select"
+                        style={{ width: '100%', padding: '7px 10px', fontSize: '0.8rem' }}
+                      >
+                        <option value="all">{lang === 'cs' ? 'Všechny typy' : 'All Types'}</option>
+                        {socialAvailableTypes.map(t => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Status Filter */}
+                    <div>
+                      <label style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 600, display: 'block', marginBottom: '4px' }}>
+                        {lang === 'cs' ? '⏳ Stav:' : '⏳ Status:'}
+                      </label>
+                      <select
+                        value={socialFilterStatus}
+                        onChange={(e) => setSocialFilterStatus(e.target.value as any)}
+                        className="admin-select"
+                        style={{ width: '100%', padding: '7px 10px', fontSize: '0.8rem' }}
+                      >
+                        <option value="all">{lang === 'cs' ? 'Všechny stavy' : 'All Statuses'}</option>
+                        <option value="upcoming">{lang === 'cs' ? '⏳ Nadcházející' : '⏳ Upcoming'}</option>
+                        <option value="active">{lang === 'cs' ? '🟢 Probíhající' : '🟢 Active'}</option>
+                        <option value="past">{lang === 'cs' ? '⌛ Uplynulé' : '⌛ Past'}</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Event Select Dropdown & Counter */}
                 <div className="form-field" style={{ marginBottom: '20px' }}>
-                  <label style={{ fontWeight: 700, fontSize: '0.85rem' }}>
-                    {lang === 'cs' ? '1. Vyberte událost:' : '1. Select Event:'}
-                  </label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <label style={{ fontWeight: 700, fontSize: '0.85rem' }}>
+                      {lang === 'cs' ? '1. Vyberte událost ze seznamu:' : '1. Select Event:'}
+                    </label>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--accent-color, #38bdf8)', fontWeight: 600 }}>
+                      {lang === 'cs' ? `Nalezeno: ${filteredSocialEvents.length} událostí` : `Found: ${filteredSocialEvents.length} events`}
+                    </span>
+                  </div>
                   <select
                     value={socialSelectedEventId}
                     onChange={(e) => setSocialSelectedEventId(e.target.value)}
                     className="admin-select"
                     style={{ width: '100%', padding: '10px 14px', borderRadius: '10px', background: 'rgba(0,0,0,0.4)', color: '#fff', border: '1px solid var(--border-color)' }}
                   >
-                    <option value="">-- {lang === 'cs' ? 'Vyberte událost ze seznamu' : 'Select an event'} --</option>
-                    {scrapedEvents.map(e => (
+                    <option value="">-- {lang === 'cs' ? `Vyberte událost (${filteredSocialEvents.length} dostupných)` : `Select an event (${filteredSocialEvents.length} available)`} --</option>
+                    {filteredSocialEvents.map(e => (
                       <option key={e.eventID} value={e.eventID}>
                         [{e.eventType}] {formatLocalizedString(e.name, lang)} ({new Date(e.start).toLocaleDateString()})
                       </option>
@@ -2410,22 +2656,22 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
                         const nameLower = typeof socialSelectedEvent.name === 'string' ? socialSelectedEvent.name.toLowerCase() : '';
 
                         if (type === 'pokemon-spotlight-hour') {
-                          return <SpotlightInfographic event={socialSelectedEvent} lang={lang} />;
+                          return <SpotlightInfographic event={socialSelectedEvent} lang={lang} isAdmin={true} />;
                         }
                         if (type === 'community-day' || type === 'hatch-day' || type === 'research-day') {
-                          return <CommunityDayInfographic event={socialSelectedEvent} lang={lang} />;
+                          return <CommunityDayInfographic event={socialSelectedEvent} lang={lang} isAdmin={true} />;
                         }
                         if (type === 'max-mondays' || nameLower.includes('max') || nameLower.includes('dynamax')) {
-                          return <MaxInfographic event={socialSelectedEvent} lang={lang} />;
+                          return <MaxInfographic event={socialSelectedEvent} lang={lang} isAdmin={true} />;
                         }
                         if (type === 'raid-battles' || type === 'raid-day' || type === 'shadow-raid' || type === 'mega-raid' || type === 'raid-hour') {
-                          return <RaidInfographic event={socialSelectedEvent} lang={lang} showTabs={true} />;
+                          return <RaidInfographic event={socialSelectedEvent} lang={lang} showTabs={true} isAdmin={true} />;
                         }
                         if (type === 'team-go-rocket' || nameLower.includes('rocket')) {
-                          return <RocketInfographic event={socialSelectedEvent} lang={lang} />;
+                          return <RocketInfographic event={socialSelectedEvent} lang={lang} isAdmin={true} />;
                         }
 
-                        return <EventInfographic event={socialSelectedEvent} lang={lang} />;
+                        return <EventInfographic event={socialSelectedEvent} lang={lang} isAdmin={true} />;
                       })()}
                     </div>
 
@@ -2522,7 +2768,7 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
             ) : (
               /* Summary Infographics Tab (Weekly & Monthly Overview) */
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <MonthSummaryInfographic events={scrapedEvents} lang={lang} />
+                <MonthSummaryInfographic events={scrapedEvents} lang={lang} isAdmin={true} />
               </div>
             )}
           </div>

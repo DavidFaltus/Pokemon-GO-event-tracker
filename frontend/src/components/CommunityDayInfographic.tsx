@@ -3,17 +3,21 @@ import { toPng } from 'html-to-image';
 import { Download, Sparkles, Clock, Calendar, Zap, Check, ShieldCheck, Flame } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
-import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError, fetchImageAsBase64 } from '../utils/imageResolver';
 import { getSpecialEventDetails, getPokemonImage } from '../data/specialEvents';
 import { findPokemonMeta } from '../data/pokemonMeta';
 import { getPokemonName } from '../utils/pokemonTranslator';
+import { getFontEmbedCSS, disableTextClipping } from '../utils/exportPoster';
 import { API_BASE_URL } from '../config';
+import { useInfographicEditor } from '../hooks/useInfographicEditor';
+import { EditableText, EditableImage, EditToolbar } from './InfographicEditable';
 import './CommunityDayInfographic.css';
 
 interface CommunityDayInfographicProps {
   event: EventData;
   lang: Language;
   timezone?: string;
+  isAdmin?: boolean;
 }
 
 // Vector SVG Pokémon GO Bonus Icons
@@ -87,29 +91,12 @@ const BonusIcon: React.FC<{ type: string; color: string }> = ({ type, color }) =
   }
 };
 
-// Converts image URL to Base64 Data URL via Express backend proxy to bypass browser CORS restrictions
-const fetchImageAsBase64 = async (url: string): Promise<string> => {
-  if (!url || url.startsWith('data:')) return url;
-  try {
-    const proxyUrl = `${API_BASE_URL}/api/proxy-image?url=${encodeURIComponent(url)}`;
-    const res = await fetch(proxyUrl);
-    if (!res.ok) return url;
-    const blob = await res.blob();
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve((reader.result as string) || url);
-      reader.onerror = () => resolve(url);
-      reader.readAsDataURL(blob);
-    });
-  } catch {
-    return url;
-  }
-};
-
-export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = ({ event, lang }) => {
+export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = ({ event, lang, isAdmin = false }) => {
   const posterRef = useRef<HTMLDivElement>(null);
+  const editor = useInfographicEditor(event.eventID, 'communityDay');
   const [downloading, setDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const isEditing = isAdmin && editor.isEditing;
 
   // Extract featured Pokemon & details
   const eventName = event.name;
@@ -214,9 +201,13 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
   const handleDownload = async () => {
     if (!posterRef.current || downloading) return;
     setDownloading(true);
+    editor.setIsExporting(true);
+    await new Promise(r => setTimeout(r, 120));
+    if (!posterRef.current) return;
 
     const originalSrcs: { img: HTMLImageElement; origSrc: string }[] = [];
 
+    let restoreClipping: (() => void) | null = null;
     try {
       const imgs = Array.from(posterRef.current.querySelectorAll('img'));
 
@@ -227,28 +218,61 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
           if (origSrc && !origSrc.startsWith('data:')) {
             originalSrcs.push({ img, origSrc });
             try {
-              const base64 = await fetchImageAsBase64(origSrc);
+              const base64 = await fetchImageAsBase64(origSrc, img);
               if (base64 && base64.startsWith('data:')) {
                 img.src = base64;
+              } else {
+                img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
               }
-            } catch (e) {
-              /* ignore and keep original */
+            } catch {
+              img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
             }
           }
         })
       );
+      if (typeof document !== 'undefined' && (document as any).fonts) {
+        await (document as any).fonts.ready;
+      }
+      if (!posterRef.current) return;
 
+      if (posterRef.current) {
+        restoreClipping = disableTextClipping(posterRef.current);
+      }
+      const fontEmbedCSS = await getFontEmbedCSS();
+      const rect = posterRef.current.getBoundingClientRect();
+      const w = Math.round(rect.width) || posterRef.current.offsetWidth || 600;
+      const h = Math.round(rect.height) || posterRef.current.offsetHeight || 650;
       const dataUrl = await toPng(posterRef.current, { 
         cacheBust: false,
-        skipFonts: true,
+        skipFonts: !fontEmbedCSS,
+        fontEmbedCSS: fontEmbedCSS || undefined,
+        width: w,
+        height: h,
+        canvasWidth: w * 2,
+        canvasHeight: h * 2,
         pixelRatio: 2,
-        backgroundColor: '#0d1117'
+        backgroundColor: '#0d1117',
+        style: {
+          width: `${w}px`,
+          height: `${h}px`,
+          maxWidth: `${w}px`,
+          minWidth: `${w}px`,
+          fontFamily: "'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          margin: '0',
+          transform: 'none',
+        }
       });
 
       const link = document.createElement('a');
       link.download = `pogo_infographic_${mainPokemonName.toLowerCase()}_cd.png`;
       link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
+      setTimeout(() => {
+        if (link.parentNode) {
+          link.parentNode.removeChild(link);
+        }
+      }, 500);
 
       setDownloadSuccess(true);
       setTimeout(() => setDownloadSuccess(false), 3000);
@@ -259,14 +283,21 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
       originalSrcs.forEach(({ img, origSrc }) => {
         img.src = origSrc;
       });
+      if (restoreClipping) {
+        restoreClipping();
+      }
       setDownloading(false);
+      editor.setIsExporting(false);
     }
   };
 
   return (
     <div className="cd-infographic-wrapper">
       {/* Main Infographic Poster (Canvas Target) */}
-      <div className="cd-poster-container" ref={posterRef}>
+      <div className={`cd-poster-container ${editor.isExporting ? 'is-exporting' : ''}`} ref={posterRef}>
+        {isAdmin && (
+          <EditToolbar isEditing={editor.isEditing} onToggleEdit={() => editor.setIsEditing(!editor.isEditing)} hasOverrides={editor.hasOverrides} onReset={editor.resetAll} lang={lang} />
+        )}
         {/* Background Decorative Glows */}
         <div className="cd-poster-glow-top"></div>
         <div className="cd-poster-glow-bottom"></div>
@@ -275,19 +306,19 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
         <div className="cd-poster-header">
           <div className="cd-poster-badge">
             <Sparkles size={14} className="cd-sparkle-icon" />
-            <span>COMMUNITY DAY</span>
+            <EditableText value={editor.getTextOverride('badge', 'COMMUNITY DAY')} onChange={(v) => editor.setTextOverride('badge', v)} isEditing={isEditing} as="span" />
           </div>
-          <h2 className="cd-poster-title">{eventName}</h2>
+          <EditableText value={editor.getTextOverride('title', eventName)} onChange={(v) => editor.setTextOverride('title', v)} isEditing={isEditing} as="h2" className="cd-poster-title" />
           
           <div className="cd-poster-time-bar">
             <div className="cd-time-item">
               <Calendar size={15} />
-              <span>{dateStr}</span>
+              <EditableText value={editor.getTextOverride('date', dateStr)} onChange={(v) => editor.setTextOverride('date', v)} isEditing={editor.isEditing} as="span" />
             </div>
             <div className="cd-time-divider">•</div>
             <div className="cd-time-item">
               <Clock size={15} />
-              <span>{timeStr}</span>
+              <EditableText value={editor.getTextOverride('time', timeStr)} onChange={(v) => editor.setTextOverride('time', v)} isEditing={editor.isEditing} as="span" />
             </div>
           </div>
         </div>
@@ -295,26 +326,22 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
         {/* Featured Pokemon Showcase */}
         <div className="cd-poster-showcase">
           <div className="cd-showcase-left">
-            <div className="cd-featured-label">{lang === 'cs' ? 'HLAVNÍ POKÉMON' : 'FEATURED POKÉMON'}</div>
-            <h3 className="cd-pokemon-title">{getPokemonName(mainPokemonName, lang)}</h3>
+            <EditableText value={editor.getTextOverride('featuredLabel', lang === 'cs' ? 'HLAVNÍ POKÉMON' : 'FEATURED POKÉMON')} onChange={(v) => editor.setTextOverride('featuredLabel', v)} isEditing={editor.isEditing} as="div" className="cd-featured-label" />
+            <EditableText value={editor.getTextOverride('pokemonTitle', getPokemonName(mainPokemonName, lang))} onChange={(v) => editor.setTextOverride('pokemonTitle', v)} isEditing={editor.isEditing} as="h3" className="cd-pokemon-title" />
             
             <div className="cd-shiny-rate-chip">
               <Sparkles size={13} />
-              <span>Shiny Rate ~1 : 25</span>
+              <EditableText value={editor.getTextOverride('shinyRate', 'Shiny Rate ~1 : 25')} onChange={(v) => editor.setTextOverride('shinyRate', v)} isEditing={editor.isEditing} as="span" />
             </div>
 
             {/* Featured Special Attack */}
             <div className="cd-attack-box">
               <div className="cd-attack-header">
                 <Flame size={14} />
-                <span>{lang === 'cs' ? 'EXKLUZIVNÍ ÚTOK (EVOLUCE)' : 'EXCLUSIVE FEATURED MOVE'}</span>
+                <EditableText value={editor.getTextOverride('specialMoveHeader', lang === 'cs' ? 'EXKLUZIVNÍ ÚTOK (EVOLUCE)' : 'EXCLUSIVE FEATURED MOVE')} onChange={(v) => editor.setTextOverride('specialMoveHeader', v)} isEditing={editor.isEditing} as="span" />
               </div>
-              <div className="cd-attack-name">
-                {specialMove || (lang === 'cs' ? `Vyviňte na ${finalEvolution}` : `Evolve into ${finalEvolution}`)}
-              </div>
-              <div className="cd-attack-note">
-                {lang === 'cs' ? `Během eventu + 5h po skončení` : `During event + up to 5 hours after`}
-              </div>
+              <EditableText value={editor.getTextOverride('specialMoveName', specialMove || (lang === 'cs' ? `Vyviňte na ${finalEvolution}` : `Evolve into ${finalEvolution}`))} onChange={(v) => editor.setTextOverride('specialMoveName', v)} isEditing={editor.isEditing} as="div" className="cd-attack-name" />
+              <EditableText value={editor.getTextOverride('specialMoveNote', lang === 'cs' ? `Během eventu + 5h po skončení` : `During event + up to 5 hours after`)} onChange={(v) => editor.setTextOverride('specialMoveNote', v)} isEditing={editor.isEditing} as="div" className="cd-attack-note" />
             </div>
           </div>
 
@@ -322,23 +349,29 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
             <div className="cd-image-halo"></div>
             <div className="cd-sprites-pair-container">
               <div className="cd-featured-img-wrapper">
-                <img 
-                  src={resolveImage(pokemonImg, event.eventType, mainPokemonName, false)} 
-                  alt={mainPokemonName} 
+                <EditableImage
+                  src={editor.getImageOverride('normalSprite', resolveImage(pokemonImg, event.eventType, mainPokemonName, false))}
+                  alt={mainPokemonName}
                   className="cd-featured-img"
                   onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, mainPokemonName, false)}
+                  isEditing={editor.isEditing}
+                  onChange={(v) => editor.setImageOverride('normalSprite', v)}
+                  pokemonName={mainPokemonName}
                 />
-                <span className="cd-sprite-tag normal">Normal</span>
+                <EditableText value={editor.getTextOverride('tagNormal', 'Normal')} onChange={(v) => editor.setTextOverride('tagNormal', v)} isEditing={editor.isEditing} as="span" className="cd-sprite-tag normal" />
               </div>
               <div className="cd-featured-img-wrapper">
-                <img 
-                  src={resolveImage(pokemonImg, event.eventType, mainPokemonName, true)} 
-                  alt={`${mainPokemonName} Shiny`} 
+                <EditableImage
+                  src={editor.getImageOverride('shinySprite', resolveImage(pokemonImg, event.eventType, mainPokemonName, true))}
+                  alt={`${mainPokemonName} Shiny`}
                   className="cd-featured-img shiny-sprite"
                   style={{ filter: 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.65))' }}
                   onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, mainPokemonName, true)}
+                  isEditing={editor.isEditing}
+                  onChange={(v) => editor.setImageOverride('shinySprite', v)}
+                  pokemonName={mainPokemonName}
                 />
-                <span className="cd-sprite-tag shiny">✨ Shiny</span>
+                <EditableText value={editor.getTextOverride('tagShiny', '✨ Shiny')} onChange={(v) => editor.setTextOverride('tagShiny', v)} isEditing={editor.isEditing} as="span" className="cd-sprite-tag shiny" />
               </div>
             </div>
           </div>
@@ -349,20 +382,23 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
           <div className="cd-shiny-family-card">
             <div className="cd-card-section-title">
               <Sparkles size={15} />
-              <span>{lang === 'cs' ? 'SHINY PREVIEW & EVOLUCE' : 'SHINY PREVIEW & EVOLUTIONS'}</span>
+              <EditableText value={editor.getTextOverride('shinyFamilyTitle', lang === 'cs' ? 'SHINY PREVIEW & EVOLUCE' : 'SHINY PREVIEW & EVOLUTIONS')} onChange={(v) => editor.setTextOverride('shinyFamilyTitle', v)} isEditing={editor.isEditing} as="span" />
             </div>
             <div className="cd-shiny-grid">
-              {cdData.shinies.map((s: any) => (
+              {cdData.shinies.map((s: any, idx: number) => (
                 <div key={s.name} className="cd-shiny-item">
                   <div className="cd-shiny-sprite-container">
                     <div className="cd-shiny-sparkle-overlay">✨</div>
-                    <img 
-                      src={resolveImage(s.image, event.eventType, s.name)} 
+                    <EditableImage
+                      src={editor.getImageOverride(`shinyFamilySprite_${idx}`, resolveImage(s.image, event.eventType, s.name))}
                       alt={getPokemonName(s.name, lang)}
                       onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, s.name)}
+                      isEditing={editor.isEditing}
+                      onChange={(v) => editor.setImageOverride(`shinyFamilySprite_${idx}`, v)}
+                      pokemonName={s.name}
                     />
                   </div>
-                  <span className="cd-shiny-name">{getPokemonName(s.name, lang)}</span>
+                  <EditableText value={editor.getTextOverride(`shinyFamilyName_${idx}`, getPokemonName(s.name, lang))} onChange={(v) => editor.setTextOverride(`shinyFamilyName_${idx}`, v)} isEditing={editor.isEditing} as="span" className="cd-shiny-name" />
                 </div>
               ))}
             </div>
@@ -373,7 +409,7 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
         <div className="cd-bonuses-container">
           <div className="cd-card-section-title">
             <Zap size={15} />
-            <span>{lang === 'cs' ? 'BONUSY EVENTU' : 'EVENT BONUSES'}</span>
+            <EditableText value={editor.getTextOverride('bonusesTitle', lang === 'cs' ? 'BONUSY EVENTU' : 'EVENT BONUSES')} onChange={(v) => editor.setTextOverride('bonusesTitle', v)} isEditing={editor.isEditing} as="span" />
           </div>
           
           <div className="cd-bonuses-grid">
@@ -383,8 +419,8 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
                   <BonusIcon type={item.type} color={item.color} />
                 </div>
                 <div className="cd-bonus-tile-info">
-                  <div className="cd-bonus-tile-title">{item.title}</div>
-                  <div className="cd-bonus-tile-subtitle">{item.subtitle}</div>
+                  <EditableText value={editor.getTextOverride(`bonusTitle_${idx}`, item.title)} onChange={(v) => editor.setTextOverride(`bonusTitle_${idx}`, v)} isEditing={editor.isEditing} as="div" className="cd-bonus-tile-title" />
+                  <EditableText value={editor.getTextOverride(`bonusSubtitle_${idx}`, item.subtitle)} onChange={(v) => editor.setTextOverride(`bonusSubtitle_${idx}`, v)} isEditing={editor.isEditing} as="div" className="cd-bonus-tile-subtitle" />
                 </div>
               </div>
             ))}
@@ -395,7 +431,7 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
         <div className="cd-poster-footer">
           <div className="cd-footer-left">
             <ShieldCheck size={16} className="cd-shield-icon" />
-            <span>pogoevents.app</span>
+            <EditableText value={editor.getTextOverride('footerBrand', 'pogoevents.app')} onChange={(v) => editor.setTextOverride('footerBrand', v)} isEditing={editor.isEditing} as="span" />
           </div>
           <div className="cd-footer-right"></div>
         </div>

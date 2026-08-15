@@ -1,0 +1,17 @@
+[
+  {
+    "id": "custom-raid-1786819325394",
+    "name": "Altered Shadow Giratina",
+    "tier": "shadow-5",
+    "image": "https://img.pokemondb.net/sprites/home/normal/altered-shadow-giratina.png",
+    "canBeShiny": true,
+    "cpRange": "1848 - 2105",
+    "boostedCpRange": "2310 - 2631",
+    "weatherBoosts": [
+      "Větrno (Windy)",
+      "Mlha (Fog)"
+    ],
+    "isDeleted": true,
+    "isCustom": false
+  }
+]

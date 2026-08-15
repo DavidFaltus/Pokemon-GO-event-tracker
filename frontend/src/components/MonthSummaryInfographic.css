@@ -91,19 +91,19 @@
   box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
 }
 
-/* Poster Container (Strict Fixed 4:5 Aspect Ratio & Pixels to prevent scaling differences) */
+/* Poster Container */
 .month-summary-poster {
   width: 480px;
-  height: 600px;
-  flex-shrink: 0;
-  flex-grow: 0;
+  min-width: 480px;
+  max-width: 480px;
+  min-height: 600px;
   background: #090d16;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   padding: 24px 20px;
   color: #fff;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   box-sizing: border-box;
   overflow: hidden;
   display: flex;
@@ -165,15 +165,17 @@
   align-items: center;
   text-align: center;
   position: relative;
+  width: 100%;
 }
 
 .brand-logo {
-  font-size: 0.65rem;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 2px;
   color: rgba(255, 255, 255, 0.3);
   text-transform: uppercase;
   margin-bottom: 4px;
+  white-space: nowrap;
 }
 
 .poster-title-area {
@@ -186,12 +188,13 @@
 
 .poster-header-badge {
   display: inline-block;
-  font-size: 0.68rem;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.5);
   margin-bottom: 2px;
+  white-space: nowrap;
 }
 
 .theme-green .poster-header-badge { color: #34d399; }
@@ -202,13 +205,12 @@
 
 .poster-header h2 {
   margin: 0;
-  font-size: 1.3rem;
+  font-size: 22px;
   font-weight: 900;
   letter-spacing: -0.5px;
-  background: linear-gradient(180deg, #fff 0%, #cbd5e1 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #ffffff;
   text-align: center;
+  white-space: nowrap;
 }
 
 /* Poster Content Area */
@@ -227,7 +229,7 @@
   margin-top: 12px;
   display: flex;
   justify-content: space-between;
-  font-size: 0.65rem;
+  font-size: 11px;
   color: rgba(255, 255, 255, 0.3);
   font-weight: 500;
 }
@@ -237,73 +239,84 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* Weekly Timeline Grid (Dynamic stretching row layout) */
+/* Weekly Timeline Grid */
 .weekly-timeline-grid {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  justify-content: space-evenly;
   gap: 8px;
+  width: 100%;
 }
 
 .weekly-day-row {
   display: grid;
-  grid-template-columns: 80px 1fr 40px;
+  grid-template-columns: 68px 1fr 38px;
   align-items: center;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
-  padding: 8px 14px;
+  padding: 8px 12px;
   min-height: 48px;
   box-sizing: border-box;
+  overflow: hidden;
+  gap: 6px;
 }
 
 .weekly-timeline-grid.days-count-1 .weekly-day-row,
 .weekly-timeline-grid.days-count-2 .weekly-day-row {
-  height: 160px;
-  padding: 18px 22px;
-  grid-template-columns: 100px 1fr 64px;
+  padding: 16px 20px;
+  grid-template-columns: 88px 1fr 56px;
 }
 
 .weekly-timeline-grid.days-count-1 .day-name,
 .weekly-timeline-grid.days-count-2 .day-name {
-  font-size: 1.25rem;
+  font-size: 21px;
 }
 
 .weekly-timeline-grid.days-count-1 .event-title-text,
 .weekly-timeline-grid.days-count-2 .event-title-text {
-  font-size: 1.25rem;
+  font-size: 21px;
 }
 
 .weekly-timeline-grid.days-count-1 .event-visual-icon,
 .weekly-timeline-grid.days-count-2 .event-visual-icon {
-  width: 60px;
-  height: 60px;
+  width: 52px;
+  height: 52px;
 }
 
 .weekly-timeline-grid.days-count-3 .weekly-day-row {
-  height: 110px;
-  padding: 14px 18px;
-  grid-template-columns: 90px 1fr 52px;
+  padding: 12px 16px;
+  grid-template-columns: 80px 1fr 48px;
 }
 
-.weekly-timeline-grid.days-count-3 .day-name { font-size: 1.1rem; }
-.weekly-timeline-grid.days-count-3 .event-title-text { font-size: 1.1rem; }
-.weekly-timeline-grid.days-count-3 .event-visual-icon { width: 48px; height: 48px; }
+.weekly-timeline-grid.days-count-3 .day-name { font-size: 18px; }
+.weekly-timeline-grid.days-count-3 .event-title-text { font-size: 18px; }
+.weekly-timeline-grid.days-count-3 .event-visual-icon { width: 44px; height: 44px; }
 
 .weekly-timeline-grid.days-count-4 .weekly-day-row,
 .weekly-timeline-grid.days-count-5 .weekly-day-row {
-  height: 80px;
-  padding: 10px 14px;
-  grid-template-columns: 85px 1fr 44px;
+  padding: 9px 12px;
+  grid-template-columns: 74px 1fr 40px;
 }
 
 .weekly-timeline-grid.days-count-4 .day-name,
-.weekly-timeline-grid.days-count-5 .day-name { font-size: 0.95rem; }
+.weekly-timeline-grid.days-count-5 .day-name { font-size: 16px; }
 .weekly-timeline-grid.days-count-4 .event-title-text,
-.weekly-timeline-grid.days-count-5 .event-title-text { font-size: 0.95rem; }
+.weekly-timeline-grid.days-count-5 .event-title-text { font-size: 16px; }
 .weekly-timeline-grid.days-count-4 .event-visual-icon,
-.weekly-timeline-grid.days-count-5 .event-visual-icon { width: 40px; height: 40px; }
+.weekly-timeline-grid.days-count-5 .event-visual-icon { width: 36px; height: 36px; }
+
+.weekly-timeline-grid.days-count-6 .weekly-day-row,
+.weekly-timeline-grid.days-count-7 .weekly-day-row {
+  padding: 6px 10px;
+  grid-template-columns: 66px 1fr 34px;
+}
+
+.weekly-timeline-grid.days-count-6 .day-name,
+.weekly-timeline-grid.days-count-7 .day-name { font-size: 13.5px; }
+.weekly-timeline-grid.days-count-6 .event-title-text,
+.weekly-timeline-grid.days-count-7 .event-title-text { font-size: 13.5px; }
+.weekly-timeline-grid.days-count-6 .event-visual-icon,
+.weekly-timeline-grid.days-count-7 .event-visual-icon { width: 28px; height: 28px; }
 
 .weekly-day-row.event-community-day {
   border-left: 4px solid #10b981 !important;
@@ -349,19 +362,25 @@
 .day-info {
   display: flex;
   flex-direction: column;
-  line-height: 1.2;
+  line-height: 1.25;
+  gap: 2px;
+  white-space: nowrap;
 }
 
 .day-name {
-  font-size: 0.8rem;
+  font-size: 14px;
   font-weight: 800;
   text-transform: uppercase;
   color: #fff;
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .day-date {
-  font-size: 0.68rem;
-  color: rgba(255, 255, 255, 0.35);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.2;
+  white-space: nowrap;
 }
 
 .event-info {
@@ -370,32 +389,39 @@
   justify-content: center;
   padding-left: 8px;
   overflow: hidden;
-  line-height: 1.2;
+  line-height: 1.3;
+  gap: 2px;
+  min-width: 0;
 }
 
 .event-badge-type {
-  font-size: 0.58rem;
+  font-size: 10.5px;
   font-weight: 700;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.6);
   display: flex;
   align-items: center;
   gap: 4px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .event-hours-range {
   color: #fbbf24;
   font-weight: 800;
+  white-space: nowrap;
 }
 
 .event-title-text {
-  font-size: 0.8rem;
+  font-size: 15px;
   font-weight: 700;
   color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 95%;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.25;
+  display: block;
 }
 
 .event-visual {
@@ -415,24 +441,27 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  width: 100%;
 }
 
 .slide-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  width: 100%;
 }
 
 .monthly-event-card {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.01);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
   padding: 8px 12px;
   gap: 12px;
-  height: 48px;
+  min-height: 48px;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .card-image-holder {
@@ -457,13 +486,17 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  line-height: 1.2;
+  overflow: hidden;
+  line-height: 1.3;
+  gap: 2px;
+  flex: 1;
 }
 
 .card-date-badge {
-  font-size: 0.65rem;
+  font-size: 11.5px;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.2;
 }
 
 .theme-gold .card-date-badge { color: #facc15; }
@@ -474,104 +507,85 @@
 
 .card-event-name {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 15px;
   font-weight: 700;
   color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.25;
+  display: block;
 }
 
 .spotlight-bonus-subline {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 0.72rem;
-  font-weight: 800;
+  font-size: 12px;
+  font-weight: 700;
   color: #fb923c;
-  margin-top: 2px;
+  margin-top: 1px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .spotlight-bonus-subline .bonus-icon {
-  font-size: 0.82rem;
-}
-
-/* Dynamic Vertical Spacing when events count is smaller (fill entire poster height) */
-.slide-list {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  justify-content: space-evenly;
-  gap: 10px;
-}
-
-.monthly-event-card {
-  display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  padding: 10px 14px;
-  gap: 14px;
-  min-height: 52px;
-  box-sizing: border-box;
+  font-size: 13.5px;
 }
 
 .slide-list.events-count-2 .monthly-event-card {
-  height: 180px;
-  padding: 20px 24px;
+  padding: 16px 20px;
 }
 
 .slide-list.events-count-2 .card-image-holder {
-  width: 110px;
-  height: 110px;
+  width: 80px;
+  height: 80px;
 }
 
 .slide-list.events-count-2 .card-main-image {
-  width: 96px;
-  height: 96px;
+  width: 72px;
+  height: 72px;
 }
 
 .slide-list.events-count-2 .card-event-name {
-  font-size: 1.35rem;
+  font-size: 21px;
 }
 
 .slide-list.events-count-3 .monthly-event-card {
-  height: 115px;
-  padding: 16px 18px;
+  padding: 14px 16px;
 }
 
 .slide-list.events-count-3 .card-image-holder {
-  width: 76px;
-  height: 76px;
+  width: 60px;
+  height: 60px;
 }
 
 .slide-list.events-count-3 .card-main-image {
-  width: 66px;
-  height: 66px;
+  width: 52px;
+  height: 52px;
 }
 
 .slide-list.events-count-3 .card-event-name {
-  font-size: 1.15rem;
+  font-size: 18.5px;
 }
 
 .slide-list.events-count-4 .monthly-event-card {
-  height: 85px;
-  padding: 12px 16px;
+  padding: 10px 14px;
 }
 
 .slide-list.events-count-4 .card-image-holder {
-  width: 58px;
-  height: 58px;
+  width: 48px;
+  height: 48px;
 }
 
 .slide-list.events-count-4 .card-main-image {
-  width: 50px;
-  height: 50px;
+  width: 42px;
+  height: 42px;
 }
 
 .slide-list.events-count-4 .card-event-name {
-  font-size: 1.02rem;
+  font-size: 16.5px;
 }
 
 /* Single Event Detailed Showcase View (Community Day & Go Pass) */
@@ -586,7 +600,7 @@
 }
 
 .detail-header-tag, .detail-badge-header {
-  font-size: 0.65rem;
+  font-size: 11.5px;
   font-weight: 800;
   letter-spacing: 1.5px;
   color: #34d399;
@@ -596,7 +610,7 @@
 
 .detail-pokemon-name, .detail-title {
   margin: 0 0 6px 0;
-  font-size: 1.6rem;
+  font-size: 28px;
   font-weight: 900;
   color: #fff;
   letter-spacing: -0.5px;
@@ -608,7 +622,7 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 20px;
   padding: 4px 14px;
-  font-size: 0.72rem;
+  font-size: 13px;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.8);
   margin-bottom: 16px;
@@ -668,7 +682,7 @@
 
 .showcase-label {
   margin-top: 6px;
-  font-size: 0.7rem;
+  font-size: 12.5px;
   font-weight: 800;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.6);
@@ -687,7 +701,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 6px 12px;
-  font-size: 0.75rem;
+  font-size: 13.5px;
   font-weight: 700;
   color: #fff;
   text-align: center;
@@ -714,7 +728,7 @@
 }
 
 .perk-icon {
-  font-size: 1.4rem;
+  font-size: 24px;
 }
 
 .perk-text {
@@ -723,12 +737,12 @@
 }
 
 .perk-text strong {
-  font-size: 0.75rem;
+  font-size: 13.5px;
   color: #facc15;
 }
 
 .perk-text span {
-  font-size: 0.65rem;
+  font-size: 11.5px;
   color: rgba(255, 255, 255, 0.6);
 }
 
@@ -777,11 +791,101 @@
   to { transform: rotate(360deg); }
 }
 
-/* Mobile Scale fallback to keep fixed sizes readable on smaller mobile screens */
-@media (max-width: 520px) {
-  .month-summary-poster {
-    transform: scale(0.9);
-    transform-origin: top center;
-    margin-bottom: -60px;
-  }
+
+
+/* Social Media Post Caption Box */
+.summary-caption-box {
+  width: 100%;
+  max-width: 480px;
+  margin-top: 18px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 14px;
+  padding: 16px;
+  box-sizing: border-box;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.summary-caption-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.summary-caption-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent-color, #38bdf8);
+}
+
+.summary-caption-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.caption-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+  transition: all 0.2s ease;
+}
+
+.caption-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.caption-btn.copy-btn {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+}
+
+.caption-btn.copy-btn:hover {
+  background: rgba(56, 189, 248, 0.25);
+  color: #fff;
+}
+
+.caption-btn.copied {
+  background: rgba(74, 222, 128, 0.2);
+  border-color: rgba(74, 222, 128, 0.4);
+  color: #4ade80;
+}
+
+.summary-caption-textarea {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #f1f5f9;
+  font-size: 0.82rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, monospace;
+  line-height: 1.5;
+  resize: vertical;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.summary-caption-textarea:focus {
+  border-color: var(--accent-color, #38bdf8);
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
 }

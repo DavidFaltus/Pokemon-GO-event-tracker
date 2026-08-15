@@ -1,8 +1,117 @@
 import { pokemonRankings, type PokemonRankData } from '../data/pokemonRankings';
+import { apiFetch, CLOUD_RUN_BACKEND_URL } from '../config';
 let basePokemonNamesCache: string[] | null = null;
 
 function getPokemonRankings(): PokemonRankData[] {
   return pokemonRankings;
+}
+
+/**
+ * Converts any image URL to a Base64 data URI for safe html-to-image exports.
+ * 1. Checks if already data: URL.
+ * 2. Attempts DOM canvas draw if already loaded and non-tainted.
+ * 3. Fetches same-origin/relative assets directly.
+ * 4. Proxies via apiFetch (/api/proxy-image?url=...) with Cloud Run fallback.
+ * 5. Direct Cloud Run fallback.
+ * 6. Direct fetch with CORS mode.
+ */
+async function _fetchImageAsBase64Internal(url: string, imgElement?: HTMLImageElement): Promise<string> {
+  if (!url || typeof url !== 'string' || url.startsWith('data:')) return url || '';
+
+  // 1. Canvas conversion if DOM image is completely loaded
+  if (imgElement && imgElement.complete && imgElement.naturalWidth > 0) {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = imgElement.naturalWidth;
+      canvas.height = imgElement.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(imgElement, 0, 0);
+        const dataUrl = canvas.toDataURL('image/png');
+        if (dataUrl && dataUrl.startsWith('data:image') && dataUrl.length > 100) {
+          return dataUrl;
+        }
+      }
+    } catch {
+      // Tainted canvas -> continue to network fetch
+    }
+  }
+
+  // 2. Direct fetch for relative/same-origin assets
+  if (url.startsWith('/') || (typeof window !== 'undefined' && url.startsWith(window.location.origin))) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        const blob = await res.blob();
+        return await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve((reader.result as string) || url);
+          reader.onerror = () => resolve(url);
+          reader.readAsDataURL(blob);
+        });
+      }
+    } catch {
+      // Continue to proxy
+    }
+  }
+
+  // 3. Backend Proxy with Cloud Run fallback
+  try {
+    const res = await apiFetch(`/api/proxy-image?url=${encodeURIComponent(url)}`);
+    if (res.ok) {
+      const blob = await res.blob();
+      return await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve((reader.result as string) || url);
+        reader.onerror = () => resolve(url);
+        reader.readAsDataURL(blob);
+      });
+    }
+  } catch {
+    // Continue
+  }
+
+  // 4. Direct Cloud Run proxy fallback if apiFetch failed
+  try {
+    const directCloudRunUrl = `${CLOUD_RUN_BACKEND_URL}/api/proxy-image?url=${encodeURIComponent(url)}`;
+    const res = await fetch(directCloudRunUrl);
+    if (res.ok) {
+      const blob = await res.blob();
+      return await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve((reader.result as string) || url);
+        reader.onerror = () => resolve(url);
+        reader.readAsDataURL(blob);
+      });
+    }
+  } catch {
+    // Continue
+  }
+
+  // 5. Direct cross-origin fetch
+  try {
+    const res = await fetch(url, { mode: 'cors' });
+    if (res.ok) {
+      const blob = await res.blob();
+      return await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve((reader.result as string) || url);
+        reader.onerror = () => resolve(url);
+        reader.readAsDataURL(blob);
+      });
+    }
+  } catch {
+    // Return original
+  }
+
+  return url;
+}
+
+export async function fetchImageAsBase64(url: string, imgElement?: HTMLImageElement): Promise<string> {
+  const timeoutPromise = new Promise<string>((resolve) => 
+    setTimeout(() => resolve(url || ''), 2500)
+  );
+  return Promise.race([_fetchImageAsBase64Internal(url, imgElement), timeoutPromise]);
 }
 
 export const SHADOW_ICON_URL = "https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Raids/shadow_icon.png";

@@ -1,10 +1,13 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { toPng } from 'html-to-image';
-import { Download, Calendar, ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { Download, Calendar, ArrowLeft, ArrowRight, Check, Copy, RefreshCw, FileText } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
-import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError, fetchImageAsBase64 } from '../utils/imageResolver';
 import { API_BASE_URL } from '../config';
+import { getFontEmbedCSS, disableTextClipping } from '../utils/exportPoster';
+import { useInfographicEditor } from '../hooks/useInfographicEditor';
+import { EditableText, EditableImage, EditToolbar } from './InfographicEditable';
 import {
   filterEventsForMonth,
   categorizeMonthlyEvents,
@@ -21,6 +24,8 @@ interface MonthSummaryInfographicProps {
   targetDate?: Date;
   initialOffset?: number;
   onClose?: () => void;
+  showCaption?: boolean;
+  isAdmin?: boolean;
 }
 
 const MONTH_NAMES_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -65,34 +70,20 @@ const getPokemonDbUrl = (name: string, isShiny = false): string => {
   return `https://img.pokemondb.net/sprites/home/${isShiny ? 'shiny' : 'normal'}/${cleanName}.png`;
 };
 
-const fetchImageAsBase64 = async (url: string): Promise<string> => {
-  if (!url || url.startsWith('data:')) return url;
-  try {
-    const proxyUrl = `${API_BASE_URL}/api/proxy-image?url=${encodeURIComponent(url)}`;
-    const res = await fetch(proxyUrl);
-    if (!res.ok) return url;
-    const blob = await res.blob();
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve((reader.result as string) || url);
-      reader.onerror = () => resolve(url);
-      reader.readAsDataURL(blob);
-    });
-  } catch {
-    return url;
-  }
-};
-
 export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = ({
   events,
   lang,
   targetDate = new Date(),
   initialOffset = 1,
-  onClose
+  onClose,
+  showCaption = true,
+  isAdmin = false
 }) => {
   const posterRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [generatedCaption, setGeneratedCaption] = useState<string>('');
+  const [captionCopied, setCaptionCopied] = useState<boolean>(false);
 
   const [summaryMode, setSummaryMode] = useState<'weekly' | 'monthly'>('weekly');
   const [selectedWeekNum, setSelectedWeekNum] = useState<number>(1);
@@ -103,6 +94,31 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
   const monthIndex = activeDate.getMonth();
   const yearNum = activeDate.getFullYear();
   const monthName = MONTH_NAMES_EN[monthIndex];
+
+  const editorKey = `${summaryMode}_${monthName}_${yearNum}_${summaryMode === 'weekly' ? `w${selectedWeekNum}` : `s${monthlySlideIndex}`}`;
+  const editor = useInfographicEditor(editorKey, 'monthSummary');
+
+  const isEditing = isAdmin && editor.isEditing;
+
+  const EdText = ({ fKey, children, inline }: { fKey: string; children: string; inline?: boolean }) => (
+    <EditableText 
+      value={editor.getTextOverride(fKey, children || '')} 
+      onChange={(v) => editor.setTextOverride(fKey, v)} 
+      isEditing={isEditing} 
+      as={inline ? 'span' : undefined}
+    />
+  );
+  
+  const EdImg = ({ fKey, src, alt, className, onError }: any) => (
+    <EditableImage
+      src={editor.getImageOverride(fKey, src)}
+      alt={alt}
+      onChange={(v) => editor.setImageOverride(fKey, v)}
+      isEditing={isEditing}
+      className={className}
+      onError={onError}
+    />
+  );
 
   const currentMonthIndex = targetDate.getMonth();
   const nextMonthIndex = (currentMonthIndex + 1) % 12;
@@ -163,7 +179,88 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
     }
     return resolveImage(item.image, item.eventType, item.name);
   };
-  const renderSpotlightBonusSubline = (item: EventData) => {
+
+  const buildCaption = useCallback((): string => {
+    if (summaryMode === 'weekly') {
+      const dateRangeStr = getWeeklyDateRangeString();
+      const activeEventsList = weeklyTimeline
+        .filter(day => day.event)
+        .map(day => {
+          const dStr = `${day.dayName.slice(0, 3)} (${day.date.getDate()}.${day.date.getMonth() + 1}.)`;
+          const evName = cleanEventName(day.event!.name);
+          const bonus = getSpotlightBonus(day.event!);
+          const bonusStr = bonus ? ` [${bonus}]` : '';
+          const time = formatEventTime(day.event!.start, day.event!.end);
+          const timeStr = time ? ` • ${time}` : '';
+          return `🗓️ ${dStr}: ${evName}${timeStr}${bonusStr}`;
+        });
+
+      const eventsFormatted = activeEventsList.length > 0
+        ? activeEventsList.join('\n')
+        : (lang === 'cs' ? 'Žádné potvrzené speciální události pro tento týden.' : 'No confirmed special events for this week.');
+
+      if (lang === 'cs') {
+        return `📅 Pokémon GO: Týdenní přehled událostí (${dateRangeStr}) 📱\n\n` +
+          `${eventsFormatted}\n\n` +
+          `✨ Živé odpočty, IV CP tabulky, slabosti a doporučené counters najdeš na našem webu!\n` +
+          `👉 https://pogoevents.app\n\n` +
+          `#PokemonGO #PogoEvents #Pokemon #PokemonGOEvents #WeeklySummary #PogoWeekly #GottaCatchEmAll #PokemonGOCzech #PogoCS`;
+      }
+
+      return `📅 Pokémon GO: Weekly Events Overview (${dateRangeStr}) 📱\n\n` +
+        `${eventsFormatted}\n\n` +
+        `✨ Check live timers, 100% IV CP ranges, weaknesses, and top raid counters in our app!\n` +
+        `👉 https://pogoevents.app\n\n` +
+        `#PokemonGO #PogoEvents #Pokemon #PokemonGOEvents #WeeklySummary #PogoWeekly #GottaCatchEmAll`;
+    } else {
+      // Monthly summary
+      const categoryHighlights: string[] = [];
+
+      if (categorized.communityDays.events.length > 0) {
+        const names = categorized.communityDays.events.map(e => `• ${cleanEventName(e.name)} (${formatDateShort(new Date(e.start))})`).join('\n');
+        categoryHighlights.push(lang === 'cs' ? `🌟 Community Days & Speciální dny:\n${names}` : `🌟 Community Days & Special Events:\n${names}`);
+      }
+      if (categorized.raids.events.length > 0) {
+        const names = categorized.raids.events.map(e => `• ${cleanEventName(e.name)} (${formatDateShort(new Date(e.start))} – ${formatDateShort(new Date(e.end))})`).join('\n');
+        categoryHighlights.push(lang === 'cs' ? `⚔️ Legendární & Mega Raidy:\n${names}` : `⚔️ Legendary & Mega Raids:\n${names}`);
+      }
+      if (categorized.spotlights.events.length > 0) {
+        const names = categorized.spotlights.events.map(e => {
+          const b = getSpotlightBonus(e);
+          return `• ${cleanEventName(e.name)} (${formatDateShort(new Date(e.start))})${b ? ` [${b}]` : ''}`;
+        }).join('\n');
+        categoryHighlights.push(lang === 'cs' ? `⭐ Spotlight Hours:\n${names}` : `⭐ Spotlight Hours:\n${names}`);
+      }
+      if (categorized.dynamax.events.length > 0) {
+        const names = categorized.dynamax.events.map(e => `• ${cleanEventName(e.name)} (${formatDateShort(new Date(e.start))})`).join('\n');
+        categoryHighlights.push(lang === 'cs' ? `🔴 Dynamax & Gigantamax:\n${names}` : `🔴 Dynamax & Gigantamax:\n${names}`);
+      }
+
+      const highlightsStr = categoryHighlights.length > 0
+        ? categoryHighlights.join('\n\n')
+        : (lang === 'cs' ? 'Brzy doplníme přehled nadcházejících událostí.' : 'Upcoming events will be updated soon.');
+
+      if (lang === 'cs') {
+        return `🗓️ Pokémon GO: Přehled událostí na ${monthName} ${yearNum}! 📱\n\n` +
+          `${highlightsStr}\n\n` +
+          `📱 Kompletní přehled, živé odpočty a doporučené counters najdete v naší aplikaci:\n` +
+          `👉 https://pogoevents.app\n\n` +
+          `#PokemonGO #PogoEvents #Pokemon #${monthName}${yearNum} #PokemonGOMonthly #GottaCatchEmAll #PokemonGOCzech #PogoCS`;
+      }
+
+      return `🗓️ Pokémon GO: ${monthName} ${yearNum} Events Overview! 📱\n\n` +
+        `${highlightsStr}\n\n` +
+        `📱 Full guides, live countdowns, and raid counters available in our web app:\n` +
+        `👉 https://pogoevents.app\n\n` +
+        `#PokemonGO #PogoEvents #Pokemon #${monthName}${yearNum} #PokemonGOMonthly #GottaCatchEmAll`;
+    }
+  }, [summaryMode, selectedWeekNum, monthIndex, yearNum, monthlyFilteredEvents, categorized, weeklyTimeline, lang, monthName]);
+
+  useEffect(() => {
+    setGeneratedCaption(buildCaption());
+  }, [buildCaption]);
+
+  const renderSpotlightBonusSubline = (item: EventData, fieldPrefix: string) => {
     const bonus = getSpotlightBonus(item);
     if (!bonus) return null;
 
@@ -176,7 +273,7 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
     return (
       <div className="spotlight-bonus-subline">
         <span className="bonus-icon">{icon}</span>
-        <span className="bonus-text">{bonus}</span>
+        <span className="bonus-text"><EdText fKey={`${fieldPrefix}_bonus`}>{bonus}</EdText></span>
       </div>
     );
   };
@@ -227,9 +324,12 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
 
   const handleDownload = async () => {
     if (!posterRef.current || downloading) return;
+    editor.setIsExporting(true);
     setDownloading(true);
+    await new Promise(r => setTimeout(r, 100));
     const originalSrcs: { img: HTMLImageElement; origSrc: string }[] = [];
 
+    let restoreClipping: (() => void) | null = null;
     try {
       const imgs = Array.from(posterRef.current.querySelectorAll('img'));
       await Promise.all(
@@ -238,33 +338,50 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
           if (origSrc && !origSrc.startsWith('data:')) {
             originalSrcs.push({ img, origSrc });
             try {
-              const base64 = await fetchImageAsBase64(origSrc);
+              const base64 = await fetchImageAsBase64(origSrc, img);
               if (base64 && base64.startsWith('data:')) {
                 img.src = base64;
+              } else {
+                img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
               }
-            } catch (e) {}
+            } catch {
+              img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+            }
           }
         })
       );
 
-      if (typeof document !== 'undefined' && document.fonts) {
-        try {
-          await document.fonts.ready;
-        } catch (e) {}
+      if (typeof document !== 'undefined' && (document as any).fonts) {
+        await (document as any).fonts.ready;
       }
+      if (!posterRef.current) return;
 
+      if (posterRef.current) {
+        restoreClipping = disableTextClipping(posterRef.current);
+      }
+      const fontEmbedCSS = await getFontEmbedCSS();
+      const rect = posterRef.current.getBoundingClientRect();
+      const w = Math.round(rect.width) || posterRef.current.offsetWidth || 480;
+      const h = Math.round(rect.height) || posterRef.current.offsetHeight || 600;
       const dataUrl = await toPng(posterRef.current, {
         cacheBust: false,
-        skipFonts: false,
-        pixelRatio: 2.5,
-        width: 1080,
-        height: 1350,
+        skipFonts: !fontEmbedCSS,
+        fontEmbedCSS: fontEmbedCSS || undefined,
+        width: w,
+        height: h,
+        canvasWidth: w * 2,
+        canvasHeight: h * 2,
+        pixelRatio: 2,
+        backgroundColor: '#090d16',
         style: {
+          width: `${w}px`,
+          height: `${h}px`,
+          maxWidth: `${w}px`,
+          minWidth: `${w}px`,
+          fontFamily: "'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          margin: '0',
           transform: 'none',
-          width: '1080px',
-          height: '1350px'
-        },
-        backgroundColor: '#090d16'
+        }
       });
 
       const link = document.createElement('a');
@@ -274,7 +391,13 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
       
       link.download = `pogo_${summaryMode}_${filenameSuffix}_${monthName.toLowerCase()}_${yearNum}.png`;
       link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
+      setTimeout(() => {
+        if (link.parentNode) {
+          link.parentNode.removeChild(link);
+        }
+      }, 500);
 
       setDownloadSuccess(true);
       setTimeout(() => setDownloadSuccess(false), 3000);
@@ -284,7 +407,11 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
       originalSrcs.forEach(({ img, origSrc }) => {
         img.src = origSrc;
       });
+      if (restoreClipping) {
+        restoreClipping();
+      }
       setDownloading(false);
+      editor.setIsExporting(false);
     }
   };
 
@@ -301,9 +428,9 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
     if (key === 'goPass') {
       return (
         <div className="single-event-detail go-pass-detail">
-          <div className="detail-badge-header">MONTHLY GO PASS</div>
-          <h3 className="detail-title">{item.name}</h3>
-          <span className="detail-date-pill">{dateRangeStr}</span>
+          <div className="detail-badge-header"><EdText fKey="go_pass_badge">MONTHLY GO PASS</EdText></div>
+          <h3 className="detail-title"><EdText fKey="go_pass_title">{item.name}</EdText></h3>
+          <span className="detail-date-pill"><EdText fKey="go_pass_date">{dateRangeStr}</EdText></span>
 
           <div className="go-pass-perks-grid">
             <div className="perk-card">
@@ -316,67 +443,52 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
             <div className="perk-card">
               <span className="perk-icon">🎟️</span>
               <div className="perk-text">
-                <strong>Extra Daily Raid Pass</strong>
-                <span>1 additional free pass per day</span>
+                <strong>Timed Research Access</strong>
+                <span>Exclusive season encounters</span>
               </div>
             </div>
             <div className="perk-card">
-              <span className="perk-icon">✨</span>
+              <span className="perk-icon">⚡</span>
               <div className="perk-text">
-                <strong>15,000 XP & 10,000 Stardust</strong>
-                <span>Milestone research rewards</span>
+                <strong>Extra Raid & XP Perks</strong>
+                <span>Boosted friendship & raid XP</span>
               </div>
             </div>
             <div className="perk-card">
               <span className="perk-icon">🎁</span>
               <div className="perk-text">
-                <strong>Featured Encounter</strong>
-                <span>Exclusive Timed Research reward</span>
+                <strong>Incubator & Item Bundles</strong>
+                <span>Weekly delivery of supplies</span>
               </div>
             </div>
+          </div>
+
+          <div className="detail-pokemon-center">
+            <EdImg fKey="go_pass_img" src={normalUrl} alt={item.name} className="detail-pokemon-img" onError={(e: any) => handlePokemonImageError(e.target as HTMLImageElement, item.name)} />
           </div>
         </div>
       );
     }
 
     return (
-      <div className="single-event-detail community-day-detail">
-        <h3 className="detail-pokemon-name">{cleanedName}</h3>
-        <div className="detail-time-badge">
-          <span>{dateRangeStr}</span>
-          {eventTime && <span className="highlight-time"> • {eventTime}</span>}
-        </div>
+      <div className="single-event-detail">
+        <div className="detail-badge-header"><EdText fKey={`single_${key}_badge`}>{currentSlide?.title.toUpperCase() || 'SPECIAL EVENT'}</EdText></div>
+        <h3 className="detail-title"><EdText fKey={`single_${key}_title`}>{cleanedName}</EdText></h3>
+        <span className="detail-date-pill">
+          <EdText fKey={`single_${key}_date`}>{dateRangeStr}</EdText>
+          {eventTime && <span className="detail-event-time"> {' • '} <EdText fKey={`single_${key}_time`} inline>{eventTime}</EdText></span>}
+        </span>
 
-        <div className="pokemon-showcase-container">
-          <div className="showcase-card">
-            <img 
-              src={normalUrl} 
-              alt={cleanedName} 
-              className="showcase-img"
-              onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, cleanedName)}
-            />
-            <span className="showcase-label">Normal</span>
-          </div>
+        <div className="detail-pokemon-center">
+          <EdImg fKey={`single_${key}_img`} src={normalUrl} alt={item.name} className="detail-pokemon-img" onError={(e: any) => handlePokemonImageError(e.target as HTMLImageElement, item.name)} />
           {shinyUrl && (
-            <div className="showcase-card shiny-card">
-              <div className="shiny-sparkle-icon">✨</div>
-              <img 
-                src={shinyUrl} 
-                alt={`${cleanedName} Shiny`} 
-                className="showcase-img"
-                onError={(e) => (e.currentTarget.style.display = 'none')}
-              />
-              <span className="showcase-label">Shiny</span>
+            <div className="shiny-badge-pill">
+              <span>✨ Shiny Available</span>
             </div>
           )}
         </div>
 
-        <div className="detail-bonuses-list">
-          <div className="bonus-pill">✨ Increased Shiny Encounter Rate</div>
-          <div className="bonus-pill">🍬 2× Catch Candy & 3× Catch Stardust</div>
-          <div className="bonus-pill">⏳ 3-Hour Lures & Incense Duration</div>
-          <div className="bonus-pill">⚔️ Featured Exclusive Attack</div>
-        </div>
+        {renderSpotlightBonusSubline(item, `single_${key}`)}
       </div>
     );
   };
@@ -384,7 +496,6 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
   return (
     <div className="month-summary-container-inline">
       <div className="month-summary-controls-wrapper">
-        {/* Top Toolbar */}
         <div className="infographic-toolbar">
           <div className="toolbar-group">
             <button
@@ -422,7 +533,6 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
           </div>
         </div>
 
-        {/* Sub-toolbar */}
         {summaryMode === 'weekly' ? (
           <div className="weekly-week-selector">
             <span className="selector-label">
@@ -466,25 +576,52 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
         )}
       </div>
 
+      {showCaption && generatedCaption && (
+        <div className="summary-caption-box">
+          <div className="summary-caption-header">
+            <span className="caption-label">
+              <FileText size={15} />
+              {summaryMode === 'weekly' 
+                ? (lang === 'cs' ? 'Návrh popisku pro Týdenní příspěvek' : 'Suggested Weekly Post Caption')
+                : (lang === 'cs' ? `Návrh popisku pro Měsíční slide (${currentSlide?.title})` : `Suggested Monthly Caption (${currentSlide?.title})`)}
+            </span>
+            <button 
+              type="button" 
+              className="copy-caption-btn"
+              onClick={() => {
+                navigator.clipboard.writeText(generatedCaption);
+                setCaptionCopied(true);
+                setTimeout(() => setCaptionCopied(false), 2000);
+              }}
+            >
+              {captionCopied ? <Check size={14} className="copied-icon" /> : <Copy size={14} />}
+              <span>{captionCopied ? (lang === 'cs' ? 'Zkopírováno!' : 'Copied!') : (lang === 'cs' ? 'Kopírovat popisek' : 'Copy Caption')}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="month-summary-modal-body">
-        {/* Printable Poster DOM Element - Fixed 4:5 Aspect Ratio */}
         <div 
-          className={`month-summary-poster aspect-4-5 mode-${summaryMode} theme-${summaryMode === 'monthly' ? currentSlide?.theme : 'weekly'}`} 
+          className={`month-summary-poster aspect-4-5 mode-${summaryMode} theme-${summaryMode === 'monthly' ? currentSlide?.theme : 'weekly'} ${editor.isExporting ? 'is-exporting' : ''}`} 
           ref={posterRef}
         >
+          {isAdmin && (
+            <EditToolbar isEditing={editor.isEditing} onToggleEdit={() => editor.setIsEditing(!editor.isEditing)} hasOverrides={editor.hasOverrides} onReset={editor.resetAll} lang={lang} />
+          )}
           {/* Header */}
           <div className="poster-header">
-            <div className="brand-logo">POGOEVENTS.APP</div>
+            <div className="brand-logo"><EdText fKey="brand_logo">POKEMON GO</EdText></div>
             <div className="poster-title-area">
               {summaryMode === 'weekly' ? (
                 <>
-                  <span className="poster-header-badge">WEEKLY SUMMARY</span>
-                  <h2>{getWeeklyDateRangeString()}</h2>
+                  <span className="poster-header-badge"><EdText fKey="header_badge">WEEKLY SUMMARY</EdText></span>
+                  <h2><EdText fKey="header_title">{getWeeklyDateRangeString()}</EdText></h2>
                 </>
               ) : (
                 <>
-                  <span className="poster-header-badge">{currentSlide?.title.toUpperCase()}</span>
-                  <h2>{monthName.toUpperCase()}</h2>
+                  <span className="poster-header-badge"><EdText fKey="header_badge">{currentSlide?.title.toUpperCase()}</EdText></span>
+                  <h2><EdText fKey="header_title">{monthName.toUpperCase()}</EdText></h2>
                 </>
               )}
             </div>
@@ -502,26 +639,21 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
                       className={`weekly-day-row ${getEventCategoryClass(day.event!)}`}
                     >
                       <div className="day-info">
-                        <span className="day-name">{day.dayName.slice(0, 3)}</span>
-                        <span className="day-date">{formatDateShort(day.date)}</span>
+                        <span className="day-name"><EdText fKey={`day_${idx}_name`}>{day.dayName.slice(0, 3)}</EdText></span>
+                        <span className="day-date"><EdText fKey={`day_${idx}_date`}>{formatDateShort(day.date)}</EdText></span>
                       </div>
                       
                       <div className="event-info">
                         <div className="event-badge-type">
-                          {getEventBadgeLabel(day.event!)}
-                          {eventTime && <span className="event-hours-range"> • {eventTime}</span>}
+                          <EdText fKey={`day_${idx}_badge`}>{getEventBadgeLabel(day.event!)}</EdText>
+                          {eventTime && <span className="event-hours-range"> {' • '} <EdText fKey={`day_${idx}_time`} inline>{eventTime}</EdText></span>}
                         </div>
-                        <span className="event-title-text">{cleanEventName(day.event!.name)}</span>
-                        {renderSpotlightBonusSubline(day.event!)}
+                        <span className="event-title-text"><EdText fKey={`day_${idx}_event_name`}>{cleanEventName(day.event!.name)}</EdText></span>
+                        {renderSpotlightBonusSubline(day.event!, `day_${idx}`)}
                       </div>
 
                       <div className="event-visual">
-                        <img 
-                          src={getEventVisualSrc(day.event!)} 
-                          alt={day.event!.name}
-                          className="event-visual-icon"
-                          onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, day.event!.name)}
-                        />
+                        <EdImg fKey={`day_${idx}_img`} src={getEventVisualSrc(day.event!)} alt={day.event!.name} className="event-visual-icon" onError={(e: any) => handlePokemonImageError(e.target as HTMLImageElement, day.event!.name)} />
                       </div>
                     </div>
                   );
@@ -540,20 +672,15 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
                         return (
                           <div key={item.eventID} className="monthly-event-card">
                             <div className="card-image-holder">
-                              <img 
-                                src={getEventVisualSrc(item)} 
-                                alt={item.name} 
-                                className="card-main-image"
-                                onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, item.name)}
-                              />
+                              <EdImg fKey={`slide_event_${item.eventID}_img`} src={getEventVisualSrc(item)} alt={item.name} className="card-main-image" onError={(e: any) => handlePokemonImageError(e.target as HTMLImageElement, item.name)} />
                             </div>
                             <div className="card-text-holder">
                               <span className="card-date-badge">
-                                {dateRangeStr}
-                                {eventTime && <span className="event-hours-range"> • {eventTime}</span>}
+                                <EdText fKey={`slide_event_${item.eventID}_date`}>{dateRangeStr}</EdText>
+                                {eventTime && <span className="event-hours-range"> {' • '} <EdText fKey={`slide_event_${item.eventID}_time`} inline>{eventTime}</EdText></span>}
                               </span>
-                              <h4 className="card-event-name">{cleanEventName(item.name)}</h4>
-                              {renderSpotlightBonusSubline(item)}
+                              <h4 className="card-event-name"><EdText fKey={`slide_event_${item.eventID}_name`}>{cleanEventName(item.name)}</EdText></h4>
+                              {renderSpotlightBonusSubline(item, `slide_event_${item.eventID}`)}
                             </div>
                           </div>
                         );
@@ -572,8 +699,8 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
 
           {/* Footer */}
           <div className="poster-footer">
-            <span className="brand-url">pogoevents.app</span>
-            <span className="credits">Not affiliated with Niantic or Nintendo</span>
+            <span className="brand-url"><EdText fKey="footer_brand">pogoevents.app</EdText></span>
+            <span className="credits"><EdText fKey="footer_credits">Not affiliated with Niantic or Nintendo</EdText></span>
           </div>
         </div>
 
@@ -596,6 +723,49 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
             </>
           )}
         </button>
+
+        {/* Social Media Caption Box */}
+        {showCaption && (
+          <div className="summary-caption-box">
+            <div className="summary-caption-header">
+              <div className="summary-caption-title">
+                <FileText size={16} />
+                <span>{lang === 'cs' ? '📝 Popisek pro Instagram / TikTok:' : '📝 IG / TikTok Post Caption:'}</span>
+              </div>
+              <div className="summary-caption-actions">
+                <button
+                  type="button"
+                  className="caption-btn"
+                  onClick={() => setGeneratedCaption(buildCaption())}
+                  title={lang === 'cs' ? 'Obnovit výchozí popisek' : 'Reset caption to default'}
+                >
+                  <RefreshCw size={13} />
+                  {lang === 'cs' ? 'Obnovit' : 'Regenerate'}
+                </button>
+                <button
+                  type="button"
+                  className={`caption-btn copy-btn ${captionCopied ? 'copied' : ''}`}
+                  onClick={() => {
+                    navigator.clipboard.writeText(generatedCaption);
+                    setCaptionCopied(true);
+                    setTimeout(() => setCaptionCopied(false), 2000);
+                  }}
+                >
+                  {captionCopied ? <Check size={13} /> : <Copy size={13} />}
+                  {captionCopied
+                    ? (lang === 'cs' ? 'Zkopírováno!' : 'Copied!')
+                    : (lang === 'cs' ? 'Zkopírovat popisek' : 'Copy Caption')}
+                </button>
+              </div>
+            </div>
+            <textarea
+              rows={8}
+              value={generatedCaption}
+              onChange={(e) => setGeneratedCaption(e.target.value)}
+              className="summary-caption-textarea"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
