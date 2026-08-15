@@ -304,23 +304,26 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
 
         {/* Header Section */}
         <div className="cd-poster-header">
-          <div className="cd-poster-badge">
-            <Sparkles size={14} className="cd-sparkle-icon" />
-            <EditableText value={editor.getTextOverride('badge', 'COMMUNITY DAY')} onChange={(v) => editor.setTextOverride('badge', v)} isEditing={isEditing} as="span" />
+          <div className="cd-header-top-row">
+            <div className="cd-poster-badge">
+              <Sparkles size={13} className="cd-sparkle-icon" />
+              <EditableText value={editor.getTextOverride('badge', 'COMMUNITY DAY')} onChange={(v) => editor.setTextOverride('badge', v)} isEditing={isEditing} as="span" />
+            </div>
+            
+            <div className="cd-poster-time-pill">
+              <div className="cd-time-item">
+                <Calendar size={13} />
+                <EditableText value={editor.getTextOverride('date', dateStr)} onChange={(v) => editor.setTextOverride('date', v)} isEditing={editor.isEditing} as="span" />
+              </div>
+              <div className="cd-time-divider">•</div>
+              <div className="cd-time-item">
+                <Clock size={13} />
+                <EditableText value={editor.getTextOverride('time', timeStr)} onChange={(v) => editor.setTextOverride('time', v)} isEditing={editor.isEditing} as="span" />
+              </div>
+            </div>
           </div>
+
           <EditableText value={editor.getTextOverride('title', eventName)} onChange={(v) => editor.setTextOverride('title', v)} isEditing={isEditing} as="h2" className="cd-poster-title" />
-          
-          <div className="cd-poster-time-bar">
-            <div className="cd-time-item">
-              <Calendar size={15} />
-              <EditableText value={editor.getTextOverride('date', dateStr)} onChange={(v) => editor.setTextOverride('date', v)} isEditing={editor.isEditing} as="span" />
-            </div>
-            <div className="cd-time-divider">•</div>
-            <div className="cd-time-item">
-              <Clock size={15} />
-              <EditableText value={editor.getTextOverride('time', timeStr)} onChange={(v) => editor.setTextOverride('time', v)} isEditing={editor.isEditing} as="span" />
-            </div>
-          </div>
         </div>
 
         {/* Featured Pokemon Showcase */}

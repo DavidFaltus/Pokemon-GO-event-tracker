@@ -249,14 +249,41 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, isAdmin =
 
         {/* Header */}
         <div className="max-poster-header">
-          <div className="max-poster-badge">
-            <Activity size={14} className="max-icon-pulse" />
-            <EditableText 
-              value={editor.getTextOverride('badgeText', isGigantamax ? 'GIGANTAMAX BATTLE' : event.eventType === 'max-monday' || event.name.toLowerCase().includes('monday') ? 'MAX MONDAY' : 'DYNAMAX MAX BATTLE')} 
-              onChange={(v) => editor.setTextOverride('badgeText', v)} 
-              isEditing={isEditing} 
-              as="span" 
-            />
+          <div className="max-header-top-row">
+            <div className="max-poster-badge">
+              <Activity size={13} className="max-icon-pulse" />
+              <EditableText 
+                value={editor.getTextOverride('badgeText', isGigantamax ? 'GIGANTAMAX BATTLE' : event.eventType === 'max-monday' || event.name.toLowerCase().includes('monday') ? 'MAX MONDAY' : 'DYNAMAX MAX BATTLE')} 
+                onChange={(v) => editor.setTextOverride('badgeText', v)} 
+                isEditing={isEditing} 
+                as="span" 
+              />
+            </div>
+            <div className="max-poster-time-pill">
+              <div className="max-time-item">
+                <Calendar size={13} />
+                <EditableText 
+                  value={editor.getTextOverride('dateStr', dateStr)} 
+                  onChange={(v) => editor.setTextOverride('dateStr', v)} 
+                  isEditing={editor.isEditing} 
+                  as="span" 
+                />
+              </div>
+              {!isMultiDay && timeStr && (
+                <>
+                  <div className="max-time-divider">•</div>
+                  <div className="max-time-item">
+                    <Clock size={13} />
+                    <EditableText 
+                      value={editor.getTextOverride('timeStr', timeStr)} 
+                      onChange={(v) => editor.setTextOverride('timeStr', v)} 
+                      isEditing={editor.isEditing} 
+                      as="span" 
+                    />
+                  </div>
+                </>
+              )}
+            </div>
           </div>
           <EditableText 
             value={editor.getTextOverride('title', getPokemonName(bossName, 'en'))} 
@@ -265,32 +292,6 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, isAdmin =
             as="h2" 
             className="max-poster-title" 
           />
-          
-          <div className="max-poster-time-bar">
-            <div className="max-time-item">
-              <Calendar size={14} />
-              <EditableText 
-                value={editor.getTextOverride('dateStr', dateStr)} 
-                onChange={(v) => editor.setTextOverride('dateStr', v)} 
-                isEditing={editor.isEditing} 
-                as="span" 
-              />
-            </div>
-            {!isMultiDay && timeStr && (
-              <>
-                <div className="max-time-divider">•</div>
-                <div className="max-time-item">
-                  <Clock size={14} />
-                  <EditableText 
-                    value={editor.getTextOverride('timeStr', timeStr)} 
-                    onChange={(v) => editor.setTextOverride('timeStr', v)} 
-                    isEditing={editor.isEditing} 
-                    as="span" 
-                  />
-                </div>
-              </>
-            )}
-          </div>
         </div>
 
         {/* Main Section */}

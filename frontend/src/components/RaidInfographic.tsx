@@ -429,11 +429,50 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
 
         {/* Poster Header (With ICON-ONLY type badges in the main title) */}
         <div className="raid-poster-header">
-          <div className="raid-poster-badge">
-            <Swords size={14} className="raid-swords-icon" />
-            <span>
-              <EditableText value={editor.getTextOverride(`slide${activeSlide}_badge`, activeSlide === 1 ? 'RAID ROTATION' : activeSlide === 2 ? 'RAID HOUR' : 'TOP COUNTERS')} onChange={(v) => editor.setTextOverride(`slide${activeSlide}_badge`, v)} isEditing={isEditing} />
-            </span>
+          <div className="raid-header-top-row">
+            <div className="raid-poster-badge">
+              <Swords size={13} className="raid-swords-icon" />
+              <span>
+                <EditableText value={editor.getTextOverride(`slide${activeSlide}_badge`, activeSlide === 1 ? 'RAID ROTATION' : activeSlide === 2 ? 'RAID HOUR' : 'TOP COUNTERS')} onChange={(v) => editor.setTextOverride(`slide${activeSlide}_badge`, v)} isEditing={isEditing} />
+              </span>
+            </div>
+
+            {/* Date & Time Pill: Slide 1 = Rotation Date, Slide 2 = Raid Hour Date, Slide 3 = Removed */}
+            {activeSlide === 1 && (
+              <div className="raid-poster-time-pill">
+                <div className="raid-time-item">
+                  <Calendar size={13} />
+                  <span><EditableText value={editor.getTextOverride('slide1_date', dateStr)} onChange={(v) => editor.setTextOverride('slide1_date', v)} isEditing={editor.isEditing} /></span>
+                </div>
+                {timeStr && (
+                  <>
+                    <div className="raid-time-divider">•</div>
+                    <div className="raid-time-item">
+                      <Clock size={13} />
+                      <span><EditableText value={editor.getTextOverride('slide1_time', timeStr)} onChange={(v) => editor.setTextOverride('slide1_time', v)} isEditing={editor.isEditing} /></span>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {activeSlide === 2 && (
+              <div className="raid-poster-time-pill">
+                <div className="raid-time-item">
+                  <Calendar size={13} />
+                  <span><EditableText value={editor.getTextOverride('slide2_date', raidHourInfo.dateStr)} onChange={(v) => editor.setTextOverride('slide2_date', v)} isEditing={editor.isEditing} /></span>
+                </div>
+                {raidHourInfo.timeStr && (
+                  <>
+                    <div className="raid-time-divider">•</div>
+                    <div className="raid-time-item">
+                      <Clock size={13} />
+                      <span><EditableText value={editor.getTextOverride('slide2_time', raidHourInfo.timeStr)} onChange={(v) => editor.setTextOverride('slide2_time', v)} isEditing={editor.isEditing} /></span>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
           </div>
 
           <h2 className="raid-poster-title flex-title-row">
@@ -448,43 +487,6 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
               ))}
             </span>
           </h2>
-          
-          {/* Date & Time Bar: Slide 1 = Rotation Date, Slide 2 = Raid Hour Date, Slide 3 = Removed */}
-          {activeSlide === 1 && (
-            <div className="raid-poster-time-bar">
-              <div className="raid-time-item">
-                <Calendar size={13} />
-                <span><EditableText value={editor.getTextOverride('slide1_date', dateStr)} onChange={(v) => editor.setTextOverride('slide1_date', v)} isEditing={editor.isEditing} /></span>
-              </div>
-              {timeStr && (
-                <>
-                  <div className="raid-time-divider">•</div>
-                  <div className="raid-time-item">
-                    <Clock size={13} />
-                    <span><EditableText value={editor.getTextOverride('slide1_time', timeStr)} onChange={(v) => editor.setTextOverride('slide1_time', v)} isEditing={editor.isEditing} /></span>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-
-          {activeSlide === 2 && (
-            <div className="raid-poster-time-bar">
-              <div className="raid-time-item">
-                <Calendar size={13} />
-                <span><EditableText value={editor.getTextOverride('slide2_date', raidHourInfo.dateStr)} onChange={(v) => editor.setTextOverride('slide2_date', v)} isEditing={editor.isEditing} /></span>
-              </div>
-              {raidHourInfo.timeStr && (
-                <>
-                  <div className="raid-time-divider">•</div>
-                  <div className="raid-time-item">
-                    <Clock size={13} />
-                    <span><EditableText value={editor.getTextOverride('slide2_time', raidHourInfo.timeStr)} onChange={(v) => editor.setTextOverride('slide2_time', v)} isEditing={editor.isEditing} /></span>
-                  </div>
-                </>
-              )}
-            </div>
-          )}
         </div>
 
         {/* SLIDE 1: RAID ROTATION (Displays 2 top, 1 bottom for 3 bosses with names above sprites) */}

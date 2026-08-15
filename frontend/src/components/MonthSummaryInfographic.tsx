@@ -611,20 +611,22 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
           )}
           {/* Header */}
           <div className="poster-header">
-            <div className="brand-logo"><EdText fKey="brand_logo">POKEMON GO</EdText></div>
-            <div className="poster-title-area">
-              {summaryMode === 'weekly' ? (
-                <>
-                  <span className="poster-header-badge"><EdText fKey="header_badge">WEEKLY SUMMARY</EdText></span>
-                  <h2><EdText fKey="header_title">{getWeeklyDateRangeString()}</EdText></h2>
-                </>
-              ) : (
-                <>
-                  <span className="poster-header-badge"><EdText fKey="header_badge">{currentSlide?.title.toUpperCase()}</EdText></span>
-                  <h2><EdText fKey="header_title">{monthName.toUpperCase()}</EdText></h2>
-                </>
-              )}
+            <div className="poster-header-top-row">
+              <span className="poster-header-badge">
+                <EdText fKey="header_badge">
+                  {summaryMode === 'weekly' ? 'WEEKLY SUMMARY' : currentSlide?.title.toUpperCase()}
+                </EdText>
+              </span>
+              <div className="poster-header-brand-pill">
+                <EdText fKey="brand_logo">POKÉMON GO</EdText>
+              </div>
             </div>
+
+            <h2 className="poster-title-text">
+              <EdText fKey="header_title">
+                {summaryMode === 'weekly' ? getWeeklyDateRangeString() : `${monthName.toUpperCase()} ${yearNum}`}
+              </EdText>
+            </h2>
           </div>
 
           {/* Main Content Area */}

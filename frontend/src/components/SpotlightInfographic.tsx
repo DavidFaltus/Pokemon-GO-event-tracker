@@ -190,27 +190,28 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
 
         {/* Header */}
         <div className="spotlight-poster-header">
-          <div className="spotlight-poster-badge">
-            <Star size={14} className="spotlight-star-icon" fill="currentColor" />
-            <EditableText value={editor.getTextOverride('badge', 'SPOTLIGHT HOUR')} onChange={(v) => editor.setTextOverride('badge', v)} isEditing={isEditing} />
+          <div className="spotlight-header-top-row">
+            <div className="spotlight-poster-badge">
+              <Star size={13} className="spotlight-star-icon" fill="currentColor" />
+              <EditableText value={editor.getTextOverride('badge', 'SPOTLIGHT HOUR')} onChange={(v) => editor.setTextOverride('badge', v)} isEditing={isEditing} />
+            </div>
+            <div className="spotlight-poster-time-pill">
+              <div className="spotlight-time-item">
+                <Calendar size={13} />
+                <EditableText value={editor.getTextOverride('date', dateStr)} onChange={(v) => editor.setTextOverride('date', v)} isEditing={editor.isEditing} />
+              </div>
+              {!isMultiDay && timeStr && (
+                <>
+                  <div className="spotlight-time-divider">•</div>
+                  <div className="spotlight-time-item">
+                    <Clock size={13} />
+                    <EditableText value={editor.getTextOverride('time', timeStr)} onChange={(v) => editor.setTextOverride('time', v)} isEditing={editor.isEditing} />
+                  </div>
+                </>
+              )}
+            </div>
           </div>
           <EditableText value={editor.getTextOverride('title', getPokemonName(pokeName, 'en'))} onChange={(v) => editor.setTextOverride('title', v)} isEditing={isEditing} as="h2" className="spotlight-poster-title" />
-          
-          <div className="spotlight-poster-time-bar">
-            <div className="spotlight-time-item">
-              <Calendar size={14} />
-              <EditableText value={editor.getTextOverride('date', dateStr)} onChange={(v) => editor.setTextOverride('date', v)} isEditing={editor.isEditing} />
-            </div>
-            {!isMultiDay && timeStr && (
-              <>
-                <div className="spotlight-time-divider">•</div>
-                <div className="spotlight-time-item">
-                  <Clock size={14} />
-                  <EditableText value={editor.getTextOverride('time', timeStr)} onChange={(v) => editor.setTextOverride('time', v)} isEditing={editor.isEditing} />
-                </div>
-              </>
-            )}
-          </div>
         </div>
 
         {/* Main Section */}

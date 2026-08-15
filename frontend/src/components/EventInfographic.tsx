@@ -264,29 +264,31 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
 
         {/* ── Header ── */}
         <div className="ei-header">
-          <div className="ei-badge" style={{ background: theme.badge, color: theme.accent, borderColor: `${theme.accent}55` }}>
-            {theme.icon}
-            <span>
-              <EditableText
-                value={editor.getTextOverride('badgeLabel', theme.badgeLabel(lang))}
-                onChange={(v) => editor.setTextOverride('badgeLabel', v)}
-                isEditing={isEditing}
-              />
-            </span>
+          <div className="ei-header-top-row">
+            <div className="ei-badge" style={{ background: theme.badge, color: theme.accent, borderColor: `${theme.accent}55` }}>
+              {theme.icon}
+              <span>
+                <EditableText
+                  value={editor.getTextOverride('badgeLabel', theme.badgeLabel(lang))}
+                  onChange={(v) => editor.setTextOverride('badgeLabel', v)}
+                  isEditing={isEditing}
+                />
+              </span>
+            </div>
+            <div className="ei-time-pill">
+              <div className="ei-time-item"><Calendar size={13} /><span><EditableText value={editor.getTextOverride('date', dateStr)} onChange={(v) => editor.setTextOverride('date', v)} isEditing={isEditing} /></span></div>
+              {!isMultiDay && timeStr && (
+                <><div className="ei-time-sep">•</div><div className="ei-time-item"><Clock size={13} /><span><EditableText value={editor.getTextOverride('time', timeStr)} onChange={(v) => editor.setTextOverride('time', v)} isEditing={isEditing} /></span></div></>
+              )}
+            </div>
           </div>
-          <h2 className="ei-title" style={{ backgroundImage: `linear-gradient(135deg, #ffffff 30%, ${theme.accent} 100%)` }}>
+          <h2 className="ei-title">
             <EditableText
               value={editor.getTextOverride('title', typeof event.name === 'object' ? getLocalizedText(event.name, lang) : event.name)}
               onChange={(v) => editor.setTextOverride('title', v)}
               isEditing={isEditing}
             />
           </h2>
-          <div className="ei-time-bar">
-            <div className="ei-time-item"><Calendar size={14} /><span><EditableText value={editor.getTextOverride('date', dateStr)} onChange={(v) => editor.setTextOverride('date', v)} isEditing={isEditing} /></span></div>
-            {!isMultiDay && timeStr && (
-              <><div className="ei-time-sep">•</div><div className="ei-time-item"><Clock size={14} /><span><EditableText value={editor.getTextOverride('time', timeStr)} onChange={(v) => editor.setTextOverride('time', v)} isEditing={isEditing} /></span></div></>
-            )}
-          </div>
         </div>
 
         {/* ── Body ── */}

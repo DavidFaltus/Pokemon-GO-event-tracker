@@ -143,27 +143,28 @@ export const RocketInfographic: React.FC<RocketInfographicProps> = ({ event, lan
 
         {/* Header */}
         <div className="rocket-poster-header">
-          <div className="rocket-poster-badge">
-            <Skull size={14} className="rocket-skull-icon" />
-            <EditableText value={editor.getTextOverride('badge', 'TEAM GO ROCKET TAKEOVER')} onChange={(v) => editor.setTextOverride('badge', v)} isEditing={isEditing} />
+          <div className="rocket-header-top-row">
+            <div className="rocket-poster-badge">
+              <Skull size={13} className="rocket-skull-icon" />
+              <EditableText value={editor.getTextOverride('badge', 'TEAM GO ROCKET TAKEOVER')} onChange={(v) => editor.setTextOverride('badge', v)} isEditing={isEditing} />
+            </div>
+            <div className="rocket-poster-time-pill">
+              <div className="rocket-time-item">
+                <Calendar size={13} />
+                <EditableText value={editor.getTextOverride('date', dateStr)} onChange={(v) => editor.setTextOverride('date', v)} isEditing={isEditing} />
+              </div>
+              {!isMultiDay && timeStr && (
+                <>
+                  <div className="rocket-time-divider">•</div>
+                  <div className="rocket-time-item">
+                    <Clock size={13} />
+                    <EditableText value={editor.getTextOverride('time', timeStr)} onChange={(v) => editor.setTextOverride('time', v)} isEditing={editor.isEditing} />
+                  </div>
+                </>
+              )}
+            </div>
           </div>
           <EditableText value={editor.getTextOverride('title', event.name)} onChange={(v) => editor.setTextOverride('title', v)} isEditing={isEditing} as="h2" className="rocket-poster-title" />
-          
-          <div className="rocket-poster-time-bar">
-            <div className="rocket-time-item">
-              <Calendar size={15} />
-              <EditableText value={editor.getTextOverride('date', dateStr)} onChange={(v) => editor.setTextOverride('date', v)} isEditing={isEditing} />
-            </div>
-            {!isMultiDay && timeStr && (
-              <>
-                <div className="rocket-time-divider">•</div>
-                <div className="rocket-time-item">
-                  <Clock size={15} />
-                  <EditableText value={editor.getTextOverride('time', timeStr)} onChange={(v) => editor.setTextOverride('time', v)} isEditing={editor.isEditing} />
-                </div>
-              </>
-            )}
-          </div>
         </div>
 
         {/* Main Section */}
