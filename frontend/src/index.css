@@ -1357,7 +1357,7 @@ body.light-mode .nav-item.active {
     box-sizing: border-box;
   }
 
-  /* Left Sidebar Navigation - Fixed & Sticky to Viewport */
+  /* Left Sidebar Navigation - Fixed to Browser Window Viewport */
   .desktop-sidebar {
     display: flex;
     flex-direction: column;
@@ -1369,15 +1369,15 @@ body.light-mode .nav-item.active {
     border-right: 1px solid var(--border-color);
     padding: 22px 16px;
     height: 100vh;
-    max-height: 100vh;
-    position: sticky;
+    height: 100dvh;
+    position: fixed;
     top: 0;
     left: 0;
+    bottom: 0;
     z-index: 100;
     box-sizing: border-box;
     overflow-y: auto;
     overflow-x: hidden;
-    align-self: flex-start;
   }
 
   .desktop-sidebar::-webkit-scrollbar {
@@ -1460,13 +1460,48 @@ body.light-mode .nav-item.active {
     box-shadow: 0 4px 15px rgba(170, 59, 255, 0.25);
   }
 
+  /* Subtle Download Pill Button above social links */
+  .sidebar-download-pill-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 9px 14px;
+    background: rgba(16, 185, 129, 0.12);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 10px;
+    color: #34d399;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+  }
+
+  .sidebar-download-pill-btn:hover {
+    background: rgba(16, 185, 129, 0.22);
+    border-color: rgba(16, 185, 129, 0.6);
+    color: #6ee7b7;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  }
+
+  .sidebar-download-pill-btn.active {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-color: transparent;
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+  }
+
   .sidebar-ad-container {
     margin-top: 20px;
     border-top: 1px solid var(--border-color);
     padding-top: 16px;
   }
 
-  /* Main container adjustments for full width desktop layout */
+  /* Main container adjustments for full width desktop layout with fixed sidebar offset */
   .app-container {
     max-width: none;
     border: none;
@@ -1474,8 +1509,11 @@ body.light-mode .nav-item.active {
     min-height: 100vh;
     flex: 1 1 0%;
     min-width: 0;
+    margin-left: 280px;
+    width: calc(100% - 280px);
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
   }
 
   /* Hide mobile header and mobile bottom navigation */

@@ -210,11 +210,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
             <span>{t.tabs_guides || 'Průvodce'}</span>
           </Link>
 
-          <Link href={getSectionPath(lang, 'download')} className={`sidebar-nav-item ${activeTab === 'download' ? 'active' : ''}`}>
-            <Download size={18} />
-            <span>{t.tabs_download || 'Stáhnout aplikaci'}</span>
-          </Link>
-
           <Link href={getSectionPath(lang, 'settings')} className={`sidebar-nav-item settings-item ${activeTab === 'settings' ? 'active' : ''}`} style={{ marginTop: '16px' }}>
             <Settings size={18} />
             <span>{t.tabs_settings || 'Nastavení'}</span>
@@ -226,14 +221,22 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
           className="sidebar-footer" 
           style={{ 
             marginTop: 'auto', 
-            paddingTop: '16px', 
+            paddingTop: '14px', 
             borderTop: '1px solid var(--border-color)', 
             textAlign: 'center',
             display: 'flex',
             flexDirection: 'column',
-            gap: '8px'
+            gap: '10px'
           }}
         >
+          {/* Subtle download button above social links */}
+          <Link
+            href={getSectionPath(lang, 'download')}
+            className={`sidebar-download-pill-btn ${activeTab === 'download' ? 'active' : ''}`}
+          >
+            <Download size={15} />
+            <span>{t.tabs_download || 'Stáhnout aplikaci'}</span>
+          </Link>
           <p style={{ fontSize: '10px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.4' }}>
             {lang === 'cs' 
               ? 'Tato aplikace je neoficiální fanouškovský projekt. Nemá žádné přidružení ke společnostmi Niantic, Nintendo nebo The Pokémon Company.' 
