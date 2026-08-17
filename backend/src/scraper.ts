@@ -1,7 +1,16 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { EventData, SpecialEventDetails, ScrapedRaidBoss, RocketMember, GruntData, RaidCounters } from './types';
-import { loadEventDetailsCache, saveEventDetailsCache, loadVerifiedImagesCache, saveVerifiedImagesCache } from './storage';
+import { 
+  loadEventDetailsCache, 
+  saveEventDetailsCache, 
+  loadVerifiedImagesCache, 
+  saveVerifiedImagesCache,
+  loadEventsListCache,
+  saveEventsListCache,
+  loadRocketLineupsCache,
+  saveRocketLineupsCache
+} from './storage';
 
 // ==========================================
 // 1. Static Databases (Meta & Counters)
@@ -1554,9 +1563,52 @@ export function findRaidCounters(
 // ==========================================
 
 export async function scrapeEvents(): Promise<EventData[]> {
-  const url = 'https://raw.githubusercontent.com/bigfoott/ScrapedDuck/data/events.min.json';
-  const response = await axios.get(url);
-  return response.data;
+  const sources = [
+    'https://cdn.jsdelivr.net/gh/bigfoott/ScrapedDuck@data/events.min.json',
+    'https://raw.githubusercontent.com/bigfoott/ScrapedDuck/data/events.min.json',
+    'https://fastly.jsdelivr.net/gh/bigfoott/ScrapedDuck@data/events.min.json',
+    'https://gcore.jsdelivr.net/gh/bigfoott/ScrapedDuck@data/events.min.json'
+  ];
+
+  const browserHeaders = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Cache-Control': 'no-cache'
+  };
+
+  let lastError: Error | null = null;
+
+  for (const url of sources) {
+    try {
+      const response = await axios.get(url, {
+        headers: browserHeaders,
+        timeout: 10000
+      });
+      if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+        // Save to persistent disk cache as emergency backup against future 429s
+        await saveEventsListCache(response.data).catch(() => {});
+        return response.data;
+      }
+    } catch (err: any) {
+      lastError = err;
+      const status = err.response?.status;
+      if (status === 429) {
+        console.warn(`[scrapeEvents] Source ${url} rate-limited (HTTP 429). Trying next mirror...`);
+      } else {
+        console.warn(`[scrapeEvents] Source ${url} failed (${status || err.message}). Trying next mirror...`);
+      }
+    }
+  }
+
+  // Fallback to disk cache if all network sources failed or were rate-limited
+  const diskBackup = await loadEventsListCache().catch(() => []);
+  if (diskBackup && Array.isArray(diskBackup) && diskBackup.length > 0) {
+    console.warn(`[scrapeEvents] All remote mirrors rate-limited (429) or unreachable. Successfully loaded ${diskBackup.length} events from local backup cache.`);
+    return diskBackup;
+  }
+
+  throw lastError || new Error('All event data sources failed and no backup cache available.');
 }
 
 /**
@@ -1728,14 +1780,35 @@ export function parseLeekDuckHtml(html: string, eventID: string = 'event'): Spec
 }
 
 async function scrapeLeekDuckEventDetails(eventID: string, link: string): Promise<SpecialEventDetails | null> {
-  const response = await axios.get(link, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)'
-    },
-    timeout: 12000
-  });
-  
-  return parseLeekDuckHtml(response.data, eventID);
+  const browserUserAgents = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0',
+    'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+    'Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)'
+  ];
+
+  const userAgent = browserUserAgents[Math.floor(Math.random() * browserUserAgents.length)];
+
+  try {
+    const response = await axios.get(link, {
+      headers: {
+        'User-Agent': userAgent,
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9'
+      },
+      timeout: 12000
+    });
+    
+    return parseLeekDuckHtml(response.data, eventID);
+  } catch (err: any) {
+    if (err.response?.status === 429) {
+      console.warn(`[scrapeLeekDuckEventDetails] LeekDuck returned HTTP 429 (Rate Limited) for ${eventID}. Using fallback sources.`);
+    } else {
+      console.warn(`[scrapeLeekDuckEventDetails] Failed for ${eventID}: ${err.message}`);
+    }
+    return null;
+  }
 }
 
 // ==========================================
@@ -2663,14 +2736,33 @@ export async function scrapeRocketLineups(): Promise<{
   grunts: GruntData[];
 }> {
   const url = 'https://leekduck.com/rocket-lineups/';
-  const response = await axios.get(url, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    }
-  });
+  let html = '';
 
-  const html = response.data;
-  const $ = cheerio.load(html);
+  try {
+    const response = await axios.get(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9'
+      },
+      timeout: 12000
+    });
+    html = response.data;
+  } catch (err: any) {
+    if (err.response?.status === 429) {
+      console.warn('[scrapeRocketLineups] LeekDuck returned HTTP 429 (Rate Limited). Checking local cache...');
+    } else {
+      console.warn(`[scrapeRocketLineups] Failed to fetch LeekDuck rocket lineups: ${err.message}. Checking local cache...`);
+    }
+
+    const cachedRocket = await loadRocketLineupsCache().catch(() => null);
+    if (cachedRocket && cachedRocket.giovanni) {
+      console.log('[scrapeRocketLineups] Successfully restored Rocket Lineups from persistent disk cache.');
+      return cachedRocket;
+    }
+  }
+
+  const $ = cheerio.load(html || '<div></div>');
 
   let giovanni: RocketMember | null = null;
   const leaders: RocketMember[] = [];
@@ -2818,20 +2910,23 @@ export async function scrapeRocketLineups(): Promise<{
     };
   }
 
-  return {
+  const result = {
     giovanni,
-    leaders: leaders.length ? leaders : [
+    leaders: leaders.length ? leaders : ([
       {
         name: "Cliff", avatar: "💪",
-        reward: { name: "Shadow Machop", pveRating: "S", pvpRating: "A", worthGrinding: true, reason: "Shadow Machamp je špičkový bojový útočník.", hubRating: "A+" },
+        reward: { name: "Shadow Machop", pveRating: "S" as const, pvpRating: "A" as const, worthGrinding: true, reason: "Shadow Machamp je špičkový bojový útočník.", hubRating: "A+" },
         lineup: { slot1: [{ name: "Machop", types: ["Fighting"], image: getPokemonImageUrl("Machop") }], slot2: [{ name: "Aerodactyl", types: ["Rock", "Flying"], image: getPokemonImageUrl("Aerodactyl") }, { name: "Gallade", types: ["Psychic", "Fighting"], image: getPokemonImageUrl("Gallade") }], slot3: [{ name: "Tyranitar", types: ["Rock", "Dark"], image: getPokemonImageUrl("Tyranitar") }] },
         counters: { megaCounters: ["Mega Gardevoir", "Mega Alakazam"], advancedCounters: ["Mewtwo (Confusion/Psystrike)"], budgetCounters: ["Machamp (Counter/Dynamic Punch)"] }
       }
-    ],
-    grunts: grunts.length ? grunts : [
-      { phraseCs: "Normální neznamená slabý!", phraseEn: "Normal does not mean weak.", type: "Normal", difficulty: "Easy", worthFighting: false, shadowPokemon: ["Teddiursa", "Hoothoot", "Porygon"], counters: ["Lucario", "Machamp", "Terrakion"] },
-      { phraseCs: "Víš, jak horký může být pokémoní dech?", phraseEn: "Do you know how hot Pokémon fire breath can get?", type: "Fire", difficulty: "Easy", worthFighting: true, shadowPokemon: ["Litwick", "Ponyta", "Torchic"], counters: ["Kyogre", "Rhyperior", "Swampert"] },
-      { phraseCs: "Tyto vody jsou zrádné!", phraseEn: "These waters are treacherous!", type: "Water", difficulty: "Medium", worthFighting: true, shadowPokemon: ["Mudkip", "Tentacool", "Krabby"], counters: ["Kartana", "Xurkitree", "Zarude"] }
-    ]
+    ] as RocketMember[]),
+    grunts: grunts.length ? grunts : ([
+      { phraseCs: "Normální neznamená slabý!", phraseEn: "Normal does not mean weak.", type: "Normal", difficulty: "Easy" as const, worthFighting: false, shadowPokemon: ["Teddiursa", "Hoothoot", "Porygon"], counters: ["Lucario", "Machamp", "Terrakion"] },
+      { phraseCs: "Víš, jak horký může být pokémoní dech?", phraseEn: "Do you know how hot Pokémon fire breath can get?", type: "Fire", difficulty: "Easy" as const, worthFighting: true, shadowPokemon: ["Litwick", "Ponyta", "Torchic"], counters: ["Kyogre", "Rhyperior", "Swampert"] },
+      { phraseCs: "Tyto vody jsou zrádné!", phraseEn: "These waters are treacherous!", type: "Water", difficulty: "Medium" as const, worthFighting: true, shadowPokemon: ["Mudkip", "Tentacool", "Krabby"], counters: ["Kartana", "Xurkitree", "Zarude"] }
+    ] as GruntData[])
   };
+
+  await saveRocketLineupsCache(result).catch(() => {});
+  return result;
 }

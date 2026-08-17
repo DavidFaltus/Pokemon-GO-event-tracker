@@ -329,3 +329,115 @@ export async function saveVerifiedImagesCache(imagesMap: Record<string, string>)
   }
 }
 
+// ─── EVENTS LIST PERSISTENT DISK CACHE (429 & OFFLINE RESILIENCE) ───
+const EVENTS_LIST_FILE_PATH = path.join(__dirname, '..', 'events_list_cache.json');
+const EVENTS_LIST_FILE_NAME = 'events_list_cache.json';
+
+export async function loadEventsListCache(): Promise<any[]> {
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(EVENTS_LIST_FILE_NAME);
+      const [exists] = await file.exists();
+      if (exists) {
+        const [content] = await file.download();
+        return JSON.parse(content.toString());
+      }
+    } catch (err: any) {
+      console.error('Failed to load events list cache from GCS:', err.message);
+    }
+  }
+
+  try {
+    if (fs.existsSync(EVENTS_LIST_FILE_PATH)) {
+      const content = fs.readFileSync(EVENTS_LIST_FILE_PATH, 'utf-8');
+      return JSON.parse(content);
+    }
+  } catch (err) {
+    console.error('Failed to load events list cache locally:', err);
+  }
+  return [];
+}
+
+export async function saveEventsListCache(events: any[]): Promise<boolean> {
+  const dataStr = JSON.stringify(events, null, 2);
+
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(EVENTS_LIST_FILE_NAME);
+      await file.save(dataStr, {
+        contentType: 'application/json',
+        resumable: false
+      });
+      return true;
+    } catch (err: any) {
+      console.error('Failed to save events list cache to GCS:', err.message);
+    }
+  }
+
+  try {
+    fs.writeFileSync(EVENTS_LIST_FILE_PATH, dataStr, 'utf-8');
+    return true;
+  } catch (err) {
+    console.error('Failed to save events list cache locally:', err);
+    return false;
+  }
+}
+
+// ─── ROCKET LINEUPS PERSISTENT DISK CACHE ─────────────────────────
+const ROCKET_FILE_PATH = path.join(__dirname, '..', 'rocket_lineups_cache.json');
+const ROCKET_FILE_NAME = 'rocket_lineups_cache.json';
+
+export async function loadRocketLineupsCache(): Promise<any | null> {
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(ROCKET_FILE_NAME);
+      const [exists] = await file.exists();
+      if (exists) {
+        const [content] = await file.download();
+        return JSON.parse(content.toString());
+      }
+    } catch (err: any) {
+      console.error('Failed to load rocket lineups cache from GCS:', err.message);
+    }
+  }
+
+  try {
+    if (fs.existsSync(ROCKET_FILE_PATH)) {
+      const content = fs.readFileSync(ROCKET_FILE_PATH, 'utf-8');
+      return JSON.parse(content);
+    }
+  } catch (err) {
+    console.error('Failed to load rocket lineups cache locally:', err);
+  }
+  return null;
+}
+
+export async function saveRocketLineupsCache(rocketData: any): Promise<boolean> {
+  const dataStr = JSON.stringify(rocketData, null, 2);
+
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(ROCKET_FILE_NAME);
+      await file.save(dataStr, {
+        contentType: 'application/json',
+        resumable: false
+      });
+      return true;
+    } catch (err: any) {
+      console.error('Failed to save rocket lineups cache to GCS:', err.message);
+    }
+  }
+
+  try {
+    fs.writeFileSync(ROCKET_FILE_PATH, dataStr, 'utf-8');
+    return true;
+  } catch (err) {
+    console.error('Failed to save rocket lineups cache locally:', err);
+    return false;
+  }
+}
+
