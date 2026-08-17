@@ -257,17 +257,30 @@ body.light-mode .modal-close-btn {
   color: var(--text-muted);
   font-size: 0.75rem;
   padding: 0 4px;
+  transition: transform 0.2s ease;
 }
 
 /* Expanded Card Content */
 .card-expanded-content {
-  padding: 0 12px 12px 12px;
-  animation: slideDown 0.2s ease-out;
+  padding: 0 12px 14px 12px;
+  animation: expandFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: default;
 }
 
-@keyframes slideDown {
-  from { opacity: 0; max-height: 0; overflow: hidden; }
-  to { opacity: 1; max-height: 500px; }
+@keyframes expandFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.event-inline-close-btn:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #f87171 !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  transform: translateY(-1px);
+}
+
+.event-inline-close-btn:active {
+  transform: translateY(0);
 }
 
 .divider {
@@ -1350,5 +1363,62 @@ body.light-mode .checklist-input {
   background: linear-gradient(135deg, rgba(0, 242, 254, 0.2) 0%, rgba(79, 172, 254, 0.2) 100%);
   color: #4facfe;
   border: 1px solid rgba(79, 172, 254, 0.4);
+}
+
+/* ── Responsive adjustments for Expanded Event Card and Modal (< 800px) ── */
+@media (max-width: 800px) {
+  .event-modal-content {
+    max-width: 96vw;
+    padding: 16px 14px;
+    border-radius: 16px;
+  }
+  .card-expanded-content {
+    padding: 0 8px 12px 8px;
+  }
+  .infographic-wrapper-row {
+    width: 100%;
+    overflow-x: hidden;
+  }
+}
+
+@media (max-width: 600px) {
+  .event-modal-overlay {
+    padding: 8px 6px;
+  }
+  .event-modal-content {
+    max-width: 100vw;
+    padding: 14px 10px;
+    border-radius: 14px;
+  }
+  .modal-header-section {
+    padding-right: 28px;
+    gap: 10px;
+  }
+  .event-img-wrapper.large {
+    width: 70px;
+    height: 70px;
+    border-radius: 10px;
+  }
+  .card-expanded-content {
+    padding: 0 4px 12px 4px;
+  }
+  .link-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+  }
+  .google-calendar-btn,
+  .share-event-link-btn,
+  .pogo-official-btn,
+  .details-link-btn {
+    padding: 8px 10px;
+    font-size: 0.74rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .link-row {
+    grid-template-columns: 1fr;
+  }
 }
 

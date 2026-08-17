@@ -67,29 +67,35 @@ export function formatEventDateRange(startInput: string | Date, endInput: string
   return { dateStr, timeStr, isMultiDay };
 }
 
-// Calculate Max Particle (MP) Costs by Tier based on exact user specification:
-// 1-Star: 250 MP, 2-Star: 400 MP, 3-Star: 400 MP, 5-Star (Legendary): 800 MP, 6-Star (Gigantamax): 800 MP
+// Max Particle (MP) Costs & Limits:
+// Tier 1 Cost: 250 MP | Tier 3 Cost: 400 MP | Tier 5 / Gigantamax Cost: 800 MP
+// Daily MP Collection Cap: 800 MP per day (excluding specific bonuses or starter claims)
+// Max MP Storage: 1,000 MP
+// Note: Only Tiers 1, 3, and 5/Gigantamax exist for Max Battles — no Tier 2 or 4.
 export function getMaxBattleMpCost(eventName: string, isGigantamax: boolean): string {
   const lower = eventName.toLowerCase();
   if (lower.includes('eternatus') || lower.includes('eternamax')) return '800 MP';
-  if (isGigantamax || lower.includes('6-star') || lower.includes('5-star') || lower.includes('legendary')) return '800 MP';
-  if (lower.includes('2-star') || lower.includes('3-star') || lower.includes('4-star')) return '400 MP';
+  if (isGigantamax || lower.includes('6-star') || lower.includes('gigantamax')) return '800 MP';
+  if (lower.includes('5-star') || lower.includes('legendary')) return '800 MP';
+  if (lower.includes('3-star')) return '400 MP';
   if (lower.includes('1-star')) return '250 MP';
   return '400 MP';
 }
 
-// Calculate Max Battle XP Scaling by Tier based on exact user specification:
-// 1-Star: 5,000 XP, 2-Star: 6,000 XP, 3-Star: 7,500 XP, 4-Star: 10,000 XP, 5-Star: 15,000 XP, 6-Star (Gigantamax): 25,000 XP, 6-Star (Eternamax Eternatus): 50,000 XP
+// XP Rewards by Tier:
+// Tier 1: 5,000 XP | Tier 2: 6,000 XP | Tier 3: 7,500 XP | Tier 4: 10,000 XP | Tier 5: 15,000 XP
+// Gigantamax (Tier 6): 25,000 XP (up to 50,000 XP with Lucky Egg)
+// In-Person Bonus: +2,500 XP additional for local, in-person participation
 export function getMaxBattleXpReward(eventName: string, isGigantamax: boolean): string {
   const lower = eventName.toLowerCase();
   if (lower.includes('eternatus') || lower.includes('eternamax')) return '50,000 XP';
-  if (isGigantamax || lower.includes('6-star')) return '25,000 XP';
+  if (isGigantamax || lower.includes('6-star') || lower.includes('gigantamax')) return '25,000 XP';
   if (lower.includes('5-star') || lower.includes('legendary')) return '15,000 XP';
   if (lower.includes('4-star')) return '10,000 XP';
   if (lower.includes('3-star')) return '7,500 XP';
   if (lower.includes('2-star')) return '6,000 XP';
   if (lower.includes('1-star')) return '5,000 XP';
-  return '10,000 XP';
+  return '7,500 XP';
 }
 
 export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, isAdmin = false }) => {

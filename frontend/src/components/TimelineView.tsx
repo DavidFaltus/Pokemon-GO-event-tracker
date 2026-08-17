@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { Sparkles } from 'lucide-react';
 import './TimelineView.css';
 import './CalendarView.css';
 import { EventCard } from './EventCard';
@@ -7,7 +6,6 @@ import type { EventData } from './EventCard';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
 import { resolveImage } from '../utils/imageResolver';
-import { MonthSummaryInfographic } from './MonthSummaryInfographic';
 
 interface TimelineViewProps {
   events: EventData[];
@@ -44,7 +42,6 @@ const WEEKDAY_NAMES: { [key in Language]: string[] } = {
 
 export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezone }) => {
   const [activeModalEvent, setActiveModalEvent] = useState<EventData | null>(null);
-  const [showPosterModal, setShowPosterModal] = useState<boolean>(false);
   
   const t = translations[lang];
 
@@ -248,7 +245,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
       
       {/* Calendar Header with Month/Year Navigation */}
       <div className="calendar-header">
-        <div className="calendar-title-nav" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div className="calendar-title-nav" style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
           <button className="calendar-nav-btn" onClick={handlePrevMonth} aria-label="Previous Month">‹</button>
           <h2>{MONTH_NAMES[lang][month]} {year}</h2>
           <button className="calendar-nav-btn" onClick={handleNextMonth} aria-label="Next Month">›</button>
@@ -256,39 +253,18 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
             className="calendar-today-btn" 
             onClick={handleToday} 
             style={{
-              padding: '4px 10px',
-              fontSize: '0.75rem',
+              padding: '4px 8px',
+              fontSize: '0.72rem',
               fontWeight: 600,
               borderRadius: '6px',
               border: '1px solid var(--border-color)',
               backgroundColor: 'var(--bg-card)',
               color: 'var(--text-primary)',
               cursor: 'pointer',
-              marginLeft: '6px'
+              marginLeft: '2px'
             }}
           >
             {lang === 'ja' ? '今月' : lang === 'cs' ? 'Dnes' : 'Today'}
-          </button>
-          <button
-            className="calendar-poster-btn"
-            onClick={() => setShowPosterModal(true)}
-            style={{
-              padding: '4px 10px',
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              borderRadius: '6px',
-              border: '1px solid var(--accent-color, #38bdf8)',
-              backgroundColor: 'rgba(56, 189, 248, 0.12)',
-              color: 'var(--accent-color, #38bdf8)',
-              cursor: 'pointer',
-              marginLeft: '6px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}
-          >
-            <Sparkles size={13} />
-            {lang === 'cs' ? 'Plakát měsíce' : 'Month Poster'}
           </button>
         </div>
         
@@ -434,23 +410,18 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
       {activeModalEvent && (
         <div className="calendar-modal-overlay" onClick={() => setActiveModalEvent(null)}>
           <div className="calendar-modal-content" onClick={e => e.stopPropagation()}>
-            <button className="calendar-modal-close" onClick={() => setActiveModalEvent(null)}>✕</button>
-            <EventCard event={activeModalEvent} lang={lang} timezone={timezone} defaultExpanded={true} useInline={true} />
+            <button className="calendar-modal-close" onClick={() => setActiveModalEvent(null)} aria-label="Close">✕</button>
+            <EventCard 
+              event={activeModalEvent} 
+              lang={lang} 
+              timezone={timezone} 
+              defaultExpanded={true} 
+              useInline={true} 
+              onToggleExpand={(id, exp) => { if (!exp) setActiveModalEvent(null); }}
+            />
           </div>
         </div>
       )}
-
-      {/* Month Summary Poster Infographic Modal */}
-      {showPosterModal && (
-        <MonthSummaryInfographic
-          events={events}
-          lang={lang}
-          targetDate={viewDate}
-          initialOffset={0}
-          onClose={() => setShowPosterModal(false)}
-        />
-      )}
-
 
       <div className="timeline-tip" style={{ padding: '8px 12px', fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center' }}>
         💡 {lang === 'ja' ? 'カレンダーのバーやイベントをクリックすると、レイド対策やボーナスなどの詳細なガイドが表示されます。' : lang === 'cs' ? 'Kliknutím na pruh nebo krátkou událost v kalendáři otevřete podrobného průvodce, bossy a bonusy.' : 'Click on any calendar banner or short event to view detailed guide, counters, and bonuses.'}

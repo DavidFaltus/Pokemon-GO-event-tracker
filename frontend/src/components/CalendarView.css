@@ -477,12 +477,58 @@
 /* Responsive adjustment for small screens */
 @media (max-width: 768px) {
   .calendar-month-wrapper {
-    padding: 12px;
+    padding: 8px 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    margin-left: -16px;
+    margin-right: -16px;
+    margin-bottom: 16px;
+    box-shadow: none;
+    width: calc(100% + 32px);
   }
   
-  .calendar-day-cell {
-    min-height: 60px;
-    padding: 2px;
+  .calendar-header {
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .calendar-title-nav h2 {
+    font-size: 1.1rem;
+  }
+
+  .calendar-legend {
+    gap: 8px;
+    padding: 0 12px;
+  }
+
+  .calendar-grid-header {
+    padding-left: 4px;
+    padding-right: 4px;
+    gap: 2px;
+    margin: 0 4px;
+  }
+
+  .calendar-header-day {
+    font-size: 0.65rem;
+  }
+
+  .calendar-weeks-container {
+    gap: 4px;
+  }
+  
+  .calendar-bg-grid {
+    padding: 0 4px;
+    gap: 2px;
+  }
+
+  .calendar-bg-cell {
+    border-radius: 8px;
+  }
+
+  .calendar-numbers-row {
+    gap: 2px;
+    padding: 4px 4px 2px 4px;
   }
   
   .calendar-day-number {
@@ -490,20 +536,122 @@
     width: 16px;
     height: 16px;
   }
+
+  .calendar-multi-overlay {
+    gap: 2px;
+    padding: 0 4px;
+    margin-bottom: 4px;
+  }
+
+  .calendar-short-events-row {
+    gap: 2px;
+    padding: 2px 4px 6px 4px;
+  }
   
   .calendar-short-event {
-    padding: 1px 2px;
-    font-size: 0.6rem;
+    padding: 2px 3px;
+    font-size: 0.58rem;
+    gap: 3px;
   }
   
   .short-event-icon {
     width: 12px;
     height: 12px;
   }
+
+  .short-event-dot {
+    width: 5px;
+    height: 5px;
+  }
   
   .calendar-multi-bar {
+    padding: 2px 5px;
+    font-size: 0.6rem;
+    border-radius: 5px;
+    gap: 4px;
+  }
+
+  .calendar-week-row {
+    padding-bottom: 6px;
+  }
+
+  .calendar-modal-overlay {
+    padding: 10px 6px;
+  }
+
+  .calendar-modal-content {
+    border-radius: 16px;
+    max-width: 98vw;
+  }
+
+  .calendar-modal-content .card-top {
+    padding: 14px 10px 8px 10px;
+  }
+
+  .calendar-modal-content .card-expanded-content {
+    padding: 0 6px 14px 6px;
+  }
+}
+
+@media (max-width: 400px) {
+  .calendar-month-wrapper {
+    margin-left: -12px;
+    margin-right: -12px;
+    width: calc(100% + 24px);
+    padding: 6px 0;
+  }
+
+  .calendar-header {
+    padding: 0 8px;
+  }
+
+  .calendar-legend {
+    padding: 0 8px;
+    gap: 6px;
+    font-size: 0.6rem;
+  }
+
+  .calendar-grid-header {
+    margin: 0 2px;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .calendar-bg-grid {
+    padding: 0 2px;
+  }
+
+  .calendar-numbers-row {
+    padding: 3px 2px 2px 2px;
+  }
+
+  .calendar-multi-overlay {
+    padding: 0 2px;
+  }
+
+  .calendar-short-events-row {
+    padding: 2px 2px 4px 2px;
+  }
+
+  .calendar-short-event {
+    padding: 1px 2px;
+    font-size: 0.55rem;
+    gap: 2px;
+  }
+
+  .short-event-time {
+    font-size: 0.55rem;
+  }
+
+  .short-event-icon {
+    width: 10px;
+    height: 10px;
+  }
+
+  .calendar-multi-bar {
+    font-size: 0.55rem;
     padding: 2px 4px;
-    font-size: 0.65rem;
+    gap: 3px;
   }
 }
 

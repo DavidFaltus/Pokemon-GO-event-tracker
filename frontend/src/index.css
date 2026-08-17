@@ -907,10 +907,10 @@ body.light-mode .view-switch-btn.active {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
 }
 
-/* Status Tabs (Active / Upcoming / Infographic Summary - Split into thirds) */
+/* Status Tabs (Active / Upcoming - Split in half) */
 .status-tabs-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   background-color: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 14px;
@@ -939,18 +939,6 @@ body.light-mode .view-switch-btn.active {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.status-tab-btn.infographic-tab-btn {
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%);
-  border: 1.5px solid rgba(56, 189, 248, 0.35);
-  color: #38bdf8;
-}
-
-.status-tab-btn.infographic-tab-btn:hover {
-  background: linear-gradient(135deg, rgba(56, 189, 248, 0.25) 0%, rgba(99, 102, 241, 0.25) 100%);
-  border-color: rgba(56, 189, 248, 0.55);
-  color: #7dd3fc;
 }
 
 .status-tab-btn:hover {
@@ -1193,6 +1181,125 @@ body.light-mode .nav-item {
 
 body.light-mode .nav-item.active {
   color: #7e22ce !important;
+}
+
+/* ── MOBILE FULL-WIDTH EVENTS SECTION ── */
+@media (max-width: 768px) {
+  .app-main {
+    padding: 12px 16px calc(76px + var(--safe-bottom)) 16px;
+    gap: 24px;
+  }
+
+  /* Events tab: let children break out of padding */
+  .events-tab {
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .events-header-bar {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .events-header-text .tab-seo-title {
+    font-size: 1.2rem;
+  }
+
+  .events-header-text .tab-seo-description {
+    font-size: 0.72rem;
+  }
+
+  .view-switch-btn {
+    padding: 5px 10px;
+    font-size: 0.75rem;
+    gap: 4px;
+  }
+
+  /* Status tabs: full-width, reduced rounding */
+  .status-tabs-container {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    margin-left: -16px;
+    margin-right: -16px;
+    width: calc(100% + 32px);
+    padding: 4px 6px;
+    margin-bottom: 10px;
+    gap: 4px;
+  }
+
+  .status-tab-btn {
+    font-size: 0.75rem;
+    padding: 9px 4px;
+    border-radius: 8px;
+    gap: 5px;
+  }
+
+  /* Filter pills: full-width scroll */
+  .filter-pill-container {
+    margin-left: -16px !important;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    margin-top: 0 !important;
+    margin-bottom: 4px;
+  }
+
+  .filter-pill {
+    font-size: 0.72rem;
+    padding: 6px 12px;
+  }
+
+  /* Events list: use full width  */
+  .events-feed-list {
+    margin-left: -16px;
+    margin-right: -16px;
+    padding-left: 16px;
+    padding-right: 16px;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 400px) {
+  .app-main {
+    padding: 10px 12px calc(76px + var(--safe-bottom)) 12px;
+  }
+
+  .events-tab {
+    margin-left: -12px;
+    margin-right: -12px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .status-tabs-container {
+    margin-left: -12px;
+    margin-right: -12px;
+    width: calc(100% + 24px);
+    padding: 3px 4px;
+  }
+
+  .status-tab-btn {
+    font-size: 0.68rem;
+    padding: 8px 3px;
+    gap: 3px;
+  }
+
+  .filter-pill-container {
+    margin-left: -12px !important;
+    margin-right: -12px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .events-feed-list {
+    margin-left: -12px;
+    margin-right: -12px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
 }
 
 /* ── GLOBAL DESKTOP & CONTENT LAYOUT STYLES ── */

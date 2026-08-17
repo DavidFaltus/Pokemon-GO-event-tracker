@@ -840,6 +840,36 @@ export const EventCard: React.FC<EventCardProps> = ({
                 );
               })()}
             </div>
+
+            {/* Bottom Close Button for easy collapsing after reading details */}
+            <div className="expanded-close-action-row" style={{ display: 'flex', justifyContent: 'center', marginTop: '16px', paddingTop: '12px', borderTop: '1px solid var(--border-color)' }}>
+              <button 
+                type="button" 
+                className="event-inline-close-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsExpanded(false);
+                  onToggleExpand?.(event.eventID, false);
+                }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '8px 20px',
+                  fontSize: '0.82rem',
+                  fontWeight: 700,
+                  borderRadius: '10px',
+                  border: '1px solid var(--border-color)',
+                  background: 'var(--bg-card-hover)',
+                  color: 'var(--text-primary)',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <span>▲</span>
+                {t.details_close_event || (lang === 'cs' ? 'Zavřít událost' : 'Close Event')}
+              </button>
+            </div>
           </div>
         </CardErrorBoundary>
     );
@@ -852,10 +882,15 @@ export const EventCard: React.FC<EventCardProps> = ({
         id={`event-card-${event.eventID}`}
         data-event-id={event.eventID}
         className={`event-card status-${status} type-${event.eventType} ${isExpanded && useInline ? 'expanded-inline' : ''}`}
-        onClick={handleCardClick}
-        style={{ cursor: 'pointer' }}
       >
-        <div className="card-top">
+        <div 
+          className="card-top" 
+          onClick={handleCardClick}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(); } }}
+          aria-expanded={isExpanded}
+        >
           <div className="event-img-wrapper">
             {(event.eventType?.toLowerCase().includes('spotlight') ||
               event.eventType?.toLowerCase().includes('community') ||
@@ -894,7 +929,7 @@ export const EventCard: React.FC<EventCardProps> = ({
               ) : (
                 <a 
                   href={`/${lang}/events/${event.eventID}`} 
-                  onClick={(e) => { e.preventDefault(); handleCardClick(); }}
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleCardClick(); }}
                   style={{ color: 'inherit', textDecoration: 'none' }}
                 >
                   {event.name}
@@ -910,7 +945,7 @@ export const EventCard: React.FC<EventCardProps> = ({
             </div>
           </div>
 
-          <div className="expand-indicator">
+          <div className="expand-indicator" title={isExpanded ? (lang === 'cs' ? 'Zavřít událost' : 'Close Event') : (lang === 'cs' ? 'Zobrazit detail' : 'Expand Event')}>
             {isExpanded ? '▲' : '▼'}
           </div>
         </div>

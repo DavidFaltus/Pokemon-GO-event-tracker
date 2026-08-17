@@ -63,9 +63,9 @@
 
 /* Poster Container (Infographic Card) */
 .cd-poster-container {
-  width: 600px;
-  min-width: 600px;
+  width: 100%;
   max-width: 600px;
+  min-width: 0;
   background: #090d16;
   background-image: 
     radial-gradient(circle at 10% 15%, rgba(56, 189, 248, 0.18) 0%, transparent 40%),
@@ -98,6 +98,7 @@
   justify-content: space-between;
   width: 100%;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .cd-poster-badge {
@@ -159,7 +160,8 @@
   margin: 10px 0 0 0;
   color: #ffffff;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
   letter-spacing: -0.3px;
   text-align: left;
   max-width: 100%;
@@ -485,10 +487,63 @@
   white-space: nowrap;
 }
 
-.cd-shield-icon {
-  color: #38bdf8;
-}
-
 .cd-footer-right {
   font-size: 9.5px;
+}
+
+/* ── Mobile Responsive Breakpoints (< 800px) ── */
+@media (max-width: 600px) {
+  .cd-poster-container {
+    padding: 14px 12px;
+    border-radius: 16px;
+  }
+  .cd-poster-title {
+    font-size: 19px;
+  }
+  .cd-poster-showcase {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 14px 12px;
+    gap: 12px;
+  }
+  .cd-showcase-right {
+    width: 100%;
+    height: 120px;
+  }
+  .cd-featured-img {
+    width: 80px;
+    height: 80px;
+  }
+  .cd-bonuses-grid {
+    grid-template-columns: 1fr;
+  }
+  .cd-poster-footer {
+    flex-wrap: wrap;
+    gap: 6px;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 420px) {
+  .cd-poster-container {
+    padding: 12px 10px;
+  }
+  .cd-poster-title {
+    font-size: 17px;
+  }
+  .cd-pokemon-title {
+    font-size: 18px;
+  }
+  .cd-poster-badge {
+    font-size: 9px;
+    padding: 4px 8px;
+  }
+  .cd-poster-time-pill {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+  .cd-featured-img {
+    width: 68px;
+    height: 68px;
+  }
 }
