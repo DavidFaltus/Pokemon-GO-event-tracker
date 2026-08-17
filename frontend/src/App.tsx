@@ -29,9 +29,10 @@ const AdminPanelView = lazy(() => import('./components/AdminPanelView').then(m =
 import { PokeballLogo } from './components/PokeballLogo';
 
 const GuidesView = lazy(() => import('./components/GuidesView').then(m => ({ default: m.GuidesView })));
+const DownloadAppView = lazy(() => import('./components/DownloadAppView').then(m => ({ default: m.DownloadAppView })));
+const NotFoundView = lazy(() => import('./components/NotFoundView').then(m => ({ default: m.NotFoundView })));
 
-
-type TabType = 'events' | 'guides' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin';
+type TabType = 'events' | 'guides' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin' | 'download' | '404';
 
 
 // Calculate difference between target timezone and browser local timezone
@@ -266,8 +267,10 @@ const getTabFromUrlPath = (pathname: string): TabType => {
   if (first === 'ditto') return 'ditto';
   if (first === 'eggs') return 'eggs';
   if (first === 'filter') return 'filter';
+  if (first === 'download' || first === 'app' || first === 'apk') return 'download';
   if (first === 'settings') return 'settings';
-  return 'events';
+  if (first === 'events' || first === '') return 'events';
+  return '404';
 };
 
 const getEventIdFromUrlPath = (pathname: string): string | null => {
@@ -297,7 +300,9 @@ const getUrlPathForTab = (tab: TabType, l: Language, eventID?: string | null, po
     case 'ditto': return `${prefix}/ditto`;
     case 'eggs': return `${prefix}/eggs`;
     case 'filter': return `${prefix}/filter`;
+    case 'download': return `${prefix}/download`;
     case 'settings': return `${prefix}/settings`;
+    case '404': return `${prefix}/404`;
     case 'events':
     default: return `${prefix}/events`;
   }
@@ -312,8 +317,10 @@ const TAB_TITLES: Record<TabType, Record<string, string>> = {
   eggs: { cs: 'Líhnutí vajec', en: 'Egg Hatching', ja: 'タマゴ孵化', ru: 'Яйца' },
   ranking: { cs: 'PvP Žebříčky', en: 'PvP Rankings', ja: 'PvPランキング', ru: 'PvP Рейтинги' },
   filter: { cs: 'Vyhledávací Filtr', en: 'Search Filter', ja: '検索フィルター', ru: 'Фильтр поиска' },
+  download: { cs: 'Stáhnout aplikaci & GitHub', en: 'Download App & GitHub', ja: 'アプリをダウンロード & GitHub', ru: 'Скачать приложение и GitHub' },
   settings: { cs: 'Nastavení', en: 'Settings', ja: '設定', ru: 'Настройки' },
   admin: { cs: 'Admin', en: 'Admin', ja: 'Admin', ru: 'Admin' },
+  '404': { cs: 'Stránka nenalezena (404)', en: 'Page Not Found (404)', ja: 'ページが見つかりません (404)', ru: 'Страница не найдена (404)' },
 };
 
 const getPageTitle = (tab: TabType, lang: string, eventName?: string | null): string => {
@@ -1167,9 +1174,21 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
                 <FilterGeneratorView lang={lang} initialRaidBoss={filterModalInitialBoss} />
               )}
 
+              {activeTab === 'download' && (
+                <div className="tab-content download-tab">
+                  <DownloadAppView lang={lang} />
+                </div>
+              )}
+
               {activeTab === 'admin' && (
                 <div className="tab-content admin-tab">
                   <AdminPanelView lang={lang} onBack={() => setActiveTab('events')} />
+                </div>
+              )}
+
+              {activeTab === '404' && (
+                <div className="tab-content not-found-tab">
+                  <NotFoundView lang={lang} onGoHome={() => changeTab('events')} />
                 </div>
               )}
             </>

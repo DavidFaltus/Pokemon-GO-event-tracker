@@ -7,10 +7,10 @@ import { translations, type Language } from '../data/translations';
 import { PokeballLogo } from './PokeballLogo';
 import { Footer } from './Footer';
 import { LegalModals, type LegalModalType } from './LegalModals';
-import { Calendar, Swords, Shield, Clock, Egg, Sparkles, Trophy, Filter, Settings, BookOpen } from 'lucide-react';
+import { Calendar, Swords, Shield, Clock, Egg, Sparkles, Trophy, Filter, Settings, BookOpen, Download } from 'lucide-react';
 import { API_BASE_URL } from '../config';
 
-export type TabType = 'events' | 'guides' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin';
+export type TabType = 'events' | 'guides' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin' | 'download' | '404';
 
 const InstagramLogo = ({ size = 15, color = '#ffffff' }: { size?: number; color?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, display: 'inline-block', verticalAlign: 'middle' }}>
@@ -72,6 +72,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
     if (cleanPath.includes('/eggs')) return 'eggs';
     if (cleanPath.includes('/rankings') || cleanPath.includes('/pokemon')) return 'ranking';
     if (cleanPath.includes('/filter')) return 'filter';
+    if (cleanPath.includes('/download') || cleanPath.includes('/app')) return 'download';
     if (cleanPath.includes('/settings')) return 'settings';
     return 'events';
   };
@@ -90,6 +91,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
       case 'ditto': return `${prefix}/ditto`;
       case 'eggs': return `${prefix}/eggs`;
       case 'filter': return `${prefix}/filter`;
+      case 'download': return `${prefix}/download`;
       case 'settings': return `${prefix}/settings`;
       case 'events':
       default: return `${prefix}/events`;
@@ -208,7 +210,12 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
             <span>{t.tabs_guides || 'Průvodce'}</span>
           </Link>
 
-          <Link href={getSectionPath(lang, 'settings')} className={`sidebar-nav-item settings-item ${activeTab === 'settings' ? 'active' : ''}`} style={{ marginTop: '28px' }}>
+          <Link href={getSectionPath(lang, 'download')} className={`sidebar-nav-item ${activeTab === 'download' ? 'active' : ''}`}>
+            <Download size={18} />
+            <span>{t.tabs_download || 'Stáhnout aplikaci'}</span>
+          </Link>
+
+          <Link href={getSectionPath(lang, 'settings')} className={`sidebar-nav-item settings-item ${activeTab === 'settings' ? 'active' : ''}`} style={{ marginTop: '16px' }}>
             <Settings size={18} />
             <span>{t.tabs_settings || 'Nastavení'}</span>
           </Link>
