@@ -320,9 +320,9 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
         </header>
 
         {/* Page Content */}
-        <main className="app-main">
+        <div className="app-page-content-wrapper">
           {children}
-        </main>
+        </div>
 
         {/* Footer */}
         <Footer lang={lang} onOpenTab={() => {}} onOpenLegalModal={(type) => setLegalModal(type)} />

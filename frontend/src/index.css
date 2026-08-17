@@ -1347,14 +1347,20 @@ body.light-mode .nav-item.active {
     position: relative;
   }
 
-  .main-content-wrapper {
+  .main-content-wrapper,
+  .app-container {
     flex: 1 1 0%;
     min-width: 0;
-    width: 100%;
+    margin-left: 280px;
+    width: calc(100% - 280px);
+    max-width: calc(100% - 280px);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     box-sizing: border-box;
+    position: relative;
+    border: none;
+    box-shadow: none;
   }
 
   /* Left Sidebar Navigation - Fixed to Browser Window Viewport */
@@ -1501,20 +1507,6 @@ body.light-mode .nav-item.active {
     padding-top: 16px;
   }
 
-  /* Main container adjustments for full width desktop layout with fixed sidebar offset */
-  .app-container {
-    max-width: none;
-    border: none;
-    box-shadow: none;
-    min-height: 100vh;
-    flex: 1 1 0%;
-    min-width: 0;
-    margin-left: 280px;
-    width: calc(100% - 280px);
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-  }
 
   /* Hide mobile header and mobile bottom navigation */
   .app-header {
