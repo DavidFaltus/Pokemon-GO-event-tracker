@@ -9,7 +9,22 @@ import {
   scrapeEvents,
   scrapeEventDetails,
 } from './scraper';
-import { loadCustomEvents, saveCustomEvents, CustomEvent, loadPokemonIconOverrides, savePokemonIconOverrides, loadCustomRaidBosses, saveCustomRaidBosses, CustomRaidBoss } from './storage';
+import { 
+  loadCustomEvents, 
+  saveCustomEvents, 
+  CustomEvent, 
+  loadPokemonIconOverrides, 
+  savePokemonIconOverrides, 
+  loadCustomRaidBosses, 
+  saveCustomRaidBosses, 
+  CustomRaidBoss,
+  loadEventsListCache,
+  saveEventsListCache,
+  loadRocketLineupsCache,
+  saveRocketLineupsCache,
+  loadEventDetailsCache,
+  saveEventDetailsCache
+} from './storage';
 import { generateBotHtml } from './ssr';
 
 // Simple in-memory rate limiter
@@ -75,6 +90,9 @@ interface CacheEntry<T> {
 const cache = new Map<string, CacheEntry<any>>();
 const CACHE_DIR = path.join(__dirname, '..', '.cache');
 
+/**
+ * Returns fresh cached data if age < ttlMs.
+ */
 function getFromCache<T>(key: string, ttlMs: number): T | null {
   const entry = cache.get(key);
   if (entry && Date.now() <= entry.expiry) {
@@ -99,7 +117,42 @@ function getFromCache<T>(key: string, ttlMs: number): T | null {
   return null;
 }
 
+/**
+ * Fallback to return last known cached data regardless of expiration age (Stale-While-Revalidate).
+ * Prevents empty UI and fatal errors if remote sources are unreachable or rate-limited.
+ */
+function getStaleCache<T>(key: string): T | null {
+  const entry = cache.get(key);
+  if (entry && entry.data) {
+    return entry.data;
+  }
+
+  try {
+    const cacheFilePath = path.join(CACHE_DIR, `${key}.json`);
+    if (fs.existsSync(cacheFilePath)) {
+      const content = fs.readFileSync(cacheFilePath, 'utf-8');
+      const data = JSON.parse(content);
+      if (data) {
+        cache.set(key, { data, expiry: Date.now() + 60 * 60 * 1000 });
+        return data;
+      }
+    }
+  } catch (err) {
+    console.error(`Failed to read stale cache for ${key}:`, err);
+  }
+  return null;
+}
+
 function setToCache<T>(key: string, data: T, ttlMs: number) {
+  if (data === null || data === undefined) return;
+  // If array and empty, don't overwrite existing good non-empty cache
+  if (Array.isArray(data) && data.length === 0) {
+    const existing = cache.get(key);
+    if (existing && Array.isArray(existing.data) && existing.data.length > 0) {
+      return;
+    }
+  }
+
   cache.set(key, { data, expiry: Date.now() + ttlMs });
   try {
     if (!fs.existsSync(CACHE_DIR)) {
@@ -263,7 +316,14 @@ async function runScheduledScraper(triggeredBy: 'cron' | 'startup' | 'admin' = '
     );
 
   } catch (err: any) {
-    console.error('[Scheduler] ❌ Fatal error:', err.message);
+    console.error('[Scheduler] ❌ Scrape error:', err.message);
+    const nextScrapeAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    const meta = loadScraperMeta();
+    saveScraperMeta({
+      ...meta,
+      lastScrapedAt: new Date().toISOString(),
+      nextScrapeAt
+    });
   } finally {
     scraperRunning = false;
   }
@@ -445,17 +505,36 @@ async function getEnrichedEventsList(forceNoCache: boolean = false): Promise<any
   const cacheKey = 'events_list';
   let scrapedData = forceNoCache ? null : getFromCache<any[]>(cacheKey, 12 * 60 * 60 * 1000);
 
-  if (!scrapedData) {
+  if (!scrapedData || scrapedData.length === 0) {
     try {
       scrapedData = await scrapeEvents();
-      setToCache(cacheKey, scrapedData, 12 * 60 * 60 * 1000);
+      if (scrapedData && scrapedData.length > 0) {
+        setToCache(cacheKey, scrapedData, 12 * 60 * 60 * 1000);
+      }
     } catch (error: any) {
-      console.error('Error scraping events:', error.message);
-      scrapedData = [];
+      console.error('[getEnrichedEventsList] Scraping events error:', error.message);
     }
   }
 
-  const customEvents = await loadCustomEvents();
+  // Resilient fallback: If live scraping failed, use stale cache from memory or disk
+  if (!scrapedData || scrapedData.length === 0) {
+    const staleData = getStaleCache<any[]>(cacheKey);
+    if (staleData && staleData.length > 0) {
+      scrapedData = staleData;
+      console.log(`[getEnrichedEventsList] Using last known good events cache (${scrapedData.length} events).`);
+    } else {
+      const diskData = await loadEventsListCache().catch(() => []);
+      if (diskData && diskData.length > 0) {
+        scrapedData = diskData;
+        setToCache(cacheKey, scrapedData, 12 * 60 * 60 * 1000);
+        console.log(`[getEnrichedEventsList] Restored ${scrapedData.length} events from persistent disk storage.`);
+      } else {
+        scrapedData = [];
+      }
+    }
+  }
+
+  const customEvents = await loadCustomEvents().catch(() => []);
   const customMap = new Map<string, CustomEvent>();
   customEvents.forEach(item => customMap.set(item.eventID, item));
 
@@ -474,16 +553,12 @@ async function getEnrichedEventsList(forceNoCache: boolean = false): Promise<any
   customEvents.forEach((event) => {
     if (!event.isDeleted) {
       const existsInMerged = mergedEvents.some((e: any) => e.eventID === event.eventID);
-      // Include if:
-      // - it's a custom (manually created) event not yet in scraped list, OR
-      // - it's a scraped event saved as an override that is no longer in the scraped list
-      //   (e.g. future events or events whose scrape ID changed)
       if (!existsInMerged) mergedEvents.push(event);
     }
   });
 
   const enrichedEvents = mergedEvents.map((event: any) => {
-    const detailsCache = getFromCache<any>(`details_${event.eventID}`, 24 * 60 * 60 * 1000);
+    const detailsCache = getFromCache<any>(`details_${event.eventID}`, 24 * 60 * 60 * 1000) || getStaleCache<any>(`details_${event.eventID}`);
     let finalLink = event.link;
     if (detailsCache && detailsCache.officialLink) {
       finalLink = detailsCache.officialLink;
@@ -504,11 +579,24 @@ async function getEnrichedEventsList(forceNoCache: boolean = false): Promise<any
 async function getRaidBossesList(forceNoCache: boolean = false): Promise<any[]> {
   const cacheKey = 'raid_bosses';
   const cachedData = forceNoCache ? null : getFromCache<any>(cacheKey, 1 * 60 * 60 * 1000); // 1 hour TTL for fresh lineup updates
-  if (cachedData) return cachedData;
+  if (cachedData && cachedData.length > 0) return cachedData;
 
-  const events = await getEnrichedEventsList(false).catch(() => []);
-  const { scrapeRaidBosses } = await import('./scraper');
-  let data = await scrapeRaidBosses(events);
+  let data: any[] = [];
+  try {
+    const events = await getEnrichedEventsList(false).catch(() => []);
+    const { scrapeRaidBosses } = await import('./scraper');
+    data = await scrapeRaidBosses(events);
+  } catch (err: any) {
+    console.warn(`[getRaidBossesList] Scraping failed: ${err.message}. Using last known cache.`);
+  }
+
+  // Resilient fallback: If live scraping failed, use stale cache
+  if (!data || data.length === 0) {
+    data = getStaleCache<any[]>(cacheKey) || [];
+    if (data.length > 0) {
+      console.log(`[getRaidBossesList] Served ${data.length} raid bosses from last known good cache.`);
+    }
+  }
 
   // Apply custom raid overrides & blacklists from storage
   const customRaids = await loadCustomRaidBosses().catch(() => []);
@@ -541,7 +629,9 @@ async function getRaidBossesList(forceNoCache: boolean = false): Promise<any[]> 
     }
   }
 
-  setToCache(cacheKey, data, 1 * 60 * 60 * 1000);
+  if (data && data.length > 0) {
+    setToCache(cacheKey, data, 1 * 60 * 60 * 1000);
+  }
   return data;
 }
 
@@ -549,12 +639,30 @@ async function getRaidBossesList(forceNoCache: boolean = false): Promise<any[]> 
 async function getRocketLineupsList(forceNoCache: boolean = false): Promise<any> {
   const cacheKey = 'rocket_lineups';
   const cachedData = forceNoCache ? null : getFromCache<any>(cacheKey, 24 * 60 * 60 * 1000);
-  if (cachedData) return cachedData;
+  if (cachedData && cachedData.giovanni) return cachedData;
 
-  const { scrapeRocketLineups } = await import('./scraper');
-  const data = await scrapeRocketLineups();
-  setToCache(cacheKey, data, 24 * 60 * 60 * 1000);
-  return data;
+  let data: any = null;
+  try {
+    const { scrapeRocketLineups } = await import('./scraper');
+    data = await scrapeRocketLineups();
+  } catch (err: any) {
+    console.warn(`[getRocketLineupsList] Scraping failed: ${err.message}. Using last known cache.`);
+  }
+
+  // Resilient fallback: If live scraping failed, use stale cache
+  if (!data || !data.giovanni) {
+    data = getStaleCache<any>(cacheKey) || (await loadRocketLineupsCache().catch(() => null));
+    if (data && data.giovanni) {
+      console.log('[getRocketLineupsList] Served rocket lineups from last known good cache.');
+    }
+  }
+
+  if (data) {
+    setToCache(cacheKey, data, 24 * 60 * 60 * 1000);
+    return data;
+  }
+
+  throw new Error('No rocket lineups data available.');
 }
 
 // Get Events (Merged Scraped + Custom)
@@ -565,7 +673,8 @@ app.get('/api/events', async (req, res) => {
     res.json(data);
   } catch (error: any) {
     console.error('Error fetching events:', error.message);
-    res.status(500).json({ error: 'Failed to process events list' });
+    const stale = getStaleCache<any[]>('events_list') || (await loadEventsListCache().catch(() => [])) || [];
+    res.json(stale);
   }
 });
 
@@ -600,31 +709,42 @@ app.get('/api/events/:id/details', async (req, res) => {
     console.error('Error checking custom event details:', err.message);
   }
 
-  if (!link) {
-    return res.status(400).json({ error: 'Missing link query parameter for scraped event' });
-  }
-
   const cacheKey = `details_${eventId}`;
   const forceNoCache = req.query.nocache === 'true';
-  // Use a longer TTL here — scheduled scraper keeps this fresh anyway
   const cachedData = forceNoCache ? null : getFromCache<any>(cacheKey, 24 * 60 * 60 * 1000);
 
   if (cachedData) {
-    console.log(`Serving details for ${eventId} from cache`);
     return res.json(cachedData);
   }
 
-  // Cache miss — scrape on demand (fallback, scheduled scraper should have prevented this)
+  // Cache miss or expired — attempt scrape
   try {
     const eventName = req.query.name as string || undefined;
-    const data = await scrapeEventDetails(eventId, link, eventName);
-    if (!data) return res.status(404).json({ error: 'Details not found' });
-    setToCache(cacheKey, data, 24 * 60 * 60 * 1000);
-    res.json(data);
+    const data = await scrapeEventDetails(eventId, link || '', eventName);
+    if (data) {
+      setToCache(cacheKey, data, 24 * 60 * 60 * 1000);
+      return res.json(data);
+    }
   } catch (error: any) {
-    console.error(`Error scraping details for ${eventId}:`, error.message);
-    res.status(500).json({ error: 'Failed to fetch event details' });
+    console.warn(`[details] Error scraping details for ${eventId}:`, error.message);
   }
+
+  // Resilient Fallback: Return stale cache if available
+  const staleData = getStaleCache<any>(cacheKey);
+  if (staleData) {
+    console.log(`[details] Serving stale cached details for ${eventId} due to remote refusal/error`);
+    return res.json(staleData);
+  }
+
+  // Check persistent disk cache storage
+  try {
+    const allDetails = await loadEventDetailsCache();
+    if (allDetails && allDetails[eventId]?.details) {
+      return res.json(allDetails[eventId].details);
+    }
+  } catch {}
+
+  return res.status(404).json({ error: 'Details not found' });
 });
 
 // Get Raid Bosses
@@ -635,7 +755,8 @@ app.get('/api/raids', async (req, res) => {
     res.json(data);
   } catch (error: any) {
     console.error('Error fetching raid bosses:', error.message);
-    res.status(500).json({ error: 'Failed to fetch raid bosses' });
+    const stale = getStaleCache<any[]>('raid_bosses') || [];
+    res.json(stale);
   }
 });
 
@@ -647,6 +768,10 @@ app.get('/api/rocket', async (req, res) => {
     res.json(data);
   } catch (error: any) {
     console.error('Error fetching rocket lineups:', error.message);
+    const stale = getStaleCache<any>('rocket_lineups') || (await loadRocketLineupsCache().catch(() => null));
+    if (stale) {
+      return res.json(stale);
+    }
     res.status(500).json({ error: 'Failed to fetch rocket lineups' });
   }
 });
@@ -1100,9 +1225,9 @@ app.get('*', async (req, res, next) => {
       getRocketLineupsList(false).catch(() => [])
     ]);
 
-    // Helper to fetch details from cache
+    // Helper to fetch details from cache (fresh or stale)
     const getDetails = (eventId: string) => {
-      return getFromCache<any>(`details_${eventId}`, 24 * 60 * 60 * 1000);
+      return getFromCache<any>(`details_${eventId}`, 24 * 60 * 60 * 1000) || getStaleCache<any>(`details_${eventId}`);
     };
 
     // Generate pre-rendered HTML
