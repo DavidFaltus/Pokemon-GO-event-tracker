@@ -240,17 +240,17 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
       }
       const fontEmbedCSS = await getFontEmbedCSS();
       const rect = posterRef.current.getBoundingClientRect();
-      const w = Math.round(rect.width) || posterRef.current.offsetWidth || 600;
-      const h = Math.round(rect.height) || posterRef.current.offsetHeight || 650;
+      const w = Math.round(rect.width) || posterRef.current.offsetWidth || 480;
+      const h = Math.round(w * 1.25);
       const dataUrl = await toPng(posterRef.current, { 
         cacheBust: false,
         skipFonts: !fontEmbedCSS,
         fontEmbedCSS: fontEmbedCSS || undefined,
         width: w,
         height: h,
-        canvasWidth: w * 2,
-        canvasHeight: h * 2,
-        pixelRatio: 2,
+        canvasWidth: 1080,
+        canvasHeight: 1350,
+        pixelRatio: 1080 / w,
         backgroundColor: '#0d1117',
         style: {
           width: `${w}px`,

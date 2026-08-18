@@ -19,7 +19,7 @@ interface SpotlightInfographicProps {
   isAdmin?: boolean;
 }
 
-export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ event, isAdmin = false }) => {
+export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ event, lang = 'en', isAdmin = false }) => {
   const editor = useInfographicEditor(event.eventID, 'spotlight');
   const posterRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
@@ -32,15 +32,15 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
   const canBeShiny = spotlightData?.canBeShiny ?? true;
   const rawBonus = spotlightData?.bonus || '';
 
-  // Format dates & times cleanly in English
-  const { dateStr, timeStr, isMultiDay } = formatEventDateRange(event.start, event.end, 'en');
+  // Format dates & times cleanly
+  const { dateStr, timeStr, isMultiDay } = formatEventDateRange(event.start, event.end, lang);
 
   // Translate bonus details
   const getBonusText = (b: string) => {
     const lower = b.toLowerCase();
     if (lower.includes('stardust')) {
       return {
-        title: '2× Catch Stardust',
+        title: lang === 'cs' ? '2× Stardust za chycení' : '2× Catch Stardust',
         iconUrl: 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Today%20View/TodayView_Icon_Stardust.png',
         iconEmoji: '🧪',
         color: '#f39c12'
@@ -48,7 +48,7 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
     }
     if (lower.includes('xp') && lower.includes('evolve')) {
       return {
-        title: '2× Evolve XP',
+        title: lang === 'cs' ? '2× XP za vývoj' : '2× Evolve XP',
         iconUrl: 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Today%20View/TodayView_Icon_Evolve.png',
         iconEmoji: '⚡',
         color: '#9b59b6'
@@ -56,7 +56,7 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
     }
     if (lower.includes('xp')) {
       return {
-        title: '2× Catch XP',
+        title: lang === 'cs' ? '2× XP za chycení' : '2× Catch XP',
         iconUrl: 'https://raw.githubusercontent.com/PokeMiners/pogo_assets/master/Images/Today%20View/TodayView_Icon_XP.png',
         iconEmoji: '⭐',
         color: '#3498db'
@@ -64,7 +64,7 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
     }
     if (lower.includes('candy') && lower.includes('transfer')) {
       return {
-        title: '2× Transfer Candy',
+        title: lang === 'cs' ? '2× Candy za přenos' : '2× Transfer Candy',
         iconUrl: '',
         iconEmoji: '🍬',
         color: '#e67e22'
@@ -72,14 +72,14 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
     }
     if (lower.includes('candy')) {
       return {
-        title: '2× Catch Candy',
+        title: lang === 'cs' ? '2× Candy za chycení' : '2× Catch Candy',
         iconUrl: '',
         iconEmoji: '🍬',
         color: '#e67e22'
       };
     }
     return {
-      title: b || '2× Catch Bonus',
+      title: b || (lang === 'cs' ? '2× Bonus za chycení' : '2× Catch Bonus'),
       iconUrl: '',
       iconEmoji: '🎁',
       color: '#f1c40f'
@@ -131,16 +131,16 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
       const fontEmbedCSS = await getFontEmbedCSS();
       const rect = posterRef.current.getBoundingClientRect();
       const w = Math.round(rect.width) || posterRef.current.offsetWidth || 480;
-      const h = Math.round(rect.height) || posterRef.current.offsetHeight || 600;
+      const h = Math.round(w * 1.25);
       const dataUrl = await toPng(posterRef.current, { 
         cacheBust: false,
         skipFonts: !fontEmbedCSS,
         fontEmbedCSS: fontEmbedCSS || undefined,
         width: w,
         height: h,
-        canvasWidth: w * 2,
-        canvasHeight: h * 2,
-        pixelRatio: 2,
+        canvasWidth: 1080,
+        canvasHeight: 1350,
+        pixelRatio: 1080 / w,
         backgroundColor: '#0d1117',
         style: {
           width: `${w}px`,
@@ -184,7 +184,7 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
     <div className="spotlight-infographic-wrapper">
       <div className={`spotlight-poster-container ${editor.isExporting ? 'is-exporting' : ''}`} ref={posterRef}>
         {isAdmin && (
-          <EditToolbar isEditing={editor.isEditing} onToggleEdit={() => editor.setIsEditing(!editor.isEditing)} hasOverrides={editor.hasOverrides} onReset={editor.resetAll} lang={'en'} />
+          <EditToolbar isEditing={editor.isEditing} onToggleEdit={() => editor.setIsEditing(!editor.isEditing)} hasOverrides={editor.hasOverrides} onReset={editor.resetAll} lang={lang} />
         )}
         <div className="spotlight-poster-glow-top"></div>
 
@@ -211,7 +211,7 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
               )}
             </div>
           </div>
-          <EditableText value={editor.getTextOverride('title', getPokemonName(pokeName, 'en'))} onChange={(v) => editor.setTextOverride('title', v)} isEditing={isEditing} as="h2" className="spotlight-poster-title" />
+          <EditableText value={editor.getTextOverride('title', getPokemonName(pokeName, lang))} onChange={(v) => editor.setTextOverride('title', v)} isEditing={isEditing} as="h2" className="spotlight-poster-title" />
         </div>
 
         {/* Main Section */}
@@ -248,11 +248,17 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
             </div>
           </div>
 
-          {/* 2. Active Hour Bonus Card (Moved directly below Pokemon photos) */}
+          {/* 2. Active Hour Bonus Card */}
           <div className="spotlight-bonus-card" style={{ borderColor: bonusInfo.color }}>
             <div className="spotlight-bonus-header">
               <Zap size={16} style={{ color: bonusInfo.color }} />
-              <span>ACTIVE HOUR BONUS</span>
+              <span>
+                <EditableText 
+                  value={editor.getTextOverride('bonusHeader', lang === 'cs' ? 'BONUS AKTIVNÍ HODINY' : 'ACTIVE HOUR BONUS')} 
+                  onChange={(v) => editor.setTextOverride('bonusHeader', v)} 
+                  isEditing={editor.isEditing} 
+                />
+              </span>
             </div>
             <div className="spotlight-bonus-val-box" style={{ backgroundColor: `${bonusInfo.color}18` }}>
               {bonusInfo.iconUrl ? (
@@ -262,14 +268,22 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
               )}
               <EditableText value={editor.getTextOverride('bonusTitle', bonusInfo.title)} onChange={(v) => editor.setTextOverride('bonusTitle', v)} isEditing={editor.isEditing} as="div" className="spotlight-bonus-title" style={{ color: bonusInfo.color }} />
             </div>
-            <EditableText value={editor.getTextOverride('bonusDesc', 'Applies during the entire hour for all caught Pokémon.')} onChange={(v) => editor.setTextOverride('bonusDesc', v)} isEditing={editor.isEditing} as="div" className="spotlight-bonus-desc" />
+            <EditableText 
+              value={editor.getTextOverride('bonusDesc', lang === 'cs' ? 'Platí po celou hodinu pro všechny chycené Pokémony.' : 'Applies during the entire hour for all caught Pokémon.')} 
+              onChange={(v) => editor.setTextOverride('bonusDesc', v)} 
+              isEditing={editor.isEditing} 
+              as="div" 
+              className="spotlight-bonus-desc" 
+            />
           </div>
 
-          {/* 3. Shiny Rate Card (Clean single-line box) */}
+          {/* 3. Shiny Rate Card */}
           <div className="spotlight-shiny-rate-card">
             <Sparkles size={15} style={{ color: '#fbbf24' }} />
             <EditableText 
-              value={editor.getTextOverride('shinyRate', canBeShiny ? 'SHINY RATE: ~1 in 500 (0.2% Chance) ✨' : 'SHINY RATE: Not Available 🚫')} 
+              value={editor.getTextOverride('shinyRate', canBeShiny 
+                ? (lang === 'cs' ? 'ŠANCE NA SHINY: ~1 z 500 (0,2% šance) ✨' : 'SHINY RATE: ~1 in 500 (0.2% Chance) ✨')
+                : (lang === 'cs' ? 'SHINY: Není k dispozici 🚫' : 'SHINY RATE: Not Available 🚫'))} 
               onChange={(v) => editor.setTextOverride('shinyRate', v)} 
               isEditing={editor.isEditing} 
               as="span" 

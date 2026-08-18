@@ -98,7 +98,7 @@ export function getMaxBattleXpReward(eventName: string, isGigantamax: boolean): 
   return '7,500 XP';
 }
 
-export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, isAdmin = false }) => {
+export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, lang = 'en', isAdmin = false }) => {
   const editor = useInfographicEditor(event.eventID, 'max');
   const posterRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
@@ -140,7 +140,7 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, isAdmin =
   const canBeShiny = true;
 
   // Format dates & times cleanly
-  const { dateStr, timeStr, isMultiDay } = formatEventDateRange(event.start, event.end, 'en');
+  const { dateStr, timeStr, isMultiDay } = formatEventDateRange(event.start, event.end, lang);
 
   // Exact Tier MP & XP values
   const mpCost = getMaxBattleMpCost(event.name, isGigantamax);
@@ -190,16 +190,16 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, isAdmin =
       const fontEmbedCSS = await getFontEmbedCSS();
       const rect = posterRef.current.getBoundingClientRect();
       const w = Math.round(rect.width) || posterRef.current.offsetWidth || 480;
-      const h = Math.round(rect.height) || posterRef.current.offsetHeight || 600;
+      const h = Math.round(w * 1.25);
       const dataUrl = await toPng(posterRef.current, { 
         cacheBust: false,
         skipFonts: !fontEmbedCSS,
         fontEmbedCSS: fontEmbedCSS || undefined,
         width: w,
         height: h,
-        canvasWidth: w * 2,
-        canvasHeight: h * 2,
-        pixelRatio: 2,
+        canvasWidth: 1080,
+        canvasHeight: 1350,
+        pixelRatio: 1080 / w,
         backgroundColor: '#0d1117',
         style: {
           width: `${w}px`,
@@ -248,7 +248,7 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, isAdmin =
             onToggleEdit={() => editor.setIsEditing(!editor.isEditing)} 
             hasOverrides={editor.hasOverrides} 
             onReset={editor.resetAll} 
-            lang={'en'} 
+            lang={lang} 
           />
         )}
         <div className="max-poster-glow-top"></div>
@@ -292,7 +292,7 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, isAdmin =
             </div>
           </div>
           <EditableText 
-            value={editor.getTextOverride('title', getPokemonName(bossName, 'en'))} 
+            value={editor.getTextOverride('title', getPokemonName(bossName, lang))} 
             onChange={(v) => editor.setTextOverride('title', v)} 
             isEditing={isEditing} 
             as="h2" 
@@ -344,12 +344,12 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, isAdmin =
             </div>
           </div>
 
-          {/* 2. Event Info Box (Moved directly below Pokemon photos) */}
+          {/* 2. Event Info Box */}
           <div className="max-details-box">
             <div className="max-details-header">
               <Zap size={16} />
               <EditableText 
-                value={editor.getTextOverride('detailsHeader', 'POWER SPOT & MAX PARTICLES')} 
+                value={editor.getTextOverride('detailsHeader', lang === 'cs' ? 'POWER SPOT & MAX PARTICLES' : 'POWER SPOT & MAX PARTICLES')} 
                 onChange={(v) => editor.setTextOverride('detailsHeader', v)} 
                 isEditing={editor.isEditing} 
                 as="span" 
@@ -367,7 +367,7 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, isAdmin =
                 />
                 <div>
                   <EditableText 
-                    value={editor.getTextOverride('mpCostLabel', 'MP COST:')} 
+                    value={editor.getTextOverride('mpCostLabel', lang === 'cs' ? 'CENA V MP:' : 'MP COST:')} 
                     onChange={(v) => editor.setTextOverride('mpCostLabel', v)} 
                     isEditing={editor.isEditing} 
                     className="max-detail-label" 
@@ -384,7 +384,7 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, isAdmin =
               <div className="max-detail-item highlight">
                 <div>
                   <EditableText 
-                    value={editor.getTextOverride('xpRewardLabel', 'XP REWARD:')} 
+                    value={editor.getTextOverride('xpRewardLabel', lang === 'cs' ? 'ODMĚNA XP:' : 'XP REWARD:')} 
                     onChange={(v) => editor.setTextOverride('xpRewardLabel', v)} 
                     isEditing={editor.isEditing} 
                     className="max-detail-label highlight" 
@@ -400,11 +400,13 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, isAdmin =
             </div>
           </div>
 
-          {/* 3. Shiny Rate Card (Single line horizontal box) */}
+          {/* 3. Shiny Rate Card */}
           <div className="max-shiny-rate-card">
             <Sparkles size={15} style={{ color: '#f472b6' }} />
             <EditableText 
-              value={editor.getTextOverride('shinyRateText', canBeShiny ? 'SHINY RATE: ~1 in 500 (0.2% Chance) ✨' : 'SHINY RATE: Not Available 🚫')} 
+              value={editor.getTextOverride('shinyRateText', canBeShiny 
+                ? (lang === 'cs' ? 'ŠANCE NA SHINY: ~1 z 500 (0,2% šance) ✨' : 'SHINY RATE: ~1 in 500 (0.2% Chance) ✨')
+                : (lang === 'cs' ? 'SHINY: Není k dispozici 🚫' : 'SHINY RATE: Not Available 🚫'))} 
               onChange={(v) => editor.setTextOverride('shinyRateText', v)} 
               isEditing={editor.isEditing} 
               as="span" 

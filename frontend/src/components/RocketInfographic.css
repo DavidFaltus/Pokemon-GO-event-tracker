@@ -4,6 +4,7 @@
   align-items: center;
   gap: 16px;
   width: 100%;
+  max-width: 480px;
   margin: 12px 0;
 }
 
@@ -11,7 +12,7 @@
   display: flex;
   justify-content: flex-end;
   width: 100%;
-  max-width: 680px;
+  max-width: 480px;
 }
 
 .rocket-download-btn {
@@ -44,17 +45,21 @@
 .rocket-poster-container {
   position: relative;
   width: 100%;
-  max-width: 680px;
+  max-width: 480px;
   min-width: 0;
+  aspect-ratio: 4 / 5;
   background: #0d1117;
   border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 20px;
-  padding: 24px;
+  padding: 20px 20px 14px;
   color: #f0f6fc;
   font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
   overflow: hidden;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .rocket-poster-glow-top {

@@ -212,12 +212,46 @@ export function getTopCountersForPokemonDetailed(
   }
 
   const topList: CounterPokemonInfo[] = [];
-  const usedDex = new Set<number>();
+  const usedNames = new Set<string>();
 
   for (const item of candidatesToUse) {
-    if (!usedDex.has(item.pokemon.pokedexId)) {
-      usedDex.add(item.pokemon.pokedexId);
+    const cleanName = item.pokemon.name.replace(/^(shadow|mega|primal)\s+/i, '').trim();
+    if (!usedNames.has(cleanName)) {
+      usedNames.add(cleanName);
       topList.push(item);
+      if (topList.length >= limit) break;
+    }
+  }
+
+  // If still less than limit, add from scored allowing variants
+  if (topList.length < limit) {
+    for (const item of scored) {
+      if (!topList.some(existing => existing.pokemon.name === item.pokemon.name)) {
+        topList.push(item);
+        if (topList.length >= limit) break;
+      }
+    }
+  }
+
+  // If still less than limit, fallback to all rankings sorted by PVE score with matching weakness types
+  if (topList.length < limit) {
+    const weaknesses = getWeaknessesForPokemon(targetPokemon.name).map(w => w.toLowerCase().replace(/\s*\([^)]+\)/g, '').trim());
+    const remaining = allRankings
+      .filter(p => {
+        const typeMatch = p.types.some(t => weaknesses.includes(t.toLowerCase()));
+        const moveMatch = weaknesses.includes(p.bestChargedMove?.type?.toLowerCase() || '');
+        return (typeMatch || moveMatch) && !topList.some(existing => existing.pokemon.name === p.name);
+      })
+      .sort((a, b) => (b.pveScore || b.dps || 0) - (a.pveScore || a.dps || 0));
+
+    for (const p of remaining) {
+      topList.push({
+        pokemon: p,
+        counterRating: Math.round(p.pveScore * 1.6),
+        effectiveType: p.bestChargedMove?.type || p.types[0] || 'Normal',
+        defensiveRating: 'neutral',
+        defensiveLabel: '⚔️ Neutrální'
+      });
       if (topList.length >= limit) break;
     }
   }
@@ -530,4 +564,144 @@ export function getWeaknessesForPokemon(bossName: string): string[] {
     return counterInfos.map(c => c.multiplier >= 2 ? `${c.type} (2x)` : c.type);
   }
   return ['Ghost', 'Dark', 'Bug'];
+}
+
+export interface BossRankingInfo {
+  typeRank: number;
+  typeName: string;
+  overallRank: number;
+  pveScore: number;
+  badgeLabelEn: string;
+  badgeLabelCs: string;
+}
+
+/**
+ * Returns accurate attacker tier ranking for any Pokemon (e.g. #1 DRAGON TYPE)
+ * derived directly from pokemonRankings as single source of truth.
+ */
+export function getPokemonRankingInfo(pokemonName: string): BossRankingInfo {
+  const fallbackType = 'Dragon';
+  if (!pokemonName) {
+    return {
+      typeRank: 1,
+      typeName: fallbackType,
+      overallRank: 1,
+      pveScore: 100,
+      badgeLabelEn: '#1 DRAGON TYPE',
+      badgeLabelCs: '#1 DRAČÍ TYP'
+    };
+  }
+
+  const clean = pokemonName.toLowerCase().replace(/^(shadow|mega|primal|apex)\s+/, '').trim();
+  const baseClean = clean.replace(/\s*\([^)]+\)/g, '').trim();
+  const resolvedTypes = getPokemonTypesByName(pokemonName);
+  const primaryType = resolvedTypes[0] || 'Normal';
+
+  const found = pokemonRankings.find(p => p.name.toLowerCase() === pokemonName.toLowerCase())
+    || pokemonRankings.find(p => p.name.toLowerCase() === clean)
+    || pokemonRankings.find(p => p.name.toLowerCase() === baseClean)
+    || pokemonRankings.find(p => p.name.toLowerCase().includes(clean) || clean.includes(p.name.toLowerCase()))
+    || pokemonRankings.find(p => p.name.toLowerCase().includes(baseClean) || baseClean.includes(p.name.toLowerCase()));
+
+  const attackType = found?.bestChargedMove?.type || found?.types[0] || primaryType;
+
+  // Filter unique pokemon by pokedexId for this type to get accurate rank
+  const typeRankingsMap = new Map<number, PokemonRankData>();
+  pokemonRankings
+    .filter(p => p.bestChargedMove?.type === attackType || p.types.includes(attackType))
+    .sort((a, b) => (b.pveScore || b.dps || 0) - (a.pveScore || a.dps || 0))
+    .forEach(p => {
+      if (!typeRankingsMap.has(p.pokedexId)) {
+        typeRankingsMap.set(p.pokedexId, p);
+      }
+    });
+
+  const uniqueTypeList = Array.from(typeRankingsMap.values());
+  const foundPokedexId = found?.pokedexId;
+  const typeIndex = foundPokedexId ? uniqueTypeList.findIndex(p => p.pokedexId === foundPokedexId) : -1;
+  const typeRank = typeIndex >= 0 ? typeIndex + 1 : 1;
+
+  const typeTranslations: Record<string, { en: string; cs: string }> = {
+    Dragon: { en: 'Dragon', cs: 'Dračí' },
+    Fire: { en: 'Fire', cs: 'Ohnivý' },
+    Water: { en: 'Water', cs: 'Vodní' },
+    Grass: { en: 'Grass', cs: 'Travní' },
+    Electric: { en: 'Electric', cs: 'Elektrický' },
+    Ice: { en: 'Ice', cs: 'Ledový' },
+    Fighting: { en: 'Fighting', cs: 'Bojový' },
+    Poison: { en: 'Poison', cs: 'Jedový' },
+    Ground: { en: 'Ground', cs: 'Zemní' },
+    Flying: { en: 'Flying', cs: 'Létající' },
+    Psychic: { en: 'Psychic', cs: 'Psychický' },
+    Bug: { en: 'Bug', cs: 'Hmyzí' },
+    Rock: { en: 'Rock', cs: 'Kamenný' },
+    Ghost: { en: 'Ghost', cs: 'Duchový' },
+    Dark: { en: 'Dark', cs: 'Temný' },
+    Steel: { en: 'Steel', cs: 'Ocelový' },
+    Fairy: { en: 'Fairy', cs: 'Vílí' },
+    Normal: { en: 'Normal', cs: 'Normální' }
+  };
+
+  const typeNameCap = attackType.charAt(0).toUpperCase() + attackType.slice(1).toLowerCase();
+  const trans = typeTranslations[typeNameCap] || { en: typeNameCap, cs: typeNameCap };
+
+  return {
+    typeRank,
+    typeName: typeNameCap,
+    overallRank: 1,
+    pveScore: found?.pveScore || 90,
+    badgeLabelEn: `#${typeRank} ${typeNameCap.toUpperCase()} TYPE`,
+    badgeLabelCs: `#${typeRank} ${trans.cs.toUpperCase()} TYP`
+  };
+}
+
+export interface AccurateRaidCounter {
+  name: string;
+  move: string;
+  types: string[];
+  image: string;
+  rank: number;
+  dps: number;
+  pveScore: number;
+  isTop1?: boolean;
+}
+
+/**
+ * Derives top raid counters directly from pokemonRankings matching boss type weaknesses.
+ */
+export function getAccurateRaidCounters(bossName: string, limit: number = 7): AccurateRaidCounter[] {
+  const clean = bossName.toLowerCase().replace(/^(shadow|mega|primal)\s+/, '').trim();
+  const baseClean = clean.replace(/\s*\([^)]+\)/g, '').trim();
+  const resolvedTypes = getPokemonTypesByName(bossName);
+
+  const targetPoke = pokemonRankings.find(p => p.name.toLowerCase() === clean || p.name.toLowerCase() === baseClean)
+    || pokemonRankings.find(p => p.name.toLowerCase().includes(clean) || clean.includes(p.name.toLowerCase()))
+    || {
+      name: bossName,
+      pokedexId: 9999,
+      types: resolvedTypes,
+      attack: 250, defense: 200, stamina: 200, maxCp: 3800, pveScore: 90, dps: 25,
+      bestFastMove: { name: 'Tackle', type: resolvedTypes[0] || 'Normal' },
+      bestChargedMove: { name: 'Body Slam', type: resolvedTypes[0] || 'Normal' }
+    };
+
+  const detailedCounters = getTopCountersForPokemonDetailed(targetPoke, pokemonRankings, limit, 'resistant');
+
+  return detailedCounters.map((item, idx) => {
+    const poke = item.pokemon;
+    const fast = poke.bestFastMove?.name || '';
+    const charged = poke.bestChargedMove?.name || '';
+    const move = fast && charged ? `${fast} / ${charged}` : (charged || fast || '');
+
+    return {
+      name: poke.name,
+      move,
+      types: poke.types || [item.effectiveType],
+      image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${poke.pokedexId}.png`,
+      rank: idx + 1,
+      dps: poke.dps || 0,
+      pveScore: poke.pveScore || 0,
+      isTop1: idx === 0
+    };
+  });
 }

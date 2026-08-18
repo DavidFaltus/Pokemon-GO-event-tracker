@@ -72,17 +72,20 @@ export async function getFontEmbedCSS(): Promise<string> {
  */
 export function disableTextClipping(node: HTMLElement): () => void {
   const saved: { el: HTMLElement; overflow: string; textOverflow: string }[] = [];
-  const all = [node, ...Array.from(node.querySelectorAll<HTMLElement>('*'))];
-  for (const el of all) {
+  const textElements = Array.from(node.querySelectorAll<HTMLElement>('span, p, h1, h2, h3, h4, h5, h6, strong, em, .editable-text-wrapper, .editable-text-content'));
+  for (const el of textElements) {
     const cs = getComputedStyle(el);
-    if (cs.overflow === 'hidden' || cs.textOverflow === 'ellipsis') {
-      saved.push({
-        el,
-        overflow: el.style.overflow,
-        textOverflow: el.style.textOverflow,
-      });
-      el.style.overflow = 'visible';
-      el.style.textOverflow = 'unset';
+    if (cs.textOverflow === 'ellipsis' || cs.overflow === 'hidden') {
+      // Only apply to elements without children or with only inline children
+      if (el.children.length <= 1) {
+        saved.push({
+          el,
+          overflow: el.style.overflow,
+          textOverflow: el.style.textOverflow,
+        });
+        el.style.overflow = 'visible';
+        el.style.textOverflow = 'unset';
+      }
     }
   }
   return () => {
@@ -96,6 +99,7 @@ export function disableTextClipping(node: HTMLElement): () => void {
 export interface ExportPosterOptions {
   fileName: string;
   pixelRatio?: number;
+  targetWidth?: number;
   backgroundColor?: string;
   onBeforeExport?: () => Promise<void> | void;
   onAfterExport?: () => Promise<void> | void;
@@ -147,24 +151,28 @@ export async function exportPosterToPng(
       } catch {}
     }
 
-    // 3. Get exact pixel dimensions from current layout
+    // 3. Get exact pixel dimensions and compute 4:5 aspect ratio
     const rect = node.getBoundingClientRect();
-    const width = Math.round(rect.width) || node.offsetWidth || 520;
-    const height = Math.round(rect.height) || node.offsetHeight || 650;
-    const pixelRatio = options.pixelRatio ?? 2;
+    const width = Math.round(rect.width) || node.offsetWidth || 480;
+    const height = Math.round(width * 1.25); // Strict 4:5 height calculation
+
+    // Target Instagram standard 1080x1350 resolution
+    const targetWidth = options.targetWidth || 1080;
+    const targetHeight = Math.round(targetWidth * 1.25);
+    const pixelRatio = targetWidth / width;
 
     // 4. Fetch font CSS for embedding
     const fontEmbedCSS = await getFontEmbedCSS();
 
-    // 5. Generate PNG via html-to-image with explicit width/height and font embedding
+    // 5. Generate PNG via html-to-image with explicit 4:5 width/height and font embedding
     const dataUrl = await toPng(node, {
       cacheBust: false,
       skipFonts: !fontEmbedCSS,
       fontEmbedCSS: fontEmbedCSS || undefined,
       width,
       height,
-      canvasWidth: width * pixelRatio,
-      canvasHeight: height * pixelRatio,
+      canvasWidth: targetWidth,
+      canvasHeight: targetHeight,
       pixelRatio,
       backgroundColor: options.backgroundColor || '#090d16',
       style: {

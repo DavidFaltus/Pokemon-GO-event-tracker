@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
-import { Download, Sparkles, Clock, Calendar, Check, ShieldCheck, Swords, Shield, Trophy, Layers, Zap, Users, User, AlertTriangle } from 'lucide-react';
+import { Download, Sparkles, Clock, Calendar, Check, ShieldCheck, Swords, Shield, Trophy, Layers, Zap, Users, User, AlertTriangle, Crown } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
 import { resolveImage, handlePokemonImageError, getBasePokemonNames, fetchImageAsBase64 } from '../utils/imageResolver';
@@ -12,7 +12,7 @@ import { TypeBadge } from './EventCard';
 import { WeatherIcon } from './CounterItem';
 import { pokemonRankings } from '../data/pokemonRankings';
 import { formatEventDateRange } from './MaxInfographic';
-import { getPokemonTypesByName, getWeaknessesForPokemon } from '../utils/pokemonCountersHelper';
+import { getPokemonTypesByName, getWeaknessesForPokemon, getPokemonRankingInfo, getAccurateRaidCounters } from '../utils/pokemonCountersHelper';
 import { getBossDifficultyInfo } from './RaidDifficultyBox';
 import { useInfographicEditor } from '../hooks/useInfographicEditor';
 import { EditableText, EditableImage, EditToolbar } from './InfographicEditable';
@@ -162,61 +162,11 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
   // Primary Boss Element Types for Title Badges
   const primaryBossTypes = getPokemonTypesByName(primaryBossName);
 
-  // Assemble Top 7 Counters
-  const getTopCounters = () => {
-    const rawList = [
-      ...(countersData?.megaCounters || []),
-      ...(countersData?.advancedCounters || []),
-      ...(countersData?.budgetCounters || [])
-    ];
+  // Attacker Tier Ranking Info (e.g. #1 DRAGON ATTACKER) from pokemonRankings
+  const bossRankingInfo = getPokemonRankingInfo(primaryBossName);
 
-    const unique = Array.from(new Set(rawList));
-    const parsed = unique.map((item) => {
-      const match = item.match(/^([^(]+)(?:\(([^)]+)\))?/);
-      const name = match ? match[1].trim() : item;
-      const move = match && match[2] ? match[2].trim() : '';
-      const types = getPokemonTypesByName(name);
-      return {
-        raw: item,
-        name,
-        move,
-        types,
-        image: getPokemonImage(name)
-      };
-    });
-
-    if (parsed.length >= 7) {
-      return parsed.slice(0, 7);
-    }
-
-    const weaknessesLower = weaknessesList.map(w => w.toLowerCase().replace(/\s*\(\d+x\)/g, '').trim());
-
-    const rankedCandidates = pokemonRankings
-      .filter(p => {
-        const fastMatch = weaknessesLower.includes(p.bestFastMove?.type?.toLowerCase() || '');
-        const chargedMatch = weaknessesLower.includes(p.bestChargedMove?.type?.toLowerCase() || '');
-        const typeMatch = p.types.some(t => weaknessesLower.includes(t.toLowerCase()));
-        return fastMatch || chargedMatch || typeMatch;
-      })
-      .sort((a, b) => (b.pveScore || b.dps || 0) - (a.pveScore || a.dps || 0));
-
-    for (const p of rankedCandidates) {
-      if (parsed.length >= 7) break;
-      if (!parsed.some(existing => existing.name.toLowerCase() === p.name.toLowerCase())) {
-        parsed.push({
-          raw: p.name,
-          name: p.name,
-          move: `${p.bestFastMove?.name || ''} / ${p.bestChargedMove?.name || ''}`,
-          types: p.types || ['Normal'],
-          image: getPokemonImage(p.name)
-        });
-      }
-    }
-
-    return parsed.slice(0, 7);
-  };
-
-  const topCountersList = getTopCounters();
+  // Assemble Top 7 Counters directly from pokemonRankings as Single Source of Truth
+  const topCountersList = getAccurateRaidCounters(primaryBossName, 7);
 
   // Format dates for Slide 1 (Raid Rotation)
   const { dateStr, timeStr } = formatEventDateRange(event.start, event.end, 'en');
@@ -287,7 +237,7 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
     const fontEmbedCSS = await getFontEmbedCSS();
     const rect = posterRef.current.getBoundingClientRect();
     const w = Math.round(rect.width) || posterRef.current.offsetWidth || 480;
-    const h = Math.round(rect.height) || posterRef.current.offsetHeight || 600;
+    const h = Math.round(w * 1.25);
 
     const dataUrl = await toPng(posterRef.current, { 
       cacheBust: false,
@@ -295,9 +245,9 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
       fontEmbedCSS: fontEmbedCSS || undefined,
       width: w,
       height: h,
-      canvasWidth: w * 2,
-      canvasHeight: h * 2,
-      pixelRatio: 2,
+      canvasWidth: 1080,
+      canvasHeight: 1350,
+      pixelRatio: 1080 / w,
       backgroundColor: '#0d1117',
       style: {
         width: `${w}px`,
@@ -399,21 +349,21 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
                 className={`slide-tab-btn ${activeSlide === 1 ? 'active' : ''}`}
                 onClick={() => setActiveSlide(1)}
               >
-                1. Raid Rotation
+                {lang === 'cs' ? '1. Raidová rotace' : '1. Raid Rotation'}
               </button>
               <button
                 type="button"
                 className={`slide-tab-btn ${activeSlide === 2 ? 'active' : ''}`}
                 onClick={() => setActiveSlide(2)}
               >
-                2. Raid Hour
+                {lang === 'cs' ? '2. Raid Hour' : '2. Raid Hour'}
               </button>
               <button
                 type="button"
                 className={`slide-tab-btn ${activeSlide === 3 ? 'active' : ''}`}
                 onClick={() => setActiveSlide(3)}
               >
-                3. Top Counters
+                {lang === 'cs' ? '3. Nejlepší countery' : '3. Top Counters'}
               </button>
             </div>
           )}
@@ -431,9 +381,17 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
         <div className="raid-poster-header">
           <div className="raid-header-top-row">
             <div className="raid-poster-badge">
-              <Swords size={13} className="raid-swords-icon" />
+              <Swords size={14} className="raid-swords-icon" />
               <span>
-                <EditableText value={editor.getTextOverride(`slide${activeSlide}_badge`, activeSlide === 1 ? 'RAID ROTATION' : activeSlide === 2 ? 'RAID HOUR' : 'TOP COUNTERS')} onChange={(v) => editor.setTextOverride(`slide${activeSlide}_badge`, v)} isEditing={isEditing} />
+                <EditableText 
+                  value={editor.getTextOverride(`slide${activeSlide}_badge`, activeSlide === 1 
+                    ? (lang === 'cs' ? 'RAIDOVÁ ROTACE' : 'RAID ROTATION') 
+                    : activeSlide === 2 
+                    ? 'RAID HOUR' 
+                    : (lang === 'cs' ? 'NEJLEPŠÍ COUNTERY' : 'TOP COUNTERS'))} 
+                  onChange={(v) => editor.setTextOverride(`slide${activeSlide}_badge`, v)} 
+                  isEditing={isEditing} 
+                />
               </span>
             </div>
 
@@ -476,11 +434,21 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
           </div>
 
           <h2 className="raid-poster-title flex-title-row">
-            <span className="boss-title-text">
-              <EditableText value={editor.getTextOverride(`slide${activeSlide}_title`, isCombined && bossesList.length > 1 
-                  ? bossesList.map(b => getPokemonName(b.name, 'en')).join(' • ')
-                  : getPokemonName(primaryBossName, 'en'))} onChange={(v) => editor.setTextOverride(`slide${activeSlide}_title`, v)} isEditing={isEditing} />
-            </span>
+            <div className="title-left-group">
+              {activeSlide === 3 && (
+                <img
+                  src={resolveImage(activeBoss.image, event.eventType, primaryBossName, false)}
+                  alt={primaryBossName}
+                  className="header-counter-target-sprite"
+                  onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, primaryBossName, false)}
+                />
+              )}
+              <span className="boss-title-text">
+                <EditableText value={editor.getTextOverride(`slide${activeSlide}_title`, isCombined && bossesList.length > 1 
+                    ? bossesList.map(b => getPokemonName(b.name, lang)).join(' • ')
+                    : getPokemonName(primaryBossName, lang))} onChange={(v) => editor.setTextOverride(`slide${activeSlide}_title`, v)} isEditing={isEditing} />
+              </span>
+            </div>
             <span className="title-type-badges">
               {primaryBossTypes.map((t) => (
                 <TypeIconOnly key={t} typeStr={t} />
@@ -492,6 +460,22 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
         {/* SLIDE 1: RAID ROTATION (Displays 2 top, 1 bottom for 3 bosses with names above sprites) */}
         {activeSlide === 1 && (
           <div className="slide-content-block slide1">
+            {/* Attacker Tier Ranking Badge (e.g. #1 DRAGON ATTACKER) */}
+            {bossRankingInfo && (
+              <div className="slide1-rank-pill-container">
+                <div className="slide1-rank-pill">
+                  <Crown size={13} className="rank-crown-icon" />
+                  <span>
+                    <EditableText
+                      value={editor.getTextOverride('slide1_rank_badge', lang === 'cs' ? bossRankingInfo.badgeLabelCs : bossRankingInfo.badgeLabelEn)}
+                      onChange={(v) => editor.setTextOverride('slide1_rank_badge', v)}
+                      isEditing={editor.isEditing}
+                    />
+                  </span>
+                </div>
+              </div>
+            )}
+
             <div className={`slide1-bosses-expanded ${isCombined && bossesList.length === 3 ? 'multi-3-grid' : isCombined && bossesList.length === 2 ? 'multi-2-grid' : ''}`}>
               {(isCombined ? bossesList : [activeBoss]).map((boss, idx) => {
                 const count = isCombined ? bossesList.length : 1;
@@ -502,7 +486,7 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
                     {/* Name ABOVE the sprite pair */}
                     {count > 1 && (
                       <span className="boss-individual-name">
-                        <EditableText value={editor.getTextOverride(`slide1_boss_name_${idx}`, getPokemonName(boss.name, 'en'))} onChange={(v) => editor.setTextOverride(`slide1_boss_name_${idx}`, v)} isEditing={editor.isEditing} />
+                        <EditableText value={editor.getTextOverride(`slide1_boss_name_${idx}`, getPokemonName(boss.name, lang))} onChange={(v) => editor.setTextOverride(`slide1_boss_name_${idx}`, v)} isEditing={editor.isEditing} />
                       </span>
                     )}
 
@@ -594,7 +578,7 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
                     <div key={idx} className="max-sprite-card-item">
                       {count > 1 && (
                         <span className="boss-individual-name">
-                          <EditableText value={editor.getTextOverride(`slide2_boss_name_${idx}`, getPokemonName(boss.name, 'en'))} onChange={(v) => editor.setTextOverride(`slide2_boss_name_${idx}`, v)} isEditing={editor.isEditing} />
+                          <EditableText value={editor.getTextOverride(`slide2_boss_name_${idx}`, getPokemonName(boss.name, lang))} onChange={(v) => editor.setTextOverride(`slide2_boss_name_${idx}`, v)} isEditing={editor.isEditing} />
                         </span>
                       )}
                       <div className="max-sprite-pair-flex">
@@ -612,14 +596,14 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
             {/* Unified CP Box */}
             <div className="unified-cp-box">
               <div className="cp-box-title">
-                <Shield size={14} />
-                <span><EditableText value={editor.getTextOverride('slide2_cp_title', "ENCOUNTER CP RANGES")} onChange={(v) => editor.setTextOverride('slide2_cp_title', v)} isEditing={editor.isEditing} /></span>
+                <Shield size={13} />
+                <span><EditableText value={editor.getTextOverride('slide2_cp_title', lang === 'cs' ? 'ROZSAH CP PŘI CHYCENÍ' : 'ENCOUNTER CP RANGES')} onChange={(v) => editor.setTextOverride('slide2_cp_title', v)} isEditing={editor.isEditing} /></span>
               </div>
 
               <div className="cp-unified-rows">
                 <div className="cp-line-item">
                   <span className="cp-line-label">
-                    <EditableText value={editor.getTextOverride('slide2_cp_normal_label', "Normal Encounter (Lvl 20):")} onChange={(v) => editor.setTextOverride('slide2_cp_normal_label', v)} isEditing={editor.isEditing} />
+                    <EditableText value={editor.getTextOverride('slide2_cp_normal_label', lang === 'cs' ? 'Běžné (Lvl 20):' : 'Normal (Lvl 20):')} onChange={(v) => editor.setTextOverride('slide2_cp_normal_label', v)} isEditing={editor.isEditing} />
                   </span>
                   <div className="cp-line-val">
                     <EditableText value={editor.getTextOverride('slide2_cp_normal_val', `CP ${minCp.toLocaleString()} – `)} onChange={(v) => editor.setTextOverride('slide2_cp_normal_val', v)} isEditing={editor.isEditing} />
@@ -631,7 +615,7 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
 
                 <div className="cp-line-item boost">
                   <span className="cp-line-label boost">
-                    <EditableText value={editor.getTextOverride('slide2_cp_boost_label', "Weather Boosted (Lvl 25):")} onChange={(v) => editor.setTextOverride('slide2_cp_boost_label', v)} isEditing={editor.isEditing} />
+                    <EditableText value={editor.getTextOverride('slide2_cp_boost_label', lang === 'cs' ? 'Počasí (Lvl 25):' : 'Boosted (Lvl 25):')} onChange={(v) => editor.setTextOverride('slide2_cp_boost_label', v)} isEditing={editor.isEditing} />
                   </span>
                   <div className="cp-line-val">
                     <EditableText value={editor.getTextOverride('slide2_cp_boost_val', `CP ${minBoostedCp.toLocaleString()} – `)} onChange={(v) => editor.setTextOverride('slide2_cp_boost_val', v)} isEditing={editor.isEditing} />
@@ -643,7 +627,7 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
 
                 <div className="cp-line-item weather-row">
                   <span className="cp-line-label">
-                    <EditableText value={editor.getTextOverride('slide2_weather_label', "Boosted by:")} onChange={(v) => editor.setTextOverride('slide2_weather_label', v)} isEditing={editor.isEditing} />
+                    <EditableText value={editor.getTextOverride('slide2_weather_label', lang === 'cs' ? 'Počasí:' : 'Boosted by:')} onChange={(v) => editor.setTextOverride('slide2_weather_label', v)} isEditing={editor.isEditing} />
                   </span>
                   <div className="weather-icons-flex">
                     {weatherBoostsList.map((w, idx) => (
@@ -655,48 +639,108 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
             </div>
 
             <div className="slide2-shiny-rate-card">
-              <Sparkles size={15} style={{ color: '#fbbf24' }} />
+              <Sparkles size={14} style={{ color: '#fbbf24' }} />
               <span className="shiny-card-single-text">
-                <EditableText value={editor.getTextOverride('slide2_shiny_rate_text', "SHINY RATE: ")} onChange={(v) => editor.setTextOverride('slide2_shiny_rate_text', v)} isEditing={editor.isEditing} />
+                <EditableText value={editor.getTextOverride('slide2_shiny_rate_text', lang === 'cs' ? 'ŠANCE NA SHINY: ' : 'SHINY RATE: ')} onChange={(v) => editor.setTextOverride('slide2_shiny_rate_text', v)} isEditing={editor.isEditing} />
                 <strong>
-                  <EditableText value={editor.getTextOverride('slide2_shiny_rate_val', "~1 in 20 (5% Chance) ✨")} onChange={(v) => editor.setTextOverride('slide2_shiny_rate_val', v)} isEditing={editor.isEditing} />
+                  <EditableText value={editor.getTextOverride('slide2_shiny_rate_val', lang === 'cs' ? '~1 z 20 (5% šance) ✨' : '~1 in 20 (5% Chance) ✨')} onChange={(v) => editor.setTextOverride('slide2_shiny_rate_val', v)} isEditing={editor.isEditing} />
                 </strong>
               </span>
             </div>
           </div>
         )}
 
-        {/* SLIDE 3: TOP COUNTERS (Perfect Fit 7-Counter Grid, No Overflow) */}
+        {/* SLIDE 3: TOP COUNTERS (Top 7 Counters Centered, Equal Height, Single Source of Truth) */}
         {activeSlide === 3 && (
           <div className="slide-content-block slide3">
             <div className="slide3-counters-grid-7">
-              {topCountersList.map((counter, idx) => (
-                <div key={idx} className={`slide3-counter-card ${idx === 0 ? 'top-1-winner' : ''}`}>
-                  {idx === 0 && (
-                    <div className="top-1-ribbon">
-                      <Trophy size={11} /> TOP 1 COUNTER
-                    </div>
+              {topCountersList.slice(0, 7).map((counter, idx) => (
+                <div key={idx} className={`slide3-counter-card-7 ${idx === 0 ? 'top-1-winner' : ''}`}>
+                  {idx === 0 ? (
+                    <>
+                      <div className="top-1-ribbon">
+                        <Crown size={11} className="ribbon-crown-icon" />
+                        <span>
+                          <EditableText
+                            value={editor.getTextOverride('slide3_top1_ribbon_text', 'TOP 1 COUNTER')}
+                            onChange={(v) => editor.setTextOverride('slide3_top1_ribbon_text', v)}
+                            isEditing={editor.isEditing}
+                          />
+                        </span>
+                      </div>
+                      <div className="top-1-inner-flex">
+                        <div className="counter-img-wrapper-7 top1-img-wrapper">
+                          <EditableImage
+                            src={editor.getImageOverride(`slide3_counter_img_${idx}`, counter.image)}
+                            alt={counter.name}
+                            onChange={(url) => editor.setImageOverride(`slide3_counter_img_${idx}`, url)}
+                            isEditing={editor.isEditing}
+                            className="counter-img-top1"
+                            onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, counter.name)}
+                          />
+                        </div>
+                        <div className="counter-body-centered top1-body">
+                          <span className="counter-title-7">
+                            <EditableText
+                              value={editor.getTextOverride(`slide3_counter_name_${idx}`, getPokemonName(counter.name, lang))}
+                              onChange={(v) => editor.setTextOverride(`slide3_counter_name_${idx}`, v)}
+                              isEditing={editor.isEditing}
+                            />
+                          </span>
+                          {counter.move && (
+                            <span className="counter-attack-7">
+                              <EditableText
+                                value={editor.getTextOverride(`slide3_counter_move_${idx}`, counter.move)}
+                                onChange={(v) => editor.setTextOverride(`slide3_counter_move_${idx}`, v)}
+                                isEditing={editor.isEditing}
+                              />
+                            </span>
+                          )}
+                          <div className="counter-element-badges-centered">
+                            {counter.types.map((t) => (
+                              <TypeBadge key={t} typeStr={t} lang={lang} />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="counter-img-wrapper-7">
+                        <EditableImage
+                          src={editor.getImageOverride(`slide3_counter_img_${idx}`, counter.image)}
+                          alt={counter.name}
+                          onChange={(url) => editor.setImageOverride(`slide3_counter_img_${idx}`, url)}
+                          isEditing={editor.isEditing}
+                          className="counter-img-normal"
+                          onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, counter.name)}
+                        />
+                      </div>
+                      <div className="counter-body-centered">
+                        <span className="counter-title-7">
+                          <EditableText
+                            value={editor.getTextOverride(`slide3_counter_name_${idx}`, getPokemonName(counter.name, lang))}
+                            onChange={(v) => editor.setTextOverride(`slide3_counter_name_${idx}`, v)}
+                            isEditing={editor.isEditing}
+                          />
+                        </span>
+                        {counter.move && (
+                          <span className="counter-attack-7">
+                            <EditableText
+                              value={editor.getTextOverride(`slide3_counter_move_${idx}`, counter.move)}
+                              onChange={(v) => editor.setTextOverride(`slide3_counter_move_${idx}`, v)}
+                              isEditing={editor.isEditing}
+                            />
+                          </span>
+                        )}
+                        <div className="counter-element-badges-centered">
+                          {counter.types.map((t) => (
+                            <TypeBadge key={t} typeStr={t} lang={lang} />
+                          ))}
+                        </div>
+                      </div>
+                    </>
                   )}
-
-                  <div className="counter-img-wrapper">
-                    <EditableImage src={editor.getImageOverride(`slide3_counter_img_${idx}`, counter.image)} alt={counter.name} onChange={(url) => editor.setImageOverride(`slide3_counter_img_${idx}`, url)} isEditing={editor.isEditing} className="counter-img" onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, counter.name)} />
-                  </div>
-
-                  <div className="counter-body">
-                    <span className="counter-title">
-                      <EditableText value={editor.getTextOverride(`slide3_counter_name_${idx}`, counter.name)} onChange={(v) => editor.setTextOverride(`slide3_counter_name_${idx}`, v)} isEditing={editor.isEditing} />
-                    </span>
-                    {counter.move && (
-                      <span className="counter-attack">
-                        <EditableText value={editor.getTextOverride(`slide3_counter_move_${idx}`, counter.move)} onChange={(v) => editor.setTextOverride(`slide3_counter_move_${idx}`, v)} isEditing={editor.isEditing} />
-                      </span>
-                    )}
-                    <div className="counter-element-badges">
-                      {counter.types.map((t) => (
-                        <TypeBadge key={t} typeStr={t} lang="en" />
-                      ))}
-                    </div>
-                  </div>
                 </div>
               ))}
             </div>

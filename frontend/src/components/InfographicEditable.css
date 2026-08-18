@@ -330,19 +330,9 @@ textarea.editable-text-input {
   display: none !important;
 }
 
-.is-exporting .edit-toolbar {
+/* ── Export: hide edit UI elements during export ── */
+.is-exporting .edit-toolbar,
+.is-exporting .editable-image-badge,
+.is-exporting .image-edit-overlay {
   display: none !important;
-}
-
-/* ── Export: prevent text truncation ─────────────────────────────────────────
-   html-to-image renders the DOM clone inside an SVG foreignObject where
-   text metrics can differ slightly from the live DOM (even with embedded
-   fonts). Elements with overflow:hidden + text-overflow:ellipsis would
-   silently clip text (e.g. "Day" vanishing from "Nickit Community Day").
-   We disable overflow clipping on ALL descendants during export to ensure
-   the exported PNG matches the preview exactly. */
-.is-exporting,
-.is-exporting * {
-  overflow: visible !important;
-  text-overflow: unset !important;
 }

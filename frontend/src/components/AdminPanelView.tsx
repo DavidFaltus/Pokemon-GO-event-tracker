@@ -2644,12 +2644,14 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
                 </div>
 
                 {socialSelectedEvent ? (
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', gap: '20px', alignItems: 'start' }}>
                     {/* Left Column: Interactive Event Infographic Generator */}
-                    <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <h4 style={{ margin: '0 0 4px 0', fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-color)' }}>
-                        {lang === 'cs' ? '📸 Generátor & Náhled Infografiky Události' : '📸 Live Interactive Event Infographic'}
-                      </h4>
+                    <div style={{ background: 'rgba(0,0,0,0.3)', padding: '16px', borderRadius: '12px', border: '1px solid var(--border-color)', display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', minWidth: 0, overflow: 'hidden' }}>
+                      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h4 style={{ margin: '0 0 4px 0', fontSize: '0.95rem', fontWeight: 700, color: 'var(--accent-color)' }}>
+                          {lang === 'cs' ? '📸 Generátor & Náhled Infografiky Události (4:5)' : '📸 Live Event Infographic Generator (4:5)'}
+                        </h4>
+                      </div>
                       
                       {(() => {
                         const type = socialSelectedEvent.eventType;

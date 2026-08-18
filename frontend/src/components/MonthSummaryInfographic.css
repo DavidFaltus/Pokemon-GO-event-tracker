@@ -93,14 +93,14 @@
 
 /* Poster Container */
 .month-summary-poster {
-  width: 480px;
-  min-width: 480px;
+  width: 100%;
   max-width: 480px;
-  min-height: 600px;
+  min-width: 0;
+  aspect-ratio: 4 / 5;
   background: #090d16;
-  border-radius: 16px;
+  border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 24px 20px;
+  padding: 18px 18px 14px;
   color: #fff;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
   font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
