@@ -25,7 +25,7 @@ import {
   loadEventDetailsCache,
   saveEventDetailsCache
 } from './storage';
-import { generateBotHtml } from './ssr';
+import { generateBotHtml, generate404Html, RouteTarget, Language } from './ssr';
 
 // Simple in-memory rate limiter
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -1203,21 +1203,94 @@ app.get('*', async (req, res, next) => {
   const userAgent = req.headers['user-agent'];
   console.log(`[Request] Serving route: ${req.path} (UA: ${userAgent || 'Unknown'})`);
 
+  // 1. Determine language
+  let lang: Language = 'cs';
+  let cleanPath = req.path;
+  const langMatch = req.path.match(/^\/(cs|en|ja|ru)(\/.*)?$/i);
+  if (langMatch) {
+    lang = langMatch[1].toLowerCase() as Language;
+    cleanPath = langMatch[2] || '';
+  }
+
+  // Normalize cleanPath
+  cleanPath = cleanPath.replace(/\/+$/, '');
+  if (!cleanPath) cleanPath = '/';
+
+  // 2. Disallow invalid/broken characters (e.g. /$, /undefined, /null)
+  if (cleanPath === '/$' || cleanPath.includes('undefined') || cleanPath.includes('null')) {
+    return res.status(404).send(generate404Html(lang));
+  }
+
+  // 3. Resolve Target Route
+  let target: RouteTarget | null = null;
+
+  if (cleanPath === '/' || cleanPath === '/events') {
+    target = { type: 'events', lang, canonicalPath: `/${lang}/events` };
+  } else if (cleanPath.startsWith('/events/')) {
+    const eventSlug = cleanPath.replace('/events/', '').trim();
+    if (eventSlug && !eventSlug.includes('/')) {
+      target = { type: 'event-detail', lang, canonicalPath: `/${lang}/events/${eventSlug}`, param: eventSlug };
+    }
+  } else if (cleanPath === '/pokemon' || cleanPath === '/rankings') {
+    target = { type: 'rankings', lang, canonicalPath: `/${lang}/rankings` };
+  } else if (cleanPath.startsWith('/pokemon/')) {
+    const pokeId = cleanPath.replace('/pokemon/', '').trim();
+    const num = parseInt(pokeId, 10);
+    // Valid Pokédex ID is 1 to 1025
+    if (!isNaN(num) && num >= 1 && num <= 1025) {
+      target = { type: 'pokemon-detail', lang, canonicalPath: `/${lang}/pokemon/${num}`, param: num.toString() };
+    } else if (/^[a-zA-Z0-9-]+$/.test(pokeId)) {
+      target = { type: 'pokemon-detail', lang, canonicalPath: `/${lang}/pokemon/${pokeId}`, param: pokeId };
+    }
+  } else if (cleanPath.startsWith('/rankings/')) {
+    const cat = cleanPath.replace('/rankings/', '').trim();
+    if (cat && !cat.includes('/')) {
+      target = { type: 'ranking-category', lang, canonicalPath: `/${lang}/rankings/${cat}`, param: cat };
+    }
+  } else if (cleanPath.startsWith('/types/')) {
+    const typeSlug = cleanPath.replace('/types/', '').trim().toLowerCase();
+    const validTypes = ['normal', 'fire', 'water', 'grass', 'electric', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'steel', 'dark', 'fairy'];
+    if (validTypes.includes(typeSlug)) {
+      target = { type: 'types', lang, canonicalPath: `/${lang}/types/${typeSlug}`, param: typeSlug };
+    }
+  } else if (cleanPath === '/raids') {
+    target = { type: 'raids', lang, canonicalPath: `/${lang}/raids` };
+  } else if (cleanPath.startsWith('/raids/')) {
+    const raidSlug = cleanPath.replace('/raids/', '').trim();
+    if (raidSlug && !raidSlug.includes('/')) {
+      target = { type: 'raid-counters', lang, canonicalPath: `/${lang}/raids/${raidSlug}`, param: raidSlug };
+    }
+  } else if (cleanPath === '/rocket') {
+    target = { type: 'rocket', lang, canonicalPath: `/${lang}/rocket` };
+  } else if (cleanPath.startsWith('/rocket/')) {
+    const leader = cleanPath.replace('/rocket/', '').trim().toLowerCase();
+    if (['giovanni', 'cliff', 'sierra', 'arlo', 'grunts'].includes(leader)) {
+      target = { type: 'rocket-leader', lang, canonicalPath: `/${lang}/rocket/${leader}`, param: leader };
+    }
+  } else if (cleanPath === '/guides') {
+    target = { type: 'guides', lang, canonicalPath: `/${lang}/guides` };
+  } else if (cleanPath.startsWith('/guides/')) {
+    const guideSlug = cleanPath.replace('/guides/', '').trim();
+    if (guideSlug && !guideSlug.includes('/')) {
+      target = { type: 'guide-detail', lang, canonicalPath: `/${lang}/guides/${guideSlug}`, param: guideSlug };
+    }
+  } else if (cleanPath === '/ditto') {
+    target = { type: 'ditto', lang, canonicalPath: `/${lang}/ditto` };
+  } else if (cleanPath === '/eggs') {
+    target = { type: 'eggs', lang, canonicalPath: `/${lang}/eggs` };
+  } else if (cleanPath === '/filter') {
+    target = { type: 'filter', lang, canonicalPath: `/${lang}/filter` };
+  } else if (cleanPath === '/download' || cleanPath === '/app' || cleanPath === '/apk') {
+    target = { type: 'download', lang, canonicalPath: `/${lang}/download` };
+  }
+
+  // 4. If route is completely unknown / invalid -> Return strict 404!
+  if (!target) {
+    console.warn(`[Route 404] Unknown route requested: ${req.path}`);
+    return res.status(404).send(generate404Html(lang));
+  }
+
   try {
-    // Determine language from path
-    let lang: 'cs' | 'en' | 'ja' | 'ru' = 'cs';
-    const match = req.path.match(/^\/(cs|en|ja|ru)\b/i);
-    if (match) {
-      lang = match[1].toLowerCase() as any;
-    }
-
-    // Check for target event ID in path (e.g. /en/events/starmie-super-mega-raid-day-2026)
-    let targetEventId: string | undefined;
-    const eventMatch = req.path.match(/\/events\/([^/]+)/i);
-    if (eventMatch && eventMatch[1]) {
-      targetEventId = eventMatch[1];
-    }
-
     // Fetch dynamic content
     const [events, raids, rocket] = await Promise.all([
       getEnrichedEventsList(false).catch(() => []),
@@ -1225,13 +1298,22 @@ app.get('*', async (req, res, next) => {
       getRocketLineupsList(false).catch(() => [])
     ]);
 
+    // If event detail requested but event does not exist -> 404
+    if (target.type === 'event-detail' && target.param) {
+      const exists = events.some(e => e.eventID === target?.param);
+      if (!exists) {
+        console.warn(`[Event 404] Event not found: ${target.param}`);
+        return res.status(404).send(generate404Html(lang));
+      }
+    }
+
     // Helper to fetch details from cache (fresh or stale)
     const getDetails = (eventId: string) => {
       return getFromCache<any>(`details_${eventId}`, 24 * 60 * 60 * 1000) || getStaleCache<any>(`details_${eventId}`);
     };
 
-    // Generate pre-rendered HTML
-    let html = await generateBotHtml(lang, events, raids, rocket, getDetails, targetEventId);
+    // Generate pre-rendered HTML with exact canonical and matching hreflangs
+    let html = await generateBotHtml(target, events, raids, rocket, getDetails);
 
     // If client is a standard browser, attempt to inject the client JS bundle from SPA shell
     try {
@@ -1248,14 +1330,7 @@ app.get('*', async (req, res, next) => {
     return res.status(200).send(html);
   } catch (err: any) {
     console.error('[SSR Route Error] Failed to generate pre-rendered HTML:', err.message);
-    try {
-      const html = await getSpaShell();
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate, s-maxage=300, stale-while-revalidate=86400');
-      return res.status(200).send(html);
-    } catch (fallbackErr) {
-      return res.status(500).send('Internal Server Error');
-    }
+    return res.status(404).send(generate404Html(lang));
   }
 });
 

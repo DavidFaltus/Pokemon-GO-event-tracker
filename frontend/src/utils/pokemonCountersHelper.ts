@@ -1,6 +1,7 @@
 import { pokemonRankings } from '../data/pokemonRankings';
 import type { PokemonRankData, MoveData } from '../data/pokemonRankings';
 import { findRaidCounters } from '../data/raidCounters';
+import { isPokemonReleasedInGo } from './pokemonReleaseHelper';
 
 // ─── LEGACY / ELITE TM MOVES ────────────────────────────────────────────────
 export const LEGACY_MOVES = new Set<string>([
@@ -566,18 +567,58 @@ export function getWeaknessesForPokemon(bossName: string): string[] {
   return ['Ghost', 'Dark', 'Bug'];
 }
 
-export interface BossRankingInfo {
+export interface BossTypeRankItem {
   typeRank: number;
   typeName: string;
-  overallRank: number;
-  pveScore: number;
+  typeSlug: string;
   badgeLabelEn: string;
   badgeLabelCs: string;
 }
 
+export interface BossRankingInfo {
+  typeRank: number;
+  typeName: string;
+  typeSlug: string;
+  overallRank: number;
+  pveScore: number;
+  badgeLabelEn: string;
+  badgeLabelCs: string;
+  topTypeRanks: BossTypeRankItem[];
+}
+
+const ALL_POKEMON_TYPES = [
+  'Normal', 'Fire', 'Water', 'Grass', 'Electric', 'Ice',
+  'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug',
+  'Rock', 'Ghost', 'Dragon', 'Steel', 'Dark', 'Fairy'
+];
+
+const TYPE_TRANSLATIONS: Record<string, { en: string; cs: string }> = {
+  Dragon: { en: 'Dragon', cs: 'Dračí' },
+  Fire: { en: 'Fire', cs: 'Ohnivý' },
+  Water: { en: 'Water', cs: 'Vodní' },
+  Grass: { en: 'Grass', cs: 'Travní' },
+  Electric: { en: 'Electric', cs: 'Elektrický' },
+  Ice: { en: 'Ice', cs: 'Ledový' },
+  Fighting: { en: 'Fighting', cs: 'Bojový' },
+  Poison: { en: 'Poison', cs: 'Jedový' },
+  Ground: { en: 'Ground', cs: 'Zemní' },
+  Flying: { en: 'Flying', cs: 'Létající' },
+  Psychic: { en: 'Psychic', cs: 'Psychický' },
+  Bug: { en: 'Bug', cs: 'Hmyzí' },
+  Rock: { en: 'Rock', cs: 'Kamenný' },
+  Ghost: { en: 'Ghost', cs: 'Duchový' },
+  Dark: { en: 'Dark', cs: 'Temný' },
+  Steel: { en: 'Steel', cs: 'Ocelový' },
+  Fairy: { en: 'Fairy', cs: 'Vílí' },
+  Normal: { en: 'Normal', cs: 'Normální' }
+};
+
+import { calculateDialgaDexMetrics } from './dialgaDexCalculator';
+
 /**
- * Returns accurate attacker tier ranking for any Pokemon (e.g. #1 DRAGON TYPE)
+ * Returns accurate attacker tier ranking for any Pokemon (e.g. #1 DRAGON ATTACKER)
  * derived directly from pokemonRankings as single source of truth.
+ * Supports returning multiple top-10 ranks (max 3).
  */
 export function getPokemonRankingInfo(pokemonName: string): BossRankingInfo {
   const fallbackType = 'Dragon';
@@ -585,10 +626,18 @@ export function getPokemonRankingInfo(pokemonName: string): BossRankingInfo {
     return {
       typeRank: 1,
       typeName: fallbackType,
+      typeSlug: 'dragon',
       overallRank: 1,
       pveScore: 100,
-      badgeLabelEn: '#1 DRAGON TYPE',
-      badgeLabelCs: '#1 DRAČÍ TYP'
+      badgeLabelEn: '#1 DRAGON ATTACKER',
+      badgeLabelCs: '#1 DRAČÍ ÚTOČNÍK',
+      topTypeRanks: [{
+        typeRank: 1,
+        typeName: fallbackType,
+        typeSlug: 'dragon',
+        badgeLabelEn: '#1 DRAGON ATTACKER',
+        badgeLabelCs: '#1 DRAČÍ ÚTOČNÍK'
+      }]
     };
   }
 
@@ -597,61 +646,119 @@ export function getPokemonRankingInfo(pokemonName: string): BossRankingInfo {
   const resolvedTypes = getPokemonTypesByName(pokemonName);
   const primaryType = resolvedTypes[0] || 'Normal';
 
+  const isShadow = /^shadow\b/i.test(pokemonName);
+  const isMega = /^mega\b/i.test(pokemonName);
+  const isPrimal = /^primal\b/i.test(pokemonName);
+
+  // Find exact match first, then base match
   const found = pokemonRankings.find(p => p.name.toLowerCase() === pokemonName.toLowerCase())
+    || (isShadow ? pokemonRankings.find(p => p.isShadow && (p.name.toLowerCase().includes(clean) || clean.includes(p.name.toLowerCase()))) : null)
+    || (isMega ? pokemonRankings.find(p => p.isMega && (p.name.toLowerCase().includes(clean) || clean.includes(p.name.toLowerCase()))) : null)
+    || (isPrimal ? pokemonRankings.find(p => p.isPrimal && (p.name.toLowerCase().includes(clean) || clean.includes(p.name.toLowerCase()))) : null)
     || pokemonRankings.find(p => p.name.toLowerCase() === clean)
     || pokemonRankings.find(p => p.name.toLowerCase() === baseClean)
     || pokemonRankings.find(p => p.name.toLowerCase().includes(clean) || clean.includes(p.name.toLowerCase()))
     || pokemonRankings.find(p => p.name.toLowerCase().includes(baseClean) || baseClean.includes(p.name.toLowerCase()));
 
-  const attackType = found?.bestChargedMove?.type || found?.types[0] || primaryType;
+  const foundPokedexId = found?.pokedexId;
 
-  // Filter unique pokemon by pokedexId for this type to get accurate rank
-  const typeRankingsMap = new Map<number, PokemonRankData>();
-  pokemonRankings
-    .filter(p => p.bestChargedMove?.type === attackType || p.types.includes(attackType))
-    .sort((a, b) => (b.pveScore || b.dps || 0) - (a.pveScore || a.dps || 0))
-    .forEach(p => {
-      if (!typeRankingsMap.has(p.pokedexId)) {
-        typeRankingsMap.set(p.pokedexId, p);
+  // Comparator for attacker ranking using official DialgaDex / Pokemon GO Hub ER metric
+  const attackerComparator = (a: PokemonRankData, b: PokemonRankData) => {
+    const scoreA = calculateDialgaDexMetrics(a).rawEr;
+    const scoreB = calculateDialgaDexMetrics(b).rawEr;
+    if (Math.abs(scoreB - scoreA) > 0.0001) return scoreB - scoreA;
+    const effAtkA = a.isShadow ? Math.round(a.attack * 1.2) : a.attack;
+    const effAtkB = b.isShadow ? Math.round(b.attack * 1.2) : b.attack;
+    if (effAtkB !== effAtkA) return effAtkB - effAtkA;
+    if (b.dps !== a.dps) return b.dps - a.dps;
+    return b.maxCp - a.maxCp;
+  };
+
+  const candidateTypes: BossTypeRankItem[] = [];
+  let bestAllTypeRank: BossTypeRankItem | null = null;
+
+  // Check all 18 types
+  ALL_POKEMON_TYPES.forEach(type => {
+    const typeAttackers = pokemonRankings
+      .filter(p => isPokemonReleasedInGo(p) && p.bestChargedMove?.type === type)
+      .sort(attackerComparator);
+
+    // Group by unique species/variant
+    const seen = new Set<string>();
+    const uniqueList: PokemonRankData[] = [];
+    typeAttackers.forEach(p => {
+      const key = `${p.name}-${p.pokedexId}-${p.isShadow ? '1' : '0'}-${p.isMega ? '1' : '0'}-${p.isPrimal ? '1' : '0'}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniqueList.push(p);
       }
     });
 
-  const uniqueTypeList = Array.from(typeRankingsMap.values());
-  const foundPokedexId = found?.pokedexId;
-  const typeIndex = foundPokedexId ? uniqueTypeList.findIndex(p => p.pokedexId === foundPokedexId) : -1;
-  const typeRank = typeIndex >= 0 ? typeIndex + 1 : 1;
+    const rankIdx = found
+      ? uniqueList.findIndex(p =>
+          p.name.toLowerCase() === found.name.toLowerCase() &&
+          p.isShadow === found.isShadow &&
+          p.isMega === found.isMega &&
+          p.isPrimal === found.isPrimal
+        )
+      : -1;
 
-  const typeTranslations: Record<string, { en: string; cs: string }> = {
-    Dragon: { en: 'Dragon', cs: 'Dračí' },
-    Fire: { en: 'Fire', cs: 'Ohnivý' },
-    Water: { en: 'Water', cs: 'Vodní' },
-    Grass: { en: 'Grass', cs: 'Travní' },
-    Electric: { en: 'Electric', cs: 'Elektrický' },
-    Ice: { en: 'Ice', cs: 'Ledový' },
-    Fighting: { en: 'Fighting', cs: 'Bojový' },
-    Poison: { en: 'Poison', cs: 'Jedový' },
-    Ground: { en: 'Ground', cs: 'Zemní' },
-    Flying: { en: 'Flying', cs: 'Létající' },
-    Psychic: { en: 'Psychic', cs: 'Psychický' },
-    Bug: { en: 'Bug', cs: 'Hmyzí' },
-    Rock: { en: 'Rock', cs: 'Kamenný' },
-    Ghost: { en: 'Ghost', cs: 'Duchový' },
-    Dark: { en: 'Dark', cs: 'Temný' },
-    Steel: { en: 'Steel', cs: 'Ocelový' },
-    Fairy: { en: 'Fairy', cs: 'Vílí' },
-    Normal: { en: 'Normal', cs: 'Normální' }
-  };
+    const rank = rankIdx >= 0 ? rankIdx + 1 : (foundPokedexId ? uniqueList.findIndex(p => p.pokedexId === foundPokedexId) + 1 : 0);
 
-  const typeNameCap = attackType.charAt(0).toUpperCase() + attackType.slice(1).toLowerCase();
-  const trans = typeTranslations[typeNameCap] || { en: typeNameCap, cs: typeNameCap };
+    if (rank > 0) {
+      const trans = TYPE_TRANSLATIONS[type] || { en: type, cs: type };
+      const item: BossTypeRankItem = {
+        typeRank: rank,
+        typeName: type,
+        typeSlug: type.toLowerCase(),
+        badgeLabelEn: `#${rank} ${type.toUpperCase()} ATTACKER`,
+        badgeLabelCs: `#${rank} ${trans.cs.toUpperCase()} ÚTOČNÍK`
+      };
+
+      if (!bestAllTypeRank || rank < bestAllTypeRank.typeRank) {
+        bestAllTypeRank = item;
+      }
+
+      if (rank <= 10) {
+        candidateTypes.push(item);
+      }
+    }
+  });
+
+  // Sort candidate types by rank (1, 2, 3...)
+  candidateTypes.sort((a, b) => a.typeRank - b.typeRank);
+
+  // Take top up to 3
+  let topTypeRanks = candidateTypes.slice(0, 3);
+
+  // If no rank <= 10 found, use its true calculated best type rank
+  if (topTypeRanks.length === 0) {
+    if (bestAllTypeRank) {
+      topTypeRanks = [bestAllTypeRank];
+    } else {
+      const primaryTypeName = found?.bestChargedMove?.type || found?.types[0] || primaryType;
+      const trans = TYPE_TRANSLATIONS[primaryTypeName] || { en: primaryTypeName, cs: primaryTypeName };
+      topTypeRanks = [{
+        typeRank: 99,
+        typeName: primaryTypeName,
+        typeSlug: primaryTypeName.toLowerCase(),
+        badgeLabelEn: `#99 ${primaryTypeName.toUpperCase()} ATTACKER`,
+        badgeLabelCs: `#99 ${trans.cs.toUpperCase()} ÚTOČNÍK`
+      }];
+    }
+  }
+
+  const best = topTypeRanks[0];
 
   return {
-    typeRank,
-    typeName: typeNameCap,
+    typeRank: best.typeRank,
+    typeName: best.typeName,
+    typeSlug: best.typeSlug,
     overallRank: 1,
     pveScore: found?.pveScore || 90,
-    badgeLabelEn: `#${typeRank} ${typeNameCap.toUpperCase()} TYPE`,
-    badgeLabelCs: `#${typeRank} ${trans.cs.toUpperCase()} TYP`
+    badgeLabelEn: best.badgeLabelEn,
+    badgeLabelCs: best.badgeLabelCs,
+    topTypeRanks
   };
 }
 

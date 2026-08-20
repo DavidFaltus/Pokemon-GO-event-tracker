@@ -21,6 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const unwrappedParams = await params;
   const lang = unwrappedParams.lang || 'cs';
   const isCzech = lang === 'cs';
+  const canonicalUrl = `https://pogoevents.app/${lang}/eggs`;
 
   return {
     title: isCzech
@@ -29,6 +30,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description: isCzech
       ? 'Přehled všech Pokémonů, které lze aktuálně vylíhnout z 2km, 5km, 7km, 10km a 12km vajec.'
       : 'Complete list of Pokémon currently hatching from 2km, 5km, 7km, 10km, and 12km eggs in Pokémon GO.',
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'cs': `https://pogoevents.app/cs/eggs`,
+        'en': `https://pogoevents.app/en/eggs`,
+        'ja': `https://pogoevents.app/ja/eggs`,
+        'ru': `https://pogoevents.app/ru/eggs`,
+      },
+    },
   };
 }
 

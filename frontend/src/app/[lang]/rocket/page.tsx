@@ -21,6 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const unwrappedParams = await params;
   const lang = unwrappedParams.lang || 'cs';
   const isCzech = lang === 'cs';
+  const canonicalUrl = `https://pogoevents.app/${lang}/rocket`;
 
   return {
     title: isCzech
@@ -29,6 +30,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description: isCzech
       ? 'Aktuální sestavy a nejlepší protihráči pro Giovanniho, Cliffa, Sierru, Arla a Rakeťáky v Pokémon GO.'
       : 'Current lineups and counter guide for Giovanni, Cliff, Sierra, Arlo, and Rocket Grunts in Pokémon GO.',
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'cs': `https://pogoevents.app/cs/rocket`,
+        'en': `https://pogoevents.app/en/rocket`,
+        'ja': `https://pogoevents.app/ja/rocket`,
+        'ru': `https://pogoevents.app/ru/rocket`,
+      },
+    },
   };
 }
 

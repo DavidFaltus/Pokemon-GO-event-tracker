@@ -460,19 +460,21 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
         {/* SLIDE 1: RAID ROTATION (Displays 2 top, 1 bottom for 3 bosses with names above sprites) */}
         {activeSlide === 1 && (
           <div className="slide-content-block slide1">
-            {/* Attacker Tier Ranking Badge (e.g. #1 DRAGON ATTACKER) */}
-            {bossRankingInfo && (
+            {/* Attacker Tier Ranking Badges (up to 3 types in top 10 with type icons) */}
+            {bossRankingInfo && bossRankingInfo.topTypeRanks && bossRankingInfo.topTypeRanks.length > 0 && (
               <div className="slide1-rank-pill-container">
-                <div className="slide1-rank-pill">
-                  <Crown size={13} className="rank-crown-icon" />
-                  <span>
-                    <EditableText
-                      value={editor.getTextOverride('slide1_rank_badge', lang === 'cs' ? bossRankingInfo.badgeLabelCs : bossRankingInfo.badgeLabelEn)}
-                      onChange={(v) => editor.setTextOverride('slide1_rank_badge', v)}
-                      isEditing={editor.isEditing}
-                    />
-                  </span>
-                </div>
+                {bossRankingInfo.topTypeRanks.map((rankItem, rIdx) => (
+                  <div key={rIdx} className="slide1-rank-pill">
+                    <TypeIconOnly typeStr={rankItem.typeName} />
+                    <span>
+                      <EditableText
+                        value={editor.getTextOverride(`slide1_rank_badge_${rIdx}`, lang === 'cs' ? rankItem.badgeLabelCs : rankItem.badgeLabelEn)}
+                        onChange={(v) => editor.setTextOverride(`slide1_rank_badge_${rIdx}`, v)}
+                        isEditing={editor.isEditing}
+                      />
+                    </span>
+                  </div>
+                ))}
               </div>
             )}
 

@@ -21,6 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const unwrappedParams = await params;
   const lang = unwrappedParams.lang || 'cs';
   const isCzech = lang === 'cs';
+  const canonicalUrl = `https://pogoevents.app/${lang}/ditto`;
 
   return {
     title: isCzech
@@ -29,6 +30,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description: isCzech
       ? 'Seznam všech Pokémonů, v které se může Ditto aktuálně maskovat na divoko.'
       : 'List of all wild Pokémon that Ditto can currently disguise as in Pokémon GO.',
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'cs': `https://pogoevents.app/cs/ditto`,
+        'en': `https://pogoevents.app/en/ditto`,
+        'ja': `https://pogoevents.app/ja/ditto`,
+        'ru': `https://pogoevents.app/ru/ditto`,
+      },
+    },
   };
 }
 

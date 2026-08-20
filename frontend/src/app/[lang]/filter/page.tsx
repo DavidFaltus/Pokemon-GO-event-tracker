@@ -21,6 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const unwrappedParams = await params;
   const lang = unwrappedParams.lang || 'cs';
   const isCzech = lang === 'cs';
+  const canonicalUrl = `https://pogoevents.app/${lang}/filter`;
 
   return {
     title: isCzech
@@ -29,6 +30,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description: isCzech
       ? 'Generátor vyhledávacích řetězců pro IV, Trash, Raidy a Trashing přímo do Pokémon GO.'
       : 'Search string generator for IVs, Trashing, and Raids directly inside Pokémon GO.',
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'cs': `https://pogoevents.app/cs/filter`,
+        'en': `https://pogoevents.app/en/filter`,
+        'ja': `https://pogoevents.app/ja/filter`,
+        'ru': `https://pogoevents.app/ru/filter`,
+      },
+    },
   };
 }
 

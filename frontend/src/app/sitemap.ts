@@ -1,7 +1,11 @@
 import type { MetadataRoute } from 'next';
 import { API_BASE_URL } from '@/config';
 import { GUIDES_DATA } from '@/data/guidesData';
-import { pokemonRankings } from '@/data/pokemonRankings';
+import { ALL_POKEDEX_IDS } from '@/data/pokemonRankings';
+import { RANKING_CATEGORIES } from '@/app/[lang]/rankings/[category]/page';
+import { POKEMON_TYPES } from '@/app/[lang]/types/[type]/page';
+import { POPULAR_RAID_BOSSES } from '@/app/[lang]/raids/[slug]/page';
+import { ROCKET_LEADERS } from '@/app/[lang]/rocket/[leader]/page';
 
 export const dynamic = 'force-static';
 
@@ -25,94 +29,103 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       eventSlugs = events.map((e) => e.eventID || e.id || '').filter(Boolean);
     }
   } catch (e) {
-    console.error('Sitemap fetch failed:', e);
+    console.warn('Sitemap fetch failed, using fallback:', e);
   }
 
   const routes: MetadataRoute.Sitemap = [];
+  const now = new Date();
 
-  // Unique Pokedex IDs for Pokemon detail pages
-  const uniquePokedexIds = Array.from(new Set(pokemonRankings.map((p) => p.pokedexId)));
-
-  // Static section URLs for each language
   languages.forEach((lang) => {
-    routes.push(
-      {
-        url: `${baseUrl}/${lang}`,
-        lastModified: new Date(),
-        changeFrequency: 'hourly',
-        priority: 1.0,
-      },
-      {
-        url: `${baseUrl}/${lang}/guides`,
-        lastModified: new Date(),
-        changeFrequency: 'daily',
-        priority: 0.9,
-      },
-      {
-        url: `${baseUrl}/${lang}/raids`,
-        lastModified: new Date(),
-        changeFrequency: 'daily',
-        priority: 0.9,
-      },
-      {
-        url: `${baseUrl}/${lang}/rocket`,
-        lastModified: new Date(),
-        changeFrequency: 'daily',
-        priority: 0.9,
-      },
-      {
-        url: `${baseUrl}/${lang}/ditto`,
-        lastModified: new Date(),
-        changeFrequency: 'daily',
-        priority: 0.8,
-      },
-      {
-        url: `${baseUrl}/${lang}/eggs`,
-        lastModified: new Date(),
-        changeFrequency: 'daily',
-        priority: 0.8,
-      },
-      {
-        url: `${baseUrl}/${lang}/rankings`,
-        lastModified: new Date(),
-        changeFrequency: 'daily',
-        priority: 0.8,
-      },
-      {
-        url: `${baseUrl}/${lang}/filter`,
-        lastModified: new Date(),
-        changeFrequency: 'daily',
-        priority: 0.8,
-      }
-    );
+    // 1. Core Section Pages
+    const sections = [
+      { path: '', priority: 1.0, changeFrequency: 'hourly' as const },
+      { path: '/events', priority: 0.95, changeFrequency: 'hourly' as const },
+      { path: '/raids', priority: 0.9, changeFrequency: 'daily' as const },
+      { path: '/rankings', priority: 0.9, changeFrequency: 'daily' as const },
+      { path: '/rocket', priority: 0.9, changeFrequency: 'daily' as const },
+      { path: '/guides', priority: 0.85, changeFrequency: 'weekly' as const },
+      { path: '/ditto', priority: 0.8, changeFrequency: 'daily' as const },
+      { path: '/eggs', priority: 0.8, changeFrequency: 'daily' as const },
+      { path: '/filter', priority: 0.8, changeFrequency: 'weekly' as const },
+      { path: '/download', priority: 0.7, changeFrequency: 'monthly' as const },
+    ];
 
-    // Guide detail pages
+    sections.forEach((sec) => {
+      routes.push({
+        url: `${baseUrl}/${lang}${sec.path}`,
+        lastModified: now,
+        changeFrequency: sec.changeFrequency,
+        priority: sec.priority,
+      });
+    });
+
+    // 2. Guide Detail Pages
     GUIDES_DATA.forEach((guide) => {
       routes.push({
         url: `${baseUrl}/${lang}/guides/${guide.slug}`,
-        lastModified: new Date(),
+        lastModified: now,
         changeFrequency: 'weekly',
         priority: 0.85,
       });
     });
 
-    // Event detail pages
+    // 3. Event Detail Pages
     eventSlugs.forEach((slug) => {
       routes.push({
         url: `${baseUrl}/${lang}/events/${slug}`,
-        lastModified: new Date(),
+        lastModified: now,
         changeFrequency: 'daily',
-        priority: 0.7,
+        priority: 0.75,
       });
     });
 
-    // Pokemon detail & ranking pages
-    uniquePokedexIds.forEach((id) => {
+    // 4. Dedicated Rankings Subpages
+    RANKING_CATEGORIES.forEach((category) => {
+      routes.push({
+        url: `${baseUrl}/${lang}/rankings/${category}`,
+        lastModified: now,
+        changeFrequency: 'weekly',
+        priority: 0.8,
+      });
+    });
+
+    // 5. Type Matchup Subpages
+    POKEMON_TYPES.forEach((type) => {
+      routes.push({
+        url: `${baseUrl}/${lang}/types/${type}`,
+        lastModified: now,
+        changeFrequency: 'monthly',
+        priority: 0.75,
+      });
+    });
+
+    // 6. Raid Boss Counter Subpages
+    POPULAR_RAID_BOSSES.forEach((boss) => {
+      routes.push({
+        url: `${baseUrl}/${lang}/raids/${boss}-counters`,
+        lastModified: now,
+        changeFrequency: 'weekly',
+        priority: 0.8,
+      });
+    });
+
+    // 7. Rocket Leader Subpages
+    ROCKET_LEADERS.forEach((leader) => {
+      routes.push({
+        url: `${baseUrl}/${lang}/rocket/${leader}`,
+        lastModified: now,
+        changeFrequency: 'weekly',
+        priority: 0.8,
+      });
+    });
+
+    // 8. Full National Pokédex Pages (#1 to #1025)
+    ALL_POKEDEX_IDS.forEach((id) => {
       routes.push({
         url: `${baseUrl}/${lang}/pokemon/${id}`,
-        lastModified: new Date(),
+        lastModified: now,
         changeFrequency: 'weekly',
-        priority: 0.75,
+        priority: 0.7,
       });
     });
   });

@@ -1,5 +1,6 @@
 import App from '@/App';
 import type { Language } from '@/data/translations';
+import { notFound } from 'next/navigation';
 
 export const revalidate = 300;
 
@@ -44,8 +45,16 @@ export default async function CatchAllLangPage({ params }: PageProps) {
   const unwrappedParams = await params;
   const rawLang = unwrappedParams.lang || 'cs';
   const validLanguages: Language[] = ['cs', 'en', 'ja', 'ru'];
-  const lang: Language = validLanguages.includes(rawLang as Language) ? (rawLang as Language) : 'cs';
+  if (!validLanguages.includes(rawLang as Language)) {
+    notFound();
+  }
+  const lang: Language = rawLang as Language;
   const tab = getTabFromSlug(unwrappedParams.slug);
+
+  if (tab === '404') {
+    notFound();
+  }
+
   const pokemonSearch = unwrappedParams.slug && unwrappedParams.slug[0]?.toLowerCase() === 'pokemon' && unwrappedParams.slug[1]
     ? unwrappedParams.slug[1]
     : undefined;

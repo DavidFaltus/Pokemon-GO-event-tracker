@@ -1,5 +1,15 @@
 import { EventData, SpecialEventDetails, ScrapedRaidBoss, RocketMember } from './types';
 
+export type Language = 'cs' | 'en' | 'ja' | 'ru';
+
+export interface RouteTarget {
+  type: 'home' | 'events' | 'event-detail' | 'pokemon-detail' | 'rankings' | 'ranking-category' | 'types' | 'raids' | 'raid-counters' | 'rocket' | 'rocket-leader' | 'guides' | 'guide-detail' | 'ditto' | 'eggs' | 'filter' | 'download';
+  lang: Language;
+  canonicalPath: string;
+  param?: string;
+  subParam?: string;
+}
+
 interface BotTranslations {
   title: string;
   description: string;
@@ -38,7 +48,7 @@ interface BotTranslations {
   rocketGuideText: string;
 }
 
-const botTranslations: Record<'cs' | 'en' | 'ja' | 'ru', BotTranslations> = {
+const botTranslations: Record<Language, BotTranslations> = {
   en: {
     title: "Pokémon GO Event Tracker - Active Events, Raids, Rocket & Guides",
     description: "Track live and upcoming Pokémon GO events, raid bosses, Team GO Rocket lineups, egg hatches, Ditto disguises, and PvP rankings in real time.",
@@ -117,7 +127,7 @@ const botTranslations: Record<'cs' | 'en' | 'ja' | 'ru', BotTranslations> = {
     title: "Pokémon GO イベントトラッカー - イベント、レイド、ロケット団 & ガイド",
     description: "Pokémon GOのイベント、レイドボス、GOロケット団の編成、タマゴ孵化、メタモン、PvPランキングをリアルタイムで確認できます。",
     h1: "Pokémon GO イベントトラッカー",
-    intro: "Pokémon GOのイベントトラッカーへようこそ。開催中および今後のイベント、レイドボスの対策、ロケット団の対策ガイド、ボーナス情報を一 me で確認できます。",
+    intro: "Pokémon GOのイベントトラッカーへようこそ。開催中および今後のイベント、レイドボスの対策、ロケット団の対策ガイド、ボーナス情報を一目で確認できます。",
     events: "イベント & タイマー",
     raids: "レイドボス & 対策",
     rocket: "GOロケット団編成",
@@ -189,14 +199,59 @@ const botTranslations: Record<'cs' | 'en' | 'ja' | 'ru', BotTranslations> = {
   }
 };
 
+export function generate404Html(lang: Language): string {
+  const isCs = lang === 'cs';
+  return `<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+  <meta charset="utf-8">
+  <title>${isCs ? '404 - Stránka nenalezena' : '404 - Page Not Found'} | Pokémon GO Event Tracker</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background-color: #0b0c10;
+      color: #c5c6c7;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 { font-size: 4rem; color: #66fcf1; margin: 0 0 10px 0; }
+    p { font-size: 1.2rem; margin-bottom: 25px; }
+    .btn {
+      background: #45a29e;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #66fcf1; color: #000; }
+  </style>
+</head>
+<body>
+  <h1>404</h1>
+  <p>${isCs ? 'Omlouváme se, ale tato stránka neexistuje nebo byla přesunuta.' : 'Sorry, the requested page does not exist or has been moved.'}</p>
+  <a href="/${lang}" class="btn">${isCs ? 'Zpět na hlavní stránku' : 'Back to Home'}</a>
+</body>
+</html>`;
+}
+
 export async function generateBotHtml(
-  lang: 'cs' | 'en' | 'ja' | 'ru',
+  target: RouteTarget,
   events: any[],
   raids: any[],
   rocket: any,
-  getDetails: (eventId: string) => SpecialEventDetails | null,
-  targetEventId?: string
+  getDetails: (eventId: string) => SpecialEventDetails | null
 ): Promise<string> {
+  const { lang, type, canonicalPath, param } = target;
   const t = botTranslations[lang] || botTranslations.en;
   
   // Format current date
@@ -204,21 +259,56 @@ export async function generateBotHtml(
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
 
-  // Target event for event-level SEO page
-  const targetEvent = targetEventId ? events.find(e => e.eventID === targetEventId) : null;
-  const pageTitle = targetEvent ? `${targetEvent.name} | Pokémon GO Event Tracker` : t.title;
-  const pageDesc = targetEvent
-    ? `${targetEvent.name} (${new Date(targetEvent.start).toLocaleDateString()} – ${new Date(targetEvent.end).toLocaleDateString()}) — Spawns, bonuses, raids, and research details.`
-    : t.description;
-  const canonicalPath = targetEventId ? `/${lang}/events/${targetEventId}` : `/${lang}/events`;
   const canonicalUrl = `https://pogoevents.app${canonicalPath}`;
+  // Extract path suffix after /:lang for hreflang matching
+  const pathSuffix = canonicalPath.replace(/^\/(cs|en|ja|ru)\b/, '');
+
+  let pageTitle = t.title;
+  let pageDesc = t.description;
+  let targetEvent: any = null;
+
+  if (type === 'event-detail' && param) {
+    targetEvent = events.find(e => e.eventID === param);
+    if (targetEvent) {
+      pageTitle = `${targetEvent.name} | Pokémon GO Event Tracker`;
+      pageDesc = `${targetEvent.name} (${new Date(targetEvent.start).toLocaleDateString()} – ${new Date(targetEvent.end).toLocaleDateString()}) — Spawns, bonuses, raids, and research details.`;
+    }
+  } else if (type === 'pokemon-detail' && param) {
+    pageTitle = `Pokémon #${param} - Stats, Best Moves & Max CP | Pokémon GO`;
+    pageDesc = `Complete Pokémon GO stats, best fast and charged movesets, max CP values, and raid counters for Pokémon #${param}.`;
+  } else if (type === 'rankings') {
+    pageTitle = lang === 'cs' ? 'PvP & PvE Žebříčky Pokémonů | Pokémon GO' : 'PvP & PvE Pokémon Rankings | Pokémon GO';
+    pageDesc = lang === 'cs' ? 'Kompletní žebříčky PvP Pokémonů pro Great, Ultra a Master League a nejlepší útočníci do raidů.' : 'Complete PvP & PvE Pokémon tier lists and rankings for Pokémon GO.';
+  } else if (type === 'ranking-category' && param) {
+    const cleanCat = param.replace(/-/g, ' ').toUpperCase();
+    pageTitle = `${cleanCat} - Rankings & Tier List | Pokémon GO`;
+    pageDesc = `Top ranked Pokémon for ${cleanCat} in Pokémon GO with optimal movesets and stats.`;
+  } else if (type === 'raids') {
+    pageTitle = lang === 'cs' ? 'Aktuální Raid Bossi & Přehled Counterů | Pokémon GO' : 'Current Raid Bosses & Counters Guide | Pokémon GO';
+    pageDesc = lang === 'cs' ? 'Aktuální 1, 3, 5-star, Mega a Shadow raid bossi v Pokémon GO s nejlepšími counters.' : 'Active raid bosses in Pokémon GO with top counters and weaknesses.';
+  } else if (type === 'raid-counters' && param) {
+    const cleanBoss = param.replace(/-counters$/i, '').replace(/-/g, ' ').toUpperCase();
+    pageTitle = `${cleanBoss} Raid Counters & Weaknesses | Pokémon GO`;
+    pageDesc = `Best raid counters, weaknesses, 100% IV CP chart, and guide to defeat ${cleanBoss} in Pokémon GO.`;
+  } else if (type === 'rocket') {
+    pageTitle = lang === 'cs' ? 'Team GO Rocket Sestavy & Průvodce | Pokémon GO' : 'Team GO Rocket Lineups & Counters | Pokémon GO';
+    pageDesc = lang === 'cs' ? 'Sestavy Giovanniho, lídrů (Cliff, Sierra, Arlo) a hlášky řadových Rakeťáků.' : 'Complete Team GO Rocket guide with Giovanni, Leaders, and Grunts lineups.';
+  } else if (type === 'rocket-leader' && param) {
+    const leaderName = param.toUpperCase();
+    pageTitle = `${leaderName} Lineup & Counters Guide | Pokémon GO`;
+    pageDesc = `How to beat Team GO Rocket Leader ${leaderName} in Pokémon GO with optimal counter lineups.`;
+  } else if (type === 'types' && param) {
+    const typeName = param.toUpperCase();
+    pageTitle = `${typeName} Type - Weakness & Counters Guide | Pokémon GO`;
+    pageDesc = `${typeName} type weakness, resistance chart, and best attackers in Pokémon GO.`;
+  }
 
   // Process Events
   const now = Date.now();
   let sortedEvents = [...events].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
   
   if (targetEvent) {
-    sortedEvents = [targetEvent, ...sortedEvents.filter(e => e.eventID !== targetEventId)];
+    sortedEvents = [targetEvent, ...sortedEvents.filter(e => e.eventID !== param)];
   }
 
   let eventsHtml = '';
@@ -231,7 +321,7 @@ export async function generateBotHtml(
       const isActive = now >= startMs && now <= endMs;
       const isUpcoming = now < startMs;
       
-      if (now > endMs && event.eventID !== targetEventId) return;
+      if (now > endMs && event.eventID !== param) return;
 
       const statusLabel = isActive ? t.active : isUpcoming ? t.upcoming : (lang === 'cs' ? 'Ukončeno' : 'Ended');
       const timeLabel = isActive 
@@ -448,10 +538,10 @@ export async function generateBotHtml(
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="${canonicalUrl}">
-  <link rel="alternate" hreflang="en" href="https://pogoevents.app/en/events">
-  <link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/events">
-  <link rel="alternate" hreflang="ja" href="https://pogoevents.app/ja/events">
-  <link rel="alternate" hreflang="ru" href="https://pogoevents.app/ru/events">
+  <link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs${pathSuffix}">
+  <link rel="alternate" hreflang="en" href="https://pogoevents.app/en${pathSuffix}">
+  <link rel="alternate" hreflang="ja" href="https://pogoevents.app/ja${pathSuffix}">
+  <link rel="alternate" hreflang="ru" href="https://pogoevents.app/ru${pathSuffix}">
   <meta property="og:type" content="website">
   <meta property="og:title" content="${pageTitle}">
   <meta property="og:description" content="${pageDesc}">
@@ -603,27 +693,28 @@ export async function generateBotHtml(
 </head>
 <body>
   <header>
-    <h1><a href="/${lang}/events">${t.h1}</a></h1>
+    <h1><a href="/${lang}">${t.h1}</a></h1>
     <div class="lang-switcher">
-      <a href="/cs/events">CS</a>
-      <a href="/en/events">EN</a>
-      <a href="/ja/events">JA</a>
-      <a href="/ru/events">RU</a>
+      <a href="/cs${pathSuffix}">CS</a>
+      <a href="/en${pathSuffix}">EN</a>
+      <a href="/ja${pathSuffix}">JA</a>
+      <a href="/ru${pathSuffix}">RU</a>
     </div>
     <nav class="site-nav">
-      <a href="/${lang}/events" class="active">${t.events}</a>
-      <a href="/${lang}/raids">${t.raids}</a>
-      <a href="/${lang}/rocket">${t.rocket}</a>
-      <a href="/${lang}/ditto">${t.ditto}</a>
-      <a href="/${lang}/eggs">${t.eggs}</a>
-      <a href="/${lang}/rankings">${t.rankings}</a>
-      <a href="/${lang}/filter">${t.filter}</a>
+      <a href="/${lang}/events" class="${type === 'events' || type === 'event-detail' ? 'active' : ''}">${t.events}</a>
+      <a href="/${lang}/raids" class="${type === 'raids' || type === 'raid-counters' ? 'active' : ''}">${t.raids}</a>
+      <a href="/${lang}/rankings" class="${type === 'rankings' || type === 'ranking-category' || type === 'pokemon-detail' ? 'active' : ''}">${t.rankings}</a>
+      <a href="/${lang}/rocket" class="${type === 'rocket' || type === 'rocket-leader' ? 'active' : ''}">${t.rocket}</a>
+      <a href="/${lang}/guides" class="${type === 'guides' || type === 'guide-detail' ? 'active' : ''}">Guides</a>
+      <a href="/${lang}/ditto" class="${type === 'ditto' ? 'active' : ''}">${t.ditto}</a>
+      <a href="/${lang}/eggs" class="${type === 'eggs' ? 'active' : ''}">${t.eggs}</a>
+      <a href="/${lang}/filter" class="${type === 'filter' ? 'active' : ''}">${t.filter}</a>
     </nav>
   </header>
 
   <main>
     <div class="intro-box">
-      <p>${t.intro}</p>
+      <p>${pageDesc || t.intro}</p>
       <small style="display:block; margin-top: 8px; color: var(--accent-color);">Data updated: ${nowStr}</small>
     </div>
 

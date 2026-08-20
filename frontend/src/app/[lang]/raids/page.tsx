@@ -21,6 +21,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const unwrappedParams = await params;
   const lang = unwrappedParams.lang || 'cs';
   const isCzech = lang === 'cs';
+  const canonicalUrl = `https://pogoevents.app/${lang}/raids`;
 
   return {
     title: isCzech
@@ -29,6 +30,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description: isCzech
       ? 'Kompletní přehled aktuálních 1-Star, 3-Star, 5-Star, Mega a Shadow Raid Bossů v Pokémon GO včetně doporučených protihráčů (counters).'
       : 'Complete guide to active 1-Star, 3-Star, 5-Star, Mega, and Shadow Raid Bosses in Pokémon GO with recommended counters.',
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'cs': `https://pogoevents.app/cs/raids`,
+        'en': `https://pogoevents.app/en/raids`,
+        'ja': `https://pogoevents.app/ja/raids`,
+        'ru': `https://pogoevents.app/ru/raids`,
+      },
+    },
   };
 }
 

@@ -17,6 +17,7 @@ import {
   isLegacyMove
 } from '../utils/pokemonCountersHelper';
 import { calculateDialgaDexMetrics } from '../utils/dialgaDexCalculator';
+import { isPokemonReleasedInGo } from '../utils/pokemonReleaseHelper';
 
 function getMoveTypeColor(type: string): string {
   const colors: Record<string, string> = {
@@ -78,7 +79,14 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [expandedPokes, setExpandedPokes] = useState<Set<string>>(new Set());
-  const [rankingMode, setRankingMode] = useState<'er' | 'basic'>('basic');
+  const [rankingMode, setRankingMode] = useState<'er' | 'basic'>('er');
+  const [onlyReleased, setOnlyReleased] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('pogo_ranking_only_released');
+      if (saved !== null) return saved === 'true';
+    }
+    return true;
+  });
   const [visibleCount, setVisibleCount] = useState(40);
 
   useEffect(() => {
@@ -92,9 +100,21 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
     onSearchChange?.(val);
   };
 
+  const toggleReleasedOnly = () => {
+    setOnlyReleased(prev => {
+      const next = !prev;
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('pogo_ranking_only_released', String(next));
+        } catch {}
+      }
+      return next;
+    });
+  };
+
   useEffect(() => {
     setVisibleCount(40);
-  }, [searchQuery, selectedType, rankingMode]);
+  }, [searchQuery, selectedType, rankingMode, onlyReleased]);
 
   const toggleExpand = useCallback((pokeKey: string) => {
     setExpandedPokes(prev => {
@@ -108,36 +128,74 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
     });
   }, []);
 
+  const getPokeKey = useCallback((poke: PokemonRankData) =>
+    `${poke.name}-${poke.pokedexId}-${poke.bestChargedMove?.type || 'none'}-${poke.bestChargedMove?.name || 'none'}-${poke.bestFastMove?.name || 'none'}-${poke.isShadow ? '1' : '0'}-${poke.isMega ? '1' : '0'}-${poke.isPrimal ? '1' : '0'}`, []);
+
   const getSortScore = useCallback((poke: PokemonRankData) => {
     if (rankingMode === 'er') {
       const dd = calculateDialgaDexMetrics(poke);
-      return dd.erScore;
+      return dd.rawEr;
     }
-    return poke.pveScore;
+    // Basic GamePress PVE Score + DPS precision
+    return (poke.pveScore * 10) + (poke.dps * 0.5);
   }, [rankingMode]);
 
+  // Comprehensive multi-factor decision tree to completely eliminate ties
   const dynamicSortFn = useCallback((a: PokemonRankData, b: PokemonRankData) => {
+    // 1. Primary score comparison (Continuous ER or PVE score)
     const scoreA = getSortScore(a);
     const scoreB = getSortScore(b);
-    if (scoreB !== scoreA) return scoreB - scoreA;
-    if (b.attack !== a.attack) return b.attack - a.attack;
-    return b.maxCp - a.maxCp;
+    if (Math.abs(scoreB - scoreA) > 0.0001) return scoreB - scoreA;
+
+    // 2. Attack stat (Effective attack accounting for Shadow/Mega boost)
+    const effAtkA = a.isShadow ? Math.round(a.attack * 1.2) : a.attack;
+    const effAtkB = b.isShadow ? Math.round(b.attack * 1.2) : b.attack;
+    if (effAtkB !== effAtkA) return effAtkB - effAtkA;
+
+    // 3. Move DPS / Power
+    if (b.dps !== a.dps) return b.dps - a.dps;
+
+    // 4. Survivability Bulk (Def * Sta)
+    const bulkA = (a.defense * a.stamina) / 100;
+    const bulkB = (b.defense * b.stamina) / 100;
+    if (Math.abs(bulkB - bulkA) > 0.01) return bulkB - bulkA;
+
+    // 5. Max CP 100% IV
+    if (b.maxCp !== a.maxCp) return b.maxCp - a.maxCp;
+
+    // 6. Tier hierarchy: Primal/Mega (3) > Shadow (2) > Normal (1)
+    const tierA = a.isPrimal ? 3 : a.isMega ? 3 : a.isShadow ? 2 : 1;
+    const tierB = b.isPrimal ? 3 : b.isMega ? 3 : b.isShadow ? 2 : 1;
+    if (tierB !== tierA) return tierB - tierA;
+
+    // 7. Pokédex ID (Lower generation/ID first for stability)
+    if (a.pokedexId !== b.pokedexId) return a.pokedexId - b.pokedexId;
+
+    // 8. Move Names (Alphabetical deterministic tie-breaker)
+    const moveComp = (b.bestChargedMove?.name || '').localeCompare(a.bestChargedMove?.name || '');
+    if (moveComp !== 0) return moveComp;
+
+    return a.name.localeCompare(b.name);
   }, [getSortScore]);
 
-  // Compute the FULL sorted list (no filters) — used to derive stable ranks
+  // Compute the FULL sorted list — used to derive stable ranks
   const fullSortedRankings = useMemo(() => {
-    return [...pokemonRankings].sort(dynamicSortFn);
-  }, [dynamicSortFn]);
+    let list = pokemonRankings;
+    if (onlyReleased) {
+      list = list.filter(isPokemonReleasedInGo);
+    }
+    return [...list].sort(dynamicSortFn);
+  }, [onlyReleased, dynamicSortFn]);
 
   // Map: uniqueKey -> overall rank (1-based)
   const overallRankMap = useMemo(() => {
     const map = new Map<string, number>();
     fullSortedRankings.forEach((poke, idx) => {
-      const key = `${poke.name}-${poke.pokedexId}-${poke.isShadow}-${poke.isMega}-${poke.isPrimal}`;
+      const key = getPokeKey(poke);
       map.set(key, idx + 1);
     });
     return map;
-  }, [fullSortedRankings]);
+  }, [fullSortedRankings, getPokeKey]);
 
   // Map: uniqueKey -> rank within its attack type (based on bestChargedMove.type)
   const typeRankMap = useMemo(() => {
@@ -150,19 +208,21 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
     });
     byType.forEach(list => {
       list.forEach((poke, idx) => {
-        const key = `${poke.name}-${poke.pokedexId}-${poke.isShadow}-${poke.isMega}-${poke.isPrimal}`;
+        const key = getPokeKey(poke);
         map.set(key, idx + 1);
       });
     });
     return map;
-  }, [fullSortedRankings]);
-
-  const getPokeKey = useCallback((poke: PokemonRankData) =>
-    `${poke.name}-${poke.pokedexId}-${poke.bestChargedMove?.type || 'none'}-${poke.bestChargedMove?.name || 'none'}-${poke.isShadow}-${poke.isMega}-${poke.isPrimal}`, []);
+  }, [fullSortedRankings, getPokeKey]);
 
   // Filtered + sorted list for display
   const filteredRankings = useMemo(() => {
     let result = [...pokemonRankings];
+
+    // Filter by released status
+    if (onlyReleased) {
+      result = result.filter(isPokemonReleasedInGo);
+    }
 
     // Filter by type (based on attack type)
     if (selectedType) {
@@ -179,7 +239,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
     }
 
     return result.sort(dynamicSortFn);
-  }, [searchQuery, selectedType, dynamicSortFn]);
+  }, [onlyReleased, searchQuery, selectedType, dynamicSortFn]);
 
   // Auto-expand matching Pokemon when search query is active
   useEffect(() => {
@@ -205,7 +265,18 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
           <div className="rankings-title-left">
             <Trophy size={28} className="trophy-icon" />
             <h1 className="tab-seo-title" style={{ margin: 0, padding: 0 }}>{t.ranking_title}</h1>
-          </div>          <div className="ranking-mode-selector-header">
+          </div>
+          <div className="ranking-mode-selector-header">
+            <button
+              type="button"
+              className={`mode-toggle-btn released-filter-btn ${onlyReleased ? 'active' : ''}`}
+              onClick={toggleReleasedOnly}
+              title={onlyReleased ? (t as any).ranking_filter_released_tooltip : (t as any).ranking_filter_all}
+              aria-label="Filter released Pokemon in Pokemon GO"
+            >
+              <Sparkles size={13} />
+              <span>{onlyReleased ? (t as any).ranking_filter_released_only : (t as any).ranking_filter_all}</span>
+            </button>
             <button
               type="button"
               className={`mode-toggle-btn ${rankingMode === 'er' ? 'active' : ''}`}
@@ -312,14 +383,14 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
                   </div>
 
                   <div className="ranking-score-badge" style={{
-                    background: (rankingMode === 'er' ? dialgaDex.erScore : poke.pveScore) >= 95
+                    background: (rankingMode === 'er' ? dialgaDex.rawEr : poke.pveScore) >= 75
                       ? 'linear-gradient(135deg, #eab308, #ca8a04)'
-                      : (rankingMode === 'er' ? dialgaDex.erScore : poke.pveScore) >= 90
+                      : (rankingMode === 'er' ? dialgaDex.rawEr : poke.pveScore) >= 60
                       ? 'linear-gradient(135deg, #a855f7, #7e22ce)'
                       : 'linear-gradient(135deg, #3b82f6, #1d4ed8)'
                   }}>
                     <span className="score-val">
-                      {rankingMode === 'er' ? dialgaDex.erScore : poke.pveScore}
+                      {rankingMode === 'er' ? dialgaDex.rawEr.toFixed(1) : poke.pveScore}
                     </span>
                     <span className="score-lbl">
                       {rankingMode === 'er' ? 'ER' : 'BASIC'}

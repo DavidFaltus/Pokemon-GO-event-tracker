@@ -134,6 +134,23 @@ body.light-mode .ranking-search-input {
   box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
 }
 
+.released-filter-btn {
+  border-color: rgba(234, 179, 8, 0.35);
+}
+
+.released-filter-btn.active {
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.2), rgba(168, 85, 247, 0.2));
+  border-color: rgba(234, 179, 8, 0.7);
+  color: #facc15;
+  box-shadow: 0 0 10px rgba(234, 179, 8, 0.2);
+}
+
+body.light-mode .released-filter-btn.active {
+  background: rgba(234, 179, 8, 0.15) !important;
+  border-color: #d97706 !important;
+  color: #b45309 !important;
+}
+
 .types-filter-container {
   display: flex;
   flex-wrap: wrap;

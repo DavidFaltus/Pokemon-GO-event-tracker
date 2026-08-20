@@ -70,9 +70,17 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
   const { lang, slug } = await params;
   const event = await fetchEventDetails(slug);
 
-  const title = event ? event.name : slug.replace(/-/g, ' ');
+  if (!event) {
+    return {
+      title: 'Event Not Found | Pokémon GO Event Tracker',
+      description: 'Event not found.',
+      robots: { index: false, follow: false },
+    };
+  }
+
+  const title = event.name;
   const canonicalUrl = `https://pogoevents.app/${lang}/events/${slug}`;
-  const bannerImage = event ? resolveImage(event.image, event.eventType, event.name) : 'https://pogoevents.app/logo-banner.jpg';
+  const bannerImage = resolveImage(event.image, event.eventType, event.name);
 
   return {
     title: `${title} | Pokémon GO Event Tracker`,
@@ -110,7 +118,7 @@ export default async function EventPage({ params }: EventPageProps) {
   const event = await fetchEventDetails(slug);
 
   if (!event) {
-    return <App initialLang={validLang} initialEventId={slug} />;
+    notFound();
   }
 
   const title = event.name;
