@@ -70,7 +70,24 @@ if (sourceHtml) {
     fs.copyFileSync(adminHtml, adminIndexHtml);
   }
 
-  console.log(`Successfully updated dist/app.html, dist/index.html, dist/admin/index.html, backend/app.html, and backend/dist/app.html from ${path.basename(sourceHtml)} (${fs.statSync(sourceHtml).size} bytes)!`);
+  // Copy sitemap.xml & robots.txt to backend root and backend/dist
+  const sitemapOut = path.join(outDir, 'sitemap.xml');
+  const robotsOut = path.join(outDir, 'robots.txt');
+  const backendSitemap = path.join(__dirname, '..', 'backend', 'sitemap.xml');
+  const backendRobots = path.join(__dirname, '..', 'backend', 'robots.txt');
+  const backendDistSitemap = path.join(__dirname, '..', 'backend', 'dist', 'sitemap.xml');
+  const backendDistRobots = path.join(__dirname, '..', 'backend', 'dist', 'robots.txt');
+
+  if (fs.existsSync(sitemapOut)) {
+    fs.copyFileSync(sitemapOut, backendSitemap);
+    fs.copyFileSync(sitemapOut, backendDistSitemap);
+  }
+  if (fs.existsSync(robotsOut)) {
+    fs.copyFileSync(robotsOut, backendRobots);
+    fs.copyFileSync(robotsOut, backendDistRobots);
+  }
+
+  console.log(`Successfully updated dist/app.html, dist/index.html, dist/admin/index.html, backend/app.html, sitemap.xml, and robots.txt from ${path.basename(sourceHtml)} (${fs.statSync(sourceHtml).size} bytes)!`);
 } else {
   console.error('Error: No valid HTML file found in dist directory!');
   process.exit(1);

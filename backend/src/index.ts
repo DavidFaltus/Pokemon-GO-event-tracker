@@ -78,6 +78,41 @@ app.use('/api/admin', rateLimit(60 * 1000, 600));
 // 3) General public API routes: max 300 requests / min
 app.use('/api', rateLimit(60 * 1000, 300));
 
+// Serve sitemap.xml directly with fast streaming
+app.get('/sitemap.xml', (req, res) => {
+  const possiblePaths = [
+    path.join(__dirname, '..', 'sitemap.xml'),
+    path.join(__dirname, '..', 'dist', 'sitemap.xml'),
+    path.join(__dirname, '..', '..', 'frontend', 'out', 'sitemap.xml'),
+    path.join(__dirname, '..', '..', 'frontend', 'dist', 'sitemap.xml'),
+  ];
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400');
+      return res.sendFile(path.resolve(p));
+    }
+  }
+  return res.status(404).send('Sitemap not found');
+});
+
+// Serve robots.txt directly
+app.get('/robots.txt', (req, res) => {
+  const possiblePaths = [
+    path.join(__dirname, '..', 'robots.txt'),
+    path.join(__dirname, '..', 'dist', 'robots.txt'),
+    path.join(__dirname, '..', '..', 'frontend', 'out', 'robots.txt'),
+    path.join(__dirname, '..', '..', 'frontend', 'dist', 'robots.txt'),
+  ];
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+      return res.sendFile(path.resolve(p));
+    }
+  }
+  return res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: https://pogoevents.app/sitemap.xml\n');
+});
+
 // ==========================================
 // Hybrid Cache (In-Memory + Persistent Disk)
 // ==========================================
