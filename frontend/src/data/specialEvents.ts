@@ -35,6 +35,58 @@ export interface SpecialEventResearch {
   isShinyAvailable?: boolean;
 }
 
+export interface SpecialEventAttack {
+  pokemonName: string;
+  moveName: string;
+  isEliteMove?: boolean;
+  description?: LocalizedString;
+}
+
+export interface SpecialEventShowcase {
+  pokemonName: string;
+  pokemonImage?: string;
+  description?: LocalizedString;
+}
+
+export interface SpecialEventPaidTicket {
+  name?: LocalizedString;
+  price?: string;
+  bonuses?: SpecialEventBonus[];
+}
+
+export interface EventHighlights {
+  pveTopPicks: string[];
+  pvpTopPicks: string[];
+  mustDoBonuses: string[];
+  grindScore: 'S' | 'A' | 'B' | 'C';
+}
+
+export interface SpecialEventRaidBoss {
+  name: string;
+  image?: string;
+  canBeShiny?: boolean;
+  types?: string[];
+  weaknesses?: string[];
+  counters?: string[];
+  cpRange?: string;
+  boostedCpRange?: string;
+}
+
+export interface SpecialEventRaidTier {
+  tier: 'mega' | '5' | '3' | '1' | 'shadow' | 'primal' | 'dynamax' | string;
+  list: SpecialEventRaidBoss[];
+}
+
+export interface SpecialEventGoPass {
+  ranks?: {
+    rank: number;
+    pointsRequired?: number;
+    freeReward?: { name: string; image?: string };
+    deluxeReward?: { name: string; image?: string };
+  }[];
+  milestones?: SpecialEventBonus[];
+}
+
 export interface SpecialEventDetails {
   eventID: string;
   officialLink?: string;
@@ -42,7 +94,13 @@ export interface SpecialEventDetails {
   spawns?: SpecialEventSpawn[];
   eggs?: SpecialEventEgg[];
   research?: SpecialEventResearch[];
+  raids?: SpecialEventRaidTier[];
   debuts?: { name: LocalizedString; image: string; description: LocalizedString }[];
+  featuredAttacks?: SpecialEventAttack[];
+  showcases?: SpecialEventShowcase[];
+  paidTicket?: SpecialEventPaidTicket;
+  goPass?: SpecialEventGoPass;
+  highlights?: EventHighlights;
   sourcesMerged?: string[];
 }
 
@@ -71,6 +129,23 @@ export const SPECIAL_EVENTS_DATABASE: Record<string, SpecialEventDetails> = {
       { name: "Scyther", image: "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_123_00.png", isShinyAvailable: true, habitat: { cs: "Les (Forest)", en: "Forest" } },
       { name: "Beldum", image: "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_374_00.png", isShinyAvailable: true, isHighPriority: true, habitat: { cs: "Les (Forest)", en: "Forest" } },
       { name: "Phantump", image: "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_708_00.png", isShinyAvailable: true, habitat: { cs: "Les (Forest)", en: "Forest" } }
+    ],
+    raids: [
+      {
+        tier: "mega",
+        list: [
+          { name: "Mega Rayquaza", canBeShiny: true, types: ["Dragon", "Flying"], weaknesses: ["Ice", "Rock", "Dragon", "Fairy"] },
+          { name: "Mega Lucario", canBeShiny: true, types: ["Fighting", "Steel"], weaknesses: ["Fire", "Fighting", "Ground"] },
+          { name: "Mega Garchomp", canBeShiny: true, types: ["Dragon", "Ground"], weaknesses: ["Ice", "Dragon", "Fairy"] }
+        ]
+      },
+      {
+        tier: "5",
+        list: [
+          { name: "Necrozma (Dusk Mane)", canBeShiny: true, types: ["Psychic", "Steel"], weaknesses: ["Fire", "Dark", "Ghost", "Ground"] },
+          { name: "Necrozma (Dawn Wings)", canBeShiny: true, types: ["Psychic", "Ghost"], weaknesses: ["Ghost", "Dark"] }
+        ]
+      }
     ],
     eggs: [
       {

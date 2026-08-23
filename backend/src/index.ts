@@ -22,8 +22,15 @@ import {
   saveEventsListCache,
   loadRocketLineupsCache,
   saveRocketLineupsCache,
+  loadEggPoolCache,
+  saveEggPoolCache,
+  loadResearchCache,
+  saveResearchCache,
   loadEventDetailsCache,
-  saveEventDetailsCache
+  saveEventDetailsCache,
+  loadFriendListings,
+  addFriendListing,
+  FriendListing
 } from './storage';
 import { generateBotHtml, generate404Html, RouteTarget, Language } from './ssr';
 
@@ -332,8 +339,11 @@ async function runScheduledScraper(triggeredBy: 'cron' | 'startup' | 'admin' = '
       }
     }
 
-    // ── 5. Refresh raid bosses list ─────────────────────────────────
+    // ── 5. Refresh raid bosses, egg pools, research, and rocket lineups ──
     await getRaidBossesList(true).catch(err => console.error('[Scheduler] Error updating raid bosses:', err));
+    await getEggPoolList(true).catch(err => console.error('[Scheduler] Error updating egg pool:', err));
+    await getFieldResearchList(true).catch(err => console.error('[Scheduler] Error updating field research:', err));
+    await getRocketLineupsList(true).catch(err => console.error('[Scheduler] Error updating rocket lineups:', err));
 
     // ── 6. Save updated metadata ────────────────────────────────────
     const nextScrapeAt = new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString();
@@ -700,6 +710,54 @@ async function getRocketLineupsList(forceNoCache: boolean = false): Promise<any>
   throw new Error('No rocket lineups data available.');
 }
 
+// Helper to fetch egg pool
+async function getEggPoolList(forceNoCache: boolean = false): Promise<any[]> {
+  const cacheKey = 'egg_pool';
+  const cachedData = forceNoCache ? null : getFromCache<any>(cacheKey, 6 * 60 * 60 * 1000);
+  if (cachedData && Array.isArray(cachedData) && cachedData.length > 0) return cachedData;
+
+  let data: any[] = [];
+  try {
+    const { scrapeEggPool } = await import('./scraper');
+    data = await scrapeEggPool();
+  } catch (err: any) {
+    console.warn(`[getEggPoolList] Failed: ${err.message}. Using last known cache.`);
+  }
+
+  if (!data || data.length === 0) {
+    data = getStaleCache<any[]>(cacheKey) || (await loadEggPoolCache().catch(() => []));
+  }
+
+  if (data && data.length > 0) {
+    setToCache(cacheKey, data, 6 * 60 * 60 * 1000);
+  }
+  return data || [];
+}
+
+// Helper to fetch field research tasks
+async function getFieldResearchList(forceNoCache: boolean = false): Promise<any[]> {
+  const cacheKey = 'field_research';
+  const cachedData = forceNoCache ? null : getFromCache<any>(cacheKey, 6 * 60 * 60 * 1000);
+  if (cachedData && Array.isArray(cachedData) && cachedData.length > 0) return cachedData;
+
+  let data: any[] = [];
+  try {
+    const { scrapeFieldResearch } = await import('./scraper');
+    data = await scrapeFieldResearch();
+  } catch (err: any) {
+    console.warn(`[getFieldResearchList] Failed: ${err.message}. Using last known cache.`);
+  }
+
+  if (!data || data.length === 0) {
+    data = getStaleCache<any[]>(cacheKey) || (await loadResearchCache().catch(() => []));
+  }
+
+  if (data && data.length > 0) {
+    setToCache(cacheKey, data, 6 * 60 * 60 * 1000);
+  }
+  return data || [];
+}
+
 // Get Events (Merged Scraped + Custom)
 app.get('/api/events', async (req, res) => {
   try {
@@ -808,6 +866,114 @@ app.get('/api/rocket', async (req, res) => {
       return res.json(stale);
     }
     res.status(500).json({ error: 'Failed to fetch rocket lineups' });
+  }
+});
+
+// Get Egg Pools
+app.get('/api/eggs', async (req, res) => {
+  try {
+    const forceNoCache = req.query.nocache === 'true';
+    const data = await getEggPoolList(forceNoCache);
+    res.json(data);
+  } catch (error: any) {
+    console.error('Error fetching egg pools:', error.message);
+    const stale = getStaleCache<any[]>('egg_pool') || (await loadEggPoolCache().catch(() => []));
+    res.json(stale);
+  }
+});
+
+// Get Field Research Tasks
+app.get('/api/research', async (req, res) => {
+  try {
+    const forceNoCache = req.query.nocache === 'true';
+    const data = await getFieldResearchList(forceNoCache);
+    res.json(data);
+  } catch (error: any) {
+    console.error('Error fetching field research:', error.message);
+    const stale = getStaleCache<any[]>('field_research') || (await loadResearchCache().catch(() => []));
+    res.json(stale);
+  }
+});
+
+// ==========================================
+// Friend Codes & Matchmaker API
+// ==========================================
+
+// GET /api/friends - List and filter friend codes
+app.get('/api/friends', async (req, res) => {
+  try {
+    const { pattern, purpose, team, search, limit } = req.query;
+    const allListings = await loadFriendListings();
+
+    let filtered = allListings;
+
+    if (pattern && typeof pattern === 'string' && pattern !== 'all') {
+      filtered = filtered.filter(f => f.vivillonPattern.toLowerCase() === pattern.toLowerCase());
+    }
+
+    if (purpose && typeof purpose === 'string' && purpose !== 'all') {
+      filtered = filtered.filter(f => f.purpose === purpose || f.purpose === 'all');
+    }
+
+    if (team && typeof team === 'string' && team !== 'all') {
+      filtered = filtered.filter(f => f.team === team || f.team === 'any');
+    }
+
+    if (search && typeof search === 'string') {
+      const q = search.toLowerCase().trim();
+      filtered = filtered.filter(f => 
+        f.trainerName.toLowerCase().includes(q) ||
+        f.trainerCode.replace(/\s/g, '').includes(q.replace(/\s/g, '')) ||
+        (f.country && f.country.toLowerCase().includes(q)) ||
+        (f.note && f.note.toLowerCase().includes(q)) ||
+        f.vivillonPattern.toLowerCase().includes(q)
+      );
+    }
+
+    const maxCount = limit ? Math.min(parseInt(limit as string, 10) || 50, 150) : 100;
+    res.json({
+      success: true,
+      total: filtered.length,
+      listings: filtered.slice(0, maxCount)
+    });
+  } catch (error: any) {
+    console.error('Error in GET /api/friends:', error.message);
+    res.status(500).json({ success: false, error: 'Failed to retrieve friend codes' });
+  }
+});
+
+// POST /api/friends - Submit a new friend code
+app.post('/api/friends', rateLimit(10 * 60 * 1000, 5), express.json(), async (req, res) => {
+  try {
+    const { trainerCode, trainerName, vivillonPattern, team, purpose, country, note } = req.body;
+
+    if (!trainerCode || typeof trainerCode !== 'string') {
+      return res.status(400).json({ success: false, error: 'Trainer code is required.' });
+    }
+
+    const cleanCode = trainerCode.replace(/\D/g, '');
+    if (cleanCode.length !== 12) {
+      return res.status(400).json({ success: false, error: 'Trainer code must be exactly 12 digits.' });
+    }
+
+    const newListing = await addFriendListing({
+      trainerCode,
+      trainerName: trainerName || 'Trainer',
+      vivillonPattern: vivillonPattern || 'continental',
+      team: team || 'any',
+      purpose: purpose || 'all',
+      country: country || '',
+      note: note || ''
+    });
+
+    if (!newListing) {
+      return res.status(400).json({ success: false, error: 'Failed to create friend listing. Invalid data.' });
+    }
+
+    res.status(201).json({ success: true, listing: newListing });
+  } catch (error: any) {
+    console.error('Error in POST /api/friends:', error.message);
+    res.status(500).json({ success: false, error: 'Internal server error submitting friend code' });
   }
 });
 
@@ -1309,6 +1475,8 @@ app.get('*', async (req, res, next) => {
     if (guideSlug && !guideSlug.includes('/')) {
       target = { type: 'guide-detail', lang, canonicalPath: `/${lang}/guides/${guideSlug}`, param: guideSlug };
     }
+  } else if (cleanPath === '/friends') {
+    target = { type: 'friends', lang, canonicalPath: `/${lang}/friends` };
   } else if (cleanPath === '/ditto') {
     target = { type: 'ditto', lang, canonicalPath: `/${lang}/ditto` };
   } else if (cleanPath === '/eggs') {

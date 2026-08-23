@@ -431,6 +431,229 @@
   white-space: nowrap;
 }
 
+/* ── Multi-Part Navigation Bar ────────────────────────────────────────── */
+.ei-parts-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+  margin-bottom: 8px;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ei-parts-nav::-webkit-scrollbar {
+  height: 4px;
+}
+
+.ei-parts-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.ei-part-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  color: #94a3b8;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.ei-part-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+}
+
+.ei-part-btn.active {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+}
+
+.ei-part-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.15);
+  color: #f8fafc;
+}
+
+.ei-part-btn.active .ei-part-badge {
+  background: #38bdf8;
+  color: #0f172a;
+}
+
+/* ── Thematic Sections: Mega Raids ───────────────────────────────────────── */
+.ei-mega-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.ei-mega-card {
+  background: linear-gradient(145deg, rgba(239, 68, 68, 0.08), rgba(24, 24, 27, 0.7));
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ei-mega-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ei-mega-avatar-wrap {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.2) 0%, transparent 70%);
+  border-radius: 12px;
+}
+
+.ei-mega-avatar {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+}
+
+.ei-mega-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ei-mega-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ei-mega-types {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.ei-mega-details-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+}
+
+.ei-mega-cp-label {
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.ei-mega-cp-value {
+  color: #f59e0b;
+  font-weight: 800;
+}
+
+.ei-mega-weaknesses {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #cbd5e1;
+}
+
+.ei-weakness-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+/* ── Thematic Sections: Habitat Groupings ────────────────────────────────── */
+.ei-habitat-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+.ei-habitat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+/* ── Action Buttons Row ─────────────────────────────────────────────────── */
+.ei-actions-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ei-download-secondary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+  color: #e2e8f0;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ei-download-secondary-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
 /* ── Mobile Responsive Breakpoints (< 800px) ── */
 @media (max-width: 680px) {
   .ei-poster {
@@ -499,3 +722,4 @@
     max-width: 48px;
   }
 }
+

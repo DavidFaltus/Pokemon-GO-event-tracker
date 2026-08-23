@@ -38,7 +38,9 @@
         },
         {
           "name": "Machamp",
-          "types": [],
+          "types": [
+            "Fighting"
+          ],
           "image": "https://img.pokemondb.net/sprites/home/normal/machamp.png"
         }
       ],
@@ -75,6 +77,82 @@
   },
   "leaders": [
     {
+      "name": "Giovanni",
+      "avatar": "👑",
+      "reward": {
+        "name": "Reshiram",
+        "pveRating": "None",
+        "pvpRating": "None",
+        "worthGrinding": false,
+        "reason": "Shadow Reshiram je užitečný pokémon do hry.",
+        "hubRating": ""
+      },
+      "lineup": {
+        "slot1": [
+          {
+            "name": "Persian",
+            "types": [
+              "Normal"
+            ],
+            "image": "https://img.pokemondb.net/sprites/home/normal/persian.png"
+          }
+        ],
+        "slot2": [
+          {
+            "name": "Kangaskhan",
+            "types": [
+              "Normal"
+            ],
+            "image": "https://img.pokemondb.net/sprites/home/normal/kangaskhan.png"
+          },
+          {
+            "name": "Rhyperior",
+            "types": [
+              "Ground",
+              "Rock"
+            ],
+            "image": "https://img.pokemondb.net/sprites/home/normal/rhyperior.png"
+          },
+          {
+            "name": "Machamp",
+            "types": [
+              "Fighting"
+            ],
+            "image": "https://img.pokemondb.net/sprites/home/normal/machamp.png"
+          }
+        ],
+        "slot3": [
+          {
+            "name": "Reshiram",
+            "types": [
+              "Dragon",
+              "Fire"
+            ],
+            "image": "https://img.pokemondb.net/sprites/home/normal/reshiram.png"
+          }
+        ]
+      },
+      "counters": {
+        "megaCounters": [
+          "Mega Rayquaza",
+          "Mega Garchomp",
+          "Primal Kyogre"
+        ],
+        "advancedCounters": [
+          "Kyogre (Waterfall/Surf)",
+          "Palkia (Dragon Tail/Spacial Rend)",
+          "Terrakion (Double Kick/Sacred Sword)",
+          "Zekrom (Dragon Breath/Outrage)"
+        ],
+        "budgetCounters": [
+          "Dragonite (Dragon Breath/Outrage)",
+          "Swampert (Water Gun/Hydro Cannon)",
+          "Garchomp (Dragon Tail/Outrage)",
+          "Machamp (Counter/Dynamic Punch)"
+        ]
+      }
+    },
+    {
       "name": "Cliff",
       "avatar": "💪",
       "reward": {
@@ -83,7 +161,7 @@
         "pvpRating": "None",
         "worthGrinding": false,
         "reason": "Shadow Axew je užitečný pokémon do hry.",
-        "hubRating": ""
+        "hubRating": "A"
       },
       "lineup": {
         "slot1": [
@@ -113,8 +191,11 @@
           },
           {
             "name": "Galarian Weezing",
-            "types": [],
-            "image": "https://img.pokemondb.net/sprites/home/normal/galarian-weezing.png"
+            "types": [
+              "Poison",
+              "Fairy"
+            ],
+            "image": "https://img.pokemondb.net/sprites/home/normal/weezing-galarian.png"
           }
         ],
         "slot3": [
@@ -355,7 +436,7 @@
   "grunts": [
     {
       "phraseCs": "Normální neznamená slabý!",
-      "phraseEn": "Normal does not mean weak.",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Normal",
       "difficulty": "Easy",
       "worthFighting": false,
@@ -372,7 +453,7 @@
     },
     {
       "phraseCs": "Víš, jak horký může být pokémoní dech?",
-      "phraseEn": "Do you know how hot Pokémon fire breath can get?",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Fire",
       "difficulty": "Easy",
       "worthFighting": true,
@@ -389,7 +470,7 @@
     },
     {
       "phraseCs": "Tyto vody jsou zrádné!",
-      "phraseEn": "These waters are treacherous!",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Water",
       "difficulty": "Medium",
       "worthFighting": true,
@@ -406,7 +487,7 @@
     },
     {
       "phraseCs": "Tyto vody jsou zrádné!",
-      "phraseEn": "These waters are treacherous!",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Water",
       "difficulty": "Medium",
       "worthFighting": true,
@@ -422,7 +503,7 @@
     },
     {
       "phraseCs": "Připrav se na pořádný šok!",
-      "phraseEn": "Get ready to be shocked!",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Electric",
       "difficulty": "Easy",
       "worthFighting": true,
@@ -439,7 +520,7 @@
     },
     {
       "phraseCs": "Checkni mé travní Pokémony!",
-      "phraseEn": "Don't tangle with us!",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Grass",
       "difficulty": "Easy",
       "worthFighting": false,
@@ -456,7 +537,7 @@
     },
     {
       "phraseCs": "Zamrzneš na místě!",
-      "phraseEn": "You're gonna be frozen in your tracks.",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Ice",
       "difficulty": "Medium",
       "worthFighting": true,
@@ -473,7 +554,7 @@
     },
     {
       "phraseCs": "Tahle vypracovaná postava není jen na ozdobu!",
-      "phraseEn": "This buff physique isn't just for show!",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Fighting",
       "difficulty": "Medium",
       "worthFighting": true,
@@ -490,7 +571,7 @@
     },
     {
       "phraseCs": "Svinutý a připravený k úderu!",
-      "phraseEn": "Coiled and ready to strike!",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Poison",
       "difficulty": "Easy",
       "worthFighting": false,
@@ -507,7 +588,7 @@
     },
     {
       "phraseCs": "Zašlapu tě do země!",
-      "phraseEn": "You'll be defeated into the ground!",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Ground",
       "difficulty": "Easy",
       "worthFighting": true,
@@ -524,7 +605,7 @@
     },
     {
       "phraseCs": "Bojuj proti mým létajícím Pokémonům!",
-      "phraseEn": "Battle against my Flying-type Pokémon!",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Flying",
       "difficulty": "Easy",
       "worthFighting": true,
@@ -541,7 +622,7 @@
     },
     {
       "phraseCs": "Bojíš se neviditelné psychické síly?",
-      "phraseEn": "Are you scared of psychics that use unseen power?",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Psychic",
       "difficulty": "Easy",
       "worthFighting": false,
@@ -558,7 +639,7 @@
     },
     {
       "phraseCs": "Vpřed, moji super hmyzí Pokémoni!",
-      "phraseEn": "Go, my super bug Pokémon!",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Bug",
       "difficulty": "Easy",
       "worthFighting": false,
@@ -575,7 +656,7 @@
     },
     {
       "phraseCs": "Rozbalíme to!",
-      "phraseEn": "Let's rock and roll!",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Rock",
       "difficulty": "Easy",
       "worthFighting": true,
@@ -592,7 +673,7 @@
     },
     {
       "phraseCs": "Ke-he-he-he-he!",
-      "phraseEn": "Ke...ke...ke...ke...ke...ke!",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Ghost",
       "difficulty": "Easy",
       "worthFighting": true,
@@ -609,7 +690,7 @@
     },
     {
       "phraseCs": "Boj je předem vyhraný!",
-      "phraseEn": "ROAR! ...How'd that sound?",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Dragon",
       "difficulty": "Hard",
       "worthFighting": true,
@@ -626,7 +707,7 @@
     },
     {
       "phraseCs": "Kde je světlo, tam je i stín.",
-      "phraseEn": "Wherever there is light, there is also shadow.",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Dark",
       "difficulty": "Medium",
       "worthFighting": true,
@@ -643,7 +724,7 @@
     },
     {
       "phraseCs": "Proti mé železné vůli nemáš šanci!",
-      "phraseEn": "You're no match for my iron will!",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Steel",
       "difficulty": "Medium",
       "worthFighting": true,
@@ -660,7 +741,7 @@
     },
     {
       "phraseCs": "Podívej se na mé roztomilé Pokémony!",
-      "phraseEn": "Check out my cute Pokémon!",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Fairy",
       "difficulty": "Medium",
       "worthFighting": true,
@@ -677,7 +758,7 @@
     },
     {
       "phraseCs": "Normální neznamená slabý!",
-      "phraseEn": "Winning is for winners.",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Normal",
       "difficulty": "Easy",
       "worthFighting": false,
@@ -694,7 +775,7 @@
     },
     {
       "phraseCs": "Normální neznamená slabý!",
-      "phraseEn": "Winning is for winners.",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Normal",
       "difficulty": "Easy",
       "worthFighting": false,
@@ -710,7 +791,7 @@
     },
     {
       "phraseCs": "Normální neznamená slabý!",
-      "phraseEn": "Fooled ya, twerp.",
+      "phraseEn": "Don't bother, I've already won!",
       "type": "Normal",
       "difficulty": "Easy",
       "worthFighting": false,

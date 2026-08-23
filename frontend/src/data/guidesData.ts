@@ -18,6 +18,7 @@ export interface GuideSection {
     ja: string[];
     ru: string[];
   };
+  pokemon?: string[];
 }
 
 export interface GuideArticle {
@@ -55,7 +56,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "weekly-hidden-mini-events-guide",
     slug: "weekly-hidden-mini-events-guide",
     iconName: "Calendar",
-    imageUrl: "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png",
     featured: true,
     author: "PoGo Events Team",
     readTime: "9 min",
@@ -114,6 +115,7 @@ export const GUIDES_DATA: GuideArticle[] = [
       },
       {
         id: "combat-mini-events",
+        pokemon: ["Charizard", "Venusaur", "Blastoise", "Rayquaza", "Mewtwo"],
         heading: {
           cs: "2. Bojové týdenní eventy (Max Mondays, Raid Hour & PvP Battle Days)",
           en: "2. Weekly Combat Mini-Events (Max Mondays, Raid Hour & PvP Battle Days)",
@@ -213,6 +215,7 @@ export const GUIDES_DATA: GuideArticle[] = [
       },
       {
         id: "daily-trainer-habits",
+        pokemon: ["Articuno-Galarian", "Zapdos-Galarian", "Moltres-Galarian"],
         heading: {
           cs: "5. Každodenní trenérské mikro-rutiny (Daily Incense, 50 PokéCoins a Streaks)",
           en: "5. Daily Trainer Micro-Routines (Daily Incense, 50 PokéCoins & Streaks)",
@@ -283,7 +286,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "rocket-leaders-giovanni-guide",
     slug: "rocket-leaders-giovanni-guide",
     iconName: "Shield",
-    imageUrl: "https://images.unsplash.com/photo-1613771404784-3a5686aa2be3?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png",
     featured: false,
     author: "PoGo Events Team",
     readTime: "8 min",
@@ -394,7 +397,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "raid-battles-counter-guide",
     slug: "raid-battles-counter-guide",
     iconName: "Swords",
-    imageUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/384.png",
     featured: false,
     author: "PoGo Events Team",
     readTime: "8 min",
@@ -472,7 +475,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "spotlight-community-day-guide",
     slug: "spotlight-community-day-guide",
     iconName: "Calendar",
-    imageUrl: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png",
     featured: false,
     author: "PoGo Events Team",
     readTime: "7 min",
@@ -532,7 +535,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "pokemon-iv-cp-appraise-guide",
     slug: "pokemon-iv-cp-appraise-guide",
     iconName: "Sparkles",
-    imageUrl: "https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/149.png",
     featured: false,
     author: "PoGo Events Team",
     readTime: "6 min",
@@ -592,7 +595,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "mega-dynamax-mechanics-guide",
     slug: "mega-dynamax-mechanics-guide",
     iconName: "Trophy",
-    imageUrl: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&auto=format&fit=crop",
+    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10036.png",
     featured: false,
     author: "PoGo Events Team",
     readTime: "8 min",
@@ -644,6 +647,235 @@ export const GUIDES_DATA: GuideArticle[] = [
           en: "Dynamax and Gigantamax battles occur at Power Spots using Max Particles (MP):\n• Daily MP Cap: Collect up to 800 MP daily by visiting Power Spots and walking 2 km intervals.\n• Max Moves: Each Dynamax Pokémon features 3 Max Moves: Max Attack, Max Guard (reduces incoming damage for the entire team), and Max Spirit (heals entire team HP!). Upgrading Max Spirit and Max Guard is essential for conquering heavy 3★ and 6★ Gigantamax bosses.",
           ja: "パワースポットでのダイマックスバトルはマックス粒子（MP）を使用します：\n• 1日の上限：パワースポット巡回や2km歩行で1日最大800 MP収集可能。\n• マックス技：ダイアタック（攻撃）、ダイウォール（チーム全体の被ダメージ軽減）、ダイリカバリー（チーム全体のHP回復）の3種。ダイリカバリーとダイウォールをレベルアップすることが高難度キョダイマックス撃破の鍵です。",
           ru: "Бои Dynamax и Gigantamax на Power Spots требуют Max Particles (MP):\n• Дневной лимит: до 800 MP в день.\n• Max Moves: Max Attack, Max Guard (защита команды) и Max Spirit (лечение всей команды!). Прокачка Max Spirit критически важна для сложных 3★ и 6★ Gigantamax рейдов."
+        }
+      }
+    ]
+  },
+  {
+    id: "pokemon-evolution-quests-guide",
+    slug: "pokemon-evolution-quests-guide",
+    iconName: "Sparkles",
+    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/865.png",
+    featured: true,
+    author: "PoGo Events Team",
+    readTime: "12 min",
+    updatedAt: "2026-08-23",
+    category: {
+      cs: "Evoluce & Buddy Úkoly",
+      en: "Evolution & Buddy Tasks",
+      ja: "進化＆相棒タスク",
+      ru: "Эволюция и Квесты Напарника"
+    },
+    title: {
+      cs: "Všechny Evolve Questy v Pokémon GO: Návod jak vyvinout Farfetch'da, Panchama, Annihilape a další (2026)",
+      en: "All Pokémon GO Evolution Quests: Complete Guide for Farfetch'd, Pancham, Annihilape & More (2026)",
+      ja: "【2026最新】全特殊進化タスク完全攻略：カモネギ、ヤンチャム、コノヨザル等の進化条件一覧",
+      ru: "Все спец-квесты на эволюцию в Pokémon GO: Гайд по Farfetch'd, Pancham, Annihilape и др. (2026)"
+    },
+    subtitle: {
+      cs: "Kompletní přehled všech Pokémonů se speciálními podmínkami vývoje – od 10 Excellent hodů, přes porážení typů, chůzi s buddym, až po otočení telefonu a počasí.",
+      en: "Master list of all Pokémon requiring special evolution tasks in Pokémon GO — from 10 Excellent throws and defeating types to walking distance, phone inversion, and lure modules.",
+      ja: "エクセレントスロー10回、特定タイプ討伐、相棒歩行、スマホ逆さま、ルアーモジュール進化など全特殊進化を一挙解説。",
+      ru: "Полный список покемонов со специальными условиями эволюции: 10 Excellent бросков, победы над типами, дистанция напарника, переворот телефона и модули."
+    },
+    sections: [
+      {
+        id: "buddy-task-evolutions",
+        heading: {
+          cs: "1. Adventure Together: Úkoly při nasazení jako Buddy",
+          en: "1. Adventure Together: Active Buddy Evolution Tasks",
+          ja: "1. 相棒と一緒に冒険：アクティブ相棒タスク進化",
+          ru: "1. Adventure Together: Задания при активном напарнике"
+        },
+        content: {
+          cs: "Pro splnění těchto úkolů musíte mít daného Pokémona aktivně nastaveného jako svého Buddyho. Po splnění úkolu se počítadlo nezresetuje ani při výměně buddyho, a Pokémona můžete vyvinout kdykoliv později:\n\n• Galarian Farfetch'd ➔ Sirfetch'd: Hoďte 10× Excellent hodů (50 Candy).\n• Primeape ➔ Annihilape: Poražte 30 Ghost- nebo Psychic-type Pokémonů (100 Candy).\n• Pancham ➔ Pangoro: Chyťte 32 Dark-type Pokémonů (50 Candy).\n• Charcadet ➔ Armarouge: Poražte 30 Psychic-type Pokémonů (50 Candy).\n• Charcadet ➔ Ceruledge: Poražte 30 Ghost-type Pokémonů (50 Candy).\n• Galarian Slowpoke ➔ Galarian Slowbro: Chyťte 30 Poison-type Pokémonů (50 Candy).\n• Galarian Slowpoke ➔ Galarian Slowking: Chyťte 30 Psychic-type Pokémonů (50 Candy).\n• Poipole ➔ Naganadel: Chyťte 20 Dragon-type Pokémonů (200 Candy).\n• Galarian Yamask ➔ Runerigus: Vyhrajte 10 Raidů jako buddy (50 Candy).\n• Hisuian Qwilfish ➔ Overqwil: Vyhrajte 10 Raidů jako buddy (50 Candy).\n• Spritzee ➔ Aromatisse: Aktivujte 1× Incense (50 Candy).\n• Swirlix ➔ Slurpuff: Nakrmte buddyho 25 pamlsky / Berries (50 Candy).\n• Floette ➔ Florges: Získejte 20 Buddy srdíček (100 Candy).\n• Eevee ➔ Sylveon: Získejte 70 Buddy srdíček (25 Candy, nebo 1× name trick: Kira).",
+          en: "The following Pokémon must be set as your active Buddy while completing the challenge. Progress is permanently saved even if you switch buddies before evolving:\n\n• Galarian Farfetch'd ➔ Sirfetch'd: Make 10 Excellent Throws (50 Candy).\n• Primeape ➔ Annihilape: Defeat 30 Ghost- or Psychic-type Pokémon (100 Candy).\n• Pancham ➔ Pangoro: Catch 32 Dark-type Pokémon (50 Candy).\n• Charcadet ➔ Armarouge: Defeat 30 Psychic-type Pokémon (50 Candy).\n• Charcadet ➔ Ceruledge: Defeat 30 Ghost-type Pokémon (50 Candy).\n• Galarian Slowpoke ➔ Galarian Slowbro: Catch 30 Poison-type Pokémon (50 Candy).\n• Galarian Slowpoke ➔ Galarian Slowking: Catch 30 Psychic-type Pokémon (50 Candy).\n• Poipole ➔ Naganadel: Catch 20 Dragon-type Pokémon (200 Candy).\n• Galarian Yamask ➔ Runerigus: Win 10 Raids while buddy (50 Candy).\n• Hisuian Qwilfish ➔ Overqwil: Win 10 Raids while buddy (50 Candy).\n• Spritzee ➔ Aromatisse: Activate 1 Incense (50 Candy).\n• Swirlix ➔ Slurpuff: Feed your buddy 25 treats / berries (50 Candy).\n• Floette ➔ Florges: Earn 20 Buddy Hearts (100 Candy).\n• Eevee ➔ Sylveon: Earn 70 Buddy Hearts (25 Candy, or 1-time name trick: Kira).",
+          ja: "以下のポケモンは相棒に設定した状態でタスクを達成する必要があります。達成後は相棒を解除しても進化条件は保持されます：\n\n• ガラルカモネギ ➔ ネギガナイト：エクセレントスローを10回投げる（アメ50個）\n• オコリザル ➔ コノヨザル：ゴーストまたはエスパータイプのポケモンを30匹倒す（アメ100個）\n• ヤンチャム ➔ ゴロンダ：あくタイプのポケモンを32匹捕まえる（アメ50個）\n• カルボウ ➔ グレンアルマ：エスパータイプを30匹倒す（アメ50個）\n• カルボウ ➔ ソウブレイズ：ゴーストタイプを30匹倒す（アメ50個）\n• ガラルヤドン ➔ ガラルヤドラン：どくタイプを30匹捕獲（アメ50個）\n• ガラルヤドン ➔ ガラルヤドキング：エスパータイプを30匹捕獲（アメ50個）\n• ベベノム ➔ アーゴヨン：ドラゴンタイプを20匹捕獲（アメ200個）\n• ガラルデスマス ➔ デスバーン：レイドバトルで10回勝利（アメ50個）\n• ヒスイハリーセン ➔ ハリーマン：レイドバトルで10回勝利（アメ50個）\n• シュシュプ ➔ フレフワン：おこうを1個使う（アメ50個）\n• ペロッパフ ➔ ペロリーム：相棒におやつを25個あげる（アメ50個）\n• フラエッテ ➔ フラージェス：相棒ハートを20個獲得（アメ100個）\n• イーブイ ➔ ニンフィア：相棒ハートを70個獲得（アメ25個、初回限定裏技: Kira）",
+          ru: "Покемон должен быть выбран вашим активным напарником (Buddy) во время выполнения условий:\n\n• Galarian Farfetch'd ➔ Sirfetch'd: 10 Excellent бросков (50 конфет).\n• Primeape ➔ Annihilape: Победить 30 Ghost или Psychic покемонов (100 конфет).\n• Pancham ➔ Pangoro: Поймать 32 Dark покемона (50 конфет).\n• Charcadet ➔ Armarouge: Победить 30 Psychic покемонов (50 конфет).\n• Charcadet ➔ Ceruledge: Победить 30 Ghost покемонов (50 конфет).\n• Galarian Slowpoke ➔ Galarian Slowbro: Поймать 30 Poison покемонов (50 конфет).\n• Galarian Slowpoke ➔ Galarian Slowking: Поймать 30 Psychic покемонов (50 конфет).\n• Poipole ➔ Naganadel: Поймать 20 Dragon покемонов (200 конфет).\n• Galarian Yamask ➔ Runerigus: Выиграть 10 рейдов (50 конфет).\n• Hisuian Qwilfish ➔ Overqwil: Выиграть 10 рейдов (50 конфет).\n• Spritzee ➔ Aromatisse: Использовать 1 ладан (Incense) (50 конфет).\n• Swirlix ➔ Slurpuff: Скормить 25 ягод/угощений (50 конфет).\n• Floette ➔ Florges: Заработать 20 сердец напарника (100 конфет).\n• Eevee ➔ Sylveon: Заработать 70 сердец напарника (25 конфет, или имя Kira)."
+        },
+        tips: {
+          cs: [
+            "Pro Annihilape a Charcadeta: Nemusíte čekat na raidy! Trénujte s Blanche v Master League (má Metagrosse) nebo dejte rychlý PvP souboj s kamarádem s 3× CP 10 Pokémony!",
+            "Pro Galarian Farfetch'da: Použijte Nanab Berry na legendární raid bossy s velkým target kruhem pro 100% jistotu Excellent hodu.",
+            "Pro Spritzee: Počítá se i bezplatný 15minutový Daily Adventure Incense."
+          ],
+          en: [
+            "For Annihilape & Charcadet: No need to wait for raids! Train against Team Leader Blanche in Master League (she uses Metagross) or battle a friend fielding three 10-CP Pokémon.",
+            "For Galarian Farfetch'd: Use Nanab Berries on 5★ Legendary raid bosses with massive catch rings to effortlessly land 10 Excellent throws.",
+            "For Spritzee: The free 15-minute Daily Adventure Incense fully counts for this requirement!"
+          ],
+          ja: [
+            "コノヨザル＆カルボウの裏技：チームリーダーのブランシェ（マスターリーグ）と対戦するか、フレンドにCP10のポケモンを3匹出してもらい素早く30回倒せば数分で達成できます！",
+            "ガラルカモネギ：伝説レイドボスの大きなサークルにナナのみを使って落ち着いてエクセレントを狙いましょう。",
+            "シュシュプ：無料の「おさんぽおこう（15分）」でも進化条件をクリアできます。"
+          ],
+          ru: [
+            "Лайфхак для Annihilape и Charcadet: Не ждите рейдов! Сражайтесь с лидером Blanche в Master League или попросите друга выставить трех покемонов с 10 CP в PvP!",
+            "Для Farfetch'd: Бросайте в легендарных боссов с Nanab Berry для легких Excellent бросков.",
+            "Для Spritzee: Бесплатный Daily Adventure Incense полностью засчитывается!"
+          ]
+        }
+      },
+      {
+        id: "walking-distance-evolutions",
+        heading: {
+          cs: "2. Chůze s Buddym (Walking Distance)",
+          en: "2. Walking Distance Buddy Evolutions",
+          ja: "2. 相棒と歩いて進化（距離条件）",
+          ru: "2. Дистанция ходьбы с напарником"
+        },
+        content: {
+          cs: "Někteří Pokémoni vyžadují nachození určité vzdálenosti jako Buddy před stisknutím tlačítka Evolve:\n\n• Feebas ➔ Milotic: 20 km (100 Candy)\n• Pawmo ➔ Pawmot: 25 km (100 Candy)\n• Eevee ➔ Espeon: 10 km + vyvinout VE DNE (musí zůstat jako aktivní buddy! 25 Candy, Name trick: Sakura)\n• Eevee ➔ Umbreon: 10 km + vyvinout V NOCI (musí zůstat jako aktivní buddy! 25 Candy, Name trick: Tamao)\n• Hisuian Sneasel ➔ Sneasler: 7 km + vyvinout VE DNE (100 Candy)\n• Woobat ➔ Swoobat: 1 km (50 Candy)\n• Happiny ➔ Chansey: 15 km (25 Candy)\n• Bonsly ➔ Sudowoodo: 15 km (50 Candy)\n• Mime Jr. ➔ Mr. Mime: 15 km (50 Candy)",
+          en: "These Pokémon must be walked as your active Buddy to unlock their evolution:\n\n• Feebas ➔ Milotic: 20 km (100 Candy)\n• Pawmo ➔ Pawmot: 25 km (100 Candy)\n• Eevee ➔ Espeon: 10 km + evolve during DAYTIME while set as Buddy (25 Candy, Name trick: Sakura)\n• Eevee ➔ Umbreon: 10 km + evolve during NIGHTTIME while set as Buddy (25 Candy, Name trick: Tamao)\n• Hisuian Sneasel ➔ Sneasler: 7 km + evolve during DAYTIME (100 Candy)\n• Woobat ➔ Swoobat: 1 km (50 Candy)\n• Happiny ➔ Chansey: 15 km (25 Candy)\n• Bonsly ➔ Sudowoodo: 15 km (50 Candy)\n• Mime Jr. ➔ Mr. Mime: 15 km (50 Candy)",
+          ja: "相棒にして一定距離を歩くことで進化が可能になるポケモン一覧：\n\n• ヒンバス ➔ ミロカロス：20 km（アメ100個）\n• パモット ➔ パーモット：25 km（アメ100個）\n• イーブイ ➔ エーフィ：10 km ＋ 相棒のまま「昼」に進化（アメ25個、裏技名: Sakura）\n• イーブイ ➔ ブラッキー：10 km ＋ 相棒のまま「夜」に進化（アメ25個、裏技名: Tamao）\n• ヒスイニューラ ➔ オオニューラ：7 km ＋「昼」に進化（アメ100個）\n• コロモリ ➔ ココロモリ：1 km（アメ50個）\n• ピンプク ➔ ラッキー：15 km（アメ25個）\n• ウソハチ ➔ ウソッキー：15 km（アメ50個）\n• マネネ ➔ バリヤード：15 km（アメ50個）",
+          ru: "Покемоны, требующие нагулять дистанцию в роли активного напарника:\n\n• Feebas ➔ Milotic: 20 км (100 конфет)\n• Pawmo ➔ Pawmot: 25 км (100 конфет)\n• Eevee ➔ Espeon: 10 км + эволюция ДНЕМ, оставаясь напарником (25 конфет, имя: Sakura)\n• Eevee ➔ Umbreon: 10 км + эволюция НОЧЬЮ, оставаясь напарником (25 конфет, имя: Tamao)\n• Hisuian Sneasel ➔ Sneasler: 7 км + эволюция ДНЕМ (100 конфет)\n• Woobat ➔ Swoobat: 1 км (50 конфет)\n• Happiny ➔ Chansey: 15 км (25 конфет)\n• Bonsly ➔ Sudowoodo: 15 км (50 конфет)\n• Mime Jr. ➔ Mr. Mime: 15 км (50 конфет)"
+        },
+        tips: {
+          cs: [
+            "POZOR u Espeona a Umbreona: Po nachození 10 km NESMÍTE Eevee sundat z pozice Buddyho! Tlačítko Evolve musí ukazovat siluetu Espeona/Umbreona, nikoliv otazník.",
+            "Denní a noční čas se řídí reálným herním světlem na mapě (slunce / měsíc)."
+          ],
+          en: [
+            "CRITICAL for Espeon & Umbreon: After walking 10 km, keep Eevee as your ACTIVE Buddy when evolving! The Evolve button MUST display Espeon or Umbreon's silhouette instead of a question mark.",
+            "Day/night transition follows the real-time lighting cycle on your in-game map."
+          ],
+          ja: [
+            "重要（エーフィ＆ブラッキー）：10km歩いた後、相棒を解除せずに進化ボタンを押してください！ボタンにシルエット（？ではなく）が表示されていることを必ず確認しましょう。",
+            "昼夜の判定はゲーム内マップの明るさ（太陽／月）と連動しています。"
+          ],
+          ru: [
+            "ВАЖНО для Espeon и Umbreon: После 10 км НЕ снимайте Eevee с напарника! На кнопке эволюции должен быть силуэт нужного покемона, а не знак вопроса (?).",
+            "Смена дня и ночи определяется освещением на игровой карте."
+          ]
+        }
+      },
+      {
+        id: "unique-lure-item-mechanics",
+        heading: {
+          cs: "3. Unikátní mechaniky: Gyroskop, Úplněk, Lure moduly a Kameny",
+          en: "3. Unique Mechanics: Gyroscope, Full Moon, Lures & Items",
+          ja: "3. 特殊ギミック：スマホ逆さま、満月、ルアーモジュール、進化アイテム",
+          ru: "3. Уникальные механики: Гироскоп, Полнолуние, Приманки и Камни"
+        },
+        content: {
+          cs: "Speciální fyzikální a herní podmínky:\n\n• Inkay ➔ Malamar: 50 Candy + Fyzicky otočit telefon vzhůru nohama (displejem dolů). Vyžaduje povolenou auto-rotaci a funkční gyroskop v mobilu!\n• Ursaring ➔ Ursaluna: 100 Candy během astronomického úplňku (Full Moon na noční obloze ve hře) nebo při vybraných eventech.\n• Sliggoo / Hisuian Sliggoo ➔ Goodra / Hisuian Goodra: 100 Candy za deštivého počasí (Rainy) NEBO v dosahu Rainy Lure Modulu.\n• Magneton / Nosepass / Charjabug ➔ Magnezone / Probopass / Vikavolt: V dosahu Magnetic Lure Modulu.\n• Eevee ➔ Leafeon / Glaceon: V dosahu Mossy / Glacial Lure Modulu (Name tricks: Linnea / Rea).\n• Crabrawler ➔ Crabominable: V dosahu Glacial Lure Modulu (50 Candy).\n• Combee (♀) ➔ Vespiquen & Salandit (♀) ➔ Salazzle: Pouze samičky mohou projít vývojem! Samci (♂) se vyvinout nemohou.\n• Kirlia (♂) ➔ Gallade (Sinnoh Stone) & Snorunt (♀) ➔ Froslass (Sinnoh Stone).\n• Tyrogue: Podle nejvyšší IV statistiky (Attack ➔ Hitmonlee, Defense ➔ Hitmonchan, HP ➔ Hitmontop).\n• Trade Evolution (0 Candy): Kadabra, Machoke, Graveler, Haunter, Boldore, Gurdurr, Karrablast, Shelmet, Phantump, Pumpkaboo.",
+          en: "Unique physical and situational evolution criteria:\n\n• Inkay ➔ Malamar: 50 Candy + physically turn your mobile device upside down! Ensure screen auto-rotate is enabled and gyro permissions are active.\n• Ursaring ➔ Ursaluna: 100 Candy during a real-world astronomical Full Moon phase (visible in the night sky in-game) or special event windows.\n• Sliggoo / Hisuian Sliggoo ➔ Goodra / Hisuian Goodra: 100 Candy during in-game Rainy weather OR while within range of a Rainy Lure Module.\n• Magneton / Nosepass / Charjabug ➔ Magnezone / Probopass / Vikavolt: Within range of a Magnetic Lure Module.\n• Eevee ➔ Leafeon / Glaceon: Within range of Mossy / Glacial Lure Modules (Name tricks: Linnea / Rea).\n• Crabrawler ➔ Crabominable: Within range of a Glacial Lure Module (50 Candy).\n• Female-Only Evolutions: Combee (♀) ➔ Vespiquen and Salandit (♀) ➔ Salazzle (males cannot evolve).\n• Gender + Sinnoh Stone: Kirlia (♂) ➔ Gallade and Snorunt (♀) ➔ Froslass.\n• Tyrogue IV Formula: Highest Attack ➔ Hitmonlee, highest Defense ➔ Hitmonchan, highest HP ➔ Hitmontop (ties are 50/50 random).\n• Free Trade Evolutions (0 Candy cost after trading): Kadabra, Machoke, Graveler, Haunter, Boldore, Gurdurr, Karrablast, Shelmet, Phantump, Pumpkaboo.",
+          ja: "物理的・環境的特殊ギミック進化一覧：\n\n• マーイーカ ➔ カラマネロ：アメ50個 ＋ スマホ本体を上下逆さまにする（画面の自動回転をONにしジャイロを有効にしてください）。\n• リングマ ➔ ガチグマ：アメ100個 ＋ 現実の「満月」の夜（ゲーム内の空に満月出現時）または特別イベント時。\n• ヌメイル / ヒスイヌメイル ➔ ヌメルゴン：アメ100個 ＋ ゲーム内天候「雨」または「レイニールアー」の有効範囲内。\n• レアコイル / ノズパス / デンヂムシ ➔ ジバコイル / ダイノーズ / クワガノン：「マグネットルアー」の範囲内。\n• イーブイ ➔ リーフィア / グレイシア：「ハーブルアー」/「アイスルアー」の範囲内（裏技名: Linnea / Rea）。\n• マケンカニ ➔ ケケンカニ：「アイスルアー」の範囲内（アメ50個）。\n• 性別限定進化：ミツハニー（♀限定 ➔ ビークイン）、ヤトウモリ（♀限定 ➔ エンニュート）※♂は進化不可。\n• 性別＋シンオウのいし：キルリア（♂限定 ➔ エルレイド）、ユキワラシ（♀限定 ➔ ユキメノコ）。\n• バルキー（個体値判定）：攻撃最高 ➔ サワムラー、防御最高 ➔ エビワラー、HP最高 ➔ カポエラー。\n• 交換進化（アメ0個）：ユンゲラー、ゴーリキー、ゴローン、ゴースト、ガントル、ドテッコツ、カブルモ、チョボマキ、ボクレー、バケッチャ。",
+          ru: "Уникальные механические и ситуационные условия эволюции:\n\n• Inkay ➔ Malamar: 50 конфет + физически перевернуть телефон вверх ногами (включите автоповорот экрана!).\n• Ursaring ➔ Ursaluna: 100 конфет во время реального полнолуния (Full Moon на небе в игре) или ивентов.\n• Sliggoo ➔ Goodra: 100 конфет в дождливую погоду (Rainy) ИЛИ у модуля Rainy Lure.\n• Magneton / Nosepass / Charjabug: В радиусе Magnetic Lure Modul.\n• Eevee ➔ Leafeon / Glaceon: В радиусе Mossy / Glacial Lure Modul (Имена: Linnea / Rea).\n• Crabrawler ➔ Crabominable: В радиусе Glacial Lure Modul (50 конфет).\n• Только самки: Combee (♀) ➔ Vespiquen и Salandit (♀) ➔ Salazzle (самцы не эволюционируют!).\n• Пол + Sinnoh Stone: Kirlia (♂) ➔ Gallade и Snorunt (♀) ➔ Froslass.\n• Tyrogue (по IV): Макс. Attack ➔ Hitmonlee, макс. Defense ➔ Hitmonchan, макс. HP ➔ Hitmontop.\n• Бесплатная эволюция после обмена (0 конфет): Kadabra, Machoke, Graveler, Haunter, Boldore, Gurdurr, Karrablast, Shelmet, Phantump, Pumpkaboo."
+        },
+        tips: {
+          cs: [
+            "Při Inkay evoluci: Pokud se tlačítko Evolve nezaktivuje po otočení, vypněte a znovu zapněte zámek rotace displeje v nastavení telefonu.",
+            "Při Trade výměnách vždy měňte Pokémona chyceného 100+ km daleko pro garanci 1× Candy XL a ušetření až 200 Candy na evoluci!"
+          ],
+          en: [
+            "Inkay Inversion Fix: If the Evolve button does not highlight upside down, toggle your phone's screen auto-rotate lock off and on in system quick settings.",
+            "Trading Pro-Tip: Trade Pokémon caught 100+ km apart to secure guaranteed Candy XL while unlocking the 0-Candy evolution cost!"
+          ],
+          ja: [
+            "マーイーカが進化できない場合：スマホの画面回転ロックを解除し、OSの設定でジャイロセンサーが許可されているか確認してください。",
+            "交換進化のコツ：100km以上離れた場所で捕まえたポケモンをトレードすると、確定でアメXLを貰いつつ進化のアメ（最大200個）を無料にできます！"
+          ],
+          ru: [
+            "Если Inkay не эволюционирует: отключите блокировку ориентации экрана в шторке смартфона.",
+            "Совет по трейдам: Меняйтесь покемонами с дистанцией 100+ км для гарантированной Candy XL и экономии до 200 конфет на эволюции!"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    id: "vivillon-patterns-postcard-guide",
+    slug: "vivillon-patterns-postcard-guide",
+    iconName: "BookOpen",
+    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/666.png",
+    featured: true,
+    author: "PoGo Events Team",
+    readTime: "10 min",
+    updatedAt: "2026-08-23",
+    category: {
+      cs: "Vivillon & Postcards",
+      en: "Vivillon & Postcards",
+      ja: "ビビヨン＆ポストカード",
+      ru: "Вивиллон и Открытки"
+    },
+    title: {
+      cs: "Vivillon Pokémon GO Guide: Mapa všech 18 vzorů, Postcard triky & Jak získat Sandstorm (2026)",
+      en: "Vivillon Pokémon GO Master Guide: All 18 Patterns Map, Postcard Tricks & Sandstorm Tips (2026)",
+      ja: "【2026最新】ビビヨン全18模様の出現地域マップ＆ポストカード攻略（砂塵・太陽・氷雪の入手方法）",
+      ru: "Полный гайд по Вивиллону в Pokémon GO: Карта всех 18 узоров, открытки и секреты Sandstorm (2026)"
+    },
+    subtitle: {
+      cs: "Kompletní průvodce sbírkou Vivillona: Jak funguje připínání pohlednic, milníky medaile Butterfly Collector, seznam zemí a strategie pro zisk nejvzácnějších vzorů.",
+      en: "Ultimate Vivillon collection handbook: How postcard pinning works, Butterfly Collector medal encounter tiers (3, 9, 15), worldwide pattern map, and strategies for rarest forms.",
+      ja: "ポストカード保存システム、コレクターメダルの出現条件（3・9・15枚）、18地域の国別マップ、砂塵（Sandstorm）や太陽（Sun）の集め方を完全網羅。",
+      ru: "Полное руководство по сбору Вивиллонов: механика сохранения открыток, уровни медали (3, 9, 15), карта регионов и поиск редких Sandstorm и Sun."
+    },
+    sections: [
+      {
+        id: "vivillon-postcard-mechanics",
+        heading: {
+          cs: "1. Jak funguje mechanika připínání pohlednic (Postcards)",
+          en: "1. How Postcard Pinning & Scatterbug Encounters Work",
+          ja: "1. ポストカード保存とコフキムシ出現の仕組み",
+          ru: "1. Механика сохранения открыток и появление Scatterbug"
+        },
+        content: {
+          cs: "Vivillon (a jeho předchozí vývojová stádia Scatterbug a Spewpa) je unikátní Pokémon, jehož křídla mají 18 různých regionálních vzorů. Získávají se připínáním pohlednic (Postcards) z dárků:\n\n1. Připnutí pohlednice od přítele: Při otevírání dárku klikněte na ikonu špendlíku (Pin) před otevřením dárku.\n2. Vlastní pohlednice: Můžete připnout až 3 své vlastní odeslané pohlednice denně, což započítává pokrok do vašeho domovského regionu (např. Continental v ČR/SK).\n3. Milníky pro setkání se Scatterbugem:\n   • 1. setkání: 3 připnuté pohlednice z daného regionu\n   • 2. setkání: 9 připnutých pohlednic\n   • 3. a každé další setkání: 15 připnutých pohlednic\n4. Vývoj: Scatterbug ➔ Spewpa (25 Candy) ➔ Vivillon (100 Candy). Vzor křídel je určen regionem původní pohlednice!",
+          en: "Vivillon (evolving from Scatterbug and Spewpa) is a unique Pokémon featuring 18 distinct regional wing patterns acquired through the Postcard Book mechanic:\n\n1. Pinning Friend Postcards: Tap the Pin icon next to the Open button on gifts received from friends worldwide.\n2. Pinning Your Own Postcards: You can pin up to 3 of your own outgoing postcards per day to make progress toward your local region (e.g. Continental in Central Europe).\n3. Scatterbug Encounter Milestones:\n   • 1st encounter: 3 pinned postcards from that region\n   • 2nd encounter: 9 pinned postcards\n   • 3rd & all subsequent encounters: 15 pinned postcards\n4. Evolution Cost: Scatterbug ➔ Spewpa (25 Candy) ➔ Vivillon (100 Candy). Wing pattern is permanently locked to the origin region of the postcard!",
+          ja: "ビビヨン（コフキムシ➔コフーライから進化）は世界18種類の羽の模様を持つ特別なポケモンです：\n\n1. フレンドのギフト保存：ギフトを開封する前に「ピン留め（Pin）」アイコンをタップします。\n2. 自分のポストカード保存：自分で入手したポストカードも1日最大3枚までピン留め可能（日本の場合は「みやび/Elegant」等に進捗）。\n3. コフキムシ出現の必要枚数：\n   • 1回目：対象地域のカード 3枚\n   • 2回目：対象地域のカード 9枚\n   • 3回目以降：対象地域のカード 15枚ごと\n4. 進化コスト：コフキムシ ➔ コフーライ（アメ25個） ➔ ビビヨン（アメ100個）。進化後の模様は入手したポストカードの地域で固定されます！",
+          ru: "Вивиллон (эволюционирует из Scatterbug и Spewpa) имеет 18 уникальных региональных узоров крыльев, открываемых через сохранение открыток:\n\n1. Сохранение открыток друзей: Нажмите иконку булавки (Pin) перед открытием подарка от друга.\n2. Собственные открытки: Можно закреплять до 3 своих отправляемых открыток в день для прогресса своего региона.\n3. Уровни для поимки Scatterbug:\n   • 1-я встреча: 3 открытки из этого региона\n   • 2-я встреча: 9 открыток\n   • 3-я и все последующие: 15 открыток\n4. Эволюция: Scatterbug ➔ Spewpa (25 конфет) ➔ Vivillon (100 конфет). Узор определяется регионом открытки!"
+        },
+        tips: {
+          cs: [
+            "Trik s plným Postcard Bookem: Pohlednici můžete ihned po připnutí (započtení bodu do medaile) zase odepnout (Unpin) v Postcard Booku, abyste nezaplnili limit kapacity.",
+            "Použijte Pinap Berry při chytání každého Scatterbuga pro rychlý sběr 125 Candy na kompletní vývoj."
+          ],
+          en: [
+            "Instant Unpin Trick: Immediately unpin the postcard in your Postcard Book after pinning it. The medal progress is awarded instantly and your storage won't get clogged!",
+            "Always throw a Silver Pinap or Pinap Berry on every Scatterbug catch to quickly amass the 125 candies required for the final Vivillon evolution."
+          ],
+          ja: [
+            "ピン留め即解除ワザ：ピン留めして進捗が加算された直後、ブック内でピンを外してもメダルのカウントは減りません。容量節約に最適です！",
+            "コフキムシ捕獲時は必ず「ぎんのパイルのみ」か「パイルのみ」を使い、進化に必要な125個のアメを効率よく集めましょう。"
+          ],
+          ru: [
+            "Лайфхак с местом: Сразу после закрепления открытки открепите ее в Postcard Book. Прогресс в медаль засчитывается мгновенно!",
+            "Всегда используйте Pinap Berry при ловле Scatterbug для сбора 125 конфет на эволюцию."
+          ]
+        }
+      },
+      {
+        id: "vivillon-all-18-regions",
+        heading: {
+          cs: "2. Kompletní katalog 18 vzorů a jejich státy",
+          en: "2. Master Regional Catalog: All 18 Vivillon Patterns & Countries",
+          ja: "2. 全18種類の模様と対象国・地域一覧",
+          ru: "2. Каталог всех 18 узоров и страны их обитания"
+        },
+        content: {
+          cs: "Přehled všech 18 vzorů v Pokémon GO a kde je ve světě najít:\n\n• Continental (Běžný): Česko, Slovensko, Polsko, Německo, Rakousko, Dánsko, Nizozemsko, Argentina.\n• Meadow (Běžný): Francie, Itálie, Švýcarsko, části Německa.\n• Garden (Běžný): Velká Británie, Irsko, Nový Zéland.\n• Marine (Běžný): Španělsko, Portugalsko, Řecko, Chorvatsko, Chile.\n• High Plains (Běžný): Západní USA (Kalifornie, Nevada, Arizona, Colorado), Východní Evropa.\n• Modern (Běžný): Jihovýchodní a centrální USA (Texas, Florida, Georgia, Ohio, Chicago).\n• Polar (Běžný): Kanada, Aljaška, severní státy USA, Švédsko, jižní Norsko.\n• Elegant (Střední): Japonsko (většina prefektur).\n• Jungle (Střední): Kolumbie, Malajsie, Singapur, Indonésie, Vietnam, Panama, Ekvádor.\n• River (Střední): Jižní Austrálie, Egypt, Jihoafrická republika.\n• Monsoon (Vzácný): Tchaj-wan, Hongkong, Thajsko, Vietnam, Indie.\n• Savanna (Vzácný): Brazílie, Paraguay, severní Argentina.\n• Archipelago (Vzácný): Karibské ostrovy (Kuba, Jamajka, Bahamy, Dominikánská republika), Puerto Rico.\n• Sun (🔥 Extrémně vzácný): Mexiko, Guatemala, Madagaskar, severní Austrálie.\n• Ocean (🔥 Extrémně vzácný): Havaj, Galapágy, Réunion, Mauricius.\n• Icy Snow (🔥 Extrémně vzácný): Grónsko, severní Finsko, severní Norsko, severní Kanada.\n• Tundra (🔥 Extrémně vzácný): Island, severní Norsko (Tromsø), Hokkaidó (Japonsko).\n• Sandstorm (👑 Nejvzácnější): Blízký východ – Spojené arabské emiráty (Dubaj), Saúdská Arábie, Izrael, Kuvajt, Katar, Omán.\n\n*Poznámka:* Poké Ball Pattern a Fancy Pattern nejsou v Pokémon GO zatím dostupné.",
+          en: "Complete guide to all 18 Vivillon wing patterns and their geographic regions:\n\n• Continental: Czechia, Slovakia, Poland, Germany, Austria, Denmark, Netherlands, Argentina.\n• Meadow: France, Italy, Switzerland, parts of Germany.\n• Garden: United Kingdom, Ireland, New Zealand.\n• Marine: Spain, Portugal, Greece, Croatia, Chile.\n• High Plains: Western USA (California, Nevada, Arizona, Colorado), Eastern Europe.\n• Modern: Southeastern and Central USA (Texas, Florida, Georgia, Ohio, Illinois).\n• Polar: Canada, Alaska, Northern USA, Sweden, Southern Norway.\n• Elegant: Japan (mainland prefectures).\n• Jungle: Colombia, Malaysia, Singapore, Indonesia, Vietnam, Panama, Ecuador.\n• River: Southern Australia, Egypt, South Africa.\n• Monsoon: Taiwan, Hong Kong, Thailand, Vietnam, India.\n• Savanna: Brazil, Paraguay, Northern Argentina.\n• Archipelago: Caribbean islands (Cuba, Jamaica, Bahamas, Dominican Republic), Puerto Rico.\n• Sun (🔥 Ultra Rare): Mexico, Guatemala, Madagascar, Northern Australia.\n• Ocean (🔥 Ultra Rare): Hawaii, Galapagos, Réunion, Mauritius.\n• Icy Snow (🔥 Ultra Rare): Greenland, Northern Finland, Northern Norway, Northern Canada.\n• Tundra (🔥 Ultra Rare): Iceland, Northern Norway (Tromsø), Hokkaido (Japan).\n• Sandstorm (👑 Holy Grail): Middle East — UAE (Dubai), Saudi Arabia, Israel, Kuwait, Qatar, Oman.\n\n*Note:* Poké Ball and Fancy Patterns are currently unreleased in Pokémon GO.",
+          ja: "全18種類のビビヨン模様と主な出現地域：\n\n• たいりく（Continental）：チェコ、ポーランド、ドイツ、オーストリア、オランダ、アルゼンチン等\n• はなぞの（Meadow）：フランス、イタリア、スイス等\n• ていえん（Garden）：イギリス、アイルランド、ニュージーランド等\n• まりん（Marine）：スペイン、ポルトガル、ギリシャ、チリ等\n• こうや（High Plains）：アメリカ西部（カリフォルニア、ネバダ等）、東欧\n• モダン（Modern）：アメリカ中南部（テキサス、フロリダ等）\n• せつげん（Polar）：カナダ、アラスカ、スウェーデン等\n• みやび（Elegant）：日本（本州・四国・九州）\n• ジャングル（Jungle）：シンガポール、マレーシア、インドネシア、コロンビア等\n• たいが（River）：オーストラリア南部、エジプト、南アフリカ等\n• スコール（Monsoon）：台湾、香港、タイ、ベトナム、インド等\n• サバンナ（Savanna）：ブラジル、パラグアイ等\n• ぐんとう（Archipelago）：カリブ海諸島、プエルトリコ等\n• たいよう（Sun・超激レア）：メキシコ、グアテマラ、マダガスカル等\n• オーシャン（Ocean・超激レア）：ハワイ、ガラパゴス等\n• ひょうせつ（Icy Snow・超激レア）：グリーンランド、北欧最北部、カナダ北部等\n• つんどら（Tundra・超激レア）：アイスランド、ノルウェー北部、北海道\n• さじん（Sandstorm・最難関）：中東地域（ドバイ/UAE、サウジアラビア、イスラエル、カタール、オマーン等）\n\n※モンスターボール模様とファンシー模様は現在未実装です。",
+          ru: "Полный список 18 узоров Вивиллона и стран их нахождения:\n\n• Continental: Чехия, Польша, Германия, Австрия, Аргентина.\n• Meadow: Франция, Италия, Швейцария.\n• Garden: Великобритания, Ирландия, Новая Зеландия.\n• Marine: Испания, Португалия, Греция, Чили.\n• High Plains: Запад США (Калифорния, Невада), Восточная Европа.\n• Modern: Юг и центр США (Техас, Флорида).\n• Polar: Канада, Аляска, Швеция.\n• Elegant: Япония.\n• Jungle: Колумбия, Сингапур, Малайзия, Индонезия.\n• River: Южная Австралия, Египет, ЮАР.\n• Monsoon: Тайвань, Гонконг, Таиланд, Индия.\n• Savanna: Бразилия, Парагвай.\n• Archipelago: Карибские острова, Пуэрто-Рико.\n• Sun (🔥 Редкий): Мексика, Мадагаскар, Север Австралии.\n• Ocean (🔥 Редкий): Гавайи, Галапагосы, Реюньон.\n• Icy Snow (🔥 Редкий): Гренландия, Север Норвегии/Финляндии.\n• Tundra (🔥 Редкий): Исландия, Тромсё (Норвегия), Хоккайдо.\n• Sandstorm (👑 Самый редкий): Ближний Восток (ОАЭ/Дубай, Саудовская Аравия, Израиль, Катар).\n\n*Примечание:* Узоры Poké Ball и Fancy пока не выпущены в Pokémon GO."
+        },
+        tips: {
+          cs: [
+            "Hledáte vzácný Sandstorm nebo Sun? Využijte naši novou záložku 'Přátelé & Kódy' v horním menu a filtrujte hráče přímo podle jejich Vivillon regionu!",
+            "Pro nalezení chycených Scatterbugů zadejte do vyhledávání ve hře: 'Scatterbug' nebo 'Spewpa'."
+          ],
+          en: [
+            "Hunting for rare Sandstorm or Sun patterns? Check out our dedicated 'Friend Codes' tab in the top navigation to find verified active trainers from those regions!",
+            "Filter your storage by searching 'Scatterbug' or 'Spewpa' to review unevolved regional specimens."
+          ],
+          ja: [
+            "砂塵（Sandstorm）や太陽（Sun）をお探しの方は、当サイト上部ナビゲーションの「フレンド募集」機能で地域別にトレーナーコードを検索してみてください！",
+            "ボックス検索で「コフキムシ」と入力すると未進化のストックを一発で確認できます。"
+          ],
+          ru: [
+            "Ищете редкие Sandstorm или Sun? Воспользуйтесь нашей вкладкой 'Друзья и Коды' для фильтрации тренеров по регионам!",
+            "Используйте поиск 'Scatterbug' для быстрого нахождения пойманных бабочек."
+          ]
         }
       }
     ]

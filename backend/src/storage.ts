@@ -441,3 +441,297 @@ export async function saveRocketLineupsCache(rocketData: any): Promise<boolean> 
   }
 }
 
+// ─── EGG POOL PERSISTENT DISK CACHE ───────────────────────────────
+const EGGS_FILE_PATH = path.join(__dirname, '..', 'eggs_cache.json');
+const EGGS_FILE_NAME = 'eggs_cache.json';
+
+export async function loadEggPoolCache(): Promise<any[]> {
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(EGGS_FILE_NAME);
+      const [exists] = await file.exists();
+      if (exists) {
+        const [content] = await file.download();
+        return JSON.parse(content.toString());
+      }
+    } catch (err: any) {
+      console.error('Failed to load egg pool cache from GCS:', err.message);
+    }
+  }
+
+  try {
+    if (fs.existsSync(EGGS_FILE_PATH)) {
+      const content = fs.readFileSync(EGGS_FILE_PATH, 'utf-8');
+      return JSON.parse(content);
+    }
+  } catch (err) {
+    console.error('Failed to load egg pool cache locally:', err);
+  }
+  return [];
+}
+
+export async function saveEggPoolCache(eggs: any[]): Promise<boolean> {
+  const dataStr = JSON.stringify(eggs, null, 2);
+
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(EGGS_FILE_NAME);
+      await file.save(dataStr, {
+        contentType: 'application/json',
+        resumable: false
+      });
+      return true;
+    } catch (err: any) {
+      console.error('Failed to save egg pool cache to GCS:', err.message);
+    }
+  }
+
+  try {
+    fs.writeFileSync(EGGS_FILE_PATH, dataStr, 'utf-8');
+    return true;
+  } catch (err) {
+    console.error('Failed to save egg pool cache locally:', err);
+    return false;
+  }
+}
+
+// ─── FIELD RESEARCH PERSISTENT DISK CACHE ─────────────────────────
+const RESEARCH_FILE_PATH = path.join(__dirname, '..', 'research_cache.json');
+const RESEARCH_FILE_NAME = 'research_cache.json';
+
+export async function loadResearchCache(): Promise<any[]> {
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(RESEARCH_FILE_NAME);
+      const [exists] = await file.exists();
+      if (exists) {
+        const [content] = await file.download();
+        return JSON.parse(content.toString());
+      }
+    } catch (err: any) {
+      console.error('Failed to load research cache from GCS:', err.message);
+    }
+  }
+
+  try {
+    if (fs.existsSync(RESEARCH_FILE_PATH)) {
+      const content = fs.readFileSync(RESEARCH_FILE_PATH, 'utf-8');
+      return JSON.parse(content);
+    }
+  } catch (err) {
+    console.error('Failed to load research cache locally:', err);
+  }
+  return [];
+}
+
+export async function saveResearchCache(research: any[]): Promise<boolean> {
+  const dataStr = JSON.stringify(research, null, 2);
+
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(RESEARCH_FILE_NAME);
+      await file.save(dataStr, {
+        contentType: 'application/json',
+        resumable: false
+      });
+      return true;
+    } catch (err: any) {
+      console.error('Failed to save research cache to GCS:', err.message);
+    }
+  }
+
+  try {
+    fs.writeFileSync(RESEARCH_FILE_PATH, dataStr, 'utf-8');
+    return true;
+  } catch (err) {
+    console.error('Failed to save research cache locally:', err);
+    return false;
+  }
+}
+
+// ─── RAID BOSSES PERSISTENT DISK CACHE ─────────────────────────────
+const RAIDS_CACHE_FILE_PATH = path.join(__dirname, '..', 'raids_cache.json');
+const RAIDS_CACHE_FILE_NAME = 'raids_cache.json';
+
+export async function loadRaidBossesCache(): Promise<any[]> {
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(RAIDS_CACHE_FILE_NAME);
+      const [exists] = await file.exists();
+      if (exists) {
+        const [content] = await file.download();
+        return JSON.parse(content.toString());
+      }
+    } catch (err: any) {
+      console.error('Failed to load raids cache from GCS:', err.message);
+    }
+  }
+
+  try {
+    if (fs.existsSync(RAIDS_CACHE_FILE_PATH)) {
+      const content = fs.readFileSync(RAIDS_CACHE_FILE_PATH, 'utf-8');
+      return JSON.parse(content);
+    }
+  } catch (err) {
+    console.error('Failed to load raids cache locally:', err);
+  }
+  return [];
+}
+
+export async function saveRaidBossesCache(raids: any[]): Promise<boolean> {
+  const dataStr = JSON.stringify(raids, null, 2);
+
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(RAIDS_CACHE_FILE_NAME);
+      await file.save(dataStr, {
+        contentType: 'application/json',
+        resumable: false
+      });
+      return true;
+    } catch (err: any) {
+      console.error('Failed to save raids cache to GCS:', err.message);
+    }
+  }
+
+  try {
+    fs.writeFileSync(RAIDS_CACHE_FILE_PATH, dataStr, 'utf-8');
+    return true;
+  } catch (err) {
+    console.error('Failed to save raids cache locally:', err);
+    return false;
+  }
+}
+
+
+// ─── FRIEND CODES & MATCHMAKER PERSISTENCE ─────────────────────────
+export interface FriendListing {
+  id: string;
+  trainerCode: string;
+  trainerName: string;
+  vivillonPattern: string;
+  team: 'mystic' | 'valor' | 'instinct' | 'any';
+  purpose: 'all' | 'vivillon' | 'raids' | 'xp' | 'trades';
+  country?: string;
+  note?: string;
+  createdAt: number;
+  expiresAt: number;
+}
+
+const FRIENDS_FILE_PATH = path.join(__dirname, '..', 'friends_listings.json');
+const FRIENDS_FILE_NAME = 'friends_listings.json';
+
+const DEFAULT_SAMPLE_FRIENDS: FriendListing[] = [];
+
+export async function loadFriendListings(): Promise<FriendListing[]> {
+  const now = Date.now();
+  let rawList: FriendListing[] = [];
+
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(FRIENDS_FILE_NAME);
+      const [exists] = await file.exists();
+      if (exists) {
+        const [content] = await file.download();
+        rawList = JSON.parse(content.toString());
+      }
+    } catch (err: any) {
+      console.error('Failed to load friends listings from GCS:', err.message);
+    }
+  }
+
+  if (rawList.length === 0) {
+    try {
+      if (fs.existsSync(FRIENDS_FILE_PATH)) {
+        const content = fs.readFileSync(FRIENDS_FILE_PATH, 'utf-8');
+        rawList = JSON.parse(content);
+      }
+    } catch (err) {
+      console.error('Failed to load friends listings locally:', err);
+    }
+  }
+
+  if (rawList.length === 0) {
+    rawList = DEFAULT_SAMPLE_FRIENDS;
+  }
+
+  // Filter out expired entries (> 7 days)
+  const activeList = rawList.filter(item => item.expiresAt > now);
+  return activeList.sort((a, b) => b.createdAt - a.createdAt);
+}
+
+export async function saveFriendListings(listings: FriendListing[]): Promise<boolean> {
+  const dataStr = JSON.stringify(listings, null, 2);
+
+  if (storage) {
+    try {
+      const bucket = storage.bucket(BUCKET_NAME);
+      const file = bucket.file(FRIENDS_FILE_NAME);
+      await file.save(dataStr, {
+        contentType: 'application/json',
+        resumable: false
+      });
+      return true;
+    } catch (err: any) {
+      console.error('Failed to save friends listings to GCS:', err.message);
+    }
+  }
+
+  try {
+    fs.writeFileSync(FRIENDS_FILE_PATH, dataStr, 'utf-8');
+    return true;
+  } catch (err) {
+    console.error('Failed to save friends listings locally:', err);
+    return false;
+  }
+}
+
+export async function addFriendListing(data: {
+  trainerCode: string;
+  trainerName: string;
+  vivillonPattern: string;
+  team: 'mystic' | 'valor' | 'instinct' | 'any';
+  purpose: 'all' | 'vivillon' | 'raids' | 'xp' | 'trades';
+  country?: string;
+  note?: string;
+}): Promise<FriendListing | null> {
+  const now = Date.now();
+  const cleanCode = data.trainerCode.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+  if (cleanCode.replace(/\s/g, '').length !== 12) {
+    return null;
+  }
+
+  const newListing: FriendListing = {
+    id: `trainer-${now}-${Math.random().toString(36).substring(2, 7)}`,
+    trainerCode: cleanCode,
+    trainerName: (data.trainerName || 'Trainer').trim().substring(0, 30),
+    vivillonPattern: (data.vivillonPattern || 'continental').toLowerCase().trim(),
+    team: data.team || 'any',
+    purpose: data.purpose || 'all',
+    country: (data.country || '').trim().substring(0, 50),
+    note: (data.note || '').trim().substring(0, 150),
+    createdAt: now,
+    expiresAt: now + 7 * 24 * 3600 * 1000 // 7 Days (1 Week) TTL
+  };
+
+  const currentList = await loadFriendListings();
+  // Avoid exact duplicates posted within 2 hours
+  const filtered = currentList.filter(item => 
+    item.trainerCode.replace(/\s/g, '') !== cleanCode.replace(/\s/g, '')
+  );
+  filtered.unshift(newListing);
+
+  // Keep maximum 300 active listings
+  const trimmed = filtered.slice(0, 300);
+  await saveFriendListings(trimmed);
+  return newListing;
+}
+
+

@@ -3,7 +3,7 @@ import { EventData, SpecialEventDetails, ScrapedRaidBoss, RocketMember } from '.
 export type Language = 'cs' | 'en' | 'ja' | 'ru';
 
 export interface RouteTarget {
-  type: 'home' | 'events' | 'event-detail' | 'pokemon-detail' | 'rankings' | 'ranking-category' | 'types' | 'raids' | 'raid-counters' | 'rocket' | 'rocket-leader' | 'guides' | 'guide-detail' | 'ditto' | 'eggs' | 'filter' | 'download';
+  type: 'home' | 'events' | 'event-detail' | 'pokemon-detail' | 'rankings' | 'ranking-category' | 'types' | 'raids' | 'raid-counters' | 'rocket' | 'rocket-leader' | 'guides' | 'guide-detail' | 'friends' | 'ditto' | 'eggs' | 'filter' | 'download';
   lang: Language;
   canonicalPath: string;
   param?: string;
@@ -301,6 +301,13 @@ export async function generateBotHtml(
     const typeName = param.toUpperCase();
     pageTitle = `${typeName} Type - Weakness & Counters Guide | Pokémon GO`;
     pageDesc = `${typeName} type weakness, resistance chart, and best attackers in Pokémon GO.`;
+  } else if (type === 'friends') {
+    pageTitle = lang === 'cs'
+      ? '👥 Pokémon GO Přátelé & Trainer Kódy (2026) – Vivillon dárky & Remote Raidy'
+      : '👥 Pokémon GO Friend Codes & Matchmaker (2026) – Vivillon Gifts & Remote Raids';
+    pageDesc = lang === 'cs'
+      ? 'Najděte aktivní přátele v Pokémon GO pro výměnu dárků, sběr všech 18 vzorů Vivillona, XP grind na Best Friends a pozvánky na Remote Raidy.'
+      : 'Find active Pokémon GO trainer friend codes for Vivillon postcards, XP grinding to Best Friends, and Remote Raid invites.';
   }
 
   // Process Events
@@ -706,6 +713,7 @@ export async function generateBotHtml(
       <a href="/${lang}/rankings" class="${type === 'rankings' || type === 'ranking-category' || type === 'pokemon-detail' ? 'active' : ''}">${t.rankings}</a>
       <a href="/${lang}/rocket" class="${type === 'rocket' || type === 'rocket-leader' ? 'active' : ''}">${t.rocket}</a>
       <a href="/${lang}/guides" class="${type === 'guides' || type === 'guide-detail' ? 'active' : ''}">Guides</a>
+      <a href="/${lang}/friends" class="${type === 'friends' ? 'active' : ''}">${lang === 'cs' ? 'Přátelé & Kódy' : 'Friend Codes'}</a>
       <a href="/${lang}/ditto" class="${type === 'ditto' ? 'active' : ''}">${t.ditto}</a>
       <a href="/${lang}/eggs" class="${type === 'eggs' ? 'active' : ''}">${t.eggs}</a>
       <a href="/${lang}/filter" class="${type === 'filter' ? 'active' : ''}">${t.filter}</a>

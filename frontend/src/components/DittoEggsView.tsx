@@ -1,18 +1,30 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './DittoEggsView.css';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
-import { dittoDisguises, eggPools } from '../data/dittoEggs';
+import { dittoDisguises, eggPools, type EggPool } from '../data/dittoEggs';
 import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { TypeBadge } from './EventCard';
 import { Sparkles } from 'lucide-react';
 import { getPokemonName } from '../utils/pokemonTranslator';
+import { API_BASE_URL } from '../config';
 
 interface DittoEggsViewProps {
   lang: Language;
   mode: 'ditto' | 'eggs';
+}
+
+function getEggColor(distance: string): string {
+  const d = distance.toLowerCase();
+  if (d.startsWith('2')) return '#4ade80';
+  if (d.startsWith('5') && !d.includes('adventure')) return '#facc15';
+  if (d.includes('adventure')) return '#eab308';
+  if (d.startsWith('7')) return '#f472b6';
+  if (d.startsWith('10')) return '#c084fc';
+  if (d.startsWith('12')) return '#ef4444';
+  return '#38bdf8';
 }
 
 // Egg icon matching Pokemon GO design
@@ -30,7 +42,31 @@ export const EggIcon = ({ size = 24, color = '#4ade80' }: { size?: number; color
 
 export const DittoEggsView: React.FC<DittoEggsViewProps> = ({ lang, mode }) => {
   const t = translations[lang];
+  const [pools, setPools] = useState<EggPool[]>(eggPools);
   const [selectedEgg, setSelectedEgg] = useState<string>("2 km");
+
+  useEffect(() => {
+    if (mode !== 'eggs') return;
+    fetch(`${API_BASE_URL}/api/eggs`)
+      .then(res => res.json())
+      .then((data: any[]) => {
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped: EggPool[] = data.map(group => ({
+            distance: group.distance,
+            color: getEggColor(group.distance),
+            contents: (group.eggs || []).map((e: any) => ({
+              name: e.name,
+              image: e.image,
+              isShinyAvailable: Boolean(e.canBeShiny),
+              rarityTier: e.rarity || 1,
+              cpMax: e.maxCp
+            }))
+          }));
+          setPools(mapped);
+        }
+      })
+      .catch(() => {});
+  }, [mode]);
 
   return (
     <div className="ditto-eggs-view-container">
@@ -74,7 +110,7 @@ export const DittoEggsView: React.FC<DittoEggsViewProps> = ({ lang, mode }) => {
           <p className="tab-seo-description">{t.eggs_pool_desc}</p>
           {/* Egg Tiers Selector */}
           <div className="egg-tiers-selector">
-            {eggPools.map(pool => (
+            {pools.map(pool => (
               <button
                 key={pool.distance}
                 className={`egg-tier-btn ${selectedEgg === pool.distance ? 'active' : ''}`}
@@ -92,7 +128,7 @@ export const DittoEggsView: React.FC<DittoEggsViewProps> = ({ lang, mode }) => {
 
           {/* Selected Egg content */}
           {(() => {
-            const currentPool = eggPools.find(p => p.distance === selectedEgg);
+            const currentPool = pools.find(p => p.distance === selectedEgg) || pools[0];
             if (!currentPool) return null;
             return (
               <div className="egg-pool-details-card">

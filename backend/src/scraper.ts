@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
-import { EventData, SpecialEventDetails, ScrapedRaidBoss, RocketMember, GruntData, RaidCounters } from './types';
+import { EventData, SpecialEventDetails, ScrapedRaidBoss, RocketMember, GruntData, RaidCounters, EnrichedEggGroup, EnrichedResearchTask } from './types';
 import { 
   loadEventDetailsCache, 
   saveEventDetailsCache, 
@@ -9,8 +9,52 @@ import {
   loadEventsListCache,
   saveEventsListCache,
   loadRocketLineupsCache,
-  saveRocketLineupsCache
+  saveRocketLineupsCache,
+  loadEggPoolCache,
+  saveEggPoolCache,
+  loadResearchCache,
+  saveResearchCache,
+  loadRaidBossesCache,
+  saveRaidBossesCache
 } from './storage';
+import {
+  fetchScrapedDuckEvents,
+  fetchScrapedDuckRaids,
+  fetchScrapedDuckEggs,
+  fetchScrapedDuckResearch,
+  fetchScrapedDuckRocketLineups
+} from './ingest/scrapedDuckIngest';
+import {
+  enrichScrapedDuckRaids,
+  enrichScrapedDuckEggs,
+  enrichScrapedDuckResearch,
+  enrichScrapedDuckRocketLineups
+} from './ingest/enrichmentPipelines';
+import { classifyDocumentSections } from './parsers/semanticClassifier';
+import { parseSpawnsFromSections, isMetaRelevantPokemon } from './parsers/habitatParser';
+import { parseFeaturedAttacksFromSections } from './parsers/moveParser';
+import { parseGoPassFromSections } from './parsers/goPassParser';
+import { parseRocketMechanicsFromSections } from './parsers/rocketParser';
+import { evaluateEventMetaAndHighlights } from './meta/metaEvaluator';
+import { evaluateBonusImpact } from './meta/bonusWeights';
+import { resolvePokemonAsset, verifyAndResolveImageOnBackend } from './assets/assetResolver';
+import { evaluateParsingConfidence, runAiFallbackExtraction } from './ai/aiFallbackIngest';
+
+export {
+  classifyDocumentSections,
+  parseSpawnsFromSections,
+  isMetaRelevantPokemon,
+  parseFeaturedAttacksFromSections,
+  parseGoPassFromSections,
+  parseRocketMechanicsFromSections,
+  evaluateEventMetaAndHighlights,
+  evaluateBonusImpact,
+  resolvePokemonAsset,
+  verifyAndResolveImageOnBackend,
+  evaluateParsingConfidence,
+  runAiFallbackExtraction
+};
+
 
 // ==========================================
 // 1. Static Databases (Meta & Counters)
@@ -1224,51 +1268,57 @@ const BOSS_COUNTERS_DB: Record<string, { bestCounters: string[]; details: string
     bestCounters: ["Reshiram (Fire Fang/Overheat)", "Charizard (Fire Spin/Blast Burn)", "Chandelure (Fire Spin/Overheat)"],
     details: "Grass/Steel typ. Má dvojitou slabost na oheň (Fire). Ohnivé útoky ho vyřadí extrémně rychle."
   },
-  "milotic": {
-    bestCounters: ["Kartana (Razor Leaf/Leaf Blade)", "Xurkitree (Thunder Shock/Discharge)", "Raikou (Thunder Shock/Wild Charge)"],
-    details: "Velmi odolný vodní pokémon. Použijte silné travní (Kartana) nebo elektrické (Xurkitree) counters."
-  },
-  "houndoom": {
+  houndoom: {
     bestCounters: ["Kyogre (Waterfall/Surf)", "Terrakion (Double Kick/Sacred Sword)", "Machamp (Counter/Dynamic Punch)"],
     details: "Dark/Fire typ. Má slabost vůči vodě, boji, zemi a kameni. Terrakion nebo Kyogre ho zničí bez problémů."
   }
 };
 
-const HUB_RATING_DB: Record<string, string> = {
-  "landorus": "A",
-  "machop": "A+",
-  "machamp": "A+",
+export const HUB_RATING_DB: Record<string, string> = {
   "bagon": "S",
-  "salamence": "S",
-  "beldum": "S",
-  "metagross": "S",
-  "larvitar": "A+",
-  "tyranitar": "A+",
-  "dratini": "A",
-  "dragonite": "A",
-  "gible": "S",
-  "garchomp": "S",
+  "dratini": "S",
   "swinub": "S",
-  "mamoswine": "S",
-  "ralts": "A+",
-  "gardevoir": "A+",
-  "gastly": "A",
-  "gengar": "A",
-  "mudkip": "A",
-  "swampert": "A",
-  "starly": "B",
-  "staraptor": "B",
-  "teddiursa": "C",
-  "ursaring": "C",
-  "bellsprout": "B",
-  "victreebel": "B",
+  "larvitar": "S",
+  "machop": "S",
+  "ralts": "S",
+  "beldum": "S",
+  "gible": "S",
+  "rhyhorn": "S",
+  "magnemite": "A",
+  "electabuzz": "A",
+  "magmar": "A",
+  "sneasel": "A",
+  "murkrow": "A",
+  "houndour": "A",
+  "treecko": "A",
+  "torchic": "A",
+  "mudkip": "S",
+  "turtwig": "B",
+  "chimchar": "B",
+  "piplup": "B",
+  "snover": "B",
+  "roggenrola": "B",
+  "drilbur": "S",
+  "timburr": "A",
+  "venipede": "C",
+  "dwebble": "C",
+  "scraggy": "A",
+  "litwick": "S",
+  "axew": "A",
+  "deino": "S",
+  "goomy": "B",
+  "zubat": "C",
+  "rattata": "C",
+  "pidgey": "C",
+  "meowth": "C",
+  "bellsprout": "C",
   "oddish": "C",
   "cacnea": "C",
   "seedot": "B",
   "nuzleaf": "B"
 };
 
-const POKEMON_TYPES_DB: Record<string, string[]> = {
+export const POKEMON_TYPES_DB: Record<string, string[]> = {
   "persian": ["Normal"],
   "rhyperior": ["Ground", "Rock"],
   "kangaskhan": ["Normal"],
@@ -1308,14 +1358,14 @@ const POKEMON_TYPES_DB: Record<string, string[]> = {
   "axew": ["Dragon"]
 };
 
-function getPokemonImageUrl(name: string): string {
+export function getPokemonImageUrl(name: string): string {
   let clean = name.toLowerCase()
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '');
   return `https://img.pokemondb.net/sprites/home/normal/${clean}.png`;
 }
 
-const LEADER_COUNTERS_DB: Record<string, { megaCounters: string[]; advancedCounters: string[]; budgetCounters: string[] }> = {
+export const LEADER_COUNTERS_DB: Record<string, { megaCounters: string[]; advancedCounters: string[]; budgetCounters: string[] }> = {
   "giovanni": {
     // Persian (Normal) + Kangaskhan/Rhyperior/Machamp + Reshiram (Dragon/Fire)
     megaCounters: ["Mega Rayquaza", "Mega Garchomp", "Primal Kyogre"],
@@ -1342,7 +1392,7 @@ const LEADER_COUNTERS_DB: Record<string, { megaCounters: string[]; advancedCount
   }
 };
 
-const GRUNT_MAP: Record<string, {
+export const GRUNT_MAP: Record<string, {
   phraseCs: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
   worthFighting: boolean;
@@ -1462,13 +1512,51 @@ const GRUNT_MAP: Record<string, {
 // 2. Translation & Helper Functions
 // ==========================================
 
-function translateTextToCs(text: string): string {
+export function translateTextToCs(text: string): string {
   if (!text) return '';
-  let translated = text;
+  let translated = text.trim();
+
+  // 1. Dynamic regex patterns for Research Tasks & Quests
+  translated = translated.replace(/spin\s+(\d+)\s+pokéstops?/gi, 'Protoč $1 Pokéstopů');
+  translated = translated.replace(/win\s+(\d+)\s+raids?/gi, 'Vyhraj $1 Raidy');
+  translated = translated.replace(/catch\s+(\d+)\s+different\s+species\s+of\s+pokémon/gi, 'Chyť $1 různých druhů Pokémonů');
+  translated = translated.replace(/catch\s+(\d+)\s+([a-zA-Z-]+)-type\s+pokémon/gi, 'Chyť $1 $2-type Pokémonů');
+  translated = translated.replace(/catch\s+(\d+)\s+pokémon/gi, 'Chyť $1 Pokémonů');
+  translated = translated.replace(/catch\s+a\s+([a-zA-Z-]+)-type\s+pokémon/gi, 'Chyť $1-type Pokémona');
+  translated = translated.replace(/catch\s+a\s+pokémon/gi, 'Chyť Pokémona');
+  translated = translated.replace(/evolve\s+(\d+)\s+pokémon/gi, 'Evolvuj $1 Pokémonů');
+  translated = translated.replace(/power\s+up\s+pokémon\s+(\d+)\s+times?/gi, 'Vylepši Pokémona $1×');
+  translated = translated.replace(/make\s+(\d+)\s+nice\s+throws?/gi, 'Hoď $1× Nice throw');
+  translated = translated.replace(/make\s+(\d+)\s+great\s+throws?/gi, 'Hoď $1× Great throw');
+  translated = translated.replace(/make\s+(\d+)\s+excellent\s+throws?/gi, 'Hoď $1× Excellent throw');
+  translated = translated.replace(/earn\s+(\d+)\s+cand(?:y|ies)\s+walking\s+with\s+your\s+buddy/gi, 'Získej $1 Candy chozením s buddym');
+  translated = translated.replace(/send\s+(\d+)\s+gifts?(?:\s+to\s+friends)?/gi, 'Pošli $1 dárků přátelům');
+  translated = translated.replace(/explore\s+(\d+)\s+km/gi, 'Ujdi $1 km');
+
+  // 2. Specific Habitats
+  const habitatDict: Record<string, string> = {
+    'meadow': 'Louka (Meadow)',
+    'mountain': 'Hory (Mountain)',
+    'forest': 'Les (Forest)',
+    'city': 'Město (City)',
+    'beach': 'Pláž (Beach)',
+    'ocean': 'Oceán (Ocean)',
+    'volcanic': 'Sopka (Volcanic)',
+    'sky': 'Obloha (Sky)',
+    'dark forest': 'Temný les (Dark Forest)'
+  };
+  const lowerTrimmed = translated.toLowerCase();
+  if (habitatDict[lowerTrimmed]) {
+    return habitatDict[lowerTrimmed];
+  }
+
+  // 3. Static Dictionary mappings
   const dict: Record<string, string> = {
+    "1/2 Hatch Distance with Incubators": "1/2 vzdálenost na líhnutí vajec v inkubátorech",
     "1/2 Hatch Distance": "1/2 vzdálenost na líhnutí vajec",
     "1/4 Hatch Distance": "1/4 vzdálenost na líhnutí vajec",
     "2x Catch Candy": "2× bonbóny (Candy) za chytání",
+    "3x Catch Candy": "3× bonbóny (Candy) za chytání",
     "2x Catch XP": "2× zkušenosti (XP) za chytání",
     "3x Catch XP": "3× zkušenosti (XP) za chytání",
     "2x Catch Stardust": "2× Stardust za chycení",
@@ -1480,6 +1568,7 @@ function translateTextToCs(text: string): string {
     "Increased chance of encountering Shiny": "Zvýšená šance na setkání se Shiny",
     "Up to 9 free Raid Passes": "Až 9 bezplatných Raid Passů",
     "Up to 6 free Raid Passes": "Až 6 bezplatných Raid Passů",
+    "Up to 2 free Raid Passes daily": "Až 2 bezplatné Raid Passy denně",
     "Remote Raid Pass limit increased to 20": "Limit na Remote Raidy navýšen na 20",
     "Remove Frustration with a Charged TM": "Lze odebrat útok Frustration pomocí Charged TM",
     "Team GO Rocket will appear more frequently at PokéStops and in balloons": "Team GO Rocket se objevuje častěji u Pokéstopů a v balónech",
@@ -1496,6 +1585,8 @@ function translateTextToCs(text: string): string {
     "Event Bonuses": "Eventové bonusy",
     "Shiny Family": "Shiny rodina",
     "Exclusive Move": "Exkluzivní útok",
+    "Featured Attacks": "Speciální útoky při evoluci",
+    "PokéStop Showcases": "PokéStop Showcase soutěže",
     "Special Research": "Speciální výzkum",
     "Raid Battles": "Raidové souboje",
     "Raid Rotation": "Raidová rotace",
@@ -1509,7 +1600,7 @@ function translateTextToCs(text: string): string {
   return translated;
 }
 
-function findPokemonMeta(pokemonName: string) {
+export function findPokemonMeta(pokemonName: string) {
   if (!pokemonName) return null;
   const key = pokemonName.toLowerCase();
   if (pokemonMetaDb[key]) return pokemonMetaDb[key];
@@ -1563,58 +1654,74 @@ export function findRaidCounters(
 // ==========================================
 
 export async function scrapeEvents(): Promise<EventData[]> {
-  const sources = [
-    'https://cdn.jsdelivr.net/gh/bigfoott/ScrapedDuck@data/events.min.json',
-    'https://raw.githubusercontent.com/bigfoott/ScrapedDuck/data/events.min.json',
-    'https://fastly.jsdelivr.net/gh/bigfoott/ScrapedDuck@data/events.min.json',
-    'https://gcore.jsdelivr.net/gh/bigfoott/ScrapedDuck@data/events.min.json'
-  ];
-
-  const browserHeaders = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-    'Accept': 'application/json, text/plain, */*',
-    'Accept-Language': 'en-US,en;q=0.9',
-    'Cache-Control': 'no-cache'
-  };
-
-  let lastError: Error | null = null;
-
-  for (const url of sources) {
-    try {
-      const response = await axios.get(url, {
-        headers: browserHeaders,
-        timeout: 10000
-      });
-      if (response.data && Array.isArray(response.data) && response.data.length > 0) {
-        // Save to persistent disk cache as emergency backup against future 429s
-        await saveEventsListCache(response.data).catch(() => {});
-        return response.data;
-      }
-    } catch (err: any) {
-      lastError = err;
-      const status = err.response?.status;
-      if (status === 429) {
-        console.warn(`[scrapeEvents] Source ${url} rate-limited (HTTP 429). Trying next mirror...`);
-      } else {
-        console.warn(`[scrapeEvents] Source ${url} failed (${status || err.message}). Trying next mirror...`);
-      }
+  try {
+    const events = await fetchScrapedDuckEvents();
+    if (events && Array.isArray(events) && events.length > 0) {
+      await saveEventsListCache(events).catch(() => {});
+      return events;
     }
+  } catch (err: any) {
+    console.warn(`[scrapeEvents] ScrapedDuck multi-CDN fetch failed: ${err.message}. Checking local backup cache...`);
   }
 
   // Fallback to disk cache if all network sources failed or were rate-limited
   const diskBackup = await loadEventsListCache().catch(() => []);
   if (diskBackup && Array.isArray(diskBackup) && diskBackup.length > 0) {
-    console.warn(`[scrapeEvents] All remote mirrors rate-limited (429) or unreachable. Successfully loaded ${diskBackup.length} events from local backup cache.`);
+    console.warn(`[scrapeEvents] Loaded ${diskBackup.length} events from local backup cache.`);
     return diskBackup;
   }
 
-  throw lastError || new Error('All event data sources failed and no backup cache available.');
+  throw new Error('All event data sources failed and no backup cache available.');
+}
+
+export async function scrapeEggPool(): Promise<EnrichedEggGroup[]> {
+  try {
+    const rawEggs = await fetchScrapedDuckEggs();
+    if (rawEggs && Array.isArray(rawEggs) && rawEggs.length > 0) {
+      const enriched = enrichScrapedDuckEggs(rawEggs);
+      if (enriched.length > 0) {
+        await saveEggPoolCache(enriched).catch(() => {});
+        return enriched;
+      }
+    }
+  } catch (err: any) {
+    console.warn(`[scrapeEggPool] ScrapedDuck egg pool feed failed: ${err.message}. Checking local cache...`);
+  }
+
+  const cached = await loadEggPoolCache().catch(() => []);
+  if (cached && cached.length > 0) {
+    return cached;
+  }
+
+  return [];
+}
+
+export async function scrapeFieldResearch(): Promise<EnrichedResearchTask[]> {
+  try {
+    const rawResearch = await fetchScrapedDuckResearch();
+    if (rawResearch && Array.isArray(rawResearch) && rawResearch.length > 0) {
+      const enriched = enrichScrapedDuckResearch(rawResearch);
+      if (enriched.length > 0) {
+        await saveResearchCache(enriched).catch(() => {});
+        return enriched;
+      }
+    }
+  } catch (err: any) {
+    console.warn(`[scrapeFieldResearch] ScrapedDuck research feed failed: ${err.message}. Checking local cache...`);
+  }
+
+  const cached = await loadResearchCache().catch(() => []);
+  if (cached && cached.length > 0) {
+    return cached;
+  }
+
+  return [];
 }
 
 /**
- * Pure parser for LeekDuck event detail HTML.
+ * Pure parser for complex Pokémon GO event detail HTML (supports LeekDuck, Niantic blog, and other sources).
  */
-export function parseLeekDuckHtml(html: string, eventID: string = 'event'): SpecialEventDetails {
+export function parseComplexEventHtml(html: string, eventID: string = 'event'): SpecialEventDetails {
   const $ = cheerio.load(html);
   
   // Find official pokemongolive.com or pokemongo.com link on the page
@@ -1637,9 +1744,68 @@ export function parseLeekDuckHtml(html: string, eventID: string = 'event'): Spec
   const spawns: any[] = [];
   const eggs: any[] = [];
   const research: any[] = [];
+  const featuredAttacks: any[] = [];
+  const showcases: any[] = [];
+  let paidTicket: any = undefined;
 
-  // Parse Bonuses
+  // 1. Run Semantic Section Classifier
+  const classifiedSections = classifyDocumentSections($);
+
+  // Helper to extract bonus icon
+  const extractBonusIcon = (text: string, imgSrc?: string, imgAlt?: string): string => {
+    if (imgSrc) {
+      const srcLower = imgSrc.toLowerCase();
+      if (srcLower.includes('candy')) return '🍬';
+      if (srcLower.includes('stardust')) return '✨';
+      if (srcLower.includes('egg') || srcLower.includes('hatch') || srcLower.includes('incubator')) return '🥚';
+      if (srcLower.includes('xp') || srcLower.includes('experience')) return '⚡';
+      if (srcLower.includes('raid') || srcLower.includes('pass')) return '🎟️';
+      if (srcLower.includes('rocket')) return '🎈';
+      if (srcLower.includes('trade')) return '🤝';
+      if (srcLower.includes('tm') || srcLower.includes('charge')) return '🟣';
+    }
+    if (imgAlt) {
+      const altLower = imgAlt.toLowerCase();
+      if (altLower.includes('candy')) return '🍬';
+      if (altLower.includes('stardust')) return '✨';
+      if (altLower.includes('hatch') || altLower.includes('egg') || altLower.includes('incubator')) return '🥚';
+      if (altLower.includes('xp') || altLower.includes('experience')) return '⚡';
+      if (altLower.includes('raid') || altLower.includes('pass')) return '🎟️';
+      if (altLower.includes('rocket')) return '🎈';
+      if (altLower.includes('trade')) return '🤝';
+    }
+    return bonusTextToIcon(text);
+  };
+
+  // Helper to parse bonus items from an element
+  const parseBonusItems = (container: cheerio.Cheerio<any>): any[] => {
+    const list: any[] = [];
+    container.find('.bonus-item, li').each((_, item) => {
+      const textEl = $(item).find('.bonus-text');
+      const text = textEl.length ? textEl.text().trim() : $(item).text().trim();
+      if (!text || text.length < 3) return;
+
+      const img = $(item).find('img');
+      const imgSrc = img.attr('src');
+      const imgAlt = img.attr('alt') || '';
+      const icon = extractBonusIcon(text, imgSrc, imgAlt);
+
+      list.push({
+        text: {
+          cs: translateTextToCs(text),
+          en: text
+        },
+        icon
+      });
+    });
+    return list;
+  };
+
+  // 2. Parse General Bonuses (outside tickets)
   $('.bonus-item').each((_, item) => {
+    if ($(item).closest('.ticket-details, .paid-ticket, .ticket-info').length > 0) {
+      return; // Skip ticket bonuses here
+    }
     const textEl = $(item).find('.bonus-text');
     const text = textEl.length ? textEl.text().trim() : $(item).text().trim();
     if (!text) return;
@@ -1647,27 +1813,7 @@ export function parseLeekDuckHtml(html: string, eventID: string = 'event'): Spec
     const img = $(item).find('img');
     const imgSrc = img.attr('src');
     const imgAlt = img.attr('alt') || '';
-
-    let icon = '🎁';
-    if (imgSrc) {
-      if (imgSrc.includes('candy')) icon = '🍬';
-      else if (imgSrc.includes('stardust')) icon = '✨';
-      else if (imgSrc.includes('egg') || imgSrc.includes('hatch')) icon = '🥚';
-      else if (imgSrc.includes('xp') || imgSrc.includes('experience')) icon = '⚡';
-      else if (imgSrc.includes('raid') || imgSrc.includes('pass')) icon = '🎟️';
-      else if (imgSrc.includes('rocket')) icon = '🎈';
-      else if (imgSrc.includes('trade')) icon = '🤝';
-      else if (imgSrc.includes('tm') || imgSrc.includes('charge')) icon = '🟣';
-    } else if (imgAlt) {
-      const altLower = imgAlt.toLowerCase();
-      if (altLower.includes('candy')) icon = '🍬';
-      else if (altLower.includes('stardust')) icon = '✨';
-      else if (altLower.includes('hatch') || altLower.includes('egg')) icon = '🥚';
-      else if (altLower.includes('xp') || altLower.includes('experience')) icon = '⚡';
-      else if (altLower.includes('raid') || altLower.includes('pass')) icon = '🎟️';
-      else if (altLower.includes('rocket')) icon = '🎈';
-      else if (altLower.includes('trade')) icon = '🤝';
-    }
+    const icon = extractBonusIcon(text, imgSrc, imgAlt);
 
     bonuses.push({
       text: {
@@ -1678,37 +1824,76 @@ export function parseLeekDuckHtml(html: string, eventID: string = 'event'): Spec
     });
   });
 
-  // Parse Headings and Lists
-  $('h2, h3').each((_, heading) => {
+  // 3. Parse Paid Ticket Details
+  $('.ticket-details, .paid-ticket, .ticket-info').each((_, tEl) => {
+    const ticketTitle = $(tEl).find('h2, h3, h4, .ticket-title').first().text().trim() || 'Paid Ticket';
+    const ticketBonuses = parseBonusItems($(tEl));
+    paidTicket = {
+      name: {
+        cs: translateTextToCs(ticketTitle),
+        en: ticketTitle
+      },
+      bonuses: ticketBonuses.length > 0 ? ticketBonuses : undefined
+    };
+  });
+
+  // 4. Sub-parsers: Featured Attacks, Habitat Spawns, GO Pass & Rocket Mechanics
+  const parsedAttacks = parseFeaturedAttacksFromSections(classifiedSections, $, translateTextToCs);
+  parsedAttacks.forEach(att => featuredAttacks.push(att));
+
+  const parsedSpawns = parseSpawnsFromSections(classifiedSections, $);
+  parsedSpawns.forEach(sp => spawns.push(sp));
+
+  const goPass = parseGoPassFromSections(classifiedSections, $, translateTextToCs);
+  const rocket = parseRocketMechanicsFromSections(classifiedSections, $, translateTextToCs);
+  rocket.bonuses.forEach(b => bonuses.push(b));
+  rocket.shadowDebuts.forEach(d => debuts.push(d));
+
+  // 5. Parse Headings for Showcases, Debuts, Eggs & direct Spawns if not covered
+  $('h2, h3, h4').each((_, heading) => {
     const title = $(heading).text().toLowerCase() || '';
-    const sectionElements = $(heading).nextUntil('h2, h3');
+    const sectionElements = $(heading).nextUntil('h2, h3, h4');
     
     let description = '';
     sectionElements.filter('p').each((_, p) => {
       description += $(p).text().trim() + ' ';
     });
 
-    let ulList = sectionElements.filter('ul.pkmn-list-flex');
+    const isShowcaseSection = title.includes('showcase') || title.includes('soutěž');
+
+    let ulList = sectionElements.filter('ul.pkmn-list-flex, ul');
     if (!ulList.length) {
-      ulList = sectionElements.find('ul.pkmn-list-flex');
+      ulList = sectionElements.find('ul.pkmn-list-flex, ul');
     }
 
     if (ulList.length) {
       const contents: any[] = [];
-      ulList.find('.pkmn-list-item').each((_, item) => {
-        const name = $(item).find('.pkmn-name').text().trim();
+      ulList.find('.pkmn-list-item, li').each((_, item) => {
+        const nameEl = $(item).find('.pkmn-name');
+        const name = nameEl.length ? nameEl.text().trim() : $(item).text().trim();
         const img = $(item).find('img');
         const imgEl = $(item).find('.pkmn-list-img img').length ? $(item).find('.pkmn-list-img img') : img;
         const image = imgEl.attr('src') || '';
-        const isShinyAvailable = $(item).find('.shiny-icon').length > 0;
+        const isShinyAvailable = $(item).find('.shiny-icon, .sparkle').length > 0 || $(item).text().includes('✨');
 
-        if (name) {
-          contents.push({ name, image, isShinyAvailable });
+        if (name && name.length < 50 && !name.toLowerCase().includes('pokémon')) {
+          contents.push({ name: name.replace(/✨/g, '').trim(), image, isShinyAvailable });
         }
       });
 
       if (contents.length > 0) {
-        if (title.includes('debut') || title.includes('new shiny') || title.includes('save shadow') || title.includes('featured')) {
+        if (isShowcaseSection) {
+          contents.forEach(c => {
+            showcases.push({
+              pokemonName: c.name,
+              pokemonImage: c.image || undefined,
+              description: {
+                cs: `${c.name} PokéStop Showcase soutěž`,
+                en: `${c.name} PokéStop Showcase`
+              }
+            });
+          });
+        } else if (title.includes('debut') || title.includes('new shiny') || title.includes('save shadow')) {
           contents.forEach(c => {
             debuts.push({
               name: c.name,
@@ -1719,7 +1904,7 @@ export function parseLeekDuckHtml(html: string, eventID: string = 'event'): Spec
               }
             });
           });
-        } else if (title.includes('egg') || title.includes('hatch')) {
+        } else if (title.includes('egg') || title.includes('hatch') || title.includes('vejce')) {
           let distance = '7km';
           const distMatch = title.match(/(\d+)\s*km/);
           if (distMatch) {
@@ -1729,7 +1914,7 @@ export function parseLeekDuckHtml(html: string, eventID: string = 'event'): Spec
             distance,
             contents
           });
-        } else if (title.includes('spawn') || title.includes('encounter') || title.includes('wild')) {
+        } else if (spawns.length === 0 && (title.includes('spawn') || title.includes('encounter') || title.includes('wild'))) {
           contents.forEach(c => {
             spawns.push({
               name: c.name,
@@ -1743,8 +1928,8 @@ export function parseLeekDuckHtml(html: string, eventID: string = 'event'): Spec
     }
   });
 
-  // Parse Field Research
-  $('.event-field-research-list li').each((_, li) => {
+  // 6. Parse Field Research
+  $('.event-field-research-list li, .field-research-list li').each((_, li) => {
     const taskEl = $(li).find('.task');
     const taskText = taskEl.length ? taskEl.text().replace(/\s+/g, ' ').trim() : '???';
 
@@ -1768,15 +1953,29 @@ export function parseLeekDuckHtml(html: string, eventID: string = 'event'): Spec
     }
   });
 
-  return {
+  const parsedDetails: SpecialEventDetails = {
     eventID,
     officialLink,
     bonuses: bonuses.length > 0 ? bonuses : undefined,
     debuts: debuts.length > 0 ? debuts : undefined,
     spawns: spawns.length > 0 ? spawns : undefined,
     eggs: eggs.length > 0 ? eggs : undefined,
-    research: research.length > 0 ? research : undefined
+    research: research.length > 0 ? research : undefined,
+    featuredAttacks: featuredAttacks.length > 0 ? featuredAttacks : undefined,
+    showcases: showcases.length > 0 ? showcases : undefined,
+    paidTicket: paidTicket || undefined,
+    goPass: goPass || undefined
   };
+
+  parsedDetails.highlights = generateEventHighlights(parsedDetails, eventID);
+  return parsedDetails;
+}
+
+/**
+ * Backward-compatible wrapper for LeekDuck HTML.
+ */
+export function parseLeekDuckHtml(html: string, eventID: string = 'event'): SpecialEventDetails {
+  return parseComplexEventHtml(html, eventID);
 }
 
 async function scrapeLeekDuckEventDetails(eventID: string, link: string): Promise<SpecialEventDetails | null> {
@@ -1960,62 +2159,40 @@ export function matchSlugToTitle(slug: string, articleTitle: string, articleUrl:
   return matches.length >= Math.min(slugWords.length, 2);
 }
 
-// ==========================================
-// 3d. Hybrid Multi-Source Orchestrator & Photo Verifier
-// ==========================================
 
-let verifiedImagesMemoryCache: Record<string, string> = {};
-
-export async function verifyAndResolveImageOnBackend(
-  url: string | undefined, 
-  eventType?: string, 
-  pokemonName?: string, 
-  canBeShiny?: boolean
-): Promise<string> {
-  if (!verifiedImagesMemoryCache || Object.keys(verifiedImagesMemoryCache).length === 0) {
-    verifiedImagesMemoryCache = await loadVerifiedImagesCache().catch(() => ({}));
-  }
-
-  const cacheKey = `${url || ''}_${pokemonName || ''}_${canBeShiny ? 'shiny' : 'normal'}`;
-  if (verifiedImagesMemoryCache[cacheKey]) {
-    return verifiedImagesMemoryCache[cacheKey];
-  }
-
-  let finalUrl = url || '';
-
-  if (!finalUrl || finalUrl.includes('placeholder') || finalUrl.includes('undefined') || finalUrl.includes('null')) {
-    if (pokemonName) {
-      finalUrl = getPokemonIconUrl(pokemonName);
-    } else {
-      finalUrl = 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=1080&auto=format&fit=crop&q=80';
-    }
-  }
-
-  if (finalUrl.startsWith('http') && !finalUrl.includes('githubusercontent.com') && !finalUrl.includes('pokemondb.net')) {
-    try {
-      const res = await axios.head(finalUrl, { timeout: 2500 });
-      if (res.status !== 200) {
-        if (pokemonName) finalUrl = getPokemonIconUrl(pokemonName);
-      }
-    } catch (e) {
-      if (pokemonName) {
-        finalUrl = getPokemonIconUrl(pokemonName);
-      }
-    }
-  }
-
-  verifiedImagesMemoryCache[cacheKey] = finalUrl;
-  saveVerifiedImagesCache(verifiedImagesMemoryCache).catch(() => {});
-  return finalUrl;
-}
 
 export async function scrapePoGOHubEventDetails(eventName: string): Promise<SpecialEventDetails | null> {
   if (!eventName) return null;
 
+  const cleanSearch = eventName.replace(/community\s*day/gi, '').replace(/spotlight\s*hour/gi, '').trim();
+
+  // 1. Try WP REST API first (fast and structured)
   try {
-    const cleanSearch = eventName.replace(/community\s*day/gi, '').replace(/spotlight\s*hour/gi, '').trim();
+    const wpApiUrl = `https://pokemongohub.net/wp-json/wp/v2/posts?search=${encodeURIComponent(cleanSearch)}&per_page=1`;
+    const apiRes = await axios.get(wpApiUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+      },
+      timeout: 6000
+    });
+
+    if (Array.isArray(apiRes.data) && apiRes.data.length > 0) {
+      const post = apiRes.data[0];
+      const renderedHtml = post.content?.rendered || '';
+      if (renderedHtml && renderedHtml.length > 200) {
+        const parsed = parseComplexEventHtml(renderedHtml, eventName.toLowerCase().replace(/\s+/g, '-'));
+        parsed.officialLink = post.link || parsed.officialLink;
+        parsed.sourcesMerged = ['PoGOHub-WP-API'];
+        return parsed;
+      }
+    }
+  } catch (wpErr: any) {
+    // Fall back to scraping webpage
+  }
+
+  // 2. Fallback to HTML Search & Article Scraping
+  try {
     const searchUrl = `https://pokemongohub.net/?s=${encodeURIComponent(cleanSearch)}`;
-    
     const searchRes = await axios.get(searchUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)'
@@ -2037,50 +2214,10 @@ export async function scrapePoGOHubEventDetails(eventName: string): Promise<Spec
       timeout: 8000
     });
 
-    const $ = cheerio.load(articleRes.data);
-    const bonuses: any[] = [];
-    const debuts: any[] = [];
-    const spawns: any[] = [];
-    const eggs: any[] = [];
-    const research: any[] = [];
-
-    $('.event-bonuses li, ul.bonuses-list li, .entry-content ul li').each((_, li) => {
-      const text = $(li).text().trim();
-      if (text.length > 5 && text.length < 150 && (text.includes('XP') || text.includes('Candy') || text.includes('Stardust') || text.includes('Trade') || text.includes('Pass') || text.includes('Egg') || text.includes('Hatch') || text.includes('Lure') || text.includes('Incense'))) {
-        bonuses.push({
-          text: { cs: translateTextToCs(text), en: text },
-          icon: bonusTextToIcon(text)
-        });
-      }
-    });
-
-    $('.entry-content img').each((_, img) => {
-      const alt = $(img).attr('alt') || '';
-      const src = $(img).attr('src') || '';
-      if (alt && alt.length > 2 && !alt.toLowerCase().includes('logo') && !alt.toLowerCase().includes('banner')) {
-        const isShiny = alt.toLowerCase().includes('shiny');
-        const cleanName = alt.replace(/shiny/gi, '').replace(/sprite/gi, '').trim();
-        if (cleanName) {
-          spawns.push({
-            name: cleanName,
-            image: src || getPokemonIconUrl(cleanName),
-            isShinyAvailable: isShiny,
-            isHighPriority: false
-          });
-        }
-      }
-    });
-
-    return {
-      eventID: eventName.toLowerCase().replace(/\s+/g, '-'),
-      officialLink: articleLink,
-      bonuses,
-      debuts,
-      spawns,
-      eggs,
-      research,
-      sourcesMerged: ['PoGOHub']
-    };
+    const parsed = parseComplexEventHtml(articleRes.data, eventName.toLowerCase().replace(/\s+/g, '-'));
+    parsed.officialLink = articleLink;
+    parsed.sourcesMerged = ['PoGOHub'];
+    return parsed;
   } catch (err: any) {
     console.warn(`[scrapePoGOHubEventDetails] Failed for "${eventName}": ${err.message}`);
     return null;
@@ -2164,6 +2301,11 @@ export async function mergeEventDetails(
   (pogoHubData?.research || []).forEach(addResearch);
   merged.research = Array.from(researchMap.values());
 
+  merged.featuredAttacks = leekData?.featuredAttacks || pogoHubData?.featuredAttacks || [];
+  merged.showcases = leekData?.showcases || pogoHubData?.showcases || [];
+  merged.paidTicket = leekData?.paidTicket || pogoHubData?.paidTicket;
+  merged.goPass = leekData?.goPass || pogoHubData?.goPass;
+
   if (merged.debuts) {
     for (const d of merged.debuts) {
       d.image = await verifyAndResolveImageOnBackend(d.image, 'event', d.name);
@@ -2187,7 +2329,20 @@ export async function mergeEventDetails(
     }
   }
 
+  // Automatically generate highlights and digest via meta evaluator
+  merged.highlights = evaluateEventMetaAndHighlights(merged, pokemonMetaDb, eventID);
+
   return merged;
+}
+
+/**
+ * Automatically evaluates event data against meta databases and generates digest highlights and grind score.
+ */
+export function generateEventHighlights(
+  details: SpecialEventDetails,
+  eventName?: string
+): { pveTopPicks: string[]; pvpTopPicks: string[]; mustDoBonuses: string[]; grindScore: 'S' | 'A' | 'B' | 'C' } {
+  return evaluateEventMetaAndHighlights(details, pokemonMetaDb, eventName);
 }
 
 export async function scrapeEventDetails(
@@ -2253,39 +2408,8 @@ export async function scrapeEventDetails(
   return mergedDetails;
 }
 
-function getPokemonIconUrl(name: string): string {
-  if (!name) return 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
-
-  const isRegionalForm = /alolan|alola|hisuian|hisui|galarian|galar|paldean|paldea/i.test(name);
-  if (isRegionalForm) {
-    let form = '';
-    if (/alolan|alola/i.test(name)) form = 'alolan';
-    else if (/hisuian|hisui/i.test(name)) form = 'hisuian';
-    else if (/galarian|galar/i.test(name)) form = 'galarian';
-    else if (/paldean|paldea/i.test(name)) form = 'paldean';
-
-    let base = name.toLowerCase()
-      .replace(/alolan|alola|hisuian|hisui|galarian|galar|paldean|paldea/gi, '')
-      .replace(/\s*\([^)]*\)/g, '')
-      .replace(/^shadow\s+/i, '')
-      .replace(/^mega\s+/i, '')
-      .trim()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9-]/g, '');
-
-    if (base && form) {
-      return `https://img.pokemondb.net/sprites/home/normal/${base}-${form}.png`;
-    }
-  }
-
-  const clean = name.toLowerCase()
-    .replace(/\s*\([^)]*\)/g, '')
-    .replace(/^shadow\s+/i, '')
-    .replace(/^mega\s+/i, '')
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '');
-  return `https://img.pokemondb.net/sprites/home/normal/${clean}.png`;
+function getPokemonIconUrl(name: string, isShiny: boolean = false): string {
+  return resolvePokemonAsset(name, isShiny);
 }
 
 export async function scrapePoGOHubRaidBosses(): Promise<ScrapedRaidBoss[]> {
@@ -2370,9 +2494,23 @@ export async function scrapePoGOHubRaidBosses(): Promise<ScrapedRaidBoss[]> {
 }
 
 export async function scrapeRaidBosses(scrapedEvents?: EventData[]): Promise<ScrapedRaidBoss[]> {
+  // 1. Try ScrapedDuck multi-CDN feed first (fastest, most reliable)
+  try {
+    const rawRaids = await fetchScrapedDuckRaids();
+    if (rawRaids && Array.isArray(rawRaids) && rawRaids.length > 0) {
+      const enriched = enrichScrapedDuckRaids(rawRaids);
+      if (enriched.length >= 4) {
+        await saveRaidBossesCache(enriched).catch(() => {});
+        return enriched;
+      }
+    }
+  } catch (err: any) {
+    console.warn(`[scrapeRaidBosses] ScrapedDuck feed failed: ${err.message}. Trying PoGOHub / LeekDuck HTML fallback...`);
+  }
+
   const bosses: ScrapedRaidBoss[] = [];
 
-  // 1. Try Pokémon GO Hub first (up-to-date live source for all raid tiers)
+  // 2. Try Pokémon GO Hub (live source fallback)
   const pogoHubBosses = await scrapePoGOHubRaidBosses();
   if (pogoHubBosses.length >= 5) {
     bosses.push(...pogoHubBosses);
@@ -2735,6 +2873,39 @@ export async function scrapeRocketLineups(): Promise<{
   leaders: RocketMember[];
   grunts: GruntData[];
 }> {
+  // 1. Try ScrapedDuck multi-CDN feed first
+  try {
+    const rawRocket = await fetchScrapedDuckRocketLineups();
+    if (rawRocket && Array.isArray(rawRocket) && rawRocket.length > 0) {
+      const enriched = enrichScrapedDuckRocketLineups(rawRocket);
+      if (enriched.giovanni || enriched.leaders.length > 0) {
+        const defaultGio: RocketMember = {
+          name: "Giovanni",
+          avatar: "👑",
+          reward: {
+            name: "Reshiram",
+            pveRating: "S",
+            pvpRating: "A",
+            worthGrinding: true,
+            reason: "Shadow Reshiram je silný útočník.",
+            hubRating: "S"
+          },
+          lineup: { slot1: [], slot2: [], slot3: [] },
+          counters: LEADER_COUNTERS_DB["giovanni"]
+        };
+        const result = {
+          giovanni: enriched.giovanni || defaultGio,
+          leaders: enriched.leaders,
+          grunts: enriched.grunts
+        };
+        await saveRocketLineupsCache(result).catch(() => {});
+        return result;
+      }
+    }
+  } catch (err: any) {
+    console.warn(`[scrapeRocketLineups] ScrapedDuck rocket feed failed: ${err.message}. Trying LeekDuck HTML...`);
+  }
+
   const url = 'https://leekduck.com/rocket-lineups/';
   let html = '';
 

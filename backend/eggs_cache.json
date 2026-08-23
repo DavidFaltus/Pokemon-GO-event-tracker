@@ -1,0 +1,910 @@
+[
+  {
+    "distance": "2 km",
+    "title": {
+      "cs": "2 km Vajíčka",
+      "en": "2 km Eggs"
+    },
+    "eggs": [
+      {
+        "name": "Exeggcute",
+        "image": "https://img.pokemondb.net/sprites/home/normal/exeggcute.png",
+        "canBeShiny": true,
+        "minCp": 671,
+        "maxCp": 671,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Pichu",
+        "image": "https://img.pokemondb.net/sprites/home/normal/pichu.png",
+        "canBeShiny": true,
+        "minCp": 270,
+        "maxCp": 270,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Cleffa",
+        "image": "https://img.pokemondb.net/sprites/home/normal/cleffa.png",
+        "canBeShiny": true,
+        "minCp": 383,
+        "maxCp": 383,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Togepi",
+        "image": "https://img.pokemondb.net/sprites/home/normal/togepi.png",
+        "canBeShiny": true,
+        "minCp": 375,
+        "maxCp": 375,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Corphish",
+        "image": "https://img.pokemondb.net/sprites/home/normal/corphish.png",
+        "canBeShiny": true,
+        "minCp": 703,
+        "maxCp": 703,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Wynaut",
+        "image": "https://img.pokemondb.net/sprites/home/normal/wynaut.png",
+        "canBeShiny": true,
+        "minCp": 305,
+        "maxCp": 305,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Larvesta",
+        "image": "https://img.pokemondb.net/sprites/home/normal/larvesta.png",
+        "canBeShiny": true,
+        "minCp": 855,
+        "maxCp": 855,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      }
+    ]
+  },
+  {
+    "distance": "5 km",
+    "title": {
+      "cs": "5 km Vajíčka",
+      "en": "5 km Eggs"
+    },
+    "eggs": [
+      {
+        "name": "Riolu",
+        "image": "https://img.pokemondb.net/sprites/home/normal/riolu.png",
+        "canBeShiny": true,
+        "minCp": 567,
+        "maxCp": 567,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Mantyke",
+        "image": "https://img.pokemondb.net/sprites/home/normal/mantyke.png",
+        "canBeShiny": true,
+        "minCp": 713,
+        "maxCp": 713,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Snom",
+        "image": "https://img.pokemondb.net/sprites/home/normal/snom.png",
+        "canBeShiny": false,
+        "minCp": 302,
+        "maxCp": 302,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Indeedee (Male)",
+        "image": "https://img.pokemondb.net/sprites/home/normal/indeedee.png",
+        "canBeShiny": true,
+        "minCp": 1396,
+        "maxCp": 1396,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Indeedee (Female)",
+        "image": "https://img.pokemondb.net/sprites/home/normal/indeedee.png",
+        "canBeShiny": true,
+        "minCp": 1370,
+        "maxCp": 1370,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Flittle",
+        "image": "https://img.pokemondb.net/sprites/home/normal/flittle.png",
+        "canBeShiny": false,
+        "minCp": 401,
+        "maxCp": 401,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Larvesta",
+        "image": "https://img.pokemondb.net/sprites/home/normal/larvesta.png",
+        "canBeShiny": true,
+        "minCp": 855,
+        "maxCp": 855,
+        "rarity": 3,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      }
+    ]
+  },
+  {
+    "distance": "7 km",
+    "title": {
+      "cs": "7 km Vajíčka (Dárky od přátel)",
+      "en": "7 km Eggs (Gift Exchange)"
+    },
+    "eggs": [
+      {
+        "name": "Galarian Meowth",
+        "image": "https://img.pokemondb.net/sprites/home/normal/meowth-galarian.png",
+        "canBeShiny": true,
+        "minCp": 591,
+        "maxCp": 591,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Galarian Corsola",
+        "image": "https://img.pokemondb.net/sprites/home/normal/corsola-galarian.png",
+        "canBeShiny": true,
+        "minCp": 855,
+        "maxCp": 855,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Galarian Zigzagoon",
+        "image": "https://img.pokemondb.net/sprites/home/normal/zigzagoon-galarian.png",
+        "canBeShiny": true,
+        "minCp": 290,
+        "maxCp": 290,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Galarian Darumaka",
+        "image": "https://img.pokemondb.net/sprites/home/normal/darumaka-galarian.png",
+        "canBeShiny": true,
+        "minCp": 823,
+        "maxCp": 823,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Galarian Stunfisk",
+        "image": "https://img.pokemondb.net/sprites/home/normal/stunfisk-galarian.png",
+        "canBeShiny": true,
+        "minCp": 1235,
+        "maxCp": 1235,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Alolan Geodude",
+        "image": "https://img.pokemondb.net/sprites/home/normal/geodude-alolan.png",
+        "canBeShiny": true,
+        "minCp": 739,
+        "maxCp": 739,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Alolan Diglett",
+        "image": "https://img.pokemondb.net/sprites/home/normal/diglett-alolan.png",
+        "canBeShiny": true,
+        "minCp": 389,
+        "maxCp": 389,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Galarian Corsola",
+        "image": "https://img.pokemondb.net/sprites/home/normal/corsola-galarian.png",
+        "canBeShiny": true,
+        "minCp": 855,
+        "maxCp": 855,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": true
+      },
+      {
+        "name": "Galarian Slowpoke",
+        "image": "https://img.pokemondb.net/sprites/home/normal/slowpoke-galarian.png",
+        "canBeShiny": true,
+        "minCp": 700,
+        "maxCp": 700,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": true
+      },
+      {
+        "name": "Hisuian Sneasel",
+        "image": "https://img.pokemondb.net/sprites/home/normal/sneasel-hisuian.png",
+        "canBeShiny": true,
+        "minCp": 1172,
+        "maxCp": 1172,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": true
+      },
+      {
+        "name": "Hisuian Growlithe",
+        "image": "https://img.pokemondb.net/sprites/home/normal/growlithe-hisuian.png",
+        "canBeShiny": true,
+        "minCp": 755,
+        "maxCp": 755,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": true
+      },
+      {
+        "name": "Basculin (White Striped)",
+        "image": "https://img.pokemondb.net/sprites/home/normal/basculin.png",
+        "canBeShiny": true,
+        "minCp": 1194,
+        "maxCp": 1194,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": true
+      }
+    ]
+  },
+  {
+    "distance": "10 km",
+    "title": {
+      "cs": "10 km Vajíčka",
+      "en": "10 km Eggs"
+    },
+    "eggs": [
+      {
+        "name": "Mawile",
+        "image": "https://img.pokemondb.net/sprites/home/normal/mawile.png",
+        "canBeShiny": true,
+        "minCp": 934,
+        "maxCp": 934,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Absol",
+        "image": "https://img.pokemondb.net/sprites/home/normal/absol.png",
+        "canBeShiny": true,
+        "minCp": 1443,
+        "maxCp": 1443,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Honedge",
+        "image": "https://img.pokemondb.net/sprites/home/normal/honedge.png",
+        "canBeShiny": true,
+        "minCp": 794,
+        "maxCp": 794,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Charcadet",
+        "image": "https://img.pokemondb.net/sprites/home/normal/charcadet.png",
+        "canBeShiny": true,
+        "minCp": 418,
+        "maxCp": 418,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Tinkatink",
+        "image": "https://img.pokemondb.net/sprites/home/normal/tinkatink.png",
+        "canBeShiny": true,
+        "minCp": 491,
+        "maxCp": 491,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Frigibax",
+        "image": "https://img.pokemondb.net/sprites/home/normal/frigibax.png",
+        "canBeShiny": true,
+        "minCp": 712,
+        "maxCp": 712,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Larvesta",
+        "image": "https://img.pokemondb.net/sprites/home/normal/larvesta.png",
+        "canBeShiny": true,
+        "minCp": 855,
+        "maxCp": 855,
+        "rarity": 3,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      }
+    ]
+  },
+  {
+    "distance": "12 km",
+    "title": {
+      "cs": "12 km Temná vajíčka (Team GO Rocket)",
+      "en": "12 km Strange Eggs (Team GO Rocket)"
+    },
+    "eggs": [
+      {
+        "name": "Sandile",
+        "image": "https://img.pokemondb.net/sprites/home/normal/sandile.png",
+        "canBeShiny": true,
+        "minCp": 592,
+        "maxCp": 592,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Vullaby",
+        "image": "https://img.pokemondb.net/sprites/home/normal/vullaby.png",
+        "canBeShiny": true,
+        "minCp": 726,
+        "maxCp": 726,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Shroodle",
+        "image": "https://img.pokemondb.net/sprites/home/normal/shroodle.png",
+        "canBeShiny": false,
+        "minCp": 531,
+        "maxCp": 531,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Pancham",
+        "image": "https://img.pokemondb.net/sprites/home/normal/pancham.png",
+        "canBeShiny": true,
+        "minCp": 850,
+        "maxCp": 850,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Salandit",
+        "image": "https://img.pokemondb.net/sprites/home/normal/salandit.png",
+        "canBeShiny": true,
+        "minCp": 641,
+        "maxCp": 641,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Varoom",
+        "image": "https://img.pokemondb.net/sprites/home/normal/varoom.png",
+        "canBeShiny": true,
+        "minCp": 650,
+        "maxCp": 650,
+        "rarity": 1,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      }
+    ]
+  },
+  {
+    "distance": "Adventure Sync (5 km)",
+    "title": {
+      "cs": "Adventure Sync (Adventure Sync (5 km)) Odměny",
+      "en": "Adventure Sync (Adventure Sync (5 km)) Rewards"
+    },
+    "eggs": [
+      {
+        "name": "Budew",
+        "image": "https://img.pokemondb.net/sprites/home/normal/budew.png",
+        "canBeShiny": true,
+        "minCp": 489,
+        "maxCp": 489,
+        "rarity": 1,
+        "isAdventureSync": true,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Chingling",
+        "image": "https://img.pokemondb.net/sprites/home/normal/chingling.png",
+        "canBeShiny": true,
+        "minCp": 574,
+        "maxCp": 574,
+        "rarity": 1,
+        "isAdventureSync": true,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Sableye",
+        "image": "https://img.pokemondb.net/sprites/home/normal/sableye.png",
+        "canBeShiny": true,
+        "minCp": 843,
+        "maxCp": 843,
+        "rarity": 1,
+        "isAdventureSync": true,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Tyrogue",
+        "image": "https://img.pokemondb.net/sprites/home/normal/tyrogue.png",
+        "canBeShiny": true,
+        "minCp": 281,
+        "maxCp": 281,
+        "rarity": 1,
+        "isAdventureSync": true,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Happiny",
+        "image": "https://img.pokemondb.net/sprites/home/normal/happiny.png",
+        "canBeShiny": true,
+        "minCp": 212,
+        "maxCp": 212,
+        "rarity": 1,
+        "isAdventureSync": true,
+        "isRegional": false,
+        "isGiftExchange": false
+      }
+    ]
+  },
+  {
+    "distance": "Adventure Sync (10 km)",
+    "title": {
+      "cs": "Adventure Sync (Adventure Sync (10 km)) Odměny",
+      "en": "Adventure Sync (Adventure Sync (10 km)) Rewards"
+    },
+    "eggs": [
+      {
+        "name": "Druddigon",
+        "image": "https://img.pokemondb.net/sprites/home/normal/druddigon.png",
+        "canBeShiny": true,
+        "minCp": 1561,
+        "maxCp": 1561,
+        "rarity": 1,
+        "isAdventureSync": true,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Toxel",
+        "image": "https://img.pokemondb.net/sprites/home/normal/toxel.png",
+        "canBeShiny": true,
+        "minCp": 415,
+        "maxCp": 415,
+        "rarity": 1,
+        "isAdventureSync": true,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Bagon",
+        "image": "https://img.pokemondb.net/sprites/home/normal/bagon.png",
+        "canBeShiny": true,
+        "minCp": 660,
+        "maxCp": 660,
+        "rarity": 1,
+        "isAdventureSync": true,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Drampa",
+        "image": "https://img.pokemondb.net/sprites/home/normal/drampa.png",
+        "canBeShiny": true,
+        "minCp": 1665,
+        "maxCp": 1665,
+        "rarity": 1,
+        "isAdventureSync": true,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Gible",
+        "image": "https://img.pokemondb.net/sprites/home/normal/gible.png",
+        "canBeShiny": true,
+        "minCp": 635,
+        "maxCp": 635,
+        "rarity": 1,
+        "isAdventureSync": true,
+        "isRegional": false,
+        "isGiftExchange": false
+      }
+    ]
+  },
+  {
+    "distance": "1 km",
+    "title": {
+      "cs": "1 km Vajíčka",
+      "en": "1 km Eggs"
+    },
+    "eggs": [
+      {
+        "name": "Bulbasaur",
+        "image": "https://img.pokemondb.net/sprites/home/normal/bulbasaur.png",
+        "canBeShiny": true,
+        "minCp": 637,
+        "maxCp": 637,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Charmander",
+        "image": "https://img.pokemondb.net/sprites/home/normal/charmander.png",
+        "canBeShiny": true,
+        "minCp": 560,
+        "maxCp": 560,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Squirtle",
+        "image": "https://img.pokemondb.net/sprites/home/normal/squirtle.png",
+        "canBeShiny": true,
+        "minCp": 540,
+        "maxCp": 540,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Chikorita",
+        "image": "https://img.pokemondb.net/sprites/home/normal/chikorita.png",
+        "canBeShiny": true,
+        "minCp": 534,
+        "maxCp": 534,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Cyndaquil",
+        "image": "https://img.pokemondb.net/sprites/home/normal/cyndaquil.png",
+        "canBeShiny": true,
+        "minCp": 560,
+        "maxCp": 560,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Totodile",
+        "image": "https://img.pokemondb.net/sprites/home/normal/totodile.png",
+        "canBeShiny": true,
+        "minCp": 646,
+        "maxCp": 646,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Treecko",
+        "image": "https://img.pokemondb.net/sprites/home/normal/treecko.png",
+        "canBeShiny": true,
+        "minCp": 601,
+        "maxCp": 601,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Torchic",
+        "image": "https://img.pokemondb.net/sprites/home/normal/torchic.png",
+        "canBeShiny": true,
+        "minCp": 624,
+        "maxCp": 624,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Mudkip",
+        "image": "https://img.pokemondb.net/sprites/home/normal/mudkip.png",
+        "canBeShiny": true,
+        "minCp": 644,
+        "maxCp": 644,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Turtwig",
+        "image": "https://img.pokemondb.net/sprites/home/normal/turtwig.png",
+        "canBeShiny": true,
+        "minCp": 678,
+        "maxCp": 678,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Chimchar",
+        "image": "https://img.pokemondb.net/sprites/home/normal/chimchar.png",
+        "canBeShiny": true,
+        "minCp": 547,
+        "maxCp": 547,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Piplup",
+        "image": "https://img.pokemondb.net/sprites/home/normal/piplup.png",
+        "canBeShiny": true,
+        "minCp": 614,
+        "maxCp": 614,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Snivy",
+        "image": "https://img.pokemondb.net/sprites/home/normal/snivy.png",
+        "canBeShiny": true,
+        "minCp": 485,
+        "maxCp": 485,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Tepig",
+        "image": "https://img.pokemondb.net/sprites/home/normal/tepig.png",
+        "canBeShiny": true,
+        "minCp": 618,
+        "maxCp": 618,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Oshawott",
+        "image": "https://img.pokemondb.net/sprites/home/normal/oshawott.png",
+        "canBeShiny": true,
+        "minCp": 597,
+        "maxCp": 597,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Chespin",
+        "image": "https://img.pokemondb.net/sprites/home/normal/chespin.png",
+        "canBeShiny": true,
+        "minCp": 626,
+        "maxCp": 626,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Fennekin",
+        "image": "https://img.pokemondb.net/sprites/home/normal/fennekin.png",
+        "canBeShiny": true,
+        "minCp": 587,
+        "maxCp": 587,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Froakie",
+        "image": "https://img.pokemondb.net/sprites/home/normal/froakie.png",
+        "canBeShiny": true,
+        "minCp": 567,
+        "maxCp": 567,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Rowlet",
+        "image": "https://img.pokemondb.net/sprites/home/normal/rowlet.png",
+        "canBeShiny": true,
+        "minCp": 604,
+        "maxCp": 604,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Litten",
+        "image": "https://img.pokemondb.net/sprites/home/normal/litten.png",
+        "canBeShiny": true,
+        "minCp": 591,
+        "maxCp": 591,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Popplio",
+        "image": "https://img.pokemondb.net/sprites/home/normal/popplio.png",
+        "canBeShiny": true,
+        "minCp": 645,
+        "maxCp": 645,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Grookey",
+        "image": "https://img.pokemondb.net/sprites/home/normal/grookey.png",
+        "canBeShiny": true,
+        "minCp": 620,
+        "maxCp": 620,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Scorbunny",
+        "image": "https://img.pokemondb.net/sprites/home/normal/scorbunny.png",
+        "canBeShiny": true,
+        "minCp": 627,
+        "maxCp": 627,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Sobble",
+        "image": "https://img.pokemondb.net/sprites/home/normal/sobble.png",
+        "canBeShiny": false,
+        "minCp": 627,
+        "maxCp": 627,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Sprigatito",
+        "image": "https://img.pokemondb.net/sprites/home/normal/sprigatito.png",
+        "canBeShiny": true,
+        "minCp": 579,
+        "maxCp": 579,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Fuecoco",
+        "image": "https://img.pokemondb.net/sprites/home/normal/fuecoco.png",
+        "canBeShiny": true,
+        "minCp": 644,
+        "maxCp": 644,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      },
+      {
+        "name": "Quaxly",
+        "image": "https://img.pokemondb.net/sprites/home/normal/quaxly.png",
+        "canBeShiny": true,
+        "minCp": 614,
+        "maxCp": 614,
+        "rarity": 4,
+        "isAdventureSync": false,
+        "isRegional": false,
+        "isGiftExchange": false
+      }
+    ]
+  }
+]

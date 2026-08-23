@@ -29,10 +29,11 @@ const AdminPanelView = lazy(() => import('./components/AdminPanelView').then(m =
 import { PokeballLogo } from './components/PokeballLogo';
 
 const GuidesView = lazy(() => import('./components/GuidesView').then(m => ({ default: m.GuidesView })));
+const FriendFinderView = lazy(() => import('./components/FriendFinderView').then(m => ({ default: m.FriendFinderView })));
 const DownloadAppView = lazy(() => import('./components/DownloadAppView').then(m => ({ default: m.DownloadAppView })));
 const NotFoundView = lazy(() => import('./components/NotFoundView').then(m => ({ default: m.NotFoundView })));
 
-type TabType = 'events' | 'guides' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin' | 'download' | '404';
+type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin' | 'download' | '404';
 
 
 // Calculate difference between target timezone and browser local timezone
@@ -261,6 +262,7 @@ const getTabFromUrlPath = (pathname: string): TabType => {
   const first = tabSegments[0] || '';
   if (first === 'admin') return 'admin';
   if (first === 'guides' || first === 'guide' || first === 'pruvodce') return 'guides';
+  if (first === 'friends' || first === 'friend' || first === 'pratele' || first === 'codes') return 'friends';
   if (first === 'raids' || first === 'raid') return 'raid';
   if (first === 'rocket') return 'rocket';
   if (first === 'rankings' || first === 'ranking' || first === 'pokemon') return 'ranking';
@@ -294,6 +296,7 @@ const getUrlPathForTab = (tab: TabType, l: Language, eventID?: string | null, po
   }
   switch (tab) {
     case 'guides': return `${prefix}/guides`;
+    case 'friends': return `${prefix}/friends`;
     case 'raid': return `${prefix}/raids`;
     case 'rocket': return `${prefix}/rocket`;
     case 'ranking': return `${prefix}/rankings`;
@@ -311,6 +314,7 @@ const getUrlPathForTab = (tab: TabType, l: Language, eventID?: string | null, po
 const TAB_TITLES: Record<TabType, Record<string, string>> = {
   events: { cs: 'Události', en: 'Events', ja: 'イベント', ru: 'События' },
   guides: { cs: 'Průvodce & Články', en: 'Guides & Articles', ja: 'ガイド & 記事', ru: 'Гайды и Статьи' },
+  friends: { cs: 'Přátelé & Kódy trenérů', en: 'Friend Codes & Matchmaker', ja: 'フレンド募集掲示板', ru: 'Коды друзей и рейды' },
   raid: { cs: 'Raid Bossi', en: 'Raid Bosses', ja: 'レイドボス', ru: 'Рейд-боссы' },
   rocket: { cs: 'Team GO Rocket', en: 'Team GO Rocket', ja: 'Team GO Rocket', ru: 'Team GO Rocket' },
   ditto: { cs: 'Ditto Přestrojení', en: 'Ditto Disguises', ja: 'メタモン変装', ru: 'Маскировки Дитто' },
@@ -1101,6 +1105,12 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
               {activeTab === 'guides' && (
                 <div className="tab-content guides-tab">
                   <GuidesView lang={lang} initialArticleSlug={initialArticleSlug} />
+                </div>
+              )}
+
+              {activeTab === 'friends' && (
+                <div className="tab-content friends-tab">
+                  <FriendFinderView lang={lang} />
                 </div>
               )}
 

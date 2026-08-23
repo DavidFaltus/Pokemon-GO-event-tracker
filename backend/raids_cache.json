@@ -1,0 +1,828 @@
+[
+  {
+    "name": "Tatsugiri (Curly)",
+    "tier": "1",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm978.fCURLY.icon.png",
+    "canBeShiny": false,
+    "cpRange": "1494 - 1569",
+    "boostedCpRange": "1868 - 1962",
+    "weatherBoosts": [
+      "Windy",
+      "Rainy"
+    ],
+    "types": [
+      "Dragon",
+      "Water"
+    ],
+    "counters": {
+      "bossName": "Tatsugiri (Curly)",
+      "weaknesses": [
+        "Dragon",
+        "Fairy"
+      ],
+      "megaCounters": [
+        "Mega Rayquaza",
+        "Mega Garchomp",
+        "Mega Salamence"
+      ],
+      "advancedCounters": [
+        "Rayquaza (Outrage)",
+        "Palkia Origin (Spacial Rend)",
+        "Dialga Origin (Roar of Time)",
+        "Shadow Salamence"
+      ],
+      "budgetCounters": [
+        "Dragonite (Outrage)",
+        "Salamence (Outrage)",
+        "Haxorus (Breaking Swipe)",
+        "Garchomp (Outrage)"
+      ],
+      "minCp": 1494,
+      "maxCp": 1569,
+      "minBoostedCp": 1868,
+      "maxBoostedCp": 1962,
+      "weatherBoosts": [
+        "Windy",
+        "Rainy"
+      ]
+    },
+    "difficultyTier": "solo"
+  },
+  {
+    "name": "Tatsugiri (Droopy)",
+    "tier": "1",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm978.fDROOPY.icon.png",
+    "canBeShiny": false,
+    "cpRange": "1494 - 1569",
+    "boostedCpRange": "1868 - 1962",
+    "weatherBoosts": [
+      "Windy",
+      "Rainy"
+    ],
+    "types": [
+      "Dragon",
+      "Water"
+    ],
+    "counters": {
+      "bossName": "Tatsugiri (Droopy)",
+      "weaknesses": [
+        "Dragon",
+        "Fairy"
+      ],
+      "megaCounters": [
+        "Mega Rayquaza",
+        "Mega Garchomp",
+        "Mega Salamence"
+      ],
+      "advancedCounters": [
+        "Rayquaza (Outrage)",
+        "Palkia Origin (Spacial Rend)",
+        "Dialga Origin (Roar of Time)",
+        "Shadow Salamence"
+      ],
+      "budgetCounters": [
+        "Dragonite (Outrage)",
+        "Salamence (Outrage)",
+        "Haxorus (Breaking Swipe)",
+        "Garchomp (Outrage)"
+      ],
+      "minCp": 1494,
+      "maxCp": 1569,
+      "minBoostedCp": 1868,
+      "maxBoostedCp": 1962,
+      "weatherBoosts": [
+        "Windy",
+        "Rainy"
+      ]
+    },
+    "difficultyTier": "solo"
+  },
+  {
+    "name": "Tatsugiri (Stretchy)",
+    "tier": "1",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm978.fSTRETCHY.icon.png",
+    "canBeShiny": false,
+    "cpRange": "1494 - 1569",
+    "boostedCpRange": "1868 - 1962",
+    "weatherBoosts": [
+      "Windy",
+      "Rainy"
+    ],
+    "types": [
+      "Dragon",
+      "Water"
+    ],
+    "counters": {
+      "bossName": "Tatsugiri (Stretchy)",
+      "weaknesses": [
+        "Dragon",
+        "Fairy"
+      ],
+      "megaCounters": [
+        "Mega Rayquaza",
+        "Mega Garchomp",
+        "Mega Salamence"
+      ],
+      "advancedCounters": [
+        "Rayquaza (Outrage)",
+        "Palkia Origin (Spacial Rend)",
+        "Dialga Origin (Roar of Time)",
+        "Shadow Salamence"
+      ],
+      "budgetCounters": [
+        "Dragonite (Outrage)",
+        "Salamence (Outrage)",
+        "Haxorus (Breaking Swipe)",
+        "Garchomp (Outrage)"
+      ],
+      "minCp": 1494,
+      "maxCp": 1569,
+      "minBoostedCp": 1868,
+      "maxBoostedCp": 1962,
+      "weatherBoosts": [
+        "Windy",
+        "Rainy"
+      ]
+    },
+    "difficultyTier": "solo"
+  },
+  {
+    "name": "Psyduck with a swim ring",
+    "tier": "1",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm54.fSWIM_2025.icon.png",
+    "canBeShiny": true,
+    "cpRange": "585 - 632",
+    "boostedCpRange": "731 - 790",
+    "weatherBoosts": [
+      "Rainy"
+    ],
+    "types": [
+      "Water"
+    ],
+    "counters": {
+      "bossName": "Psyduck with a swim ring",
+      "weaknesses": [
+        "Electric",
+        "Grass"
+      ],
+      "megaCounters": [
+        "Mega Manectric",
+        "Mega Ampharos",
+        "Mega Sceptile"
+      ],
+      "advancedCounters": [
+        "Xurkitree (Discharge)",
+        "Zekrom (Fusion Bolt)",
+        "Shadow Raikou",
+        "Shadow Electivire"
+      ],
+      "budgetCounters": [
+        "Electivire (Wild Charge)",
+        "Magnezone (Wild Charge)",
+        "Jolteon (Discharge)",
+        "Luxray (Wild Charge)"
+      ],
+      "minCp": 585,
+      "maxCp": 632,
+      "minBoostedCp": 731,
+      "maxBoostedCp": 790,
+      "weatherBoosts": [
+        "Rainy"
+      ]
+    },
+    "difficultyTier": "solo"
+  },
+  {
+    "name": "Lapras wearing a Scarf",
+    "tier": "3",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm131.fCOSTUME_2020.icon.png",
+    "canBeShiny": true,
+    "cpRange": "1435 - 1509",
+    "boostedCpRange": "1794 - 1886",
+    "weatherBoosts": [
+      "Rainy",
+      "Snow"
+    ],
+    "types": [
+      "Water",
+      "Ice"
+    ],
+    "counters": {
+      "bossName": "Lapras wearing a Scarf",
+      "weaknesses": [
+        "Electric",
+        "Grass",
+        "Fighting",
+        "Rock"
+      ],
+      "megaCounters": [
+        "Mega Manectric",
+        "Mega Ampharos",
+        "Mega Sceptile"
+      ],
+      "advancedCounters": [
+        "Xurkitree (Discharge)",
+        "Zekrom (Fusion Bolt)",
+        "Shadow Raikou",
+        "Shadow Electivire"
+      ],
+      "budgetCounters": [
+        "Electivire (Wild Charge)",
+        "Magnezone (Wild Charge)",
+        "Jolteon (Discharge)",
+        "Luxray (Wild Charge)"
+      ],
+      "minCp": 1435,
+      "maxCp": 1509,
+      "minBoostedCp": 1794,
+      "maxBoostedCp": 1886,
+      "weatherBoosts": [
+        "Rainy",
+        "Snow"
+      ]
+    },
+    "difficultyTier": "solo"
+  },
+  {
+    "name": "Hisuian Samurott",
+    "tier": "3",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm503.fHISUIAN.icon.png",
+    "canBeShiny": true,
+    "cpRange": "1525 - 1601",
+    "boostedCpRange": "1907 - 2001",
+    "weatherBoosts": [
+      "Rainy",
+      "Fog"
+    ],
+    "types": [
+      "Water",
+      "Dark"
+    ],
+    "counters": {
+      "bossName": "Hisuian Samurott",
+      "weaknesses": [
+        "Electric",
+        "Grass",
+        "Fighting",
+        "Bug",
+        "Fairy"
+      ],
+      "megaCounters": [
+        "Mega Manectric",
+        "Mega Sceptile",
+        "Mega Lucario",
+        "Mega Rayquaza"
+      ],
+      "advancedCounters": [
+        "Kartana (Razor Leaf)",
+        "Terrakion (Sacred Sword)",
+        "Xurkitree (Discharge)",
+        "Lucario (Aura Sphere)"
+      ],
+      "budgetCounters": [
+        "Machamp (Dynamic Punch)",
+        "Electivire (Wild Charge)",
+        "Roserade (Grass Knot)",
+        "Tapu Koko (Thunderbolt)"
+      ],
+      "minCp": 1530,
+      "maxCp": 1613,
+      "minBoostedCp": 1913,
+      "maxBoostedCp": 2017,
+      "weatherBoosts": [
+        "Deštivo (Rainy)",
+        "Mlha (Fog)"
+      ]
+    },
+    "difficultyTier": "solo"
+  },
+  {
+    "name": "Dondozo",
+    "tier": "3",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm977.icon.png",
+    "canBeShiny": true,
+    "cpRange": "1633 - 1712",
+    "boostedCpRange": "2041 - 2140",
+    "weatherBoosts": [
+      "Rainy"
+    ],
+    "types": [
+      "Water"
+    ],
+    "counters": {
+      "bossName": "Dondozo",
+      "weaknesses": [
+        "Electric",
+        "Grass"
+      ],
+      "megaCounters": [
+        "Mega Manectric",
+        "Mega Ampharos",
+        "Mega Sceptile"
+      ],
+      "advancedCounters": [
+        "Xurkitree (Discharge)",
+        "Zekrom (Fusion Bolt)",
+        "Shadow Raikou",
+        "Shadow Electivire"
+      ],
+      "budgetCounters": [
+        "Electivire (Wild Charge)",
+        "Magnezone (Wild Charge)",
+        "Jolteon (Discharge)",
+        "Luxray (Wild Charge)"
+      ],
+      "minCp": 1633,
+      "maxCp": 1712,
+      "minBoostedCp": 2041,
+      "maxBoostedCp": 2140,
+      "weatherBoosts": [
+        "Rainy"
+      ]
+    },
+    "difficultyTier": "solo"
+  },
+  {
+    "name": "Lunala",
+    "tier": "5",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm792.icon.png",
+    "canBeShiny": false,
+    "cpRange": "2219 - 2310",
+    "boostedCpRange": "2774 - 2887",
+    "weatherBoosts": [
+      "Windy",
+      "Fog"
+    ],
+    "types": [
+      "Psychic",
+      "Ghost"
+    ],
+    "counters": {
+      "bossName": "Lunala",
+      "weaknesses": [
+        "Ghost (2x)",
+        "Dark (2x)"
+      ],
+      "megaCounters": [
+        "Mega Gengar",
+        "Mega Tyranitar",
+        "Mega Houndoom"
+      ],
+      "advancedCounters": [
+        "Hydreigon (Brutal Swing)",
+        "Tyranitar (Brutal Swing)",
+        "Giratina Origin (Shadow Ball)",
+        "Darkrai (Dark Pulse)"
+      ],
+      "budgetCounters": [
+        "Chandelure (Shadow Ball)",
+        "Weavile (Foul Play)",
+        "Honchkrow (Dark Pulse)",
+        "Gengar (Shadow Ball)"
+      ],
+      "minCp": 2217,
+      "maxCp": 2307,
+      "minBoostedCp": 2771,
+      "maxBoostedCp": 2884,
+      "weatherBoosts": [
+        "Mlha (Fog)",
+        "Větrno (Windy)"
+      ]
+    },
+    "difficultyTier": "trio"
+  },
+  {
+    "name": "Mega Swampert",
+    "tier": "mega",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm260.fMEGA.icon.png",
+    "canBeShiny": true,
+    "cpRange": "1622 - 1699",
+    "boostedCpRange": "2027 - 2124",
+    "weatherBoosts": [
+      "Rainy",
+      "Sunny"
+    ],
+    "types": [
+      "Water",
+      "Ground"
+    ],
+    "counters": {
+      "bossName": "Mega Swampert",
+      "weaknesses": [
+        "Grass (2x)"
+      ],
+      "megaCounters": [
+        "Mega Sceptile",
+        "Mega Venusaur"
+      ],
+      "advancedCounters": [
+        "Kartana (Leaf Blade)",
+        "Zarude (Power Whip)",
+        "Shadow Tangrowth",
+        "Shadow Venusaur"
+      ],
+      "budgetCounters": [
+        "Sceptile (Frenzy Plant)",
+        "Venusaur (Frenzy Plant)",
+        "Tangrowth (Power Whip)",
+        "Roserade (Grass Knot)"
+      ],
+      "minCp": 1697,
+      "maxCp": 1777,
+      "minBoostedCp": 2121,
+      "maxBoostedCp": 2221,
+      "weatherBoosts": [
+        "Deštivo (Rainy)",
+        "Slunečno (Sunny)"
+      ]
+    },
+    "difficultyTier": "duo"
+  },
+  {
+    "name": "Shadow Slowpoke",
+    "tier": "1",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm79.icon.png",
+    "canBeShiny": true,
+    "cpRange": "610 - 700",
+    "boostedCpRange": "763 - 876",
+    "weatherBoosts": [
+      "Rainy",
+      "Windy"
+    ],
+    "types": [
+      "Water",
+      "Psychic"
+    ],
+    "counters": {
+      "bossName": "Shadow Slowpoke",
+      "weaknesses": [
+        "Electric",
+        "Grass",
+        "Bug",
+        "Ghost",
+        "Dark"
+      ],
+      "megaCounters": [
+        "Mega Manectric",
+        "Mega Ampharos",
+        "Mega Sceptile"
+      ],
+      "advancedCounters": [
+        "Xurkitree (Discharge)",
+        "Zekrom (Fusion Bolt)",
+        "Shadow Raikou",
+        "Shadow Electivire"
+      ],
+      "budgetCounters": [
+        "Electivire (Wild Charge)",
+        "Magnezone (Wild Charge)",
+        "Jolteon (Discharge)",
+        "Luxray (Wild Charge)"
+      ],
+      "minCp": 610,
+      "maxCp": 700,
+      "minBoostedCp": 763,
+      "maxBoostedCp": 876,
+      "weatherBoosts": [
+        "Rainy",
+        "Windy"
+      ]
+    },
+    "difficultyTier": "solo"
+  },
+  {
+    "name": "Shadow Aipom",
+    "tier": "1",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm190.icon.png",
+    "canBeShiny": true,
+    "cpRange": "678 - 770",
+    "boostedCpRange": "848 - 963",
+    "weatherBoosts": [
+      "Partly cloudy"
+    ],
+    "types": [
+      "Normal"
+    ],
+    "counters": {
+      "bossName": "Shadow Aipom",
+      "weaknesses": [
+        "Fighting"
+      ],
+      "megaCounters": [
+        "Mega Blaziken",
+        "Mega Lopunny"
+      ],
+      "advancedCounters": [
+        "Terrakion (Sacred Sword)",
+        "Keldeo (Sacred Sword)",
+        "Lucario (Aura Sphere)",
+        "Shadow Machamp"
+      ],
+      "budgetCounters": [
+        "Machamp (Dynamic Punch)",
+        "Hariyama (Dynamic Punch)",
+        "Conkeldurr (Dynamic Punch)",
+        "Sirfetch'd (Close Combat)"
+      ],
+      "minCp": 678,
+      "maxCp": 770,
+      "minBoostedCp": 848,
+      "maxBoostedCp": 963,
+      "weatherBoosts": [
+        "Partly cloudy"
+      ]
+    },
+    "difficultyTier": "solo"
+  },
+  {
+    "name": "Shadow Croagunk",
+    "tier": "1",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm453.icon.png",
+    "canBeShiny": true,
+    "cpRange": "466 - 544",
+    "boostedCpRange": "583 - 680",
+    "weatherBoosts": [
+      "Cloudy"
+    ],
+    "types": [
+      "Poison",
+      "Fighting"
+    ],
+    "counters": {
+      "bossName": "Shadow Croagunk",
+      "weaknesses": [
+        "Psychic (2x)",
+        "Ground",
+        "Flying"
+      ],
+      "megaCounters": [
+        "Mega Alakazam",
+        "Mega Latios",
+        "Mega Gardevoir"
+      ],
+      "advancedCounters": [
+        "Mewtwo (Psystrike)",
+        "Shadow Mewtwo",
+        "Shadow Alakazam",
+        "Shadow Metagross"
+      ],
+      "budgetCounters": [
+        "Espeon (Psychic)",
+        "Alakazam (Psychic)",
+        "Gardevoir (Psychic)",
+        "Metagross (Psychic)"
+      ],
+      "minCp": 466,
+      "maxCp": 544,
+      "minBoostedCp": 583,
+      "maxBoostedCp": 680,
+      "weatherBoosts": [
+        "Cloudy"
+      ]
+    },
+    "difficultyTier": "solo"
+  },
+  {
+    "name": "Shadow Grubbin",
+    "tier": "1",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm736.icon.png",
+    "canBeShiny": true,
+    "cpRange": "483 - 562",
+    "boostedCpRange": "604 - 703",
+    "weatherBoosts": [
+      "Rainy"
+    ],
+    "types": [
+      "Bug"
+    ],
+    "counters": {
+      "bossName": "Shadow Grubbin",
+      "weaknesses": [
+        "Fire",
+        "Flying",
+        "Rock"
+      ],
+      "megaCounters": [
+        "Mega Blaziken",
+        "Mega Charizard Y",
+        "Mega Houndoom"
+      ],
+      "advancedCounters": [
+        "Reshiram (Fusion Flare)",
+        "Shadow Chandelure",
+        "Shadow Entei",
+        "Shadow Moltres"
+      ],
+      "budgetCounters": [
+        "Chandelure (Overheat)",
+        "Charizard (Blast Burn)",
+        "Flareon (Overheat)",
+        "Darmanitan (Overheat)"
+      ],
+      "minCp": 483,
+      "maxCp": 562,
+      "minBoostedCp": 604,
+      "maxBoostedCp": 703,
+      "weatherBoosts": [
+        "Rainy"
+      ]
+    },
+    "difficultyTier": "solo"
+  },
+  {
+    "name": "Shadow Snorlax",
+    "tier": "3",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm143.icon.png",
+    "canBeShiny": true,
+    "cpRange": "1696 - 1843",
+    "boostedCpRange": "2120 - 2304",
+    "weatherBoosts": [
+      "Partly cloudy"
+    ],
+    "types": [
+      "Normal"
+    ],
+    "counters": {
+      "bossName": "Shadow Snorlax",
+      "weaknesses": [
+        "Fighting"
+      ],
+      "megaCounters": [
+        "Mega Blaziken",
+        "Mega Lopunny"
+      ],
+      "advancedCounters": [
+        "Terrakion (Sacred Sword)",
+        "Keldeo (Sacred Sword)",
+        "Lucario (Aura Sphere)",
+        "Shadow Machamp"
+      ],
+      "budgetCounters": [
+        "Machamp (Dynamic Punch)",
+        "Hariyama (Dynamic Punch)",
+        "Conkeldurr (Dynamic Punch)",
+        "Sirfetch'd (Close Combat)"
+      ],
+      "minCp": 1696,
+      "maxCp": 1843,
+      "minBoostedCp": 2120,
+      "maxBoostedCp": 2304,
+      "weatherBoosts": [
+        "Partly cloudy"
+      ]
+    },
+    "difficultyTier": "solo"
+  },
+  {
+    "name": "Shadow Hitmontop",
+    "tier": "3",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm237.icon.png",
+    "canBeShiny": true,
+    "cpRange": "1114 - 1232",
+    "boostedCpRange": "1393 - 1540",
+    "weatherBoosts": [
+      "Cloudy"
+    ],
+    "types": [
+      "Fighting"
+    ],
+    "counters": {
+      "bossName": "Shadow Hitmontop",
+      "weaknesses": [
+        "Flying",
+        "Psychic",
+        "Fairy"
+      ],
+      "megaCounters": [
+        "Mega Rayquaza",
+        "Mega Pidgeot",
+        "Mega Alakazam"
+      ],
+      "advancedCounters": [
+        "Rayquaza (Dragon Ascent)",
+        "Shadow Moltres",
+        "Shadow Staraptor",
+        "Yveltal (Oblivion Wing)"
+      ],
+      "budgetCounters": [
+        "Staraptor (Fly)",
+        "Honchkrow (Sky Attack)",
+        "Unfezant (Sky Attack)",
+        "Togekiss (Air Slash)"
+      ],
+      "minCp": 1114,
+      "maxCp": 1232,
+      "minBoostedCp": 1393,
+      "maxBoostedCp": 1540,
+      "weatherBoosts": [
+        "Cloudy"
+      ]
+    },
+    "difficultyTier": "solo"
+  },
+  {
+    "name": "Shadow Lampent",
+    "tier": "3",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm608.icon.png",
+    "canBeShiny": true,
+    "cpRange": "871 - 976",
+    "boostedCpRange": "1089 - 1220",
+    "weatherBoosts": [
+      "Fog",
+      "Sunny"
+    ],
+    "types": [
+      "Ghost",
+      "Fire"
+    ],
+    "counters": {
+      "bossName": "Shadow Lampent",
+      "weaknesses": [
+        "Water",
+        "Ground",
+        "Rock",
+        "Ghost",
+        "Dark"
+      ],
+      "megaCounters": [
+        "Primal Kyogre",
+        "Mega Swampert",
+        "Mega Blastoise"
+      ],
+      "advancedCounters": [
+        "Kyogre (Origin Pulse)",
+        "Shadow Swampert",
+        "Shadow Feraligatr",
+        "Shadow Gyarados"
+      ],
+      "budgetCounters": [
+        "Swampert (Hydro Cannon)",
+        "Gyarados (Hydro Pump)",
+        "Feraligatr (Hydro Cannon)",
+        "Samurott (Hydro Cannon)"
+      ],
+      "minCp": 871,
+      "maxCp": 976,
+      "minBoostedCp": 1089,
+      "maxBoostedCp": 1220,
+      "weatherBoosts": [
+        "Fog",
+        "Sunny"
+      ]
+    },
+    "difficultyTier": "solo"
+  },
+  {
+    "name": "Shadow Giratina (Altered)",
+    "tier": "5",
+    "image": "https://cdn.leekduck.com/assets/img/pokemon_icons/pm487.fALTERED.icon.png",
+    "canBeShiny": true,
+    "cpRange": "1782 - 1931",
+    "boostedCpRange": "2228 - 2414",
+    "weatherBoosts": [
+      "Fog",
+      "Windy"
+    ],
+    "types": [
+      "Ghost",
+      "Dragon"
+    ],
+    "counters": {
+      "bossName": "Giratina (Altered & Origin)",
+      "weaknesses": [
+        "Ghost",
+        "Dark",
+        "Dragon",
+        "Ice",
+        "Fairy"
+      ],
+      "megaCounters": [
+        "Mega Rayquaza",
+        "Mega Garchomp",
+        "Mega Gengar",
+        "Mega Tyranitar"
+      ],
+      "advancedCounters": [
+        "Hydreigon (Brutal Swing)",
+        "Rayquaza (Outrage)",
+        "Giratina Origin (Shadow Ball)",
+        "Darkrai (Dark Pulse)"
+      ],
+      "budgetCounters": [
+        "Dragonite (Outrage)",
+        "Garchomp (Outrage)",
+        "Tyranitar (Crunch)",
+        "Chandelure (Shadow Ball)"
+      ],
+      "minCp": 1848,
+      "maxCp": 2105,
+      "minBoostedCp": 2310,
+      "maxBoostedCp": 2631,
+      "weatherBoosts": [
+        "Větrno (Windy)",
+        "Mlha (Fog)"
+      ]
+    },
+    "difficultyTier": "trio"
+  }
+]

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { toPng } from 'html-to-image';
-import { Download, Sparkles, Clock, Calendar, Check, ShieldCheck, Gift, Leaf, Search, Star, Egg } from 'lucide-react';
+import { Download, Sparkles, Clock, Calendar, Check, ShieldCheck, Gift, Leaf, Search, Star, Egg, Swords, Layers, Zap, FolderArchive, ArrowRight, Shield } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
 import { resolveImage, handlePokemonImageError, fetchImageAsBase64 } from '../utils/imageResolver';
@@ -10,13 +10,16 @@ import { formatEventDateRange } from './MaxInfographic';
 import { getLocalizedText } from './EventCard';
 import { useInfographicEditor } from '../hooks/useInfographicEditor';
 import { EditableText, EditableImage, EditToolbar } from './InfographicEditable';
+import { findRaidCounters } from '../data/raidCounters';
+import { getWeaknessesForPokemon, getPokemonTypesByName } from '../utils/pokemonCountersHelper';
+import { getBossDifficultyInfo } from './RaidDifficultyBox';
 import './EventInfographic.css';
 
 interface EventInfographicProps {
   event: EventData;
   lang: Language;
   timezone?: string;
-  /** Merged special-event details (bonuses, spawns, eggs, research, debuts) */
+  /** Merged special-event details (bonuses, spawns, eggs, research, debuts, raids, goPass) */
   specialDetails?: any;
   isAdmin?: boolean;
 }
@@ -32,8 +35,8 @@ interface EventTheme {
 }
 
 function getEventTheme(eventType: string, eventName: string): EventTheme {
-  const type = eventType.toLowerCase();
-  const name = eventName.toLowerCase();
+  const type = (eventType || '').toLowerCase();
+  const name = (eventName || '').toLowerCase();
 
   if (type === 'hatch-day' || name.includes('hatch')) {
     return {
@@ -71,21 +74,20 @@ function getEventTheme(eventType: string, eventName: string): EventTheme {
       accentLight: 'rgba(248,113,113,0.15)',
       accentGlow: 'rgba(248,113,113,0.25)',
       badge: 'rgba(248,113,113,0.15)',
-      icon: <Sparkles size={14} />,
+      icon: <Swords size={14} />,
       badgeLabel: (l) => l === 'cs' ? 'RAID DAY' : 'RAID DAY',
     };
   }
-  if (type === 'event') {
+  if (type === 'event' || name.includes('fest') || name.includes('tour')) {
     return {
-      accent: '#22d3ee',
-      accentLight: 'rgba(34,211,238,0.13)',
-      accentGlow: 'rgba(34,211,238,0.22)',
-      badge: 'rgba(34,211,238,0.13)',
+      accent: '#38bdf8',
+      accentLight: 'rgba(56,189,248,0.15)',
+      accentGlow: 'rgba(56,189,248,0.25)',
+      badge: 'rgba(56,189,248,0.15)',
       icon: <Sparkles size={14} />,
       badgeLabel: (l) => l === 'cs' ? 'POKÉMON GO EVENT' : 'POKÉMON GO EVENT',
     };
   }
-  // Default: major event / other
   return {
     accent: '#60a5fa',
     accentLight: 'rgba(96,165,250,0.15)',
@@ -96,21 +98,22 @@ function getEventTheme(eventType: string, eventName: string): EventTheme {
   };
 }
 
-// ── Small Egg SVG ─────────────────────────────────────────────────────────────
 const EggSvg = ({ size = 16 }: { size?: number }) => (
   <svg viewBox="0 0 100 120" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
     <path d="M50 10 C20 10, 10 60, 10 85 C10 105, 30 115, 50 115 C70 115, 90 105, 90 85 C90 60, 80 10, 50 10 Z" fill="currentColor" stroke="none" />
   </svg>
 );
 
+export type InfographicPart = 'all' | 'overview' | 'spawns' | 'raids' | 'research';
+
 // ── Main Component ─────────────────────────────────────────────────────────────
 export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang, specialDetails, isAdmin = false }) => {
   const posterRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [activePart, setActivePart] = useState<InfographicPart>('all');
 
   const editor = useInfographicEditor(event.eventID, 'event');
-
   const theme = getEventTheme(event.eventType, event.name);
   const { dateStr, timeStr, isMultiDay } = formatEventDateRange(event.start, event.end, lang);
 
@@ -121,7 +124,13 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
   const eggs: any[] = extraData?.eggs || specialDetails?.eggs || [];
   const research: any[] = extraData?.research || specialDetails?.research || [];
   const debuts: any[] = extraData?.debuts || specialDetails?.debuts || [];
+  const featuredAttacks: any[] = extraData?.featuredAttacks || specialDetails?.featuredAttacks || [];
+  const showcases: any[] = extraData?.showcases || specialDetails?.showcases || [];
+  const paidTicket: any = extraData?.paidTicket || specialDetails?.paidTicket;
+  const goPass: any = extraData?.goPass || specialDetails?.goPass;
+  const highlights: any = extraData?.highlights || specialDetails?.highlights;
   const communitydaySpawns: any[] = extraData?.communityday?.spawns || [];
+  const rawRaids: any[] = extraData?.raids || specialDetails?.raids || [];
 
   const allSpawns = spawns.length > 0 ? spawns : communitydaySpawns;
 
@@ -130,16 +139,56 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
   const displayEggs = editor.getListOverride('eggs', eggs);
   const displayResearch = editor.getListOverride('research', research);
   const displayDebuts = editor.getListOverride('debuts', debuts);
+  const displayFeaturedAttacks = editor.getListOverride('featuredAttacks', featuredAttacks);
+  const displayShowcases = editor.getListOverride('showcases', showcases);
 
-  const totalSections = [displaySpawns.length > 0, displayBonuses.length > 0, displayEggs.length > 0, displayResearch.length > 0, displayDebuts.length > 0].filter(Boolean).length;
+  // Collect Mega Raids and other raid bosses
+  const megaRaids: any[] = [];
+  const otherRaids: any[] = [];
 
-  // ── Download ──────────────────────────────────────────────────────────────
-  const handleDownload = async () => {
-    if (!posterRef.current || downloading) return;
-    setDownloading(true);
-    editor.setIsExporting(true);
-    await new Promise(r => setTimeout(r, 100)); // allow render to hide edit UI
+  rawRaids.forEach((rGroup: any) => {
+    const tier = (rGroup?.tier || '').toLowerCase();
+    const list = rGroup?.list || [];
+    list.forEach((boss: any) => {
+      const bName = typeof boss === 'string' ? boss : boss.name;
+      if (/mega|primal/i.test(tier) || /^mega\s+/i.test(bName) || /^primal\s+/i.test(bName)) {
+        megaRaids.push(typeof boss === 'string' ? { name: boss } : boss);
+      } else {
+        otherRaids.push(typeof boss === 'string' ? { name: boss, tier } : { ...boss, tier });
+      }
+    });
+  });
 
+  // Also check if event name or extraData has mega boss
+  if (megaRaids.length === 0 && (event.name.toLowerCase().includes('mega') || (extraData?.raidbattles?.bosses?.some((b: any) => (b.name || '').toLowerCase().includes('mega'))))) {
+    (extraData?.raidbattles?.bosses || []).forEach((b: any) => {
+      const bName = typeof b === 'string' ? b : b.name;
+      if ((bName || '').toLowerCase().includes('mega')) {
+        megaRaids.push(typeof b === 'string' ? { name: b } : b);
+      }
+    });
+  }
+
+  // Group spawns by habitat
+  const habitatMap = new Map<string, any[]>();
+  displaySpawns.forEach((s: any) => {
+    const habName = s.habitat ? getLocalizedText(s.habitat, lang) : (lang === 'cs' ? 'Divoká příroda' : 'Wild Spawns');
+    if (!habitatMap.has(habName)) habitatMap.set(habName, []);
+    habitatMap.get(habName)!.push(s);
+  });
+  const habitatEntries = Array.from(habitatMap.entries());
+
+  // Determine if event is extensive and calculate available parts
+  const isExtensive = displaySpawns.length >= 8 || habitatEntries.length > 1 || megaRaids.length > 0 || (displayEggs.length > 0 && displayBonuses.length > 0 && displayResearch.length > 0);
+
+  const hasOverview = displayBonuses.length > 0 || highlights !== undefined || paidTicket !== undefined || goPass !== undefined;
+  const hasSpawns = displaySpawns.length > 0 || displayDebuts.length > 0 || displayShowcases.length > 0;
+  const hasRaids = megaRaids.length > 0 || otherRaids.length > 0;
+  const hasResearch = displayEggs.length > 0 || displayResearch.length > 0 || displayFeaturedAttacks.length > 0;
+
+  // ── Download Helpers ──────────────────────────────────────────────────────
+  const exportPosterToPng = async (filename: string): Promise<void> => {
+    if (!posterRef.current) return;
     const originalSrcs: { img: HTMLImageElement; origSrc: string }[] = [];
     let restoreClipping: (() => void) | null = null;
     try {
@@ -153,12 +202,8 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
               const b64 = await fetchImageAsBase64(origSrc, img);
               if (b64 && b64.startsWith('data:')) {
                 img.src = b64;
-              } else {
-                img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
               }
-            } catch {
-              img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-            }
+            } catch {}
           }
         })
       );
@@ -167,13 +212,12 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
       }
       if (!posterRef.current) return;
 
-      if (posterRef.current) {
-        restoreClipping = disableTextClipping(posterRef.current);
-      }
+      restoreClipping = disableTextClipping(posterRef.current);
       const fontEmbedCSS = await getFontEmbedCSS();
       const rect = posterRef.current.getBoundingClientRect();
       const w = Math.round(rect.width) || posterRef.current.offsetWidth || 480;
       const h = Math.round(w * 1.25);
+
       const dataUrl = await toPng(posterRef.current, {
         cacheBust: false,
         skipFonts: !fontEmbedCSS,
@@ -194,25 +238,65 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
           transform: 'none',
         }
       });
+
       const link = document.createElement('a');
-      link.download = `pogo_event_${event.eventID}.png`;
+      link.download = filename;
       link.href = dataUrl;
       document.body.appendChild(link);
       link.click();
       setTimeout(() => {
-        if (link.parentNode) {
-          link.parentNode.removeChild(link);
-        }
+        if (link.parentNode) link.parentNode.removeChild(link);
       }, 500);
+    } finally {
+      originalSrcs.forEach(({ img, origSrc }) => { img.src = origSrc; });
+      if (restoreClipping) restoreClipping();
+    }
+  };
+
+  const handleDownloadCurrent = async () => {
+    if (downloading) return;
+    setDownloading(true);
+    editor.setIsExporting(true);
+    await new Promise(r => setTimeout(r, 100));
+
+    try {
+      const partSuffix = activePart !== 'all' ? `_${activePart}` : '';
+      await exportPosterToPng(`pogo_event_${event.eventID}${partSuffix}.png`);
       setDownloadSuccess(true);
       setTimeout(() => setDownloadSuccess(false), 3000);
     } catch (err) {
       console.error('EventInfographic: download failed', err);
     } finally {
-      originalSrcs.forEach(({ img, origSrc }) => { img.src = origSrc; });
-      if (restoreClipping) {
-        restoreClipping();
+      setDownloading(false);
+      editor.setIsExporting(false);
+    }
+  };
+
+  const handleDownloadAllParts = async () => {
+    if (downloading) return;
+    setDownloading(true);
+    editor.setIsExporting(true);
+
+    const availableParts: InfographicPart[] = [];
+    if (hasOverview) availableParts.push('overview');
+    if (hasSpawns) availableParts.push('spawns');
+    if (hasRaids) availableParts.push('raids');
+    if (hasResearch) availableParts.push('research');
+    if (availableParts.length === 0) availableParts.push('all');
+
+    try {
+      for (const part of availableParts) {
+        setActivePart(part);
+        await new Promise(r => setTimeout(r, 200));
+        await exportPosterToPng(`pogo_event_${event.eventID}_part_${part}.png`);
+        await new Promise(r => setTimeout(r, 400));
       }
+      setActivePart('all');
+      setDownloadSuccess(true);
+      setTimeout(() => setDownloadSuccess(false), 3500);
+    } catch (err) {
+      console.error('EventInfographic: batch export failed', err);
+    } finally {
       setDownloading(false);
       editor.setIsExporting(false);
     }
@@ -243,7 +327,60 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="ei-wrapper">
-      {/* Poster */}
+      {/* Multi-Part Tab Bar (If Event is Extensive) */}
+      {isExtensive && (
+        <div className="ei-parts-nav">
+          <button
+            className={`ei-part-btn ${activePart === 'all' ? 'active' : ''}`}
+            onClick={() => setActivePart('all')}
+          >
+            <Layers size={13} />
+            <span>{lang === 'cs' ? 'Kompaktní přehled' : 'All-in-One'}</span>
+          </button>
+          {hasOverview && (
+            <button
+              className={`ei-part-btn ${activePart === 'overview' ? 'active' : ''}`}
+              onClick={() => setActivePart('overview')}
+            >
+              <Gift size={13} />
+              <span>{lang === 'cs' ? '1. Přehled & Bonusy' : '1. Overview & Bonuses'}</span>
+              <span className="ei-part-badge">{displayBonuses.length}</span>
+            </button>
+          )}
+          {hasSpawns && (
+            <button
+              className={`ei-part-btn ${activePart === 'spawns' ? 'active' : ''}`}
+              onClick={() => setActivePart('spawns')}
+            >
+              <Leaf size={13} />
+              <span>{lang === 'cs' ? '2. Spawny & Habitaty' : '2. Spawns & Habitats'}</span>
+              <span className="ei-part-badge">{displaySpawns.length}</span>
+            </button>
+          )}
+          {hasRaids && (
+            <button
+              className={`ei-part-btn ${activePart === 'raids' ? 'active' : ''}`}
+              onClick={() => setActivePart('raids')}
+            >
+              <Swords size={13} />
+              <span>{lang === 'cs' ? '3. Mega Raidy & Bossové' : '3. Mega Raids & Bosses'}</span>
+              <span className="ei-part-badge">{megaRaids.length || otherRaids.length}</span>
+            </button>
+          )}
+          {hasResearch && (
+            <button
+              className={`ei-part-btn ${activePart === 'research' ? 'active' : ''}`}
+              onClick={() => setActivePart('research')}
+            >
+              <Egg size={13} />
+              <span>{lang === 'cs' ? '4. Výzkum, Vejce & Útoky' : '4. Research & Moves'}</span>
+              <span className="ei-part-badge">{displayEggs.length + displayResearch.length}</span>
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Poster Canvas */}
       <div
         className={`ei-poster ${editor.isExporting ? 'is-exporting' : ''}`}
         ref={posterRef}
@@ -292,215 +429,383 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
         </div>
 
         {/* ── Body ── */}
-        <div className={`ei-body sections-${totalSections}`}>
-          {/* Main sections grid */}
-          <div className="ei-sections">
-
-            {/* Spawns */}
-            {displaySpawns.length > 0 && (
-              <div className="ei-section">
-                <div className="ei-section-title" style={{ color: theme.accent }}>
-                  <Leaf size={13} />
-                  <span>
-                    <EditableText value={editor.getTextOverride('spawnsTitle', lang === 'cs' ? 'Výskyt Pokémonů' : 'Featured Spawns')} onChange={(v) => editor.setTextOverride('spawnsTitle', v)} isEditing={editor.isEditing} />
-                  </span>
+        <div className="ei-body">
+          {/* ════════════════════════════════════════════════════════════════════════
+              PART 1: OVERVIEW, BONUSES & GRIND SCORE
+          ════════════════════════════════════════════════════════════════════════ */}
+          {(activePart === 'all' || activePart === 'overview') && (
+            <>
+              {/* Event Digest & Grind Score */}
+              {highlights && (highlights.pveTopPicks?.length > 0 || highlights.pvpTopPicks?.length > 0 || highlights.mustDoBonuses?.length > 0) && (
+                <div className="ei-highlights-box" style={{ background: 'rgba(255, 255, 255, 0.04)', border: `1px solid ${theme.accent}44`, borderRadius: '12px', padding: '10px 14px', marginBottom: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                    <span style={{ fontSize: '0.85rem', fontWeight: 800, color: theme.accent, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                      🔥 {lang === 'cs' ? 'Doporučení pro hráče / Na co se zaměřit' : 'Event Digest & Highlights'}
+                    </span>
+                    {highlights.grindScore && (
+                      <span style={{ fontSize: '0.75rem', fontWeight: 900, padding: '2px 8px', borderRadius: '6px', background: highlights.grindScore === 'S' ? '#eab308' : theme.accentLight, color: highlights.grindScore === 'S' ? '#000' : theme.accent }}>
+                        SCORE: {highlights.grindScore}
+                      </span>
+                    )}
+                  </div>
+                  <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '0.78rem', color: '#e2e8f0', lineHeight: 1.4 }}>
+                    {highlights.mustDoBonuses?.map((b: string, idx: number) => (
+                      <li key={`hb-${idx}`} style={{ marginBottom: '3px' }}><strong>{b}</strong></li>
+                    ))}
+                    {highlights.pveTopPicks?.map((p: string, idx: number) => (
+                      <li key={`hpve-${idx}`} style={{ marginBottom: '3px' }}>⚔️ PvE: {p}</li>
+                    ))}
+                    {highlights.pvpTopPicks?.map((p: string, idx: number) => (
+                      <li key={`hpvp-${idx}`} style={{ marginBottom: '3px' }}>🛡️ PvP: {p}</li>
+                    ))}
+                  </ul>
                 </div>
-                <div className="ei-spawns-grid">
-                  {displaySpawns.slice(0, 12).map((s: any, i: number) => {
-                    const name = getPokeName(s);
-                    return (
-                      <div key={i} className="ei-spawn-item">
-                        {editor.isEditing && (
-                          <button className="ei-remove-item-btn" onClick={() => editor.removeListItem('spawns', allSpawns, i)}>×</button>
-                        )}
-                        <EditableImage
-                          src={editor.getImageOverride(`spawnImage-${i}`, resolveImage(s?.image, event.eventType, name))}
-                          alt={name}
-                          onChange={(url) => editor.setImageOverride(`spawnImage-${i}`, url)}
-                          isEditing={editor.isEditing}
-                          className="ei-spawn-img"
-                          onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, name)}
-                          pokemonName={name}
-                        />
-                        <span className="ei-spawn-name">
-                          <EditableText value={editor.getTextOverride(`spawnName-${i}`, getPokemonName(name, lang))} onChange={(v) => editor.setTextOverride(`spawnName-${i}`, v)} isEditing={editor.isEditing} />
+              )}
+
+              {/* Bonuses Section */}
+              {displayBonuses.length > 0 && (
+                <div className="ei-section">
+                  <div className="ei-section-title" style={{ color: theme.accent }}>
+                    <Gift size={13} />
+                    <span>
+                      <EditableText value={editor.getTextOverride('bonusesTitle', lang === 'cs' ? 'Aktivní Bonusy' : 'Active Bonuses')} onChange={(v) => editor.setTextOverride('bonusesTitle', v)} isEditing={editor.isEditing} />
+                    </span>
+                  </div>
+                  <div className="ei-bonuses-list">
+                    {displayBonuses.slice(0, activePart === 'overview' ? 12 : 6).map((b: any, bi: number) => (
+                      <div key={bi} className="ei-bonus-row" style={{ borderColor: `${theme.accent}30` }}>
+                        <span className="ei-bonus-icon">
+                          <EditableText value={editor.getTextOverride(`bonusIcon-${bi}`, getBonusIcon(b))} onChange={(v) => editor.setTextOverride(`bonusIcon-${bi}`, v)} isEditing={editor.isEditing} />
                         </span>
-                        {s?.isShinyAvailable && <span className="ei-shiny-dot">✨</span>}
+                        <span className="ei-bonus-text">
+                          <EditableText value={editor.getTextOverride(`bonus-${bi}`, getBonusText(b))} onChange={(v) => editor.setTextOverride(`bonus-${bi}`, v)} isEditing={editor.isEditing} multiline={true} />
+                        </span>
                       </div>
-                    );
-                  })}
-                  {editor.isEditing && (
-                    <button className="ei-add-item-btn" onClick={() => editor.addListItem('spawns', allSpawns, { name: 'New Spawn' })}>+</button>
-                  )}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Egg pool */}
-            {displayEggs.length > 0 && (
-              <div className="ei-section">
-                <div className="ei-section-title" style={{ color: theme.accent }}>
-                  <EggSvg size={13} />
-                  <span>
-                    <EditableText value={editor.getTextOverride('eggsTitle', lang === 'cs' ? 'Líhnutí Vajíček' : 'Egg Hatches')} onChange={(v) => editor.setTextOverride('eggsTitle', v)} isEditing={editor.isEditing} />
-                  </span>
+              {/* Paid Ticket / GO Pass */}
+              {paidTicket?.bonuses && paidTicket.bonuses.length > 0 && (
+                <div className="ei-section">
+                  <div className="ei-section-title" style={{ color: '#f59e0b' }}>
+                    <span>🎟️</span>
+                    <span>{paidTicket.name ? getLocalizedText(paidTicket.name, lang) : (lang === 'cs' ? 'Bonusy placeného lístku' : 'Paid Ticket Bonuses')}</span>
+                  </div>
+                  <div className="ei-bonuses-list">
+                    {paidTicket.bonuses.map((b: any, bi: number) => (
+                      <div key={bi} className="ei-bonus-row" style={{ borderColor: 'rgba(245, 158, 11, 0.3)' }}>
+                        <span className="ei-bonus-icon">{getBonusIcon(b)}</span>
+                        <span className="ei-bonus-text">{getBonusText(b)}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                {displayEggs.map((egg: any, ei: number) => {
-                  const dist = typeof egg?.distance === 'string' ? egg.distance : getLocalizedText(egg?.distance, lang);
-                  return (
-                    <div key={ei} className="ei-egg-group">
-                      <div className="ei-egg-label" style={{ color: theme.accent }}>
-                        <EggSvg size={11} />
-                        <EditableText value={editor.getTextOverride(`eggDist-${ei}`, dist)} onChange={(v) => editor.setTextOverride(`eggDist-${ei}`, v)} isEditing={editor.isEditing} />
-                        {editor.isEditing && (
-                          <button className="ei-remove-item-btn" style={{ marginLeft: 8 }} onClick={() => editor.removeListItem('eggs', eggs, ei)}>×</button>
-                        )}
+              )}
+            </>
+          )}
+
+          {/* ════════════════════════════════════════════════════════════════════════
+              PART 2: WILD SPAWNS & HABITAT ROTATIONS
+          ════════════════════════════════════════════════════════════════════════ */}
+          {(activePart === 'all' || activePart === 'spawns') && (
+            <>
+              {habitatEntries.length > 1 ? (
+                <div className="ei-section">
+                  <div className="ei-section-title" style={{ color: theme.accent }}>
+                    <Leaf size={13} />
+                    <span>{lang === 'cs' ? 'Výskyt Pokémonů v Habitátech' : 'Habitat Biome Spawns'}</span>
+                  </div>
+                  {habitatEntries.map(([habName, habSpawns], hIdx) => (
+                    <div key={hIdx} className="ei-habitat-group">
+                      <div className="ei-habitat-header" style={{ color: theme.accent }}>
+                        <span>📍 {habName}</span>
+                        <span style={{ opacity: 0.7, fontSize: '10.5px' }}>{habSpawns.length} Pokémonů</span>
                       </div>
                       <div className="ei-spawns-grid">
-                        {(egg.contents || []).slice(0, 8).map((p: any, pi: number) => {
-                          const name = typeof p === 'string' ? p : getPokeName(p);
+                        {habSpawns.map((s: any, i: number) => {
+                          const name = getPokeName(s);
                           return (
-                            <div key={pi} className="ei-spawn-item">
+                            <div key={i} className="ei-spawn-item">
                               <EditableImage
-                                src={editor.getImageOverride(`eggImage-${ei}-${pi}`, resolveImage(p?.image, event.eventType, name))}
+                                src={resolveImage(s?.image, event.eventType, name)}
                                 alt={name}
-                                onChange={(url) => editor.setImageOverride(`eggImage-${ei}-${pi}`, url)}
-                                isEditing={editor.isEditing}
+                                onChange={() => {}}
+                                isEditing={false}
                                 className="ei-spawn-img"
                                 onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, name)}
                                 pokemonName={name}
                               />
-                              <span className="ei-spawn-name">
-                                <EditableText value={editor.getTextOverride(`eggName-${ei}-${pi}`, getPokemonName(name, lang))} onChange={(v) => editor.setTextOverride(`eggName-${ei}-${pi}`, v)} isEditing={editor.isEditing} />
-                              </span>
-                              {p?.isShinyAvailable && <span className="ei-shiny-dot">✨</span>}
+                              <span className="ei-spawn-name">{getPokemonName(name, lang)}</span>
+                              {s?.isShinyAvailable && <span className="ei-shiny-dot">✨</span>}
                             </div>
                           );
                         })}
                       </div>
                     </div>
-                  );
-                })}
-                {editor.isEditing && (
-                  <button className="ei-add-item-btn" onClick={() => editor.addListItem('eggs', eggs, { distance: '5 km', contents: [] })}>+</button>
-                )}
-              </div>
-            )}
-
-            {/* Bonuses */}
-            {displayBonuses.length > 0 && (
-              <div className="ei-section">
-                <div className="ei-section-title" style={{ color: theme.accent }}>
-                  <Gift size={13} />
-                  <span>
-                    <EditableText value={editor.getTextOverride('bonusesTitle', lang === 'cs' ? 'Aktivní Bonusy' : 'Active Bonuses')} onChange={(v) => editor.setTextOverride('bonusesTitle', v)} isEditing={editor.isEditing} />
-                  </span>
-                </div>
-                <div className="ei-bonuses-list">
-                  {displayBonuses.slice(0, 8).map((b: any, bi: number) => (
-                    <div key={bi} className="ei-bonus-row" style={{ borderColor: `${theme.accent}30` }}>
-                      {editor.isEditing && (
-                        <button className="ei-remove-item-btn" onClick={() => editor.removeListItem('bonuses', bonuses, bi)}>×</button>
-                      )}
-                      <span className="ei-bonus-icon">
-                        <EditableText value={editor.getTextOverride(`bonusIcon-${bi}`, getBonusIcon(b))} onChange={(v) => editor.setTextOverride(`bonusIcon-${bi}`, v)} isEditing={editor.isEditing} />
-                      </span>
-                      <span className="ei-bonus-text">
-                        <EditableText value={editor.getTextOverride(`bonus-${bi}`, getBonusText(b))} onChange={(v) => editor.setTextOverride(`bonus-${bi}`, v)} isEditing={editor.isEditing} multiline={true} />
-                      </span>
-                    </div>
                   ))}
-                  {editor.isEditing && (
-                    <button className="ei-add-item-btn" onClick={() => editor.addListItem('bonuses', bonuses, { text: 'New Bonus', icon: '🎁' })}>+</button>
-                  )}
                 </div>
-              </div>
-            )}
+              ) : (
+                displaySpawns.length > 0 && (
+                  <div className="ei-section">
+                    <div className="ei-section-title" style={{ color: theme.accent }}>
+                      <Leaf size={13} />
+                      <span>{lang === 'cs' ? 'Divocí Pokémoni' : 'Featured Spawns'}</span>
+                    </div>
+                    <div className="ei-spawns-grid">
+                      {displaySpawns.slice(0, activePart === 'spawns' ? 24 : 12).map((s: any, i: number) => {
+                        const name = getPokeName(s);
+                        return (
+                          <div key={i} className="ei-spawn-item">
+                            <EditableImage
+                              src={resolveImage(s?.image, event.eventType, name)}
+                              alt={name}
+                              onChange={() => {}}
+                              isEditing={false}
+                              className="ei-spawn-img"
+                              onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, name)}
+                              pokemonName={name}
+                            />
+                            <span className="ei-spawn-name">{getPokemonName(name, lang)}</span>
+                            {s?.isShinyAvailable && <span className="ei-shiny-dot">✨</span>}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )
+              )}
 
-            {/* Research */}
-            {displayResearch.length > 0 && (
-              <div className="ei-section">
-                <div className="ei-section-title" style={{ color: theme.accent }}>
-                  <Search size={13} />
-                  <span>
-                    <EditableText value={editor.getTextOverride('researchTitle', lang === 'cs' ? 'Výzkumné úkoly' : 'Field Research')} onChange={(v) => editor.setTextOverride('researchTitle', v)} isEditing={editor.isEditing} />
-                  </span>
+              {/* Debuts */}
+              {displayDebuts.length > 0 && (
+                <div className="ei-section">
+                  <div className="ei-section-title" style={{ color: theme.accent }}>
+                    <Sparkles size={13} />
+                    <span>{lang === 'cs' ? 'Debuty Pokémonů' : 'Pokémon Debuts'}</span>
+                  </div>
+                  <div className="ei-spawns-grid">
+                    {displayDebuts.map((d: any, di: number) => {
+                      const name = typeof d?.name === 'object' ? (d.name.en || d.name.cs) : (d?.name || '');
+                      return (
+                        <div key={di} className="ei-spawn-item">
+                          <EditableImage
+                            src={resolveImage(d?.image, event.eventType, name)}
+                            alt={name}
+                            onChange={() => {}}
+                            isEditing={false}
+                            className="ei-spawn-img"
+                            onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, name)}
+                            pokemonName={name}
+                          />
+                          <span className="ei-spawn-name">{getPokemonName(name, lang)}</span>
+                          <span className="ei-new-badge" style={{ background: theme.accentLight, color: theme.accent }}>NEW</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="ei-research-list">
-                  {displayResearch.slice(0, 5).map((r: any, ri: number) => {
-                    const taskText = getLocalizedText(r?.task || r?.text || r, lang);
-                    const rewardText = r?.reward ? getLocalizedText(r.reward?.text || r.reward, lang) : '';
+              )}
+            </>
+          )}
+
+          {/* ════════════════════════════════════════════════════════════════════════
+              PART 3: ALL MEGA RAIDS & RAID ROTATION ON ONE INFOGRAPHIC
+          ════════════════════════════════════════════════════════════════════════ */}
+          {(activePart === 'all' || activePart === 'raids') && (megaRaids.length > 0 || otherRaids.length > 0) && (
+            <div className="ei-section">
+              <div className="ei-section-title" style={{ color: '#ef4444' }}>
+                <Swords size={14} />
+                <span>{lang === 'cs' ? 'Mega Raidy a Raidové Bitvy' : 'Mega Raids & Raid Bosses'}</span>
+              </div>
+
+              {/* Mega Raids in single cohesive cards */}
+              {megaRaids.length > 0 && (
+                <div className="ei-mega-grid">
+                  {megaRaids.map((megaBoss: any, mi: number) => {
+                    const bossName = typeof megaBoss === 'string' ? megaBoss : megaBoss.name;
+                    const counters = findRaidCounters(bossName);
+                    const weaknesses = counters?.weaknesses || getWeaknessesForPokemon(bossName);
+                    const types = counters ? [] : getPokemonTypesByName(bossName);
+                    const diffInfo = getBossDifficultyInfo(bossName, 'mega', undefined, counters?.difficultyTier, undefined, lang);
+                    const diffTier = diffInfo.difficultyTier;
+                    const diffBg = diffTier === 'solo' ? 'rgba(52, 211, 153, 0.2)' : diffTier === 'duo' ? 'rgba(56, 189, 248, 0.2)' : diffTier === 'hard-group' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(251, 146, 60, 0.2)';
+                    const diffColor = diffTier === 'solo' ? '#34d399' : diffTier === 'duo' ? '#38bdf8' : diffTier === 'hard-group' ? '#f87171' : '#fb923c';
+
                     return (
-                      <div key={ri} className="ei-research-row" style={{ borderColor: `${theme.accent}30` }}>
-                        {editor.isEditing && (
-                          <button className="ei-remove-item-btn" onClick={() => editor.removeListItem('research', research, ri)}>×</button>
+                      <div key={mi} className="ei-mega-card">
+                        <div className="ei-mega-header">
+                          <div className="ei-mega-avatar-wrap">
+                            <EditableImage
+                              src={resolveImage(megaBoss?.image, 'raid', bossName)}
+                              alt={bossName}
+                              onChange={() => {}}
+                              isEditing={false}
+                              className="ei-mega-avatar"
+                              onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, bossName)}
+                              pokemonName={bossName}
+                            />
+                            {megaBoss?.canBeShiny !== false && <span className="ei-shiny-dot">✨</span>}
+                          </div>
+                          <div className="ei-mega-info">
+                            <span className="ei-mega-name">{getPokemonName(bossName, lang)}</span>
+                            <div className="ei-mega-types">
+                              {types.map((t, ti) => (
+                                <span key={ti} style={{ fontSize: '10px', padding: '1px 5px', borderRadius: '4px', background: 'rgba(255,255,255,0.1)', color: '#cbd5e1' }}>{t}</span>
+                              ))}
+                              <span style={{ fontSize: '9.5px', padding: '1px 5px', borderRadius: '4px', background: diffBg, color: diffColor, fontWeight: 800 }}>
+                                {diffInfo.recLabel || diffTier.toUpperCase()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* CP & Stats */}
+                        {counters && (
+                          <div className="ei-mega-details-row">
+                            <span className="ei-mega-cp-label">100% IV CP:</span>
+                            <span className="ei-mega-cp-value">{counters.maxCp} <span style={{ opacity: 0.7, fontSize: '9.5px' }}>({counters.maxBoostedCp} WB)</span></span>
+                          </div>
                         )}
-                        <span className="ei-research-task">
-                          <EditableText value={editor.getTextOverride(`researchTask-${ri}`, taskText)} onChange={(v) => editor.setTextOverride(`researchTask-${ri}`, v)} isEditing={editor.isEditing} multiline={true} />
-                        </span>
-                        {(rewardText || editor.isEditing) && (
-                          <span className="ei-research-reward">→ 
-                            <EditableText value={editor.getTextOverride(`researchReward-${ri}`, rewardText)} onChange={(v) => editor.setTextOverride(`researchReward-${ri}`, v)} isEditing={editor.isEditing} />
+
+                        {/* Weaknesses */}
+                        <div className="ei-mega-weaknesses">
+                          <span style={{ fontWeight: 700, fontSize: '10.5px' }}>{lang === 'cs' ? 'Slabiny:' : 'Weak:'}</span>
+                          <div style={{ display: 'flex', gap: '3px', flexWrap: 'wrap' }}>
+                            {weaknesses.slice(0, 4).map((w, wi) => (
+                              <span key={wi} className="ei-weakness-pill">{w}</span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Other 5-star / Shadow Bosses */}
+              {otherRaids.length > 0 && (
+                <div style={{ marginTop: '10px' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    {lang === 'cs' ? 'Legendární & Ostatní Raidy' : 'Legendary & Other Raids'}
+                  </span>
+                  <div className="ei-spawns-grid" style={{ marginTop: '6px' }}>
+                    {otherRaids.map((ob: any, obi: number) => {
+                      const name = ob.name || '';
+                      return (
+                        <div key={obi} className="ei-spawn-item">
+                          <EditableImage
+                            src={resolveImage(ob.image, 'raid', name)}
+                            alt={name}
+                            onChange={() => {}}
+                            isEditing={false}
+                            className="ei-spawn-img"
+                            onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, name)}
+                            pokemonName={name}
+                          />
+                          <span className="ei-spawn-name">{getPokemonName(name, lang)}</span>
+                          <span className="ei-new-badge" style={{ background: 'rgba(239,68,68,0.2)', color: '#f87171' }}>{ob.tier || '5★'}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ════════════════════════════════════════════════════════════════════════
+              PART 4: RESEARCH, EGG POOLS & EXCLUSIVE ATTACKS
+          ════════════════════════════════════════════════════════════════════════ */}
+          {(activePart === 'all' || activePart === 'research') && (
+            <>
+              {/* Featured Attacks */}
+              {displayFeaturedAttacks.length > 0 && (
+                <div className="ei-section">
+                  <div className="ei-section-title" style={{ color: '#ec4899' }}>
+                    <Zap size={13} />
+                    <span>{lang === 'cs' ? 'Exkluzivní Speciální Útoky při Evoluci' : 'Featured Evolution Attacks'}</span>
+                  </div>
+                  <div className="ei-bonuses-list">
+                    {displayFeaturedAttacks.map((att: any, ai: number) => {
+                      const desc = att.description ? getLocalizedText(att.description, lang) : `${att.pokemonName} získá útok ${att.moveName}`;
+                      return (
+                        <div key={ai} className="ei-bonus-row" style={{ borderColor: 'rgba(236, 72, 153, 0.3)' }}>
+                          <span className="ei-bonus-icon">⚡</span>
+                          <span className="ei-bonus-text">
+                            <strong>{att.pokemonName}</strong> → <em>{att.moveName}</em> ({desc})
                           </span>
-                        )}
-                      </div>
-                    );
-                  })}
-                  {editor.isEditing && (
-                    <button className="ei-add-item-btn" onClick={() => editor.addListItem('research', research, { text: 'New Task', reward: { text: 'Reward' } })}>+</button>
-                  )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Debuts */}
-            {displayDebuts.length > 0 && (
-              <div className="ei-section">
-                <div className="ei-section-title" style={{ color: theme.accent }}>
-                  <Sparkles size={13} />
-                  <span>
-                    <EditableText value={editor.getTextOverride('debutsTitle', lang === 'cs' ? 'Debuty Pokémonů' : 'Pokémon Debuts')} onChange={(v) => editor.setTextOverride('debutsTitle', v)} isEditing={editor.isEditing} />
-                  </span>
-                </div>
-                <div className="ei-spawns-grid">
-                  {displayDebuts.slice(0, 6).map((d: any, di: number) => {
-                    const name = typeof d?.name === 'object' ? (d.name.en || d.name.cs) : (d?.name || '');
+              {/* Egg Pools */}
+              {displayEggs.length > 0 && (
+                <div className="ei-section">
+                  <div className="ei-section-title" style={{ color: theme.accent }}>
+                    <EggSvg size={13} />
+                    <span>{lang === 'cs' ? 'Líhnutí Vajíček (Egg Hatch Pool)' : 'Egg Hatch Pools'}</span>
+                  </div>
+                  {displayEggs.map((egg: any, ei: number) => {
+                    const dist = typeof egg?.distance === 'string' ? egg.distance : getLocalizedText(egg?.distance, lang);
                     return (
-                      <div key={di} className="ei-spawn-item">
-                        {editor.isEditing && (
-                          <button className="ei-remove-item-btn" onClick={() => editor.removeListItem('debuts', debuts, di)}>×</button>
-                        )}
-                        <EditableImage
-                          src={editor.getImageOverride(`debutImage-${di}`, resolveImage(d?.image, event.eventType, name))}
-                          alt={name}
-                          onChange={(url) => editor.setImageOverride(`debutImage-${di}`, url)}
-                          isEditing={editor.isEditing}
-                          className="ei-spawn-img"
-                          onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, name)}
-                          pokemonName={name}
-                        />
-                        <span className="ei-spawn-name">
-                          <EditableText value={editor.getTextOverride(`debutName-${di}`, getPokemonName(name, lang))} onChange={(v) => editor.setTextOverride(`debutName-${di}`, v)} isEditing={editor.isEditing} />
-                        </span>
-                        <span className="ei-new-badge" style={{ background: theme.accentLight, color: theme.accent }}>NEW</span>
+                      <div key={ei} className="ei-egg-group">
+                        <div className="ei-egg-label" style={{ color: theme.accent }}>
+                          <EggSvg size={11} />
+                          <span>{dist}</span>
+                        </div>
+                        <div className="ei-spawns-grid">
+                          {(egg.contents || []).map((p: any, pi: number) => {
+                            const name = typeof p === 'string' ? p : getPokeName(p);
+                            return (
+                              <div key={pi} className="ei-spawn-item">
+                                <EditableImage
+                                  src={resolveImage(p?.image, event.eventType, name)}
+                                  alt={name}
+                                  onChange={() => {}}
+                                  isEditing={false}
+                                  className="ei-spawn-img"
+                                  onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, name)}
+                                  pokemonName={name}
+                                />
+                                <span className="ei-spawn-name">{getPokemonName(name, lang)}</span>
+                                {p?.isShinyAvailable && <span className="ei-shiny-dot">✨</span>}
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     );
                   })}
-                  {editor.isEditing && (
-                    <button className="ei-add-item-btn" onClick={() => editor.addListItem('debuts', debuts, { name: 'New Debut' })}>+</button>
-                  )}
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Fallback — no data yet */}
-            {displaySpawns.length === 0 && displayBonuses.length === 0 && displayEggs.length === 0 && displayResearch.length === 0 && displayDebuts.length === 0 && (
-              <div className="ei-no-data">
-                <Sparkles size={28} style={{ color: theme.accent, opacity: 0.5 }} />
-                <p>{lang === 'cs' ? 'Detaily budou brzy k dispozici.' : 'Details will be available soon.'}</p>
-              </div>
-            )}
-          </div>
+              {/* Field Research */}
+              {displayResearch.length > 0 && (
+                <div className="ei-section">
+                  <div className="ei-section-title" style={{ color: theme.accent }}>
+                    <Search size={13} />
+                    <span>{lang === 'cs' ? 'Field Research Úkoly' : 'Field Research Tasks'}</span>
+                  </div>
+                  <div className="ei-research-list">
+                    {displayResearch.slice(0, activePart === 'research' ? 8 : 4).map((r: any, ri: number) => {
+                      const taskText = getLocalizedText(r?.task || r?.text || r, lang);
+                      const rewardText = r?.reward ? getLocalizedText(r.reward?.text || r.reward, lang) : '';
+                      return (
+                        <div key={ri} className="ei-research-row" style={{ borderColor: `${theme.accent}30` }}>
+                          <span className="ei-research-task">{taskText}</span>
+                          {rewardText && <span className="ei-research-reward">→ {rewardText}</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         {/* ── Footer ── */}
@@ -517,11 +822,22 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
         </div>
       </div>
 
-      {/* Download button */}
-      <div className="ei-actions" style={{ marginTop: '12px' }}>
+      {/* ── Action Buttons Row ── */}
+      <div className="ei-actions-row" style={{ marginTop: '12px' }}>
+        {isExtensive && (
+          <button
+            className="ei-download-secondary-btn"
+            onClick={handleDownloadAllParts}
+            disabled={downloading}
+          >
+            <FolderArchive size={16} />
+            <span>{lang === 'cs' ? 'Stáhnout všechny části' : 'Download All Parts'}</span>
+          </button>
+        )}
+
         <button
           className={`ei-download-btn ${downloadSuccess ? 'success' : ''}`}
-          onClick={handleDownload}
+          onClick={handleDownloadCurrent}
           disabled={downloading}
           style={{ background: `linear-gradient(135deg, ${theme.accent}, ${theme.accent}cc)`, boxShadow: `0 4px 14px ${theme.accentGlow}` }}
         >
@@ -530,7 +846,7 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
           ) : downloading ? (
             <><div className="ei-btn-spinner" />{lang === 'cs' ? 'Generuji...' : 'Generating...'}</>
           ) : (
-            <><Download size={17} />{lang === 'cs' ? 'Stáhnout Infografiku' : 'Download Infographic'}</>
+            <><Download size={17} />{isExtensive && activePart !== 'all' ? (lang === 'cs' ? `Stáhnout tuto část (${activePart})` : `Download Part (${activePart})`) : (lang === 'cs' ? 'Stáhnout Infografiku' : 'Download Infographic')}</>
           )}
         </button>
       </div>

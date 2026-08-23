@@ -7,10 +7,10 @@ import { translations, type Language } from '../data/translations';
 import { PokeballLogo } from './PokeballLogo';
 import { Footer } from './Footer';
 import { LegalModals, type LegalModalType } from './LegalModals';
-import { Calendar, Swords, Shield, Clock, Egg, Sparkles, Trophy, Filter, Settings, BookOpen, Download } from 'lucide-react';
+import { Calendar, Swords, Shield, Clock, Egg, Sparkles, Trophy, Filter, Settings, BookOpen, Download, Users, ScrollText } from 'lucide-react';
 import { API_BASE_URL } from '../config';
 
-export type TabType = 'events' | 'guides' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin' | 'download' | '404';
+export type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'research' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin' | 'download' | '404';
 
 const InstagramLogo = ({ size = 15, color = '#ffffff' }: { size?: number; color?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, display: 'inline-block', verticalAlign: 'middle' }}>
@@ -66,8 +66,10 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
     const cleanPath = pathname.toLowerCase();
     if (cleanPath.includes('/admin')) return 'admin';
     if (cleanPath.includes('/guides')) return 'guides';
+    if (cleanPath.includes('/friends')) return 'friends';
     if (cleanPath.includes('/raids')) return 'raid';
     if (cleanPath.includes('/rocket')) return 'rocket';
+    if (cleanPath.includes('/research')) return 'research';
     if (cleanPath.includes('/ditto')) return 'ditto';
     if (cleanPath.includes('/eggs')) return 'eggs';
     if (cleanPath.includes('/rankings') || cleanPath.includes('/pokemon')) return 'ranking';
@@ -85,8 +87,10 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
     const prefix = `/${targetLang}`;
     switch (section) {
       case 'guides': return `${prefix}/guides`;
+      case 'friends': return `${prefix}/friends`;
       case 'raid': return `${prefix}/raids`;
       case 'rocket': return `${prefix}/rocket`;
+      case 'research': return `${prefix}/research`;
       case 'ranking': return `${prefix}/rankings`;
       case 'ditto': return `${prefix}/ditto`;
       case 'eggs': return `${prefix}/eggs`;
@@ -185,6 +189,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
             <span>{t.tabs_rocket}</span>
           </Link>
 
+          <Link href={getSectionPath(lang, 'research')} className={`sidebar-nav-item ${activeTab === 'research' ? 'active' : ''}`}>
+            <ScrollText size={18} />
+            <span>{t.tabs_research || 'Výzkum'}</span>
+          </Link>
+
           <Link href={getSectionPath(lang, 'ditto')} className={`sidebar-nav-item ${activeTab === 'ditto' ? 'active' : ''}`}>
             <Sparkles size={18} />
             <span>{t.tabs_ditto}</span>
@@ -210,7 +219,12 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
             <span>{t.tabs_guides || 'Průvodce'}</span>
           </Link>
 
-          <Link href={getSectionPath(lang, 'settings')} className={`sidebar-nav-item settings-item ${activeTab === 'settings' ? 'active' : ''}`} style={{ marginTop: '16px' }}>
+          <Link href={getSectionPath(lang, 'friends')} className={`sidebar-nav-item ${activeTab === 'friends' ? 'active' : ''}`}>
+            <Users size={18} />
+            <span>{t.tabs_friends || 'Přátelé & Kódy'}</span>
+          </Link>
+
+          <Link href={getSectionPath(lang, 'settings')} className={`sidebar-nav-item settings-item ${activeTab === 'settings' ? 'active' : ''}`}>
             <Settings size={18} />
             <span>{t.tabs_settings || 'Nastavení'}</span>
           </Link>
@@ -344,6 +358,26 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
             <span className="nav-text">{t.tabs_rocket}</span>
           </Link>
 
+          <Link href={getSectionPath(lang, 'research')} className={`nav-item ${activeTab === 'research' ? 'active' : ''}`}>
+            <span className="nav-icon"><ScrollText size={18} /></span>
+            <span className="nav-text">{t.tabs_research || 'Výzkum'}</span>
+          </Link>
+
+          <Link href={getSectionPath(lang, 'ranking')} className={`nav-item ${activeTab === 'ranking' ? 'active' : ''}`}>
+            <span className="nav-icon"><Trophy size={18} /></span>
+            <span className="nav-text">{t.tabs_ranking}</span>
+          </Link>
+
+          <Link href={getSectionPath(lang, 'guides')} className={`nav-item ${activeTab === 'guides' ? 'active' : ''}`}>
+            <span className="nav-icon"><BookOpen size={18} /></span>
+            <span className="nav-text">{t.tabs_guides || 'Průvodce'}</span>
+          </Link>
+
+          <Link href={getSectionPath(lang, 'friends')} className={`nav-item ${activeTab === 'friends' ? 'active' : ''}`}>
+            <span className="nav-icon"><Users size={18} /></span>
+            <span className="nav-text">{t.tabs_friends || 'Přátelé'}</span>
+          </Link>
+
           <Link href={getSectionPath(lang, 'ditto')} className={`nav-item ${activeTab === 'ditto' ? 'active' : ''}`}>
             <span className="nav-icon"><Sparkles size={18} /></span>
             <span className="nav-text">{t.tabs_ditto}</span>
@@ -354,14 +388,14 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
             <span className="nav-text">{t.tabs_eggs}</span>
           </Link>
 
-          <Link href={getSectionPath(lang, 'ranking')} className={`nav-item ${activeTab === 'ranking' ? 'active' : ''}`}>
-            <span className="nav-icon"><Trophy size={18} /></span>
-            <span className="nav-text">{t.tabs_ranking}</span>
-          </Link>
-
           <Link href={getSectionPath(lang, 'filter')} className={`nav-item ${activeTab === 'filter' ? 'active' : ''}`}>
             <span className="nav-icon"><Filter size={18} /></span>
             <span className="nav-text">{t.tabs_filter}</span>
+          </Link>
+
+          <Link href={getSectionPath(lang, 'settings')} className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}>
+            <span className="nav-icon"><Settings size={18} /></span>
+            <span className="nav-text">{t.tabs_settings || 'Nastavení'}</span>
           </Link>
         </nav>
 

@@ -85,34 +85,76 @@ export default async function IndividualGuidePage({ params }: PageProps) {
   const title = guide.title[lang] || guide.title.en;
   const canonicalUrl = `https://pogoevents.app/${lang}/guides/${guide.slug}`;
 
-  const jsonLd = {
+  const faqItems = guide.sections.map(sec => ({
+    '@type': 'Question',
+    name: sec.heading[lang] || sec.heading.en,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: (sec.content[lang] || sec.content.en).replace(/\n/g, ' ') + 
+        (sec.tips && sec.tips[lang] ? ' Tip: ' + sec.tips[lang].join(' ') : '')
+    }
+  }));
+
+  const jsonLdGraph = {
     '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: title,
-    description: guide.subtitle[lang] || guide.subtitle.en,
-    image: guide.imageUrl || 'https://pogoevents.app/logo-banner.jpg',
-    url: canonicalUrl,
-    author: {
-      '@type': 'Organization',
-      name: 'Pokémon GO Event Tracker',
-      url: 'https://pogoevents.app'
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'Pokémon GO Event Tracker',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://pogoevents.app/logo-1080.png'
+    '@graph': [
+      {
+        '@type': 'Article',
+        headline: title,
+        description: guide.subtitle[lang] || guide.subtitle.en,
+        image: guide.imageUrl || 'https://pogoevents.app/logo-banner.jpg',
+        url: canonicalUrl,
+        dateModified: guide.updatedAt ? `${guide.updatedAt}T12:00:00Z` : undefined,
+        author: {
+          '@type': 'Organization',
+          name: 'Pokémon GO Event Tracker',
+          url: 'https://pogoevents.app'
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'Pokémon GO Event Tracker',
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://pogoevents.app/logo-1080.png'
+          }
+        },
+        mainEntityOfPage: canonicalUrl,
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: faqItems
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: `https://pogoevents.app/${lang}`
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Guides',
+            item: `https://pogoevents.app/${lang}/guides`
+          },
+          {
+            '@type': 'ListItem',
+            position: 3,
+            name: title,
+            item: canonicalUrl
+          }
+        ]
       }
-    },
-    mainEntityOfPage: canonicalUrl,
+    ]
   };
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdGraph) }}
       />
       <App initialLang={lang} initialTab="guides" initialArticleSlug={guideId} />
     </>

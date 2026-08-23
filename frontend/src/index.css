@@ -1434,7 +1434,8 @@ body.light-mode .nav-item.active {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-bottom: auto; /* Pushes footer to bottom */
+    flex: 1;
+    margin-bottom: 12px;
   }
 
   .sidebar-nav-item {
@@ -1464,6 +1465,12 @@ body.light-mode .nav-item.active {
     background: var(--accent-gradient);
     color: white;
     box-shadow: 0 4px 15px rgba(170, 59, 255, 0.25);
+  }
+
+  .sidebar-nav-item.settings-item {
+    margin-top: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 13px;
   }
 
   /* Subtle Download Pill Button above social links */
