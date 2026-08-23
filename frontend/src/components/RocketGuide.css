@@ -1,22 +1,56 @@
-/* SECTION 838-1124 */
+.rocket-guide {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.rocket-header-card.guides-header {
+  background: var(--bg-card, rgba(22, 27, 44, 0.8));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 16px;
+  padding: 22px 24px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rocket-header-card.guides-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -20%;
+  width: 140%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(170, 59, 255, 0.14) 0%, rgba(239, 68, 68, 0.05) 50%, transparent 80%);
+  pointer-events: none;
+}
 
 .rocket-tabs {
   display: flex;
-  gap: 6px;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
 }
 
 .rocket-tab-btn {
   flex: 1;
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
+  background-color: var(--bg-card, rgba(22, 27, 44, 0.8));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  color: var(--text-muted, #cbd5e1);
   font-family: var(--font-sans);
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
@@ -24,25 +58,37 @@
   transition: all 0.2s ease;
 }
 
+.rocket-tab-btn:hover {
+  background-color: var(--bg-card-hover, #1e212b);
+  color: var(--text-primary, #f8fafc);
+  border-color: rgba(168, 85, 247, 0.35);
+  transform: translateY(-1px);
+}
+
 .rocket-tab-btn.active {
-  background-color: var(--rocket-purple);
-  color: white;
-  border-color: var(--rocket-purple);
+  background: var(--accent-gradient, linear-gradient(135deg, #aa3bff 0%, #7e22ce 100%));
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 0 12px rgba(170, 59, 255, 0.4);
 }
 
 .rocket-tab-btn.giovanni-btn.active {
-  background: linear-gradient(135deg, #facc15, #f97316);
-  border-color: #facc15;
-  color: black;
+  background: linear-gradient(135deg, #facc15 0%, #f97316 100%);
+  border-color: transparent;
+  color: #000000;
+  box-shadow: 0 0 14px rgba(250, 204, 21, 0.45);
 }
 
 .rocket-content-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background-color: var(--bg-card, rgba(22, 27, 44, 0.8));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
   border-radius: 16px;
-  padding: 16px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   gap: 16px;
 }
 
@@ -653,7 +699,129 @@
   }
 }
 
+/* Counters Levels Grid & Counter Cards */
+.counters-levels-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.counter-level-col {
+  background-color: var(--bg-card-hover, rgba(30, 33, 43, 0.7));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.level-badge {
+  font-size: 0.65rem;
+  font-weight: 850;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 6px;
+  color: white;
+  display: inline-block;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.level-badge.mega { 
+  background: linear-gradient(135deg, #facc15 0%, #f97316 100%); 
+  color: #000000; 
+  box-shadow: 0 0 8px rgba(250, 204, 21, 0.3);
+}
+
+.level-badge.advanced { 
+  background-color: var(--tier-a, #22c55e); 
+  color: #0c0d12; 
+}
+
+.level-badge.budget { 
+  background-color: var(--tier-b, #3b82f6); 
+  color: #ffffff;
+}
+
+.counter-level-col ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 8px;
+  width: 100%;
+}
+
+.counter-level-col li.counter-item-card {
+  background-color: var(--bg-card, rgba(22, 27, 44, 0.8));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  padding: 10px 8px;
+  border-radius: 10px;
+  color: var(--text-primary, #f8fafc);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.counter-level-col li.counter-item-card:hover {
+  background-color: var(--bg-card-hover, #1e212b);
+  border-color: rgba(168, 85, 247, 0.4);
+  transform: translateY(-2px);
+}
+
+.counter-level-col li.counter-item-card img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
+  transition: transform 0.2s ease;
+}
+
+.counter-level-col li.counter-item-card:hover img {
+  transform: scale(1.08);
+}
+
+.counter-pokemon-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+
+.counter-pokemon-name {
+  font-weight: 750;
+  font-size: 0.82rem;
+  color: var(--text-primary, #f8fafc);
+  line-height: 1.2;
+}
+
+.counter-moves-container {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 6px;
+  margin-top: 2px;
+}
+
+.counter-move-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: var(--text-muted, #cbd5e1);
+}
+
 /* Light Mode Overrides for Rocket Guide */
+body.light-mode .rocket-header-card,
+body.light-mode .rocket-content-card,
 body.light-mode .grunt-card,
 body.light-mode .leader-card,
 body.light-mode .reward-card,
@@ -664,15 +832,30 @@ body.light-mode .focus-card,
 body.light-mode .lineup-column,
 body.light-mode .grunts-focus-section,
 body.light-mode .member-avatar,
-body.light-mode .rocket-guide-container {
+body.light-mode .counter-level-col,
+body.light-mode li.counter-item-card {
   background-color: #ffffff !important;
   background: #ffffff !important;
-  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
   color: #0f172a !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
 }
 
 body.light-mode .focus-grunt-phrase,
 body.light-mode .focus-description,
-body.light-mode .reward-info h4 {
+body.light-mode .reward-info h4,
+body.light-mode .counter-pokemon-name,
+body.light-mode .slot-pokemon-name {
   color: #0f172a !important;
+}
+
+body.light-mode .rocket-tab-btn {
+  background-color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  color: #334155 !important;
+}
+
+body.light-mode .rocket-tab-btn.active {
+  background: var(--accent-gradient, linear-gradient(135deg, #aa3bff 0%, #7e22ce 100%)) !important;
+  color: #ffffff !important;
 }

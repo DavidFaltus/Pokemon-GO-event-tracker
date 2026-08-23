@@ -50,13 +50,13 @@ const EVOLUTION_QUEST_ITEMS = [
     evolved: 'Sirfetchd',
     category: 'buddy',
     task: { 
-      cs: '10× Excellent hodů jako Buddy Pokémon', 
-      en: '10 Excellent Throws as Buddy Pokémon', 
-      ja: '相棒にしてエクセレントスロー10回', 
-      ru: '10 Excellent бросков с бадди' 
+      cs: '10× Excellent hodů jako Buddy Pokémon (50 Candy)', 
+      en: '10 Excellent Throws as Buddy Pokémon (50 Candy)', 
+      ja: '相棒にしてエクセレントスロー10回（アメ50個）', 
+      ru: '10 Excellent бросков с бадди (50 конфет)' 
     },
     tip: { 
-      cs: 'Hody nemusí jít za sebou! Použijte Nanab Berry na velké raid bossy (Wailmer, Snorlax, Ponyta).', 
+      cs: 'Hody nemusí jít za sebou! Použijte Nanab Berry na velké raid bossy (Wailmer, Snorlax, legendární bossové).', 
       en: 'Throws do not need to be in a row! Use Nanab Berries on large raid bosses for easy targets.',
       ja: '連続で投げる必要はありません！レイドボスにナナのみを使って落ち着いて狙いましょう。',
       ru: 'Броски не обязательно делать подряд! Используйте Nanab Berry на крупных рейдовых боссах.'
@@ -68,10 +68,10 @@ const EVOLUTION_QUEST_ITEMS = [
     evolved: 'Pangoro',
     category: 'buddy',
     task: { 
-      cs: 'Chytit 32 Dark-type Pokémonů jako Buddy', 
-      en: 'Catch 32 Dark-type Pokémon as Buddy', 
-      ja: '相棒にしてあくタイプ32匹捕獲', 
-      ru: 'Поймать 32 Темных покемона с бадди' 
+      cs: 'Chytit 32 Dark-type Pokémonů jako Buddy (50 Candy)', 
+      en: 'Catch 32 Dark-type Pokémon as Buddy (50 Candy)', 
+      ja: '相棒にしてあくタイプ32匹捕獲（アメ50個）', 
+      ru: 'Поймать 32 Темных покемона с бадди (50 конфет)' 
     },
     tip: { 
       cs: 'Bojujte s Dark-type Rocket Gruntem ("Kde je světlo, tam je stín") nebo lovte během nočních spawnů.', 
@@ -86,13 +86,13 @@ const EVOLUTION_QUEST_ITEMS = [
     evolved: 'Annihilape',
     category: 'combat',
     task: { 
-      cs: 'Porazit 30 Ghost nebo Psychic Pokémonů v bitvách', 
-      en: 'Defeat 30 Ghost or Psychic Pokémon in Trainer Battles', 
-      ja: '相棒にしてゴースト/エスパー30匹撃破', 
-      ru: 'Победить 30 Призраков/Психических в битвах' 
+      cs: 'Porazit 30 Ghost nebo Psychic Pokémonů v bitvách (100 Candy)', 
+      en: 'Defeat 30 Ghost or Psychic Pokémon in Trainer Battles (100 Candy)', 
+      ja: '相棒にしてゴースト/エスパー30匹撃破（アメ100個）', 
+      ru: 'Победить 30 Призраков/Психических в битвах (100 конфет)' 
     },
     tip: { 
-      cs: '⚡ Blanche ML Trik: Spusťte trénink proti Blanche v Master League. Její Metagross je Psychic. Porazte Metagrosse a okamžitě vzdejte bitvu — 30 killů máte za pár minut!', 
+      cs: '⚡ Blanche ML Trik: Spusťte trénink proti Blanche v Master League (má Metagrosse). Porazte Metagrosse a okamžitě vzdejte — 30 killů máte za pár minut!', 
       en: '⚡ Blanche ML Trick: Battle Blanche in Master League (Metagross is Psychic). Defeat Metagross and surrender to quickly farm all 30 kills!',
       ja: '⚡ ブランシェ裏技：マスターリーグでブランシェと対戦し、メタグロス（エスパー）を倒したら即降参を繰り返せば数分で達成！',
       ru: '⚡ Трюк с Бланш: Сражайтесь с Бланш в Master League. Побеждайте Metagross и сдавайтесь — 30 побед за пару минут!'
@@ -102,31 +102,390 @@ const EVOLUTION_QUEST_ITEMS = [
   {
     base: 'Charcadet',
     evolved: 'Armarouge',
-    altEvolved: 'Ceruledge',
     category: 'combat',
     task: { 
-      cs: 'Porazit 30 Psychic (Armarouge) NEBO 30 Ghost (Ceruledge)', 
-      en: 'Defeat 30 Psychic (Armarouge) OR 30 Ghost (Ceruledge)', 
-      ja: '相棒にしてエスパー30匹（グレンアルマ）/ゴースト30匹（ソウブレイズ）撃破', 
-      ru: 'Победить 30 Психических (Armarouge) ИЛИ 30 Призраков (Ceruledge)' 
+      cs: 'Porazit 30 Psychic Pokémonů v bitvách jako Buddy (50 Candy)', 
+      en: 'Defeat 30 Psychic-type Pokémon in battles as Buddy (50 Candy)', 
+      ja: '相棒にしてエスパータイプ30匹撃破（アメ50個）', 
+      ru: 'Победить 30 Психических покемонов в битвах (50 конфет)' 
     },
     tip: { 
-      cs: 'Trénink s lídrem Blanche v Master League funguje i na Armarouge!', 
-      en: 'Training against Blanche in Master League works for Armarouge too!',
-      ja: 'マスターリーグのブランシェ特訓はグレンアルマの進化条件にも有効です！',
-      ru: 'Тренировка с лидером Бланш в Master League подходит и для Armarouge!'
+      cs: 'Trénink s Blanche v Master League v menu Battle funguje skvěle i na Armarouge!', 
+      en: 'Training against Blanche in Master League in the Battle menu works great for Armarouge too!',
+      ja: '対戦メニューのブランシェ（マスターリーグ）特訓で素早く達成できます！',
+      ru: 'Тренировка с лидером Бланш в Master League отлично подходит для Armarouge!'
     },
-    badge: '30 Defeated'
+    badge: '30 Psychic Defeated'
+  },
+  {
+    base: 'Charcadet',
+    evolved: 'Ceruledge',
+    category: 'combat',
+    task: { 
+      cs: 'Porazit 30 Ghost Pokémonů v bitvách jako Buddy (50 Candy)', 
+      en: 'Defeat 30 Ghost-type Pokémon in battles as Buddy (50 Candy)', 
+      ja: '相棒にしてゴーストタイプ30匹撃破（アメ50個）', 
+      ru: 'Победить 30 Призрачных покемонов в битвах (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Zahrajte rychlý přátelský PvP souboj s kamarádem, který nasadí 3× Ghost Pokémony s nízkým CP.', 
+      en: 'Battle a friend in PvP who fields three low-CP Ghost-type Pokémon.',
+      ja: 'フレンドに対戦でCPの低いゴーストタイプを3匹出してもらうと一瞬で達成できます。',
+      ru: 'Сыграйте быстрое PvP с другом, который выставит 3 призрака с низким CP.'
+    },
+    badge: '30 Ghost Defeated'
+  },
+  {
+    base: 'Slowpoke-Galarian',
+    evolved: 'Slowbro-Galarian',
+    category: 'buddy',
+    task: { 
+      cs: 'Chytit 30 Poison-type Pokémonů jako Buddy (50 Candy)', 
+      en: 'Catch 30 Poison-type Pokémon as Buddy (50 Candy)', 
+      ja: '相棒にしてどくタイプ30匹捕獲（アメ50個）', 
+      ru: 'Поймать 30 Ядовитых покемонов с бадди (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Hledejte Poison Rocket Grunta ("Připrav se na otravu!") nebo lovte v zataženém počasí (Cloudy boost).', 
+      en: 'Hunt Poison Rocket Grunts or catch Poison-types during Cloudy in-game weather.',
+      ja: 'ロケット団のどくタイプしたっぱや、ゲーム内の曇り（Cloudy）ブースト時に捕獲しましょう。',
+      ru: 'Ищите ядовитых пешек Ракеты или ловите в облачную погоду (Cloudy).'
+    },
+    badge: '30 Poison-type'
+  },
+  {
+    base: 'Slowpoke-Galarian',
+    evolved: 'Slowking-Galarian',
+    category: 'buddy',
+    task: { 
+      cs: 'Chytit 30 Psychic-type Pokémonů jako Buddy (50 Candy)', 
+      en: 'Catch 30 Psychic-type Pokémon as Buddy (50 Candy)', 
+      ja: '相棒にしてエスパータイプ30匹捕獲（アメ50個）', 
+      ru: 'Поймать 30 Психических покемонов с бадди (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Využijte větrné počasí (Windy) nebo Psychic Rocket Grunta ("Neviditelná síla").', 
+      en: 'Hunt during Windy weather or battle Psychic Rocket Grunts.',
+      ja: '強風（Windy）天候やエスパータイプのロケット団したっぱを活用しましょう。',
+      ru: 'Ловите в ветреную погоду (Windy) или побеждайте психических пешек Ракеты.'
+    },
+    badge: '30 Psychic-type'
+  },
+  {
+    base: 'Yamask-Galarian',
+    evolved: 'Runerigus',
+    category: 'combat',
+    task: { 
+      cs: 'Zúčastnit se / Vyhrát 10 Raidů jako Buddy (50 Candy)', 
+      en: 'Participate in / Win 10 Raids as Buddy (50 Candy)', 
+      ja: '相棒にしてレイドバトルに10回参加/勝利（アメ50個）', 
+      ru: 'Принять участие / Выиграть 10 рейдов с бадди (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Nemusíte v raidu s Yamaskem bojovat, stačí ho mít jako aktivního Buddyho během raidů!', 
+      en: 'Yamask does not need to battle in the raid; simply keep it as your active Buddy while clearing raids.',
+      ja: 'デスマスを戦闘に出す必要はありません。相棒にした状態でレイドをクリアすればOKです。',
+      ru: 'Yamask не обязательно должен сражаться в рейде, достаточно просто держать его напарником!'
+    },
+    badge: '10 Raids'
+  },
+  {
+    base: 'Qwilfish-Hisuian',
+    evolved: 'Overqwil',
+    category: 'combat',
+    task: { 
+      cs: 'Vyhrát 10 Raidů jako Buddy Pokémon (50 Candy)', 
+      en: 'Win 10 Raids as Buddy Pokémon (50 Candy)', 
+      ja: '相棒にしてレイドバトルで10回勝利（アメ50個）', 
+      ru: 'Выиграть 10 рейдов с бадди (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Ideální splnit během Raid Hour nebo víkendových Raid Day eventů s volnými pasy.', 
+      en: 'Best completed during Wednesday Raid Hours or weekend Raid Day events with bonus passes.',
+      ja: '水曜レイドアワーやレイドデイイベントの無料パスを使って効率よく達成しましょう。',
+      ru: 'Идеально выполнять во время Raid Hour по средам или рейдовых дней.'
+    },
+    badge: '10 Won Raids'
+  },
+  {
+    base: 'Bisharp',
+    evolved: 'Kingambit',
+    category: 'combat',
+    task: { 
+      cs: 'Porazit 15 Dark nebo Steel Pokémonů v Raidech (100 Candy)', 
+      en: 'Defeat 15 Dark- or Steel-type Pokémon in Raid Battles (100 Candy)', 
+      ja: '相棒にしてレイドで あく/はがね タイプ15匹撃破（アメ100個）', 
+      ru: 'Победить 15 Темных/Стальных в рейдах с бадди (100 конфет)' 
+    },
+    tip: { 
+      cs: 'Hledejte 1★–3★ raidy s Dark/Steel bossy (Bisharp, Scizor, Tyranitar, Mawile apod.).', 
+      en: 'Target 1★–3★ raids featuring Dark/Steel bosses (Bisharp, Scizor, Tyranitar, Mawile).',
+      ja: 'あく/はがねタイプの1★〜3★レイドボスを狙って素早くカウントを稼ぎましょう。',
+      ru: 'Ищите рейды 1★–3★ с боссами темного/стального типа.'
+    },
+    badge: '15 Raid Kills'
+  },
+  {
+    base: 'Kubfu',
+    evolved: 'Urshifu',
+    category: 'combat',
+    task: { 
+      cs: 'Porazit 30 Dark (Single Strike) NEBO 30 Water (Rapid Strike) v Raidech/Max Battles', 
+      en: 'Defeat 30 Dark (Single Strike) OR 30 Water (Rapid Strike) in Raids/Max Battles', 
+      ja: '相棒にしてレイド/マックスバトルであく30匹（いちげき）/みず30匹（れんげき）撃破', 
+      ru: 'Победить 30 Dark (Single) ИЛИ 30 Water (Rapid) в рейдах/макс-битвах' 
+    },
+    tip: { 
+      cs: 'Počítají se i Max Battles u Power Spotů! Vyberte si formu podle své PvP/PvE preference.', 
+      en: 'Dynamax Max Battles at Power Spots count! Choose your form based on PvP/PvE preference.',
+      ja: 'パワースポットのマックスバトルもカウントされます！用途に合わせて進化先を選びましょう。',
+      ru: 'Макс-битвы на Power Spot тоже засчитываются! Выбирайте форму под свои нужды.'
+    },
+    badge: '30 Dark/Water Raids'
+  },
+  {
+    base: 'Swirlix',
+    evolved: 'Slurpuff',
+    category: 'buddy',
+    task: { 
+      cs: 'Nakrmit Buddyho 25× Berries / pamlsky (50 Candy)', 
+      en: 'Feed your Buddy 25 Berries or Treats (50 Candy)', 
+      ja: '相棒におやつ（きのみ/ポフィン）を25個あげる（アメ50個）', 
+      ru: 'Скормить бадди 25 ягод/угощений (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Počkejte, až Buddymu klesne hladoměr, nebo krmte po 3 Nanab Berries po vypršení!', 
+      en: 'Feed 3 Nanab Berries whenever the hunger meter empties to fast-track all 25 treats.',
+      ja: 'お腹が減ったタイミングでナナのみを3個ずつあげることで最短クリア可能です。',
+      ru: 'Кормите по 3 ягоды каждый раз, когда напарник проголодается.'
+    },
+    badge: 'Feed 25 Berries'
+  },
+  {
+    base: 'Spritzee',
+    evolved: 'Aromatisse',
+    category: 'buddy',
+    task: { 
+      cs: 'Použít 1× Incense jako Buddy Pokémon (50 Candy)', 
+      en: 'Use 1 Incense while set as Buddy (50 Candy)', 
+      ja: '相棒にした状態でおこうを1個使用（アメ50個）', 
+      ru: 'Использовать 1 ладан (Incense) с бадди (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Plně funguje i bezplatný modrý 15minutový Daily Adventure Incense!', 
+      en: 'The free daily 15-minute Daily Adventure Incense fully triggers this requirement!',
+      ja: '毎日無料で使える15分間の「おさんぽおこう」でも達成可能です！',
+      ru: 'Бесплатный ежедневный 15-минутный Daily Adventure Incense отлично подходит!'
+    },
+    badge: 'Use 1 Incense'
+  },
+  {
+    base: 'Floette',
+    evolved: 'Florges',
+    category: 'buddy',
+    task: { 
+      cs: 'Získat 20 srdíček jako Buddy Pokémon (100 Candy)', 
+      en: 'Earn 20 Hearts as Buddy Pokémon (100 Candy)', 
+      ja: '相棒にしてハートを20個獲得（アメ100個）', 
+      ru: 'Заработать 20 сердец с бадди (100 конфет)' 
+    },
+    tip: { 
+      cs: 'Použijte Poffin pro dvojnásobek srdcí (až 26 srdcí za 1 jediný den)!', 
+      en: 'Feed a Poffin to double available hearts (earn up to 26 hearts in a single day)!',
+      ja: 'ポフィンを使えば1日で最大26個のハートを獲得できるため即座に進化可能になります！',
+      ru: 'Используйте Poffin, чтобы удвоить лимит сердец и выполнить квест за 1 день!'
+    },
+    badge: '20 Buddy Hearts'
+  },
+  {
+    base: 'Poipole',
+    evolved: 'Naganadel',
+    category: 'buddy',
+    task: { 
+      cs: 'Chytit 20 Dragon-type Pokémonů jako Buddy (200 Candy)', 
+      en: 'Catch 20 Dragon-type Pokémon as Buddy (200 Candy)', 
+      ja: '相棒にしてドラゴンタイプ20匹捕獲（アメ200個）', 
+      ru: 'Поймать 20 Драконов с бадди (200 конфет)' 
+    },
+    tip: { 
+      cs: 'Využijte Dragon raid bosse (5★ Legendary), Dragon Rocket Grunta nebo Windy počasí.', 
+      en: 'Target Dragon-type Legendary raids, Dragon Rocket Grunts, or Windy weather spawns.',
+      ja: '伝説レイドのドラゴンボスやロケット団のドラゴンしたっぱを活用しましょう。',
+      ru: 'Ловите в легендарных рейдах или побеждайте пешек Ракеты с драконами.'
+    },
+    badge: '20 Dragon-type'
+  },
+  {
+    base: 'Pawmo',
+    evolved: 'Pawmot',
+    category: 'walk',
+    task: { 
+      cs: 'Ujít 25 km jako Buddy Pokémon (100 Candy)', 
+      en: 'Walk 25 km as Buddy Pokémon (100 Candy)', 
+      ja: '相棒にして25km歩く（アメ100個）', 
+      ru: 'Пройти 25 км с бадди (100 конфет)' 
+    },
+    tip: { 
+      cs: 'Jako Buddyho musíte mít Pawmo (2. vývojovou fázi), nikoliv základního Pawmi!', 
+      en: 'Must have Pawmo (Stage 1 evolution) equipped as active Buddy, not basic Pawmi!',
+      ja: '進化前のパモではなく、第2形態のパモットを相棒にして歩く必要があります！',
+      ru: 'Напарником должен быть именно Pawmo (2-я стадия), а не базовый Pawmi!'
+    },
+    badge: '25 km Buddy Walk'
+  },
+  {
+    base: 'Feebas',
+    evolved: 'Milotic',
+    category: 'walk',
+    task: { 
+      cs: 'Ujít 20 km jako Buddy Pokémon (100 Candy)', 
+      en: 'Walk 20 km as Buddy Pokémon (100 Candy)', 
+      ja: '相棒にして20km歩く（アメ100個）', 
+      ru: 'Пройти 20 км с бадди (100 конфет)' 
+    },
+    tip: { 
+      cs: 'Poffin zkrátí vzdálenost pro sběr Candy na 2.5 km a zrychlí plnění.', 
+      en: 'Poffin halves candy-finding distance to 2.5 km while working on the 20 km total.',
+      ja: 'ポフィンを使うとアメ獲得距離が2.5kmに半減し効率よくアメも集まります。',
+      ru: 'Poffin сократит дистанцию до 2.5 км на конфету.'
+    },
+    badge: '20 km Buddy Walk'
+  },
+  {
+    base: 'Bramblin',
+    evolved: 'Brambleghast',
+    category: 'walk',
+    task: { 
+      cs: 'Ujít 20 km jako Buddy Pokémon (50 Candy)', 
+      en: 'Walk 20 km as Buddy Pokémon (50 Candy)', 
+      ja: '相棒にして20km歩く（アメ50個）', 
+      ru: 'Пройти 20 км с бадди (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Zapněte Adventure Sync v nastavení, aby se kilometry načítaly i při vypnuté aplikaci.', 
+      en: 'Enable Adventure Sync in game settings to count background walking distance while app is closed.',
+      ja: 'いつでも冒険モード（Adventure Sync）をオンにしておけばアプリを閉じていても距離が稼げます。',
+      ru: 'Включите Adventure Sync, чтобы километры засчитывались с выключенной игрой.'
+    },
+    badge: '20 km Buddy Walk'
+  },
+  {
+    base: 'Rellor',
+    evolved: 'Rabsca',
+    category: 'walk',
+    task: { 
+      cs: 'Ujít 24 km jako Buddy Pokémon (50 Candy)', 
+      en: 'Walk 24 km as Buddy Pokémon (50 Candy)', 
+      ja: '相棒にして24km歩く（アメ50個）', 
+      ru: 'Пройти 24 км с бадди (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Nachodíte pohodlně během běžných procházek s aktivním Adventure Sync.', 
+      en: 'Easily completed during weekly routine walks with Adventure Sync enabled.',
+      ja: '日々の移動でいつでも冒険モードを活用すれば自然とクリアできます。',
+      ru: 'Легко выполняется при обычных прогулках с включенным Adventure Sync.'
+    },
+    badge: '24 km Buddy Walk'
+  },
+  {
+    base: 'Sneasel-Hisuian',
+    evolved: 'Sneasler',
+    category: 'walk',
+    task: { 
+      cs: 'Ujít 7 km jako Buddy + Vyvinout VE DNE ☀️ (100 Candy)', 
+      en: 'Walk 7 km as Buddy + Evolve during DAYTIME ☀️ (100 Candy)', 
+      ja: '相棒にして7km歩く＋「昼」に進化（アメ100個）', 
+      ru: 'Пройти 7 км с бадди + эволюция ДНЕМ ☀️ (100 конфет)' 
+    },
+    tip: { 
+      cs: 'V noci se tlačítko evoluce uzamkne. Vyčkejte na denní světlo na herní mapě.', 
+      en: 'Evolution button locks during night hours. Evolve when the in-game map is in daylight.',
+      ja: '夜間は進化ボタンがロックされます。ゲーム内マップが昼間の時間帯に進化させてください。',
+      ru: 'Ночью кнопка эволюции блокируется. Дождитесь дневного света в игре.'
+    },
+    badge: '7 km + Day ☀️'
+  },
+  {
+    base: 'Snom',
+    evolved: 'Frosmoth',
+    category: 'walk',
+    task: { 
+      cs: 'Ujít 10 km jako Buddy + Vyvinout V NOCI 🌙 (400 Candy)', 
+      en: 'Walk 10 km as Buddy + Evolve during NIGHTTIME 🌙 (400 Candy)', 
+      ja: '相棒にして10km歩く＋「夜」に進化（アメ400個）', 
+      ru: 'Пройти 10 км с бадди + эволюция НОЧЬЮ 🌙 (400 конфет)' 
+    },
+    tip: { 
+      cs: 'Vyžaduje 400 Candy — používejte Pinap Berry při chytání a krmte Snoma v Gymech.', 
+      en: 'Requires 400 Candy — use Silver/Pinap Berries on wild catches and feed Gym defenders.',
+      ja: 'アメ400個が必要です。パイルのみを使って捕獲し、ジム防衛ポケモンにおやつをあげて集めましょう。',
+      ru: 'Требуется 400 конфет — ловите с Pinap Berry и кормите в гимах.'
+    },
+    badge: '10 km + Night 🌙'
+  },
+  {
+    base: 'Woobat',
+    evolved: 'Swoobat',
+    category: 'walk',
+    task: { 
+      cs: 'Ujít 1 km jako Buddy Pokémon (50 Candy)', 
+      en: 'Walk 1 km as Buddy Pokémon (50 Candy)', 
+      ja: '相棒にして1km歩く（アメ50個）', 
+      ru: 'Пройти 1 км с бадди (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Nejkratší walking quest ve hře! Stačí 10–12 minut běžné chůze.', 
+      en: 'Shortest walking quest in the game! Takes just 10–12 minutes of normal walking.',
+      ja: 'ゲーム内で最短の歩行タスクです！10分程度の散歩で即完了します。',
+      ru: 'Самый короткий квест на ходьбу в игре! Достаточно 10 минут прогулки.'
+    },
+    badge: '1 km Buddy Walk'
+  },
+  {
+    base: 'Happiny',
+    evolved: 'Chansey',
+    category: 'walk',
+    task: { 
+      cs: 'Ujít 15 km jako Buddy Pokémon (25 Candy)', 
+      en: 'Walk 15 km as Buddy Pokémon (25 Candy)', 
+      ja: '相棒にして15km歩く（アメ25個）', 
+      ru: 'Пройти 15 км с бадди (25 конфет)' 
+    },
+    tip: { 
+      cs: 'Platí i pro miminka Bonsly a Mime Jr. (15 km buddy walk).', 
+      en: 'Baby Pokémon Bonsly & Mime Jr. share the identical 15 km walking requirement.',
+      ja: 'ウソハチやマネネなどのベイビィポケモンも同様に15kmの相棒歩行が必要です。',
+      ru: 'Для малышей Bonsly и Mime Jr. действует аналогичное требование в 15 км.'
+    },
+    badge: '15 km Baby Walk'
+  },
+  {
+    base: 'Eevee',
+    evolved: 'Sylveon',
+    category: 'buddy',
+    task: { 
+      cs: 'Sylveon (70 srdcí), Espeon/Umbreon (10 km + Den/Noc), Leafeon/Glaceon (Lure Moduly)', 
+      en: 'Sylveon (70 hearts), Espeon/Umbreon (10 km + Day/Night), Leafeon/Glaceon (Lure Modules)', 
+      ja: 'ニンフィア（ハート70個）、エーフィ/ブラッキー（10km＋昼/夜）、リーフィア/グレイシア（ルアー）', 
+      ru: 'Sylveon (70 сердец), Espeon/Umbreon (10км + день/ночь), Leafeon/Glaceon (Lure)' 
+    },
+    tip: { 
+      cs: 'Jednorázové triky se jmény: Kira ➔ Sylveon, Sakura ➔ Espeon, Tamao ➔ Umbreon, Linnea ➔ Leafeon, Rea ➔ Glaceon.', 
+      en: 'One-time name tricks: Kira (Sylveon), Sakura (Espeon), Tamao (Umbreon), Linnea (Leafeon), Rea (Glaceon).',
+      ja: '初回限定名前裏技：Kira（ニンフィア）、Sakura（エーフィ）、Tamao（ブラッキー）、Linnea（リーフィア）、Rea（グレイシア）',
+      ru: 'Одноразовые имена: Kira (Sylveon), Sakura (Espeon), Tamao (Umbreon), Linnea (Leafeon), Rea (Glaceon).'
+    },
+    badge: 'Eeveelutions'
   },
   {
     base: 'Inkay',
     evolved: 'Malamar',
     category: 'special',
     task: { 
-      cs: 'Otočit telefon fyzicky vzhůru nohama 🙃 + 50 Candy', 
-      en: 'Turn phone physically upside down 🙃 + 50 Candy', 
-      ja: '端末を逆さまにして進化ボタンを押す＋アメ50個', 
-      ru: 'Перевернуть телефон вверх ногами 🙃 + 50 конфет' 
+      cs: 'Otočit telefon fyzicky vzhůru nohama 🙃 (50 Candy)', 
+      en: 'Turn phone physically upside down 🙃 (50 Candy)', 
+      ja: '端末を逆さまにして進化ボタンを押す（アメ50個）', 
+      ru: 'Перевернуть телефон вверх ногами 🙃 (50 конфет)' 
     },
     tip: { 
       cs: 'Vypněte zámek otáčení obrazovky (Screen Rotation Lock) v telefonu, aby gyroskop detekoval polohu.', 
@@ -137,49 +496,13 @@ const EVOLUTION_QUEST_ITEMS = [
     badge: 'Gyro Invert 🙃'
   },
   {
-    base: 'Feebas',
-    evolved: 'Milotic',
-    category: 'walk',
-    task: { 
-      cs: 'Ujít 20 km jako Buddy Pokémon + 100 Candy', 
-      en: 'Walk 20 km as Buddy Pokémon + 100 Candy', 
-      ja: '相棒にして20km歩く＋100アメ', 
-      ru: 'Пройти 20 км с бадди + 100 конфет' 
-    },
-    tip: { 
-      cs: 'Použijte Poffin na zkrácení vzdálenosti pro sběr Candy na 2.5 km.', 
-      en: 'Use a Poffin to halve candy finding distance.',
-      ja: 'ポフィンを使うとアメ獲得に必要な歩行距離を半減（2.5km）できます。',
-      ru: 'Используйте Poffin, чтобы сократить дистанцию для поиска конфет до 2.5 км.'
-    },
-    badge: '20 km Buddy Walk'
-  },
-  {
-    base: 'Pawmo',
-    evolved: 'Pawmot',
-    category: 'walk',
-    task: { 
-      cs: 'Ujít 25 km jako Buddy Pokémon + 100 Candy', 
-      en: 'Walk 25 km as Buddy Pokémon + 100 Candy', 
-      ja: '相棒にして25km歩く＋100アメ', 
-      ru: 'Пройти 25 км с бадди + 100 конфет' 
-    },
-    tip: { 
-      cs: 'Jako buddyho musíte mít Pawmo (2. fázi), ne základního Pawmi!', 
-      en: 'Must have Pawmo (stage 2) equipped as your active buddy, not basic Pawmi!',
-      ja: '進化前のパモではなく、第2形態のパモットを相棒にして歩く必要があります！',
-      ru: 'Напарником должен быть именно Pawmo (2-я стадия), а не базовый Pawmi!'
-    },
-    badge: '25 km Buddy Walk'
-  },
-  {
     base: 'Ursaring',
     evolved: 'Ursaluna',
     category: 'special',
     task: { 
       cs: '100 Candy během astronomického Úplňku 🌕', 
       en: '100 Candy during real-world Full Moon night 🌕', 
-      ja: '現実の満月の夜に進化ボタンが解禁＋アメ100個', 
+      ja: '現実の満月の夜に進化ボタンが解禁（アメ100個）', 
       ru: '100 конфет во время реального полнолуния 🌕' 
     },
     tip: { 
@@ -193,16 +516,15 @@ const EVOLUTION_QUEST_ITEMS = [
   {
     base: 'Sliggoo',
     evolved: 'Goodra',
-    altEvolved: 'Goodra-Hisuian',
     category: 'special',
     task: { 
-      cs: 'Během deště 🌧️ NEBO v dosahu Rainy Lure Modulu', 
-      en: 'During in-game Rain 🌧️ OR near active Rainy Lure Module', 
-      ja: '雨天時またはレイニールアーの近くで進化', 
-      ru: 'Во время дождя 🌧️ ИЛИ у Rainy Lure' 
+      cs: 'Během deště 🌧️ NEBO v dosahu Rainy Lure Modulu (100 Candy)', 
+      en: 'During in-game Rain 🌧️ OR near active Rainy Lure Module (100 Candy)', 
+      ja: '雨天時またはレイニールアーの近くで進化（アメ100個）', 
+      ru: 'Во время дождя 🌧️ ИЛИ у Rainy Lure (100 конфет)' 
     },
     tip: { 
-      cs: 'Aktivujte modrý Rainy Lure Modul na libovolném PokéStopu pro okamžitou evoluci.', 
+      cs: 'Aktivujte modrý Rainy Lure Modul na libovolném PokéStopu pro okamžitou evoluci bez čekání na déšť.', 
       en: 'Drop a Rainy Lure Module on any PokéStop to unlock the evolution instantly.',
       ja: 'ポケストップにレイニールアーを使用すれば天候に関係なく即座に進化できます。',
       ru: 'Установите модуль Rainy Lure на любой покестоп для мгновенной эволюции.'
@@ -210,59 +532,76 @@ const EVOLUTION_QUEST_ITEMS = [
     badge: 'Rain / Rainy Lure 🌧️'
   },
   {
-    base: 'Poipole',
-    evolved: 'Naganadel',
-    category: 'buddy',
+    base: 'Cosmoem',
+    evolved: 'Solgaleo',
+    category: 'special',
     task: { 
-      cs: 'Chytit 20 Dragon-type Pokémonů jako Buddy + 200 Candy', 
-      en: 'Catch 20 Dragon-type Pokémon as Buddy + 200 Candy', 
-      ja: '相棒にしてドラゴンタイプ20匹捕獲＋アメ200個', 
-      ru: 'Поймать 20 Драконов с бадди + 200 конфет' 
+      cs: 'Vyvinout VE DNE ☀️ (Solgaleo) NEBO V NOCI 🌙 (Lunala) + 100 Candy', 
+      en: 'Evolve during DAYTIME ☀️ (Solgaleo) OR NIGHTTIME 🌙 (Lunala) + 100 Candy', 
+      ja: '昼間に進化 ☀️（ソルガレオ）/ 夜間に進化 🌙（ルナアーラ）＋アメ100個', 
+      ru: 'Эволюция ДНЕМ ☀️ (Solgaleo) ИЛИ НОЧЬЮ 🌙 (Lunala) + 100 конфет' 
     },
     tip: { 
-      cs: 'Využijte Dragon raidy nebo Dragon Rocket Grunta ("ROAR... Jak se ti líbí tohle?").', 
-      en: 'Clear Dragon-tier raids or Dragon Rocket Grunts.',
-      ja: 'ドラゴンレイドやロケット団のドラゴンタイプしたっぱを活用しましょう。',
-      ru: 'Используйте рейды на драконов или пешек Ракеты с драконьим типом.'
+      cs: 'Obě legendy mají prvotřídní Fusion formy s Necrozmou (Dusk Mane & Dawn Wings)!', 
+      en: 'Both legendaries form the top-tier Necrozma fusions (Dusk Mane & Dawn Wings)!',
+      ja: 'どちらもネクロズマとの合体（日食/月食ネクロズマ）で最強クラスのアタッカーになります！',
+      ru: 'Обе легенды создают мощнейшие формы слияния с Necrozma (Dusk Mane / Dawn Wings)!'
     },
-    badge: '20 Dragon-type'
+    badge: 'Day ☀️ / Night 🌙'
   },
   {
-    base: 'Sneasel-Hisuian',
-    evolved: 'Sneasler',
-    category: 'walk',
+    base: 'Rockruff',
+    evolved: 'Lycanroc',
+    category: 'special',
     task: { 
-      cs: 'Ujít 7 km jako Buddy + Denní doba (Daytime ☀️)', 
-      en: 'Walk 7 km as Buddy + Daytime evolve ☀️', 
-      ja: '相棒にして7km歩く＋昼間に進化', 
-      ru: 'Пройти 7 км с бадди + днём ☀️' 
+      cs: 'Midday (Den ☀️), Midnight (Noc 🌙), Dusk (17:00–19:00 u Dusk Rockruffa)', 
+      en: 'Midday (Day ☀️), Midnight (Night 🌙), Dusk Form (17:00–19:00 local with Dusk Rockruff)', 
+      ja: 'まひる（昼 ☀️）、まよなか（夜 🌙）、たそがれ（17:00〜19:00・限定個体）', 
+      ru: 'Midday (день ☀️), Midnight (ночь 🌙), Dusk (17:00–19:00 у Dusk Rockruff)' 
     },
     tip: { 
-      cs: 'V noci se tlačítko evoluce zamkne. Počkejte na východ slunce ve hře.', 
-      en: 'Evolution button locks during night hours. Evolve when the in-game sky is bright.',
-      ja: '夜間は進化ボタンがロックされます。ゲーム内マップが昼間の明るさの時に進化させてください。',
-      ru: 'Ночью кнопка эволюции блокируется. Дождитесь светлого времени суток на игровой карте.'
+      cs: 'Dusk Form Lycanroca lze vyvinout pouze ze speciálního Rockruffa (z vajec / raidů) s ikonou západu slunce.', 
+      en: 'Dusk Form Lycanroc requires a specific Dusk-capable Rockruff hatched or caught from raids.',
+      ja: 'たそがれのすがたは、夕暮れアイコンが付いた特別なイワンコからのみ進化可能です。',
+      ru: 'Форма Dusk доступна только у специального Rockruff со значком заката.'
     },
-    badge: '7 km + Day ☀️'
+    badge: 'Lycanroc Forms'
   },
   {
-    base: 'Eevee',
-    evolved: 'Sylveon',
-    altEvolved: 'Espeon',
-    category: 'buddy',
+    base: 'Tyrogue',
+    evolved: 'Hitmonlee',
+    category: 'special',
     task: { 
-      cs: 'Sylveon (70 srdcí), Espeon/Umbreon (10 km + Den/Noc), Leafeon/Glaceon (Lure)', 
-      en: 'Sylveon (70 hearts), Espeon/Umbreon (10 km + Day/Night), Leafeon/Glaceon (Lures)', 
-      ja: 'ニンフィア（ハート70個）、エーフィ/ブラッキー（10km＋昼/夜）、リーフィア/グレイシア（ルアー）', 
-      ru: 'Sylveon (70 сердец), Espeon/Umbreon (10км + день/ночь), Leafeon/Glaceon (Lure)' 
+      cs: 'Nejvyšší IV Attack ➔ Hitmonlee, Defense ➔ Hitmonchan, HP ➔ Hitmontop (25 Candy)', 
+      en: 'Highest IV Attack ➔ Hitmonlee, Defense ➔ Hitmonchan, HP ➔ Hitmontop (25 Candy)', 
+      ja: '最高個体値が 攻撃 ➔ サワムラー、防御 ➔ エビワラー、HP ➔ カポエラー（アメ25個）', 
+      ru: 'Макс. IV: Атака ➔ Hitmonlee, Защита ➔ Hitmonchan, HP ➔ Hitmontop (25 конфет)' 
     },
     tip: { 
-      cs: 'Jednorázové triky se jmény: Kira ➔ Sylveon, Sakura ➔ Espeon, Tamao ➔ Umbreon, Linnea ➔ Leafeon, Rea ➔ Glaceon.', 
-      en: 'One-time name tricks: Kira (Sylveon), Sakura (Espeon), Tamao (Umbreon), Linnea (Leafeon), Rea (Glaceon).',
-      ja: '初回限定名前裏技：Kira（ニンフィア）、Sakura（エーフィ）、Tamao（ブラッキー）、Linnea（リーフィア）、Rea（グレイシア）',
-      ru: 'Одноразовые имена: Kira (Sylveon), Sakura (Espeon), Tamao (Umbreon), Linnea (Leafeon), Rea (Glaceon).'
+      cs: 'Před evolucí použijte funkci Appraise (Ohodnotit). Při shodě více max statů je vývoj náhodný (50/50).', 
+      en: 'Appraise IVs first. If highest stats are tied, the evolution outcome is 50/50 random.',
+      ja: '進化前に必ず「鑑定」でステータスを確認しましょう。最高値が同じ場合はランダム判定になります。',
+      ru: 'Проверьте оценку покемона (Appraise) перед эволюцией. При равенстве статов шанс 50/50.'
     },
-    badge: 'Eeveelutions'
+    badge: 'IV Appraise Rule'
+  },
+  {
+    base: 'Gimmighoul-Roaming',
+    evolved: 'Gholdengo',
+    category: 'special',
+    task: { 
+      cs: 'Nasbírat 999 Gimmighoul Coins + 100 Gimmighoul Candy', 
+      en: 'Collect 999 Gimmighoul Coins + 100 Gimmighoul Candy', 
+      ja: '「コレクレーのコイン」を999枚集める＋アメ100個', 
+      ru: 'Собрать 999 Gimmighoul Coins + 100 конфет' 
+    },
+    tip: { 
+      cs: 'Propojte hru s Nintendo Switch (Pokémon Scarlet/Violet) pro Coin Bag a Golden Lure Moduly.', 
+      en: 'Connect Pokémon GO with Nintendo Switch (Scarlet/Violet) to receive the Coin Bag and Golden Lures.',
+      ja: 'ニンテンドースイッチ（スカーレット/バイオレット）と連携して「だいじなたからばこ」とおうごんルアーを使いましょう。',
+      ru: 'Подключите игру к Nintendo Switch для получения мешка с монетами и Golden Lure.'
+    },
+    badge: '999 Coins 🪙'
   }
 ];
 
@@ -384,12 +723,13 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
                   <div className="evolution-sprite-deck">
                     <div className="pokemon-avatar-box">
                       <img 
-                        src={`https://img.pokemondb.net/sprites/home/normal/${item.base.toLowerCase()}.png`} 
+                        src={getPokemonIconUrl(item.base)} 
                         alt={item.base} 
                         className="evolution-avatar-img"
+                        onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, item.base)}
                         loading="lazy"
                       />
-                      <span className="evolution-avatar-name">{item.base.replace('-Galarian', ' (Galarian)').replace('-Hisuian', ' (Hisuian)')}</span>
+                      <span className="evolution-avatar-name">{item.base.replace('-Galarian', ' (Galarian)').replace('-Hisuian', ' (Hisuian)').replace('-Roaming', '')}</span>
                     </div>
 
                     <div className="evolution-arrow-badge">
@@ -399,12 +739,13 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
 
                     <div className="pokemon-avatar-box">
                       <img 
-                        src={`https://img.pokemondb.net/sprites/home/normal/${item.evolved.toLowerCase()}.png`} 
+                        src={getPokemonIconUrl(item.evolved)} 
                         alt={item.evolved} 
                         className="evolution-avatar-img"
+                        onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, item.evolved)}
                         loading="lazy"
                       />
-                      <span className="evolution-avatar-name">{item.evolved}</span>
+                      <span className="evolution-avatar-name">{item.evolved.replace('-Galarian', ' (Galarian)').replace('-Hisuian', ' (Hisuian)')}</span>
                     </div>
                   </div>
                 </div>
@@ -976,8 +1317,8 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
         </div>
       ) : (
         <div className="guides-grid">
-          {filteredArticles.map((article) => {
-            const isFeatured = article.featured && !searchQuery;
+          {filteredArticles.map((article, index) => {
+            const isFeatured = index === 0 && !searchQuery;
             return (
               <article 
                 key={article.id} 

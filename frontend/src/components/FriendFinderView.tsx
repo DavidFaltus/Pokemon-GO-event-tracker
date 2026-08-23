@@ -274,9 +274,9 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
       )}
 
       {/* Header Banner */}
-      <div className="friend-header-card">
+      <div className="friend-header-card guides-header">
         <div className="friend-header-content">
-          <div className="friend-badge-pill">
+          <div className="guides-title-badge">
             <Users size={14} />
             <span>COMMUNITY MATCHMAKER 2026</span>
           </div>

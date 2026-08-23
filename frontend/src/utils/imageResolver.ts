@@ -153,6 +153,145 @@ export function handlePrimalIconError(img: HTMLImageElement): void {
   }
 }
 
+// Explicit mapping of special forms, fusions, Megas and regional variants to exact PokeAPI IDs & PokemonDB slugs
+export const SPECIAL_FORM_ARTWORK_MAP: Record<string, { pokeApiId: number; dbSlug: string }> = {
+  // Necrozma Fusions & Ultra Form
+  "dusk mane necrozma": { pokeApiId: 10155, dbSlug: "necrozma-dusk-mane" },
+  "necrozma (dusk mane)": { pokeApiId: 10155, dbSlug: "necrozma-dusk-mane" },
+  "dawn wings necrozma": { pokeApiId: 10156, dbSlug: "necrozma-dawn-wings" },
+  "necrozma (dawn wings)": { pokeApiId: 10156, dbSlug: "necrozma-dawn-wings" },
+  "ultra necrozma": { pokeApiId: 10157, dbSlug: "necrozma-ultra" },
+  "necrozma (ultra)": { pokeApiId: 10157, dbSlug: "necrozma-ultra" },
+
+  // Kyurem Fusions
+  "black kyurem": { pokeApiId: 10022, dbSlug: "kyurem-black" },
+  "kyurem (black)": { pokeApiId: 10022, dbSlug: "kyurem-black" },
+  "white kyurem": { pokeApiId: 10023, dbSlug: "kyurem-white" },
+  "kyurem (white)": { pokeApiId: 10023, dbSlug: "kyurem-white" },
+
+  // Origin Formes
+  "dialga (origin)": { pokeApiId: 10245, dbSlug: "dialga-origin" },
+  "dialga (origin forme)": { pokeApiId: 10245, dbSlug: "dialga-origin" },
+  "origin dialga": { pokeApiId: 10245, dbSlug: "dialga-origin" },
+  "palkia (origin)": { pokeApiId: 10246, dbSlug: "palkia-origin" },
+  "palkia (origin forme)": { pokeApiId: 10246, dbSlug: "palkia-origin" },
+  "origin palkia": { pokeApiId: 10246, dbSlug: "palkia-origin" },
+  "giratina (origin)": { pokeApiId: 10007, dbSlug: "giratina-origin" },
+  "giratina (origin forme)": { pokeApiId: 10007, dbSlug: "giratina-origin" },
+  "origin giratina": { pokeApiId: 10007, dbSlug: "giratina-origin" },
+
+  // Therian Formes
+  "landorus (therian)": { pokeApiId: 10021, dbSlug: "landorus-therian" },
+  "landorus (therian forme)": { pokeApiId: 10021, dbSlug: "landorus-therian" },
+  "therian landorus": { pokeApiId: 10021, dbSlug: "landorus-therian" },
+  "thundurus (therian)": { pokeApiId: 10020, dbSlug: "thundurus-therian" },
+  "thundurus (therian forme)": { pokeApiId: 10020, dbSlug: "thundurus-therian" },
+  "therian thundurus": { pokeApiId: 10020, dbSlug: "thundurus-therian" },
+  "tornadus (therian)": { pokeApiId: 10019, dbSlug: "tornadus-therian" },
+  "tornadus (therian forme)": { pokeApiId: 10019, dbSlug: "tornadus-therian" },
+  "therian tornadus": { pokeApiId: 10019, dbSlug: "tornadus-therian" },
+  "enamorus (therian)": { pokeApiId: 10249, dbSlug: "enamorus-therian" },
+  "enamorus (therian forme)": { pokeApiId: 10249, dbSlug: "enamorus-therian" },
+
+  // Megas & Primals
+  "mega mewtwo x": { pokeApiId: 10043, dbSlug: "mewtwo-mega-x" },
+  "mega mewtwo y": { pokeApiId: 10044, dbSlug: "mewtwo-mega-y" },
+  "mega charizard x": { pokeApiId: 10034, dbSlug: "charizard-mega-x" },
+  "mega charizard y": { pokeApiId: 10035, dbSlug: "charizard-mega-y" },
+  "mega metagross": { pokeApiId: 10076, dbSlug: "metagross-mega" },
+  "mega rayquaza": { pokeApiId: 10079, dbSlug: "rayquaza-mega" },
+  "primal kyogre": { pokeApiId: 10077, dbSlug: "kyogre-primal" },
+  "kyogre (primal)": { pokeApiId: 10077, dbSlug: "kyogre-primal" },
+  "primal groudon": { pokeApiId: 10078, dbSlug: "groudon-primal" },
+  "groudon (primal)": { pokeApiId: 10078, dbSlug: "groudon-primal" },
+  "mega lucario": { pokeApiId: 10059, dbSlug: "lucario-mega" },
+  "mega garchomp": { pokeApiId: 10058, dbSlug: "garchomp-mega" },
+  "mega tyranitar": { pokeApiId: 10049, dbSlug: "tyranitar-mega" },
+  "mega salamence": { pokeApiId: 10089, dbSlug: "salamence-mega" },
+  "mega gardevoir": { pokeApiId: 10051, dbSlug: "gardevoir-mega" },
+  "mega gallade": { pokeApiId: 10068, dbSlug: "gallade-mega" },
+  "mega gengar": { pokeApiId: 10038, dbSlug: "gengar-mega" },
+  "mega heracross": { pokeApiId: 10047, dbSlug: "heracross-mega" },
+  "mega pinsir": { pokeApiId: 10040, dbSlug: "pinsir-mega" },
+  "mega scizor": { pokeApiId: 10046, dbSlug: "scizor-mega" },
+  "mega alakazam": { pokeApiId: 10037, dbSlug: "alakazam-mega" },
+  "mega blaziken": { pokeApiId: 10050, dbSlug: "blaziken-mega" },
+  "mega sceptile": { pokeApiId: 10065, dbSlug: "sceptile-mega" },
+  "mega swampert": { pokeApiId: 10064, dbSlug: "swampert-mega" },
+  "mega venusaur": { pokeApiId: 10033, dbSlug: "venusaur-mega" },
+  "mega blastoise": { pokeApiId: 10036, dbSlug: "blastoise-mega" },
+  "mega houndoom": { pokeApiId: 10048, dbSlug: "houndoom-mega" },
+  "mega aggron": { pokeApiId: 10053, dbSlug: "aggron-mega" },
+  "mega gyarados": { pokeApiId: 10041, dbSlug: "gyarados-mega" },
+  "mega aerodactyl": { pokeApiId: 10042, dbSlug: "aerodactyl-mega" },
+  "mega ampharos": { pokeApiId: 10045, dbSlug: "ampharos-mega" },
+  "mega banette": { pokeApiId: 10056, dbSlug: "banette-mega" },
+  "mega absol": { pokeApiId: 10057, dbSlug: "absol-mega" },
+  "mega manectric": { pokeApiId: 10055, dbSlug: "manectric-mega" },
+  "mega glalie": { pokeApiId: 10074, dbSlug: "glalie-mega" },
+  "mega abomasnow": { pokeApiId: 10060, dbSlug: "abomasnow-mega" },
+  "mega beedrill": { pokeApiId: 10090, dbSlug: "beedrill-mega" },
+  "mega pidgeot": { pokeApiId: 10073, dbSlug: "pidgeot-mega" },
+  "mega kangaskhan": { pokeApiId: 10039, dbSlug: "kangaskhan-mega" },
+  "mega lopunny": { pokeApiId: 10088, dbSlug: "lopunny-mega" },
+  "mega altaria": { pokeApiId: 10067, dbSlug: "altaria-mega" },
+  "mega latios": { pokeApiId: 10062, dbSlug: "latios-mega" },
+  "mega latias": { pokeApiId: 10063, dbSlug: "latias-mega" },
+  "mega diancie": { pokeApiId: 10075, dbSlug: "diancie-mega" },
+  "mega sableye": { pokeApiId: 10066, dbSlug: "sableye-mega" },
+  "mega mawile": { pokeApiId: 10052, dbSlug: "mawile-mega" },
+  "mega medicham": { pokeApiId: 10054, dbSlug: "medicham-mega" },
+  "mega sharpedo": { pokeApiId: 10070, dbSlug: "sharpedo-mega" },
+  "mega camerupt": { pokeApiId: 10071, dbSlug: "camerupt-mega" },
+  "mega audino": { pokeApiId: 10069, dbSlug: "audino-mega" },
+  "mega slowbro": { pokeApiId: 10072, dbSlug: "slowbro-mega" },
+  "mega steelix": { pokeApiId: 10087, dbSlug: "steelix-mega" },
+
+  // Galar & Hisui & Paldea
+  "urshifu (single strike)": { pokeApiId: 892, dbSlug: "urshifu-single-strike" },
+  "urshifu (rapid strike)": { pokeApiId: 10191, dbSlug: "urshifu-rapid-strike" },
+  "zacian (crowned sword)": { pokeApiId: 10188, dbSlug: "zacian-crowned" },
+  "crowned sword zacian": { pokeApiId: 10188, dbSlug: "zacian-crowned" },
+  "zamazenta (crowned shield)": { pokeApiId: 10189, dbSlug: "zamazenta-crowned" },
+  "crowned shield zamazenta": { pokeApiId: 10189, dbSlug: "zamazenta-crowned" },
+  "origin forme dialga": { pokeApiId: 10245, dbSlug: "dialga-origin" },
+  "origin forme palkia": { pokeApiId: 10246, dbSlug: "palkia-origin" },
+  "origin forme giratina": { pokeApiId: 10007, dbSlug: "giratina-origin" },
+  "keldeo (resolute forme)": { pokeApiId: 10024, dbSlug: "keldeo-resolute" },
+  "mega greninja": { pokeApiId: 10116, dbSlug: "greninja-ash" },
+  "mega delphox": { pokeApiId: 655, dbSlug: "delphox" },
+  "mega dragonite": { pokeApiId: 149, dbSlug: "dragonite" },
+  "galarian darmanitan": { pokeApiId: 10177, dbSlug: "darmanitan-galar" },
+  "galarian darmanitan (zen mode)": { pokeApiId: 10178, dbSlug: "darmanitan-galar-zen" },
+  "galarian yamask": { pokeApiId: 10179, dbSlug: "yamask-galar" },
+  "galarian slowbro": { pokeApiId: 10165, dbSlug: "slowbro-galar" },
+  "galarian slowking": { pokeApiId: 10172, dbSlug: "slowking-galar" },
+  "galarian farfetch'd": { pokeApiId: 10166, dbSlug: "farfetchd-galar" },
+  "galarian weezing": { pokeApiId: 10167, dbSlug: "weezing-galar" },
+  "galarian stunfisk": { pokeApiId: 10180, dbSlug: "stunfisk-galar" },
+  "galarian articuno": { pokeApiId: 10169, dbSlug: "articuno-galar" },
+  "galarian zapdos": { pokeApiId: 10170, dbSlug: "zapdos-galar" },
+  "galarian moltres": { pokeApiId: 10171, dbSlug: "moltres-galar" },
+  "hisuian typhlosion": { pokeApiId: 10232, dbSlug: "typhlosion-hisui" },
+  "hisuian samurott": { pokeApiId: 10236, dbSlug: "samurott-hisui" },
+  "hisuian decidueye": { pokeApiId: 10244, dbSlug: "decidueye-hisui" },
+  "hisuian arcanine": { pokeApiId: 10229, dbSlug: "arcanine-hisui" },
+  "hisuian electrode": { pokeApiId: 10231, dbSlug: "electrode-hisui" },
+  "hisuian qwilfish": { pokeApiId: 10234, dbSlug: "qwilfish-hisui" },
+  "hisuian sneasel": { pokeApiId: 10235, dbSlug: "sneasel-hisui" },
+  "hisuian braviary": { pokeApiId: 10240, dbSlug: "braviary-hisui" },
+  "hisuian zoroark": { pokeApiId: 10239, dbSlug: "zoroark-hisui" },
+  "hisuian goodra": { pokeApiId: 10241, dbSlug: "goodra-hisui" },
+  "hisuian avalugg": { pokeApiId: 10243, dbSlug: "avalugg-hisui" },
+  "hisuian lilligant": { pokeApiId: 10237, dbSlug: "lilligant-hisui" },
+  "alolan raichu": { pokeApiId: 10100, dbSlug: "raichu-alola" },
+  "alolan marowak": { pokeApiId: 10115, dbSlug: "marowak-alola" },
+  "alolan exeggutor": { pokeApiId: 10114, dbSlug: "exeggutor-alola" },
+  "alolan ninetales": { pokeApiId: 10104, dbSlug: "ninetales-alola" },
+  "alolan sandslash": { pokeApiId: 10102, dbSlug: "sandslash-alola" },
+  "alolan muk": { pokeApiId: 10113, dbSlug: "muk-alola" },
+  "alolan golem": { pokeApiId: 10111, dbSlug: "golem-alola" },
+};
 
 export function getBasePokemonNames(): string[] {
   if (basePokemonNamesCache) return basePokemonNamesCache;
@@ -235,8 +374,15 @@ export function getBasePokemonName(name: string): string {
     .replace(/\s+classic/gi, '')
     .trim();
 
-  const knownNames = getBasePokemonNames();
   const lowerName = baseName.toLowerCase();
+
+  // 1. Check if the name matches a special form in our artwork map first
+  const cleanSpecialKey = lowerName.replace(/^shadow\s+/i, '').replace(/\s*\(.*?\)\s*/g, '').trim();
+  if (SPECIAL_FORM_ARTWORK_MAP[lowerName] || SPECIAL_FORM_ARTWORK_MAP[cleanSpecialKey]) {
+    return baseName.replace(/^shadow\s+/i, '').trim();
+  }
+
+  const knownNames = getBasePokemonNames();
 
   for (const known of knownNames) {
     const lowerKnown = known.toLowerCase();
@@ -263,6 +409,16 @@ export function getBasePokemonName(name: string): string {
 
 export function getPokedexIdByName(name: string): number | null {
   const cleanName = getBasePokemonName(name).toLowerCase();
+  const directKey = name.toLowerCase().trim();
+
+  // Check special form map first
+  if (SPECIAL_FORM_ARTWORK_MAP[cleanName]) {
+    return SPECIAL_FORM_ARTWORK_MAP[cleanName].pokeApiId;
+  }
+  if (SPECIAL_FORM_ARTWORK_MAP[directKey]) {
+    return SPECIAL_FORM_ARTWORK_MAP[directKey].pokeApiId;
+  }
+
   const rankings = getPokemonRankings();
   
   // First try direct match
@@ -309,6 +465,13 @@ export function getPokemonIconUrl(name: string, isShiny?: boolean): string {
   }
   if (pokemonIconOverridesCache[directKey]) {
     return pokemonIconOverridesCache[directKey];
+  }
+
+  // 1. Check special form map (Dusk Mane, Dawn Wings, Mega Mewtwo X/Y, Kyurem fusions, Origins, Therians, etc.)
+  const specialForm = SPECIAL_FORM_ARTWORK_MAP[cleanKey] || SPECIAL_FORM_ARTWORK_MAP[directKey];
+  if (specialForm) {
+    const folder = isShiny ? 'official-artwork/shiny' : 'official-artwork';
+    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/${folder}/${specialForm.pokeApiId}.png`;
   }
 
   const isMegaOrPrimal = /mega|primal/i.test(name);
@@ -371,8 +534,28 @@ export function handlePokemonImageError(img: HTMLImageElement, name: string, isS
     return;
   }
 
-  const isMegaOrPrimal = /mega|primal/i.test(name);
   const baseName = getBasePokemonName(name);
+  const cleanKey = baseName.toLowerCase().trim();
+  const directKey = name.toLowerCase().trim();
+  const specialForm = SPECIAL_FORM_ARTWORK_MAP[cleanKey] || SPECIAL_FORM_ARTWORK_MAP[directKey];
+
+  // Special form fallback pipeline (PokeAPI Official Artwork -> PokemonDB Home -> PokeAPI Home 3D -> Default)
+  if (specialForm) {
+    if (!img.getAttribute('data-fb-special-db')) {
+      img.setAttribute('data-fb-special-db', 'true');
+      const folder = isShiny ? 'shiny' : 'normal';
+      img.src = `https://img.pokemondb.net/sprites/home/${folder}/${specialForm.dbSlug}.png`;
+      return;
+    }
+    if (!img.getAttribute('data-fb-special-home')) {
+      img.setAttribute('data-fb-special-home', 'true');
+      const folder = isShiny ? 'home/shiny' : 'home';
+      img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/${folder}/${specialForm.pokeApiId}.png`;
+      return;
+    }
+  }
+
+  const isMegaOrPrimal = /mega|primal/i.test(name);
 
   // Fallback Step 1 for Mega/Primal: Try PokemonDB exact form name sprite first to avoid bouncing to base pokedexId
   if (isMegaOrPrimal && !img.getAttribute('data-fb-form-db')) {
@@ -417,7 +600,6 @@ export function handlePokemonImageError(img: HTMLImageElement, name: string, isS
     return;
   }
 
-
   // Fallback Step 3: PokemonDB Home Normal/Shiny Sprite
   if (!img.getAttribute('data-fb-db')) {
     img.setAttribute('data-fb-db', 'true');
@@ -427,7 +609,7 @@ export function handlePokemonImageError(img: HTMLImageElement, name: string, isS
     return;
   }
 
-  // Fallback Step 3: PokeAPI Official Artwork
+  // Fallback Step 4: PokeAPI Official Artwork
   if (pokedexId && !img.getAttribute('data-fb-artwork')) {
     img.setAttribute('data-fb-artwork', 'true');
     const folder = isShiny ? 'official-artwork/shiny' : 'official-artwork';
@@ -435,7 +617,7 @@ export function handlePokemonImageError(img: HTMLImageElement, name: string, isS
     return;
   }
 
-  // Fallback Step 4: PokeAPI Front Default 2D Sprite
+  // Fallback Step 5: PokeAPI Front Default 2D Sprite
   if (pokedexId && !img.getAttribute('data-fb-default')) {
     img.setAttribute('data-fb-default', 'true');
     const folder = isShiny ? 'shiny' : '';

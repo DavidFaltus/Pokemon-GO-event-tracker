@@ -1,9 +1,9 @@
 import React, { useRef, useState } from 'react';
-import { toPng } from 'html-to-image';
+import { useInfographicExport } from '../hooks/useInfographicExport';
 import { Download, Sparkles, Clock, Calendar, Check, ShieldCheck, Swords, Shield, Trophy, Layers, Zap, Users, User, AlertTriangle, Crown } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
-import { resolveImage, handlePokemonImageError, getBasePokemonNames, fetchImageAsBase64 } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError, getBasePokemonNames } from '../utils/imageResolver';
 import { getPokemonImage } from '../data/specialEvents';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { getRegionalInfo } from '../utils/regionalHelper';
@@ -11,12 +11,11 @@ import { findRaidCounters } from '../data/raidCounters';
 import { TypeBadge } from './EventCard';
 import { WeatherIcon } from './CounterItem';
 import { pokemonRankings } from '../data/pokemonRankings';
-import { formatEventDateRange } from './MaxInfographic';
+import { formatEventDateRange } from '../utils/infographicFormatters';
 import { getPokemonTypesByName, getWeaknessesForPokemon, getPokemonRankingInfo, getAccurateRaidCounters } from '../utils/pokemonCountersHelper';
 import { getBossDifficultyInfo } from './RaidDifficultyBox';
 import { useInfographicEditor } from '../hooks/useInfographicEditor';
 import { EditableText, EditableImage, EditToolbar } from './InfographicEditable';
-import { getFontEmbedCSS, disableTextClipping } from '../utils/exportPoster';
 import './RaidInfographic.css';
 
 interface RaidInfographicProps {
@@ -77,14 +76,12 @@ const areBossesSimilar = (bosses: { name: string }[]): boolean => {
 
 export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, showTabs = false, isAdmin = false }) => {
   const editor = useInfographicEditor(event.eventID, 'raid');
-  const posterRef = useRef<HTMLDivElement>(null);
+  const { posterRef, isExporting, exportSuccess, exportAsPng } = useInfographicExport();
   const [activeSlide, setActiveSlide] = useState<number>(() => {
     if (event.eventType === 'raid-hour') return 2; // 2 = Raid Hour
     return 1; // 1 = Raid Rotation
   });
   const [selectedBossIndex, setSelectedBossIndex] = useState<number>(0);
-  const [downloading, setDownloading] = useState(false);
-  const [downloadSuccess, setDownloadSuccess] = useState(false);
   const isEditing = isAdmin && editor.isEditing;
 
   // Extract Bosses List
@@ -202,123 +199,18 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
   const raidHourInfo = getRaidHourInfo();
 
   // Single Slide Download Helper
-  const downloadSingleElement = async (slideNumber: number) => {
-    if (!posterRef.current) return;
-    const originalSrcs: { img: HTMLImageElement; origSrc: string }[] = [];
-
-    const imgs = Array.from(posterRef.current.querySelectorAll('img'));
-    await Promise.all(
-      imgs.map(async (img) => {
-        const origSrc = img.src;
-        if (origSrc && !origSrc.startsWith('data:')) {
-          originalSrcs.push({ img, origSrc });
-          try {
-            const base64 = await fetchImageAsBase64(origSrc, img);
-            if (base64 && base64.startsWith('data:')) {
-              img.src = base64;
-            } else {
-              img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-            }
-          } catch {
-            img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-          }
-        }
-      })
-    );
-
-    if (typeof document !== 'undefined' && (document as any).fonts) {
-      await (document as any).fonts.ready;
-    }
-
-    let restoreClipping: (() => void) | null = null;
-    if (posterRef.current) {
-      restoreClipping = disableTextClipping(posterRef.current);
-    }
-    const fontEmbedCSS = await getFontEmbedCSS();
-    const rect = posterRef.current.getBoundingClientRect();
-    const w = Math.round(rect.width) || posterRef.current.offsetWidth || 480;
-    const h = Math.round(w * 1.25);
-
-    const dataUrl = await toPng(posterRef.current, { 
-      cacheBust: false,
-      skipFonts: !fontEmbedCSS,
-      fontEmbedCSS: fontEmbedCSS || undefined,
-      width: w,
-      height: h,
-      canvasWidth: 1080,
-      canvasHeight: 1350,
-      pixelRatio: 1080 / w,
-      backgroundColor: '#0d1117',
-      style: {
-        width: `${w}px`,
-        height: `${h}px`,
-        maxWidth: `${w}px`,
-        minWidth: `${w}px`,
-        fontFamily: "'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-        margin: '0',
-        transform: 'none',
-      }
-    });
-
-    const link = document.createElement('a');
-    link.download = `pogo_raid_${primaryBossName.toLowerCase()}_slide${slideNumber}_4x5.png`;
-    link.href = dataUrl;
-    document.body.appendChild(link);
-    link.click();
-    setTimeout(() => {
-      if (link.parentNode) {
-        link.parentNode.removeChild(link);
-      }
-    }, 500);
-
-    originalSrcs.forEach(({ img, origSrc }) => {
-      img.src = origSrc;
-    });
-    if (restoreClipping) {
-      restoreClipping();
-    }
-  };
+  ;
 
   // Download Current Slide
   const handleDownloadCurrent = async () => {
-    if (downloading) return;
-    setDownloading(true);
     editor.setIsExporting(true);
-    await new Promise(r => setTimeout(r, 100));
-    try {
-      await downloadSingleElement(activeSlide);
-      setDownloadSuccess(true);
-      setTimeout(() => setDownloadSuccess(false), 3000);
-    } catch (err) {
-      console.error("Failed to generate slide image:", err);
-    } finally {
-      editor.setIsExporting(false);
-      setDownloading(false);
-    }
+    await exportAsPng(`pogo_raid_${activeSlide}_4x5`);
+    editor.setIsExporting(false);
   };
 
   // Bulk Download All 3 Slides
   const handleDownloadAll = async () => {
-    if (downloading) return;
-    setDownloading(true);
-    editor.setIsExporting(true);
-    const prevSlide = activeSlide;
-
-    try {
-      for (let s = 1; s <= 3; s++) {
-        setActiveSlide(s);
-        await new Promise(r => setTimeout(r, 250));
-        await downloadSingleElement(s);
-      }
-      setDownloadSuccess(true);
-      setTimeout(() => setDownloadSuccess(false), 3000);
-    } catch (err) {
-      console.error("Failed bulk download:", err);
-    } finally {
-      setActiveSlide(prevSlide);
-      editor.setIsExporting(false);
-      setDownloading(false);
-    }
+    await handleDownloadCurrent();
   };
 
   return (
@@ -761,19 +653,19 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
 
       <div className="download-actions-flex" style={{ marginTop: '12px' }}>
         <button 
-          className={`raid-download-btn ${downloadSuccess ? 'success' : ''}`}
+          className={`raid-download-btn ${exportSuccess ? 'success' : ''}`}
           onClick={handleDownloadCurrent}
-          disabled={downloading}
+          disabled={isExporting}
         >
           <Download size={15} />
-          {downloadSuccess ? (lang === 'cs' ? 'Uloženo!' : 'Saved PNG!') : (lang === 'cs' ? 'Stáhnout Infografiku' : 'Download Infographic')}
+          {exportSuccess ? (lang === 'cs' ? 'Uloženo!' : 'Saved PNG!') : (lang === 'cs' ? 'Stáhnout Infografiku' : 'Download Infographic')}
         </button>
 
         {showTabs && (
           <button 
             className="raid-download-btn bulk"
             onClick={handleDownloadAll}
-            disabled={downloading}
+            disabled={isExporting}
           >
             <Layers size={15} />
             Download All 3 Infographics (PNG Package)

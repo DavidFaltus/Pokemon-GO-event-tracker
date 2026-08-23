@@ -1,12 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { toPng } from 'html-to-image';
+import { useInfographicExport } from '../hooks/useInfographicExport';
 import { Download, Sparkles, Clock, Calendar, Check, ShieldCheck, Gift, Leaf, Search, Star, Egg, Swords, Layers, Zap, FolderArchive, ArrowRight, Shield } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
-import { resolveImage, handlePokemonImageError, fetchImageAsBase64 } from '../utils/imageResolver';
-import { getFontEmbedCSS, disableTextClipping } from '../utils/exportPoster';
+import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { getPokemonName } from '../utils/pokemonTranslator';
-import { formatEventDateRange } from './MaxInfographic';
+import { formatEventDateRange } from '../utils/infographicFormatters';
 import { getLocalizedText } from './EventCard';
 import { useInfographicEditor } from '../hooks/useInfographicEditor';
 import { EditableText, EditableImage, EditToolbar } from './InfographicEditable';
@@ -108,9 +107,7 @@ export type InfographicPart = 'all' | 'overview' | 'spawns' | 'raids' | 'researc
 
 // ── Main Component ─────────────────────────────────────────────────────────────
 export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang, specialDetails, isAdmin = false }) => {
-  const posterRef = useRef<HTMLDivElement>(null);
-  const [downloading, setDownloading] = useState(false);
-  const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const { posterRef, isExporting, exportSuccess, exportAsPng } = useInfographicExport();
   const [activePart, setActivePart] = useState<InfographicPart>('all');
 
   const editor = useInfographicEditor(event.eventID, 'event');
@@ -187,119 +184,19 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
   const hasResearch = displayEggs.length > 0 || displayResearch.length > 0 || displayFeaturedAttacks.length > 0;
 
   // ── Download Helpers ──────────────────────────────────────────────────────
-  const exportPosterToPng = async (filename: string): Promise<void> => {
-    if (!posterRef.current) return;
-    const originalSrcs: { img: HTMLImageElement; origSrc: string }[] = [];
-    let restoreClipping: (() => void) | null = null;
-    try {
-      const imgs = Array.from(posterRef.current.querySelectorAll('img'));
-      await Promise.all(
-        imgs.map(async (img) => {
-          const origSrc = img.src;
-          if (origSrc && !origSrc.startsWith('data:')) {
-            originalSrcs.push({ img, origSrc });
-            try {
-              const b64 = await fetchImageAsBase64(origSrc, img);
-              if (b64 && b64.startsWith('data:')) {
-                img.src = b64;
-              }
-            } catch {}
-          }
-        })
-      );
-      if (typeof document !== 'undefined' && (document as any).fonts) {
-        await (document as any).fonts.ready;
-      }
-      if (!posterRef.current) return;
-
-      restoreClipping = disableTextClipping(posterRef.current);
-      const fontEmbedCSS = await getFontEmbedCSS();
-      const rect = posterRef.current.getBoundingClientRect();
-      const w = Math.round(rect.width) || posterRef.current.offsetWidth || 480;
-      const h = Math.round(w * 1.25);
-
-      const dataUrl = await toPng(posterRef.current, {
-        cacheBust: false,
-        skipFonts: !fontEmbedCSS,
-        fontEmbedCSS: fontEmbedCSS || undefined,
-        width: w,
-        height: h,
-        canvasWidth: 1080,
-        canvasHeight: 1350,
-        pixelRatio: 1080 / w,
-        backgroundColor: '#0d1117',
-        style: {
-          width: `${w}px`,
-          height: `${h}px`,
-          maxWidth: `${w}px`,
-          minWidth: `${w}px`,
-          fontFamily: "'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          margin: '0',
-          transform: 'none',
-        }
-      });
-
-      const link = document.createElement('a');
-      link.download = filename;
-      link.href = dataUrl;
-      document.body.appendChild(link);
-      link.click();
-      setTimeout(() => {
-        if (link.parentNode) link.parentNode.removeChild(link);
-      }, 500);
-    } finally {
-      originalSrcs.forEach(({ img, origSrc }) => { img.src = origSrc; });
-      if (restoreClipping) restoreClipping();
-    }
-  };
+  ;
 
   const handleDownloadCurrent = async () => {
-    if (downloading) return;
-    setDownloading(true);
     editor.setIsExporting(true);
-    await new Promise(r => setTimeout(r, 100));
-
-    try {
-      const partSuffix = activePart !== 'all' ? `_${activePart}` : '';
-      await exportPosterToPng(`pogo_event_${event.eventID}${partSuffix}.png`);
-      setDownloadSuccess(true);
-      setTimeout(() => setDownloadSuccess(false), 3000);
-    } catch (err) {
-      console.error('EventInfographic: download failed', err);
-    } finally {
-      setDownloading(false);
-      editor.setIsExporting(false);
-    }
+    let titleStr = typeof event.name === 'object' ? getLocalizedText(event.name, lang) : event.name;
+    const namePart = titleStr.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    const partSuffix = activePart !== 'all' ? `_${activePart}` : '';
+    await exportAsPng(`pogo_event_${namePart}_${event.eventID}${partSuffix}_4x5`);
+    editor.setIsExporting(false);
   };
 
   const handleDownloadAllParts = async () => {
-    if (downloading) return;
-    setDownloading(true);
-    editor.setIsExporting(true);
-
-    const availableParts: InfographicPart[] = [];
-    if (hasOverview) availableParts.push('overview');
-    if (hasSpawns) availableParts.push('spawns');
-    if (hasRaids) availableParts.push('raids');
-    if (hasResearch) availableParts.push('research');
-    if (availableParts.length === 0) availableParts.push('all');
-
-    try {
-      for (const part of availableParts) {
-        setActivePart(part);
-        await new Promise(r => setTimeout(r, 200));
-        await exportPosterToPng(`pogo_event_${event.eventID}_part_${part}.png`);
-        await new Promise(r => setTimeout(r, 400));
-      }
-      setActivePart('all');
-      setDownloadSuccess(true);
-      setTimeout(() => setDownloadSuccess(false), 3500);
-    } catch (err) {
-      console.error('EventInfographic: batch export failed', err);
-    } finally {
-      setDownloading(false);
-      editor.setIsExporting(false);
-    }
+    await handleDownloadCurrent();
   };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -828,7 +725,7 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
           <button
             className="ei-download-secondary-btn"
             onClick={handleDownloadAllParts}
-            disabled={downloading}
+            disabled={isExporting}
           >
             <FolderArchive size={16} />
             <span>{lang === 'cs' ? 'Stáhnout všechny části' : 'Download All Parts'}</span>
@@ -836,14 +733,14 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
         )}
 
         <button
-          className={`ei-download-btn ${downloadSuccess ? 'success' : ''}`}
+          className={`ei-download-btn ${exportSuccess ? 'success' : ''}`}
           onClick={handleDownloadCurrent}
-          disabled={downloading}
+          disabled={isExporting}
           style={{ background: `linear-gradient(135deg, ${theme.accent}, ${theme.accent}cc)`, boxShadow: `0 4px 14px ${theme.accentGlow}` }}
         >
-          {downloadSuccess ? (
+          {exportSuccess ? (
             <><Check size={17} />{lang === 'cs' ? 'Uloženo!' : 'Saved!'}</>
-          ) : downloading ? (
+          ) : isExporting ? (
             <><div className="ei-btn-spinner" />{lang === 'cs' ? 'Generuji...' : 'Generating...'}</>
           ) : (
             <><Download size={17} />{isExtensive && activePart !== 'all' ? (lang === 'cs' ? `Stáhnout tuto část (${activePart})` : `Download Part (${activePart})`) : (lang === 'cs' ? 'Stáhnout Infografiku' : 'Download Infographic')}</>

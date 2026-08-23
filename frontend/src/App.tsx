@@ -30,10 +30,11 @@ import { PokeballLogo } from './components/PokeballLogo';
 
 const GuidesView = lazy(() => import('./components/GuidesView').then(m => ({ default: m.GuidesView })));
 const FriendFinderView = lazy(() => import('./components/FriendFinderView').then(m => ({ default: m.FriendFinderView })));
+const FieldResearchView = lazy(() => import('./components/FieldResearchView').then(m => ({ default: m.FieldResearchView })));
 const DownloadAppView = lazy(() => import('./components/DownloadAppView').then(m => ({ default: m.DownloadAppView })));
 const NotFoundView = lazy(() => import('./components/NotFoundView').then(m => ({ default: m.NotFoundView })));
 
-type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin' | 'download' | '404';
+type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin' | 'download' | 'research' | '404';
 
 
 // Calculate difference between target timezone and browser local timezone
@@ -270,6 +271,7 @@ const getTabFromUrlPath = (pathname: string): TabType => {
   if (first === 'eggs') return 'eggs';
   if (first === 'filter') return 'filter';
   if (first === 'download' || first === 'app' || first === 'apk') return 'download';
+  if (first === 'research' || first === 'vyzkum' || first === 'tasks') return 'research';
   if (first === 'settings') return 'settings';
   if (first === 'events' || first === '') return 'events';
   return '404';
@@ -297,6 +299,7 @@ const getUrlPathForTab = (tab: TabType, l: Language, eventID?: string | null, po
   switch (tab) {
     case 'guides': return `${prefix}/guides`;
     case 'friends': return `${prefix}/friends`;
+    case 'research': return `${prefix}/research`;
     case 'raid': return `${prefix}/raids`;
     case 'rocket': return `${prefix}/rocket`;
     case 'ranking': return `${prefix}/rankings`;
@@ -315,6 +318,7 @@ const TAB_TITLES: Record<TabType, Record<string, string>> = {
   events: { cs: 'Události', en: 'Events', ja: 'イベント', ru: 'События' },
   guides: { cs: 'Průvodce & Články', en: 'Guides & Articles', ja: 'ガイド & 記事', ru: 'Гайды и Статьи' },
   friends: { cs: 'Přátelé & Kódy trenérů', en: 'Friend Codes & Matchmaker', ja: 'フレンド募集掲示板', ru: 'Коды друзей и рейды' },
+  research: { cs: 'Polní Výzkum & Odměny', en: 'Field Research Tasks', ja: 'フィールドリサーチ', ru: 'Полевые исследования' },
   raid: { cs: 'Raid Bossi', en: 'Raid Bosses', ja: 'レイドボス', ru: 'Рейд-боссы' },
   rocket: { cs: 'Team GO Rocket', en: 'Team GO Rocket', ja: 'Team GO Rocket', ru: 'Team GO Rocket' },
   ditto: { cs: 'Ditto Přestrojení', en: 'Ditto Disguises', ja: 'メタモン変装', ru: 'Маскировки Дитто' },
@@ -1005,32 +1009,38 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
             <>
               {activeTab === 'events' && (
                 <div className="tab-content events-tab">
-                  <div className="events-header-bar">
-                    <div className="events-header-text">
-                      <h1 className="tab-seo-title">{t.tabs_events}</h1>
-                      <p className="tab-seo-description">{t.seo_events_desc}</p>
+                  <header className="events-header-card guides-header">
+                    <div className="guides-title-badge">
+                      <Calendar size={16} />
+                      {lang === 'cs' ? 'Pokémon GO Kalendář & Eventy' : lang === 'ja' ? 'イベントスケジュール & タイマー' : lang === 'ru' ? 'Календарь событий Pokémon GO' : 'Events Calendar & Timers'}
                     </div>
-                    <div className="events-view-switcher" role="radiogroup" aria-label={t.settings_layout_title}>
-                      <button 
-                        className={`view-switch-btn ${viewMode === 'list' ? 'active' : ''}`}
-                        onClick={() => setViewMode('list')}
-                        title={t.settings_layout_list}
-                        aria-label={t.settings_layout_list}
-                      >
-                        <LayoutList size={14} />
-                        <span>{t.view_mode_list}</span>
-                      </button>
-                      <button 
-                        className={`view-switch-btn ${viewMode === 'timeline' ? 'active' : ''}`}
-                        onClick={() => setViewMode('timeline')}
-                        title={t.settings_layout_timeline}
-                        aria-label={t.settings_layout_timeline}
-                      >
-                        <Calendar size={14} />
-                        <span>{t.view_mode_timeline}</span>
-                      </button>
+                    <div className="events-header-bar">
+                      <div className="events-header-text">
+                        <h1 className="tab-seo-title">{t.tabs_events}</h1>
+                        <p className="tab-seo-description">{t.seo_events_desc}</p>
+                      </div>
+                      <div className="events-view-switcher" role="radiogroup" aria-label={t.settings_layout_title}>
+                        <button 
+                          className={`view-switch-btn ${viewMode === 'list' ? 'active' : ''}`}
+                          onClick={() => setViewMode('list')}
+                          title={t.settings_layout_list}
+                          aria-label={t.settings_layout_list}
+                        >
+                          <LayoutList size={14} />
+                          <span>{t.view_mode_list}</span>
+                        </button>
+                        <button 
+                          className={`view-switch-btn ${viewMode === 'timeline' ? 'active' : ''}`}
+                          onClick={() => setViewMode('timeline')}
+                          title={t.settings_layout_timeline}
+                          aria-label={t.settings_layout_timeline}
+                        >
+                          <Calendar size={14} />
+                          <span>{t.view_mode_timeline}</span>
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  </header>
                   {/* Active / Upcoming Status Tabs */}
                   {viewMode !== 'timeline' && (
                     <div className="status-tabs-container">
@@ -1111,6 +1121,12 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
               {activeTab === 'friends' && (
                 <div className="tab-content friends-tab">
                   <FriendFinderView lang={lang} />
+                </div>
+              )}
+
+              {activeTab === 'research' && (
+                <div className="tab-content research-tab">
+                  <FieldResearchView lang={lang} />
                 </div>
               )}
 

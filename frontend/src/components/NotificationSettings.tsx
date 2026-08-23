@@ -205,10 +205,14 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
   return (
     <div className="notification-settings-panel">
       {/* Settings Header */}
-      <div className="settings-header">
-        <h2>
+      <header className="settings-header-card guides-header">
+        <div className="guides-title-badge">
+          <SlidersHorizontal size={16} />
+          {lang === 'cs' ? 'Konfigurace & Předvolby' : lang === 'ja' ? '設定とカスタマイズ' : lang === 'ru' ? 'Конфигурация и настройки' : 'Preferences & Configuration'}
+        </div>
+        <h1 className="tab-seo-title">
           {lang === 'cs' ? 'Nastavení' : lang === 'ru' ? 'Настройки' : lang === 'ja' ? '設定' : 'Settings'}
-        </h2>
+        </h1>
         <p className="settings-subtitle">
           {lang === 'cs'
             ? 'Správa jazyka, rozvržení kalendáře, časových pásem a předvoleb notifikací.'
@@ -218,7 +222,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
             ? '言語、カレンダーレイアウト、タイムゾーン、および通知設定の管理。'
             : 'Manage language, calendar layout, timezones, and notification preferences.'}
         </p>
-      </div>
+      </header>
 
       <div className="settings-grid">
         {/* Column 1: General Settings */}

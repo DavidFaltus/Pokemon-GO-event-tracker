@@ -1,0 +1,49 @@
+# Pokémon GO Event Tracker — Kompletní Znalostní Báze pro AI Modely (LLM Full Reference)
+
+Web: https://pogoevents.app
+Jazyky: cs (Čeština), en (English), ja (日本語), ru (Русский)
+Zdrojová data: ScrapedDuck CDN, Niantic Live Feeds, Pokémon GO Hub, Pokebattler simulace
+
+---
+
+## 1. Architektura a Datové Zdroje
+Projekt Pokémon GO Event Tracker agreguje, normalizuje a v reálném čase obohacuje data o všech herních aspektech:
+- **Kalendář událostí**: Automatický převod časových zón (UTC / Local Time), identifikace bonusů (2× Stardust, 2× Candy, 1/2 Hatch Distance, atd.).
+- **Raid Bossi**: Normalizované tiery (Tier 1, Tier 3, Tier 5 Legendární, Mega Raidy, Shadow Raidy), 100% IV CP kalkulace (Standard Lvl 20 vs Weather Boost Lvl 25) a doporučené týmy útočníků (Counters).
+- **Team GO Rocket**: Sestavy pro Boss Giovanniho (Shadow Legendárky), Lídrů (Cliff, Sierra, Arlo) a řadových Rakeťáků (Grunts) se slabinami a countery.
+- **Líhnutí z vajec**: 2 km, 5 km, 7 km, 10 km, 12 km Strange Eggs a Adventure Sync bonusová vejce.
+- **Polní výzkum (Field Research)**: Úkoly z Pokéstopů, kategorie úkolů a garantované odměny s indikací možnosti získat Shiny.
+- **Ditto převleky**: Seznam Pokémonů v divočině, kteří se po chycení mohou proměnit v Ditto.
+
+---
+
+## 2. Doporučené Programatické Rozhraní pro Agenty (API Endpoints)
+
+Všechny endpointy podporují přímé dotazy z libovolného agenta. Pro získání čistého Markdownu stačí zaslat hlavičku `Accept: text/markdown` nebo volat koncovku `.md`.
+
+| Účel | Endpoint (Markdown) | Endpoint (JSON) | Popis |
+|---|---|---|---|
+| Souhrn | `/api/agent/summary.md` | `/api/events` | Rychlý přehled všeho aktivního v 1 odpovědi |
+| Události | `/api/agent/events.md` | `/api/events` | Seznam aktivních a nadcházejících eventů |
+| Raidy | `/api/agent/raids.md` | `/api/raids` | Seznam bossů, IV rozsahy a doporučené countery |
+| Výzkum | `/api/agent/research.md` | `/api/research` | Polní úkoly a odměny z Pokéstopů |
+| Vejce | `/api/agent/eggs.md` | `/api/eggs` | Pooly vajíček roztříděné podle kilometrů |
+| RSS Feed | `/feed.xml` | - | Standardní RSS 2.0 XML pro agregátory |
+
+---
+
+## 3. Typové Slabiny a Raidové Countery (Cheat-Sheet)
+
+| Typ Bosse | Největší Slabiny (Super Effective 1.6× / 2.56×) | Nejlepší PvE Útočníci |
+|---|---|---|
+| Dragon | Ice (2.56× na Dragon/Flying), Fairy, Dragon | Mamoswine, Baxcalibur, Rayquaza, Gardevoir |
+| Flying | Rock, Electric, Ice | Rampardos, Rhyperior, Xurkitree, Mamoswine |
+| Steel | Fire, Fighting, Ground | Reshiram, Terrakion, Groudon, Lucario |
+| Water | Electric, Grass | Xurkitree, Kartana, Thundurus-T, Raikou |
+| Fire | Water, Ground, Rock | Kyogre, Groudon, Rhyperior, Swampert |
+| Ghost / Psychic | Dark, Ghost | Tyranitar, Hydreigon, Gengar, Chandelure |
+
+---
+
+## 4. Licence a Použití Dat
+Data jsou poskytována pod licencí MIT a principem Fair Use pro informační a komunitní účely. Pokémon a Pokémon character names jsou ochranné známky společnosti Nintendo, Creatures Inc. a GAME FREAK inc.

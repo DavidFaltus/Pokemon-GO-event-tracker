@@ -1,13 +1,12 @@
 import React, { useRef, useState } from 'react';
-import { toPng } from 'html-to-image';
+import { useInfographicExport } from '../hooks/useInfographicExport';
 import { Download, Sparkles, Clock, Calendar, Zap, Check, ShieldCheck, Flame } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
-import { resolveImage, handlePokemonImageError, fetchImageAsBase64 } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { getSpecialEventDetails, getPokemonImage } from '../data/specialEvents';
 import { findPokemonMeta } from '../data/pokemonMeta';
 import { getPokemonName } from '../utils/pokemonTranslator';
-import { getFontEmbedCSS, disableTextClipping } from '../utils/exportPoster';
 import { API_BASE_URL } from '../config';
 import { useInfographicEditor } from '../hooks/useInfographicEditor';
 import { EditableText, EditableImage, EditToolbar } from './InfographicEditable';
@@ -92,10 +91,8 @@ const BonusIcon: React.FC<{ type: string; color: string }> = ({ type, color }) =
 };
 
 export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = ({ event, lang, isAdmin = false }) => {
-  const posterRef = useRef<HTMLDivElement>(null);
+  const { posterRef, isExporting, exportSuccess, exportAsPng } = useInfographicExport();
   const editor = useInfographicEditor(event.eventID, 'communityDay');
-  const [downloading, setDownloading] = useState(false);
-  const [downloadSuccess, setDownloadSuccess] = useState(false);
   const isEditing = isAdmin && editor.isEditing;
 
   // Extract featured Pokemon & details
@@ -199,96 +196,10 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
 
   // Download handler: Pre-converts all img elements to Base64 to ensure 100% reliable image rendering
   const handleDownload = async () => {
-    if (!posterRef.current || downloading) return;
-    setDownloading(true);
     editor.setIsExporting(true);
-    await new Promise(r => setTimeout(r, 120));
-    if (!posterRef.current) return;
-
-    const originalSrcs: { img: HTMLImageElement; origSrc: string }[] = [];
-
-    let restoreClipping: (() => void) | null = null;
-    try {
-      const imgs = Array.from(posterRef.current.querySelectorAll('img'));
-
-      // Convert all images to Base64 in parallel
-      await Promise.all(
-        imgs.map(async (img) => {
-          const origSrc = img.src;
-          if (origSrc && !origSrc.startsWith('data:')) {
-            originalSrcs.push({ img, origSrc });
-            try {
-              const base64 = await fetchImageAsBase64(origSrc, img);
-              if (base64 && base64.startsWith('data:')) {
-                img.src = base64;
-              } else {
-                img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-              }
-            } catch {
-              img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-            }
-          }
-        })
-      );
-      if (typeof document !== 'undefined' && (document as any).fonts) {
-        await (document as any).fonts.ready;
-      }
-      if (!posterRef.current) return;
-
-      if (posterRef.current) {
-        restoreClipping = disableTextClipping(posterRef.current);
-      }
-      const fontEmbedCSS = await getFontEmbedCSS();
-      const rect = posterRef.current.getBoundingClientRect();
-      const w = Math.round(rect.width) || posterRef.current.offsetWidth || 480;
-      const h = Math.round(w * 1.25);
-      const dataUrl = await toPng(posterRef.current, { 
-        cacheBust: false,
-        skipFonts: !fontEmbedCSS,
-        fontEmbedCSS: fontEmbedCSS || undefined,
-        width: w,
-        height: h,
-        canvasWidth: 1080,
-        canvasHeight: 1350,
-        pixelRatio: 1080 / w,
-        backgroundColor: '#0d1117',
-        style: {
-          width: `${w}px`,
-          height: `${h}px`,
-          maxWidth: `${w}px`,
-          minWidth: `${w}px`,
-          fontFamily: "'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          margin: '0',
-          transform: 'none',
-        }
-      });
-
-      const link = document.createElement('a');
-      link.download = `pogo_infographic_${mainPokemonName.toLowerCase()}_cd.png`;
-      link.href = dataUrl;
-      document.body.appendChild(link);
-      link.click();
-      setTimeout(() => {
-        if (link.parentNode) {
-          link.parentNode.removeChild(link);
-        }
-      }, 500);
-
-      setDownloadSuccess(true);
-      setTimeout(() => setDownloadSuccess(false), 3000);
-    } catch (err) {
-      console.error("Failed to generate infographic image:", err);
-    } finally {
-      // Restore original src attributes
-      originalSrcs.forEach(({ img, origSrc }) => {
-        img.src = origSrc;
-      });
-      if (restoreClipping) {
-        restoreClipping();
-      }
-      setDownloading(false);
-      editor.setIsExporting(false);
-    }
+    const mPoke = cdData?.spawns?.[0]?.name || "poke";
+    await exportAsPng(`pogo_cd_${mPoke.toLowerCase()}_4x5`);
+    editor.setIsExporting(false);
   };
 
   return (
@@ -443,16 +354,16 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
       {/* Action Bar (Below Infographic) */}
       <div className="cd-infographic-actions" style={{ marginTop: '12px' }}>
         <button 
-          className={`cd-download-btn ${downloadSuccess ? 'success' : ''}`}
+          className={`cd-download-btn ${exportSuccess ? 'success' : ''}`}
           onClick={handleDownload}
-          disabled={downloading}
+          disabled={isExporting}
         >
-          {downloadSuccess ? (
+          {exportSuccess ? (
             <>
               <Check size={18} />
               {lang === 'cs' ? 'Uloženo!' : 'Saved!'}
             </>
-          ) : downloading ? (
+          ) : isExporting ? (
             <>
               <div className="btn-spinner"></div>
               {lang === 'cs' ? 'Generuji obrázek...' : 'Generating image...'}

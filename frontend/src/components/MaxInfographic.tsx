@@ -1,14 +1,14 @@
 import React, { useRef, useState } from 'react';
-import { toPng } from 'html-to-image';
+import { useInfographicExport } from '../hooks/useInfographicExport';
 import { Download, Sparkles, Clock, Calendar, Zap, Check, ShieldCheck, Activity } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
-import { resolveImage, handlePokemonImageError, getBasePokemonNames, fetchImageAsBase64 } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError, getBasePokemonNames } from '../utils/imageResolver';
 import { getPokemonImage } from '../data/specialEvents';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { useInfographicEditor } from '../hooks/useInfographicEditor';
+import { formatEventDateRange } from '../utils/infographicFormatters';
 import { EditableText, EditableImage, EditToolbar } from './InfographicEditable';
-import { getFontEmbedCSS, disableTextClipping } from '../utils/exportPoster';
 import './MaxInfographic.css';
 
 interface MaxInfographicProps {
@@ -18,54 +18,6 @@ interface MaxInfographicProps {
   isAdmin?: boolean;
 }
 
-// Formats date & time range for single day and multi-day events
-export function formatEventDateRange(startInput: string | Date, endInput: string | Date, lang: Language) {
-  const start = new Date(startInput);
-  const end = new Date(endInput);
-
-  const isSameDay = start.getFullYear() === end.getFullYear() &&
-                    start.getMonth() === end.getMonth() &&
-                    start.getDate() === end.getDate();
-
-  const isMultiDay = !isSameDay;
-
-  const monthNamesEn = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const monthNamesCs = ['led', 'úno', 'bře', 'dub', 'kvě', 'čvn', 'čvc', 'srp', 'zář', 'říj', 'lis', 'pro'];
-  const months = lang === 'cs' ? monthNamesCs : monthNamesEn;
-
-  const startDay = start.getDate();
-  const startMonth = months[start.getMonth()];
-  const endDay = end.getDate();
-  const endMonth = months[end.getMonth()];
-
-  let dateStr = "";
-  if (isSameDay) {
-    const dayOfWeekEn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][start.getDay()];
-    const dayOfWeekCs = ['Ne', 'Po', 'Út', 'St', 'Čt', 'Pá', 'So'][start.getDay()];
-    const dow = lang === 'cs' ? dayOfWeekCs : dayOfWeekEn;
-    dateStr = `${dow}, ${startDay} ${startMonth} ${start.getFullYear()}`;
-  } else {
-    if (start.getMonth() === end.getMonth()) {
-      dateStr = `${startDay} – ${endDay} ${startMonth} ${start.getFullYear()}`;
-    } else {
-      dateStr = `${startDay} ${startMonth} – ${endDay} ${endMonth} ${start.getFullYear()}`;
-    }
-  }
-
-  // Format Hours cleanly (e.g., 6:00 PM – 7:00 PM)
-  const formatTimePart = (d: Date) => {
-    let hrs = d.getHours();
-    const mins = d.getMinutes().toString().padStart(2, '0');
-    const ampm = hrs >= 12 ? 'PM' : 'AM';
-    hrs = hrs % 12;
-    hrs = hrs ? hrs : 12;
-    return `${hrs}:${mins} ${ampm}`;
-  };
-
-  const timeStr = `${formatTimePart(start)} – ${formatTimePart(end)}`;
-
-  return { dateStr, timeStr, isMultiDay };
-}
 
 // Max Particle (MP) Costs & Limits:
 // Tier 1 Cost: 250 MP | Tier 3 Cost: 400 MP | Tier 5 / Gigantamax Cost: 800 MP
@@ -100,9 +52,7 @@ export function getMaxBattleXpReward(eventName: string, isGigantamax: boolean): 
 
 export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, lang = 'en', isAdmin = false }) => {
   const editor = useInfographicEditor(event.eventID, 'max');
-  const posterRef = useRef<HTMLDivElement>(null);
-  const [downloading, setDownloading] = useState(false);
-  const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const { posterRef, isExporting, exportSuccess, exportAsPng } = useInfographicExport();
   const isEditing = isAdmin && editor.isEditing;
 
   // Extract Max Boss details
@@ -148,95 +98,9 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, lang = 'e
 
   // Download handler
   const handleDownload = async () => {
-    if (!posterRef.current || downloading) return;
-    setDownloading(true);
     editor.setIsExporting(true);
-    await new Promise(r => setTimeout(r, 120));
-    if (!posterRef.current) return;
-
-    const originalSrcs: { img: HTMLImageElement; origSrc: string }[] = [];
-    let restoreClipping: (() => void) | null = null;
-
-    try {
-      const imgs = Array.from(posterRef.current.querySelectorAll('img'));
-
-      await Promise.all(
-        imgs.map(async (img) => {
-          const origSrc = img.src;
-          if (origSrc && !origSrc.startsWith('data:')) {
-            originalSrcs.push({ img, origSrc });
-            try {
-              const base64 = await fetchImageAsBase64(origSrc, img);
-              if (base64 && base64.startsWith('data:')) {
-                img.src = base64;
-              } else {
-                img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-              }
-            } catch {
-              img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-            }
-          }
-        })
-      );
-
-      if (typeof document !== 'undefined' && (document as any).fonts) {
-        await (document as any).fonts.ready;
-      }
-      if (!posterRef.current) return;
-
-      if (posterRef.current) {
-        restoreClipping = disableTextClipping(posterRef.current);
-      }
-      const fontEmbedCSS = await getFontEmbedCSS();
-      const rect = posterRef.current.getBoundingClientRect();
-      const w = Math.round(rect.width) || posterRef.current.offsetWidth || 480;
-      const h = Math.round(w * 1.25);
-      const dataUrl = await toPng(posterRef.current, { 
-        cacheBust: false,
-        skipFonts: !fontEmbedCSS,
-        fontEmbedCSS: fontEmbedCSS || undefined,
-        width: w,
-        height: h,
-        canvasWidth: 1080,
-        canvasHeight: 1350,
-        pixelRatio: 1080 / w,
-        backgroundColor: '#0d1117',
-        style: {
-          width: `${w}px`,
-          height: `${h}px`,
-          maxWidth: `${w}px`,
-          minWidth: `${w}px`,
-          fontFamily: "'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          margin: '0',
-          transform: 'none',
-        }
-      });
-
-      const link = document.createElement('a');
-      link.download = `pogo_max_${bossName.toLowerCase()}_4x5.png`;
-      link.href = dataUrl;
-      document.body.appendChild(link);
-      link.click();
-      setTimeout(() => {
-        if (link.parentNode) {
-          link.parentNode.removeChild(link);
-        }
-      }, 500);
-
-      setDownloadSuccess(true);
-      setTimeout(() => setDownloadSuccess(false), 3000);
-    } catch (err) {
-      console.error("Failed to generate max battle image:", err);
-    } finally {
-      originalSrcs.forEach(({ img, origSrc }) => {
-        img.src = origSrc;
-      });
-      if (restoreClipping) {
-        restoreClipping();
-      }
-      setDownloading(false);
-      editor.setIsExporting(false);
-    }
+    await exportAsPng(`pogo_max_${bossName.toLowerCase()}_4x5`);
+    editor.setIsExporting(false);
   };
 
   return (
@@ -436,16 +300,16 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, lang = 'e
 
       <div className="max-infographic-actions" style={{ marginTop: '12px' }}>
         <button 
-          className={`max-download-btn ${downloadSuccess ? 'success' : ''}`}
+          className={`max-download-btn ${exportSuccess ? 'success' : ''}`}
           onClick={handleDownload}
-          disabled={downloading}
+          disabled={isExporting}
         >
-          {downloadSuccess ? (
+          {exportSuccess ? (
             <>
               <Check size={18} />
               Saved PNG!
             </>
-          ) : downloading ? (
+          ) : isExporting ? (
             <>
               <div className="btn-spinner"></div>
               Generating Image (4:5)...

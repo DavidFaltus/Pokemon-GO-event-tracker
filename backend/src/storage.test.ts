@@ -9,18 +9,20 @@ import {
   loadRaidBossesCache,
   saveRaidBossesCache
 } from './storage';
+import { dataStore } from './dataStore';
 import { EnrichedEggGroup, EnrichedResearchTask, ScrapedRaidBoss } from './types';
 
 describe('Storage & Disk Cache Persistence', () => {
-  const EGGS_FILE = path.join(__dirname, '..', 'eggs_cache.json');
-  const RESEARCH_FILE = path.join(__dirname, '..', 'research_cache.json');
-  const RAIDS_FILE = path.join(__dirname, '..', 'raids_cache.json');
+  const CACHE_DIR = path.join(__dirname, '..', '.cache');
+  const EGGS_FILE = path.join(CACHE_DIR, 'eggs_cache.json');
+  const RESEARCH_FILE = path.join(CACHE_DIR, 'research_cache.json');
+  const RAIDS_FILE = path.join(CACHE_DIR, 'raids_cache.json');
 
-  afterEach(() => {
-    // Cleanup temporary test files
-    if (fs.existsSync(EGGS_FILE)) fs.unlinkSync(EGGS_FILE);
-    if (fs.existsSync(RESEARCH_FILE)) fs.unlinkSync(RESEARCH_FILE);
-    if (fs.existsSync(RAIDS_FILE)) fs.unlinkSync(RAIDS_FILE);
+  afterEach(async () => {
+    // Cleanup temporary test files and memory cache
+    await dataStore.delete('eggs_cache');
+    await dataStore.delete('research_cache');
+    await dataStore.delete('raids_cache');
   });
 
   it('saves and loads egg pool cache accurately', async () => {
@@ -78,15 +80,15 @@ describe('Storage & Disk Cache Persistence', () => {
   });
 
   it('returns empty array when cache file is missing or invalid', async () => {
-    if (fs.existsSync(EGGS_FILE)) fs.unlinkSync(EGGS_FILE);
+    await dataStore.delete('eggs_cache');
     const eggs = await loadEggPoolCache();
     expect(eggs).toEqual([]);
 
-    if (fs.existsSync(RESEARCH_FILE)) fs.unlinkSync(RESEARCH_FILE);
+    await dataStore.delete('research_cache');
     const research = await loadResearchCache();
     expect(research).toEqual([]);
 
-    if (fs.existsSync(RAIDS_FILE)) fs.unlinkSync(RAIDS_FILE);
+    await dataStore.delete('raids_cache');
     const raids = await loadRaidBossesCache();
     expect(raids).toEqual([]);
   });

@@ -1,13 +1,12 @@
 import React, { useRef, useState } from 'react';
-import { toPng } from 'html-to-image';
+import { useInfographicExport } from '../hooks/useInfographicExport';
 import { Download, Sparkles, Clock, Calendar, Zap, Check, ShieldCheck, Star } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
-import { resolveImage, handlePokemonImageError, fetchImageAsBase64 } from '../utils/imageResolver';
-import { getFontEmbedCSS, disableTextClipping } from '../utils/exportPoster';
+import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { getPokemonImage } from '../data/specialEvents';
 import { getPokemonName } from '../utils/pokemonTranslator';
-import { formatEventDateRange } from './MaxInfographic';
+import { formatEventDateRange } from '../utils/infographicFormatters';
 import { useInfographicEditor } from '../hooks/useInfographicEditor';
 import { EditableText, EditableImage, EditToolbar } from './InfographicEditable';
 import './SpotlightInfographic.css';
@@ -21,9 +20,7 @@ interface SpotlightInfographicProps {
 
 export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ event, lang = 'en', isAdmin = false }) => {
   const editor = useInfographicEditor(event.eventID, 'spotlight');
-  const posterRef = useRef<HTMLDivElement>(null);
-  const [downloading, setDownloading] = useState(false);
-  const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const { posterRef, isExporting, exportSuccess, exportAsPng } = useInfographicExport();
   const isEditing = isAdmin && editor.isEditing;
 
   const spotlightData = event.extraData?.spotlight;
@@ -90,94 +87,9 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
 
   // Download handler
   const handleDownload = async () => {
-    if (!posterRef.current || downloading) return;
-    setDownloading(true);
     editor.setIsExporting(true);
-    await new Promise(r => setTimeout(r, 120));
-    if (!posterRef.current) return;
-
-    const originalSrcs: { img: HTMLImageElement; origSrc: string }[] = [];
-
-    let restoreClipping: (() => void) | null = null;
-    try {
-      const imgs = Array.from(posterRef.current.querySelectorAll('img'));
-
-      await Promise.all(
-        imgs.map(async (img) => {
-          const origSrc = img.src;
-          if (origSrc && !origSrc.startsWith('data:')) {
-            originalSrcs.push({ img, origSrc });
-            try {
-              const base64 = await fetchImageAsBase64(origSrc, img);
-              if (base64 && base64.startsWith('data:')) {
-                img.src = base64;
-              } else {
-                img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-              }
-            } catch {
-              img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-            }
-          }
-        })
-      );
-      if (typeof document !== 'undefined' && (document as any).fonts) {
-        await (document as any).fonts.ready;
-      }
-      if (!posterRef.current) return;
-
-      if (posterRef.current) {
-        restoreClipping = disableTextClipping(posterRef.current);
-      }
-      const fontEmbedCSS = await getFontEmbedCSS();
-      const rect = posterRef.current.getBoundingClientRect();
-      const w = Math.round(rect.width) || posterRef.current.offsetWidth || 480;
-      const h = Math.round(w * 1.25);
-      const dataUrl = await toPng(posterRef.current, { 
-        cacheBust: false,
-        skipFonts: !fontEmbedCSS,
-        fontEmbedCSS: fontEmbedCSS || undefined,
-        width: w,
-        height: h,
-        canvasWidth: 1080,
-        canvasHeight: 1350,
-        pixelRatio: 1080 / w,
-        backgroundColor: '#0d1117',
-        style: {
-          width: `${w}px`,
-          height: `${h}px`,
-          maxWidth: `${w}px`,
-          minWidth: `${w}px`,
-          fontFamily: "'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          margin: '0',
-          transform: 'none',
-        }
-      });
-
-      const link = document.createElement('a');
-      link.download = `pogo_spotlight_${pokeName.toLowerCase()}_4x5.png`;
-      link.href = dataUrl;
-      document.body.appendChild(link);
-      link.click();
-      setTimeout(() => {
-        if (link.parentNode) {
-          link.parentNode.removeChild(link);
-        }
-      }, 500);
-
-      setDownloadSuccess(true);
-      setTimeout(() => setDownloadSuccess(false), 3000);
-    } catch (err) {
-      console.error("Failed to generate spotlight image:", err);
-    } finally {
-      originalSrcs.forEach(({ img, origSrc }) => {
-        img.src = origSrc;
-      });
-      if (restoreClipping) {
-        restoreClipping();
-      }
-      editor.setIsExporting(false);
-      setDownloading(false);
-    }
+    await exportAsPng(`pogo_spotlight_${pokeName.toLowerCase()}_4x5`);
+    editor.setIsExporting(false);
   };
 
   return (
@@ -303,16 +215,16 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
 
       <div className="spotlight-infographic-actions" style={{ marginTop: '12px' }}>
         <button 
-          className={`spotlight-download-btn ${downloadSuccess ? 'success' : ''}`}
+          className={`spotlight-download-btn ${exportSuccess ? 'success' : ''}`}
           onClick={handleDownload}
-          disabled={downloading}
+          disabled={isExporting}
         >
-          {downloadSuccess ? (
+          {exportSuccess ? (
             <>
               <Check size={18} />
               Saved PNG!
             </>
-          ) : downloading ? (
+          ) : isExporting ? (
             <>
               <div className="btn-spinner"></div>
               Generating Image (4:5)...

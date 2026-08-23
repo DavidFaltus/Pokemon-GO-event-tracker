@@ -71,7 +71,8 @@
   pointer-events: none;
 }
 
-.ranking-search-input {
+.ranking-search-input,
+.ranking-search-bar {
   width: 100%;
   padding: 12px 14px 12px 42px;
   background-color: var(--bg-card);
@@ -84,14 +85,16 @@
   box-sizing: border-box;
 }
 
-body.light-mode .ranking-search-input {
+body.light-mode .ranking-search-input,
+body.light-mode .ranking-search-bar {
   background-color: #ffffff !important;
   background: #ffffff !important;
   border: 1px solid rgba(15, 23, 42, 0.18) !important;
   color: #0f172a !important;
 }
 
-.ranking-search-input:focus {
+.ranking-search-input:focus,
+.ranking-search-bar:focus {
   outline: none;
   border-color: rgba(168, 85, 247, 0.4);
   box-shadow: 0 0 10px rgba(168, 85, 247, 0.15);
@@ -478,6 +481,17 @@ subtle-glow {
   background-color: rgba(249, 115, 22, 0.15);
   color: #fb923c;
   border: 1px solid rgba(249, 115, 22, 0.3);
+}
+
+.status-tag.unreleased-tag {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.ranking-pokemon-row.unreleased-pokemon {
+  opacity: 0.88;
+  border-left: 3px dashed rgba(239, 68, 68, 0.6);
 }
 
 /* Sprite badge in bottom-left corner (Official Shadow / Mega icon) */
@@ -1168,6 +1182,17 @@ body.light-mode .ranking-pokemon-row {
   background: #ffffff;
   border: 1px solid rgba(15, 23, 42, 0.12);
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+}
+
+body.light-mode .ranking-pokemon-row.unreleased-pokemon {
+  opacity: 0.92;
+  border-left: 3px dashed #ef4444;
+}
+
+body.light-mode .status-tag.unreleased-tag {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
 }
 
 body.light-mode .ranking-pokemon-row:hover {

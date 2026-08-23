@@ -1,11 +1,10 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
-import { toPng } from 'html-to-image';
+import { useInfographicExport } from '../hooks/useInfographicExport';
 import { Download, Calendar, ArrowLeft, ArrowRight, Check, Copy, RefreshCw, FileText } from 'lucide-react';
 import type { EventData } from './EventCard';
 import type { Language } from '../data/translations';
-import { resolveImage, handlePokemonImageError, fetchImageAsBase64 } from '../utils/imageResolver';
+import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { API_BASE_URL } from '../config';
-import { getFontEmbedCSS, disableTextClipping } from '../utils/exportPoster';
 import { useInfographicEditor } from '../hooks/useInfographicEditor';
 import { EditableText, EditableImage, EditToolbar } from './InfographicEditable';
 import {
@@ -79,9 +78,7 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
   showCaption = true,
   isAdmin = false
 }) => {
-  const posterRef = useRef<HTMLDivElement>(null);
-  const [downloading, setDownloading] = useState(false);
-  const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const { posterRef, isExporting, exportSuccess, exportAsPng } = useInfographicExport();
   const [generatedCaption, setGeneratedCaption] = useState<string>('');
   const [captionCopied, setCaptionCopied] = useState<boolean>(false);
 
@@ -323,96 +320,8 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
   };
 
   const handleDownload = async () => {
-    if (!posterRef.current || downloading) return;
-    editor.setIsExporting(true);
-    setDownloading(true);
-    await new Promise(r => setTimeout(r, 100));
-    const originalSrcs: { img: HTMLImageElement; origSrc: string }[] = [];
-
-    let restoreClipping: (() => void) | null = null;
-    try {
-      const imgs = Array.from(posterRef.current.querySelectorAll('img'));
-      await Promise.all(
-        imgs.map(async (img) => {
-          const origSrc = img.src;
-          if (origSrc && !origSrc.startsWith('data:')) {
-            originalSrcs.push({ img, origSrc });
-            try {
-              const base64 = await fetchImageAsBase64(origSrc, img);
-              if (base64 && base64.startsWith('data:')) {
-                img.src = base64;
-              } else {
-                img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-              }
-            } catch {
-              img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-            }
-          }
-        })
-      );
-
-      if (typeof document !== 'undefined' && (document as any).fonts) {
-        await (document as any).fonts.ready;
-      }
-      if (!posterRef.current) return;
-
-      if (posterRef.current) {
-        restoreClipping = disableTextClipping(posterRef.current);
-      }
-      const fontEmbedCSS = await getFontEmbedCSS();
-      const rect = posterRef.current.getBoundingClientRect();
-      const w = Math.round(rect.width) || posterRef.current.offsetWidth || 480;
-      const h = Math.round(w * 1.25);
-      const dataUrl = await toPng(posterRef.current, {
-        cacheBust: false,
-        skipFonts: !fontEmbedCSS,
-        fontEmbedCSS: fontEmbedCSS || undefined,
-        width: w,
-        height: h,
-        canvasWidth: 1080,
-        canvasHeight: 1350,
-        pixelRatio: 1080 / w,
-        backgroundColor: '#090d16',
-        style: {
-          width: `${w}px`,
-          height: `${h}px`,
-          maxWidth: `${w}px`,
-          minWidth: `${w}px`,
-          fontFamily: "'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          margin: '0',
-          transform: 'none',
-        }
-      });
-
-      const link = document.createElement('a');
-      const filenameSuffix = summaryMode === 'weekly' 
-        ? `week_${selectedWeekNum}` 
-        : slides[monthlySlideIndex]?.key || 'overview';
-      
-      link.download = `pogo_${summaryMode}_${filenameSuffix}_${monthName.toLowerCase()}_${yearNum}.png`;
-      link.href = dataUrl;
-      document.body.appendChild(link);
-      link.click();
-      setTimeout(() => {
-        if (link.parentNode) {
-          link.parentNode.removeChild(link);
-        }
-      }, 500);
-
-      setDownloadSuccess(true);
-      setTimeout(() => setDownloadSuccess(false), 3000);
-    } catch (err) {
-      console.error('Failed to generate infographic:', err);
-    } finally {
-      originalSrcs.forEach(({ img, origSrc }) => {
-        img.src = origSrc;
-      });
-      if (restoreClipping) {
-        restoreClipping();
-      }
-      setDownloading(false);
-      editor.setIsExporting(false);
-    }
+    const filenameSuffix = summaryMode === 'weekly' ? `week_${selectedWeekNum}` : (slides[monthlySlideIndex]?.key || 'overview');
+    await exportAsPng(`pogo_${summaryMode}_${filenameSuffix}_${monthName.toLowerCase()}_${yearNum}`);
   };
 
   const currentSlide = slides[monthlySlideIndex];
@@ -707,13 +616,13 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
         </div>
 
         {/* Download Action Button */}
-        <button className="download-poster-btn" onClick={handleDownload} disabled={downloading}>
-          {downloadSuccess ? (
+        <button className="download-poster-btn" onClick={handleDownload} disabled={isExporting}>
+          {exportSuccess ? (
             <>
               <Check size={20} />
               Saved to Downloads!
             </>
-          ) : downloading ? (
+          ) : isExporting ? (
             <>
               <div className="spinner"></div>
               Exporting 1080x1350 PNG...

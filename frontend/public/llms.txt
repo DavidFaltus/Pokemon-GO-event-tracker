@@ -1,0 +1,29 @@
+# Pokémon GO Event Tracker (pogoevents.app)
+
+> Kompletní databáze a živé sledování událostí, raid bossů, čítačů slabin, sestav Team GO Rocket (Giovanni, Leaders, Grunts), líhnutí z vajec a polních výzkumů pro hru Pokémon GO v reálném čase.
+
+## Core Feeds for AI Agents & Crawlers
+- [Full LLM Knowledge Database](/llms-full.txt): Kompletní textová znalostní báze všech herních dat a parametrů.
+- [Live Events Feed (Markdown)](/api/agent/events.md): Aktuální a nadcházející události, časy začátku a konce, herní bonusy.
+- [Live Raids Feed (Markdown)](/api/agent/raids.md): Přehled 1★, 3★, 5★, Mega a Shadow raid bossů, doporučené týmy a countery.
+- [Live Research Tasks Feed (Markdown)](/api/agent/research.md): Polní úkoly z Pokéstopů, kategorie a encounter odměny.
+- [Live Summary Feed (Markdown)](/api/agent/summary.md): Rychlý souhrn všech aktuálně aktivních prvků v jednom tokenově úsporném markdownu.
+- [RSS Event Feed](/feed.xml): Standardní RSS 2.0 feed událostí pro RSS čtečky a webhook agenty.
+
+## Available Web Sections (HTML)
+- [/cs/events](/cs/events): Kalendář a odpočty všech událostí (Community Days, Spotlight Hours, Raid Days)
+- [/cs/raids](/cs/raids): Průvodce raidovými souboji, CP rozsahy 100% IV, slabiny a nejlepší útočníci
+- [/cs/rocket](/cs/rocket): Tým GO Rocket – Giovanni, lídři (Arlo, Cliff, Sierra) a Shadow Pokémoni
+- [/cs/research](/cs/research): Polní výzkumy z Pokéstopů, kategorie a encounter odměny
+- [/cs/eggs](/cs/eggs): Seznam líhnutí z vajec pro aktuální sezónu (2km, 5km, 7km, 10km, 12km)
+- [/cs/friends](/cs/friends): Mezinárodní Trainer Codes katalog pro Vivillon dárky a XP grind
+- [/cs/ditto](/cs/ditto): Aktuální seznam Pokémonů, za které se maskuje Ditto v divočině
+- [/cs/rankings](/cs/rankings): PvE a PvP žebříčky útočníků podle simulací a eDPS
+- [/cs/filter](/cs/filter): Pokročilý generátor vyhledávacích řetězců (hundo, pvp iv, trade)
+
+## REST API Endpoints (JSON)
+- `GET /api/events`: Seznam všech událostí s detaily a bonusy
+- `GET /api/raids`: Aktuální raid bossi se statistikami a countery
+- `GET /api/rocket`: Sestavy Team GO Rocket včetně Giovanniho
+- `GET /api/eggs`: Rozdělení vajíček podle vzdálenosti a tierů vzácnosti
+- `GET /api/research`: Databáze úkolů polního výzkumu a odměn

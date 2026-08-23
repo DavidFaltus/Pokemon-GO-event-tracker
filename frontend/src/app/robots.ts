@@ -11,10 +11,23 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/admin', '/api/private/'],
       },
       {
-        userAgent: 'Mediapartners-Google',
+        userAgent: [
+          'GPTBot',
+          'ChatGPT-User',
+          'ClaudeBot',
+          'Claude-Web',
+          'PerplexityBot',
+          'Google-Extended',
+          'Applebot-Extended',
+          'Amazonbot',
+          'Mediapartners-Google',
+        ],
         allow: '/',
       },
     ],
-    sitemap: 'https://pogoevents.app/sitemap.xml',
+    sitemap: [
+      'https://pogoevents.app/sitemap.xml',
+    ],
+    host: 'https://pogoevents.app',
   };
 }

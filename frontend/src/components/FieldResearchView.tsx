@@ -90,35 +90,39 @@ export const FieldResearchView: React.FC<FieldResearchViewProps> = ({ lang }) =>
 
   return (
     <div className="field-research-view-container">
-      <div className="research-header">
+      <header className="research-header-card guides-header">
+        <div className="guides-title-badge">
+          <Search size={16} />
+          {lang === 'cs' ? 'PokéStop Polní Výzkum' : lang === 'ja' ? 'フィールドリサーチタスク' : lang === 'ru' ? 'Полевые исследования' : 'PokéStop Field Research'}
+        </div>
         <h1 className="tab-seo-title">{t.research_title || 'Field Research Tasks & Rewards'}</h1>
         <p className="tab-seo-description">{t.research_subtitle || 'Complete database of current PokéStop tasks and encounter rewards.'}</p>
-      </div>
 
-      <div className="research-controls">
-        <div className="research-search-bar">
-          <Search size={18} color="#94a3b8" />
-          <input
-            type="text"
-            className="research-search-input"
-            placeholder={t.research_search_placeholder || 'Search task or Pokémon...'}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
+        <div className="research-controls">
+          <div className="research-search-bar">
+            <Search size={18} color="#94a3b8" />
+            <input
+              type="text"
+              className="research-search-input"
+              placeholder={t.research_search_placeholder || 'Search task or Pokémon...'}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
 
-        <div className="research-categories-pills">
-          {categories.map(cat => (
-            <button
-              key={cat.key}
-              className={`research-pill ${selectedCategory === cat.key ? 'active' : ''}`}
-              onClick={() => setSelectedCategory(cat.key)}
-            >
-              {cat.label}
-            </button>
-          ))}
+          <div className="research-categories-pills">
+            {categories.map(cat => (
+              <button
+                key={cat.key}
+                className={`research-pill ${selectedCategory === cat.key ? 'active' : ''}`}
+                onClick={() => setSelectedCategory(cat.key)}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      </header>
 
       {loading ? (
         <div className="research-loading">Načítám aktuální polní výzkumy...</div>

@@ -5,19 +5,23 @@ import { isPokemonReleasedInGo } from './pokemonReleaseHelper';
 
 // ─── LEGACY / ELITE TM MOVES ────────────────────────────────────────────────
 export const LEGACY_MOVES = new Set<string>([
-  // Fast moves (Elite TM / Event Legacy)
+  // Fast moves (Elite Fast TM / Event / Signature Legacy)
   "Thunder Shock", "Wing Attack", "Vine Whip", "Lick", "Shadow Claw", "Ice Shard", "Dragon Breath",
   "Smack Down", "Counter", "Bullet Punch", "Poison Jab", "Incinerate", "Water Gun",
   "Quick Attack", "Lock-On", "Gust", "Present", "Karate Chop", "Rollout", "Magical Leaf",
+  "Force Palm", "Water Shuriken", "Geomancy",
 
-  // Charged moves (Elite TM / Event / Signature Legacy)
+  // Charged moves (Elite Charged TM / Event / Signature Legacy)
   "Psystrike", "Frenzy Plant", "Blast Burn", "Hydro Cannon", "Rock Wrecker", "Meteor Mash",
   "Roar of Time", "Spacial Rend", "Dragon Ascent", "Sacred Sword", "Aeroblast", "Sacred Fire",
   "Doom Desire", "Mist Ball", "Luster Purge", "Origin Pulse", "Precipice Blades", "Sunsteel Strike",
-  "Moongeist Beam", "Behemoth Blade", "Behemoth Bash", "Dark Void", "Oblivion Wing", "Geomancy",
+  "Moongeist Beam", "Behemoth Blade", "Behemoth Bash", "Dark Void", "Oblivion Wing",
   "Magma Storm", "Aura Sphere", "High Horsepower", "Rage Fist", "Volt Tackle", "Draco Meteor",
   "Shadow Bone", "Supercell Slam", "Brutal Swing", "Poltergeist", "Tri Attack", "Boomburst",
-  "Icicle Spear", "Zap Cannon", "Flying Press", "Scorching Sands", "Night Slash"
+  "Icicle Spear", "Zap Cannon", "Flying Press", "Scorching Sands", "Night Slash",
+  "Fusion Flare", "Fusion Bolt", "Earth Power", "Breaking Swipe", "Shadow Force", "Secret Sword",
+  "Double Iron Bash", "Nature's Madness", "Bleakwind Storm", "Sandsear Storm", "Wildbolt Storm",
+  "Glaciate", "Freeze Shock", "Ice Burn", "Dynamax Cannon"
 ]);
 
 export function isLegacyMove(moveName: string): boolean {

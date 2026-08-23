@@ -9,7 +9,7 @@ import type { PokemonRankData } from '../data/pokemonRankings';
 import { resolveImage, handlePokemonImageError, SHADOW_ICON_URL, MEGA_ICON_URL, PRIMAL_ICON_URL, handleShadowIconError, handleMegaIconError, handlePrimalIconError } from '../utils/imageResolver';
 import { TypeBadge } from './EventCard';
 import { getPokemonName, getStatusTagName } from '../utils/pokemonTranslator';
-import { Search, Trophy, Sword, ShieldAlert, Heart, Star, ChevronDown, ChevronUp, Target, Zap, Sparkles, SlidersHorizontal } from 'lucide-react';
+import { Search, Trophy, Sword, ShieldAlert, Heart, Star, ChevronDown, ChevronUp, Target, Zap, Sparkles, SlidersHorizontal, Clock } from 'lucide-react';
 import {
   getCounterTypes,
   getTopCountersForPokemon,
@@ -80,14 +80,17 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [expandedPokes, setExpandedPokes] = useState<Set<string>>(new Set());
   const [rankingMode, setRankingMode] = useState<'er' | 'basic'>('er');
-  const [onlyReleased, setOnlyReleased] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('pogo_ranking_only_released');
-      if (saved !== null) return saved === 'true';
-    }
-    return true;
-  });
+  const [onlyReleased, setOnlyReleased] = useState<boolean>(true);
   const [visibleCount, setVisibleCount] = useState(40);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('pogo_ranking_only_released');
+      if (saved !== null) {
+        setOnlyReleased(saved === 'true');
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     if (initialSearchQuery !== undefined && initialSearchQuery !== searchQuery) {
@@ -219,27 +222,37 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
   const filteredRankings = useMemo(() => {
     let result = [...pokemonRankings];
 
-    // Filter by released status
+    // Filter by released status strictly
     if (onlyReleased) {
       result = result.filter(isPokemonReleasedInGo);
     }
 
-    // Filter by type (based on attack type)
+    // Filter by type (matches if Pokemon has the type OR its best charged move is of that type)
     if (selectedType) {
-      result = result.filter(poke => poke.bestChargedMove.type === selectedType);
+      result = result.filter(poke => poke.types.includes(selectedType) || poke.bestChargedMove?.type === selectedType);
     }
 
-    // Filter by search query
+    // Filter by search query (supports English name, translated name, #pokedexId, and forms)
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
-      result = result.filter(poke =>
-        poke.name.toLowerCase().includes(q) ||
-        poke.pokedexId.toString() === q
-      );
+      const numQuery = q.replace(/^#/, '');
+      result = result.filter(poke => {
+        const engName = poke.name.toLowerCase();
+        const transName = getPokemonName(poke.name, lang).toLowerCase();
+        return (
+          engName.includes(q) ||
+          transName.includes(q) ||
+          poke.pokedexId.toString() === numQuery ||
+          `#${poke.pokedexId}` === q ||
+          (q === 'mega' && (poke.isMega || engName.includes('mega'))) ||
+          (q === 'shadow' && (poke.isShadow || engName.includes('shadow'))) ||
+          (q === 'primal' && (poke.isPrimal || engName.includes('primal')))
+        );
+      });
     }
 
     return result.sort(dynamicSortFn);
-  }, [onlyReleased, searchQuery, selectedType, dynamicSortFn]);
+  }, [onlyReleased, searchQuery, selectedType, dynamicSortFn, lang]);
 
   // Auto-expand matching Pokemon when search query is active
   useEffect(() => {
@@ -259,11 +272,13 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
 
   return (
     <div className="pokemon-rankings-container">
-      <p className="tab-seo-description">{(t as any).seo_ranking_desc}</p>
-      <div className="rankings-header-card">
+      <div className="rankings-header-card guides-header">
+        <div className="guides-title-badge">
+          <Trophy size={16} />
+          {lang === 'cs' ? 'PvE & Raid Meta Žebříčky' : lang === 'ja' ? '最強ポケモンランキング' : lang === 'ru' ? 'Рейтинги и тир-лист' : 'PvE & Raid Meta Rankings'}
+        </div>
         <div className="rankings-title-row">
           <div className="rankings-title-left">
-            <Trophy size={28} className="trophy-icon" />
             <h1 className="tab-seo-title" style={{ margin: 0, padding: 0 }}>{t.ranking_title}</h1>
           </div>
           <div className="ranking-mode-selector-header">
@@ -298,6 +313,8 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
           </div>
         </div>
 
+        <p className="tab-seo-description" style={{ margin: '2px 0 6px 0' }}>{(t as any).seo_ranking_desc}</p>
+
         <div className="search-bar-wrapper">
           <Search size={18} className="search-icon" />
           <input 
@@ -305,7 +322,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
             className="ranking-search-input"
             placeholder={t.ranking_search_placeholder}
             value={searchQuery}
-            onChange={(e) => handleSearchChange(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
@@ -343,11 +360,11 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
             <p>{t.ranking_no_results}</p>
           </div>
         ) : (
-          filteredRankings.slice(0, visibleCount).map((poke) => {
+          filteredRankings.slice(0, visibleCount).map((poke, indexInFiltered) => {
             const pokeKey = getPokeKey(poke);
             const overallRank = overallRankMap.get(pokeKey) ?? 1;
-            const typeRank = typeRankMap.get(pokeKey) ?? 1;
-            const primaryType = poke.types[0];
+            const primaryType = selectedType || poke.bestChargedMove?.type || poke.types[0];
+            const typeRank = selectedType ? indexInFiltered + 1 : (typeRankMap.get(pokeKey) ?? 1);
             const isExpanded = expandedPokes.has(pokeKey);
 
             const isFastLegacy = isLegacyMove(poke.bestFastMove.name);
@@ -356,11 +373,12 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
             const topCounters = getTopCountersForPokemon(poke, fullSortedRankings);
             const topMovesets = getTopMovesetsForPokemon(poke);
             const dialgaDex = calculateDialgaDexMetrics(poke);
+            const isReleased = isPokemonReleasedInGo(poke);
 
             return (
               <div 
                 key={pokeKey} 
-                className={`ranking-pokemon-row ${!isExpanded ? 'collapsed' : ''}`}
+                className={`ranking-pokemon-row ${!isExpanded ? 'collapsed' : ''} ${!isReleased ? 'unreleased-pokemon' : ''}`}
                 onClick={() => toggleExpand(pokeKey)}
                 style={{ cursor: 'pointer' }}
               >
@@ -464,6 +482,12 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
                         <span className="status-tag primal-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                           <img src={PRIMAL_ICON_URL} alt="Primal" style={{ width: '12px', height: '12px', objectFit: 'contain' }} onError={(e) => handlePrimalIconError(e.target as HTMLImageElement)} />
                           {getStatusTagName('Primal', lang)}
+                        </span>
+                      )}
+                      {!isReleased && (
+                        <span className="status-tag unreleased-tag" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                          <Clock size={11} />
+                          {(t as any).ranking_unreleased_badge || 'Nevydáno v GO'}
                         </span>
                       )}
                     </div>

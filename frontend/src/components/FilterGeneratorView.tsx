@@ -297,13 +297,14 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
 
   return (
     <div className="tab-content filter-generator-view">
-      <div className="filter-generator-header">
-        <h1 className="tab-seo-title">
-          <Filter size={24} style={{ color: 'var(--accent-purple, #a855f7)', verticalAlign: 'middle', marginRight: '8px' }} />
-          {getText('title')}
-        </h1>
+      <header className="filter-generator-header guides-header">
+        <div className="guides-title-badge">
+          <Filter size={16} />
+          {lang === 'cs' ? 'In-game Vyhledávací Řetězce' : lang === 'ja' ? 'ボックス検索フィルター' : lang === 'ru' ? 'Поисковые фильтры' : 'In-Game Search Strings'}
+        </div>
+        <h1 className="tab-seo-title">{getText('title')}</h1>
         <p className="tab-seo-description">{getText('desc')}</p>
-      </div>
+      </header>
 
       {/* Interactive Filter Strategy Cards (Clickable Toggles) */}
       <div className="filter-modes-info-banner">

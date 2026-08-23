@@ -8,7 +8,7 @@ import { TypeBadge } from './EventCard';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import type { EventData } from './EventCard';
 import { API_BASE_URL } from '../config';
-import { Sparkles, Trophy, BookOpen, ChevronRight } from 'lucide-react';
+import { Sparkles, Trophy, BookOpen, ChevronRight, Swords } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
 import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
 import { findRaidCounters } from '../data/raidCounters';
@@ -428,41 +428,48 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator,
 
   return (
     <div className="raid-view-container">
-      <h1 className="tab-seo-title">{t.tabs_raid}</h1>
-      <p className="tab-seo-description">{(t as any).seo_raid_desc}</p>
-      {/* Tier Filter Pills */}
-      <div className="filter-pill-container font-small">
-        <button 
-          className={`filter-pill ${activeFilter === 'all' ? 'active' : ''}`} 
-          onClick={() => { setActiveFilter('all'); setExpandedBoss(null); }}
-        >
-          {lang === 'ja' ? 'すべて' : lang === 'cs' ? 'Vše' : 'All'}
-        </button>
-        <button 
-          className={`filter-pill ${activeFilter === '5' ? 'active' : ''}`} 
-          onClick={() => { setActiveFilter('5'); setExpandedBoss(null); }}
-        >
-          5★
-        </button>
-        <button 
-          className={`filter-pill ${activeFilter === 'mega' ? 'active' : ''}`} 
-          onClick={() => { setActiveFilter('mega'); setExpandedBoss(null); }}
-        >
-          Mega
-        </button>
-        <button 
-          className={`filter-pill ${activeFilter === '3' ? 'active' : ''}`} 
-          onClick={() => { setActiveFilter('3'); setExpandedBoss(null); }}
-        >
-          3★
-        </button>
-        <button 
-          className={`filter-pill ${activeFilter === '1' ? 'active' : ''}`} 
-          onClick={() => { setActiveFilter('1'); setExpandedBoss(null); }}
-        >
-          1★
-        </button>
-      </div>
+      {/* Unified Header Card */}
+      <header className="raid-header-card guides-header">
+        <div className="guides-title-badge">
+          <Swords size={16} />
+          {lang === 'cs' ? 'Raid Boss Rotace & Countery' : lang === 'ja' ? 'レイドボス出現情報 & 対策' : lang === 'ru' ? 'Ротация рейд-боссов и контры' : 'Raid Bosses & Counters'}
+        </div>
+        <h1>{t.tabs_raid}</h1>
+        <p>{(t as any).seo_raid_desc}</p>
+        {/* Tier Filter Pills */}
+        <div className="filter-pill-container font-small" style={{ marginTop: '4px' }}>
+          <button 
+            className={`filter-pill ${activeFilter === 'all' ? 'active' : ''}`} 
+            onClick={() => { setActiveFilter('all'); setExpandedBoss(null); }}
+          >
+            {lang === 'ja' ? 'すべて' : lang === 'cs' ? 'Vše' : 'All'}
+          </button>
+          <button 
+            className={`filter-pill ${activeFilter === '5' ? 'active' : ''}`} 
+            onClick={() => { setActiveFilter('5'); setExpandedBoss(null); }}
+          >
+            5★
+          </button>
+          <button 
+            className={`filter-pill ${activeFilter === 'mega' ? 'active' : ''}`} 
+            onClick={() => { setActiveFilter('mega'); setExpandedBoss(null); }}
+          >
+            Mega
+          </button>
+          <button 
+            className={`filter-pill ${activeFilter === '3' ? 'active' : ''}`} 
+            onClick={() => { setActiveFilter('3'); setExpandedBoss(null); }}
+          >
+            3★
+          </button>
+          <button 
+            className={`filter-pill ${activeFilter === '1' ? 'active' : ''}`} 
+            onClick={() => { setActiveFilter('1'); setExpandedBoss(null); }}
+          >
+            1★
+          </button>
+        </div>
+      </header>
 
       {/* Grid of bosses */}
       <div className="raid-bosses-grid">

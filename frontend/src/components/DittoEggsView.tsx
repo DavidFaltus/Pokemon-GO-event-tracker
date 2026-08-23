@@ -72,8 +72,15 @@ export const DittoEggsView: React.FC<DittoEggsViewProps> = ({ lang, mode }) => {
     <div className="ditto-eggs-view-container">
       {mode === 'ditto' ? (
         <div className="ditto-section">
-          <h1 className="tab-seo-title">{t.ditto_disguises_title}</h1>
-          <p className="tab-seo-description">{t.ditto_disguises_desc}</p>
+          <header className="ditto-header-card guides-header">
+            <div className="guides-title-badge">
+              <Sparkles size={16} />
+              {lang === 'cs' ? 'Ditto Přestrojení' : lang === 'ja' ? 'メタモンへんしんポケモン' : lang === 'ru' ? 'Маскировки Дитто' : 'Ditto Disguises'}
+            </div>
+            <h1>{t.ditto_disguises_title}</h1>
+            <p>{t.ditto_disguises_desc}</p>
+          </header>
+
           <div className="ditto-disguises-grid">
             {dittoDisguises.map(poke => (
               <div key={poke.name} className="disguise-card">
@@ -106,25 +113,32 @@ export const DittoEggsView: React.FC<DittoEggsViewProps> = ({ lang, mode }) => {
         </div>
       ) : (
         <div className="eggs-section">
-          <h1 className="tab-seo-title">{t.eggs_pool_title}</h1>
-          <p className="tab-seo-description">{t.eggs_pool_desc}</p>
-          {/* Egg Tiers Selector */}
-          <div className="egg-tiers-selector">
-            {pools.map(pool => (
-              <button
-                key={pool.distance}
-                className={`egg-tier-btn ${selectedEgg === pool.distance ? 'active' : ''}`}
-                onClick={() => setSelectedEgg(pool.distance)}
-                style={{ 
-                  borderColor: selectedEgg === pool.distance ? pool.color : 'transparent',
-                  boxShadow: selectedEgg === pool.distance ? `0 0 12px ${pool.color}40` : 'none'
-                }}
-              >
-                <EggIcon size={36} color={pool.color} />
-                <span className="egg-tier-label">{pool.distance}</span>
-              </button>
-            ))}
-          </div>
+          <header className="eggs-header-card guides-header">
+            <div className="guides-title-badge">
+              <Sparkles size={16} />
+              {lang === 'cs' ? 'Aktuální Líhnutí Vajec' : lang === 'ja' ? 'タマゴ孵化ポケモン一覧' : lang === 'ru' ? 'Пул покемонов из яиц' : 'Egg Hatching Pools'}
+            </div>
+            <h1>{t.eggs_pool_title}</h1>
+            <p>{t.eggs_pool_desc}</p>
+
+            {/* Egg Tiers Selector */}
+            <div className="egg-tiers-selector" style={{ marginTop: '8px' }}>
+              {pools.map(pool => (
+                <button
+                  key={pool.distance}
+                  className={`egg-tier-btn ${selectedEgg === pool.distance ? 'active' : ''}`}
+                  onClick={() => setSelectedEgg(pool.distance)}
+                  style={{ 
+                    borderColor: selectedEgg === pool.distance ? pool.color : 'transparent',
+                    boxShadow: selectedEgg === pool.distance ? `0 0 12px ${pool.color}40` : 'none'
+                  }}
+                >
+                  <EggIcon size={36} color={pool.color} />
+                  <span className="egg-tier-label">{pool.distance}</span>
+                </button>
+              ))}
+            </div>
+          </header>
 
           {/* Selected Egg content */}
           {(() => {

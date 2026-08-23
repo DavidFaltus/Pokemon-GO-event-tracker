@@ -14,7 +14,7 @@
         "headers": [
           {
             "key": "Cache-Control",
-            "value": "no-cache, no-store, must-revalidate, max-age=0"
+            "value": "public, max-age=1800, stale-while-revalidate=86400"
           },
           {
             "key": "X-Frame-Options",
@@ -88,7 +88,33 @@
         "headers": [
           {
             "key": "Cache-Control",
-            "value": "no-cache, no-store, must-revalidate, max-age=0"
+            "value": "public, max-age=86400"
+          }
+        ]
+      },
+      {
+        "source": "/llms.txt",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "text/plain; charset=utf-8"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=3600, stale-while-revalidate=86400"
+          }
+        ]
+      },
+      {
+        "source": "/llms-full.txt",
+        "headers": [
+          {
+            "key": "Content-Type",
+            "value": "text/plain; charset=utf-8"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=3600, stale-while-revalidate=86400"
           }
         ]
       }
@@ -100,15 +126,7 @@
           "serviceId": "pogo-tracker-backend",
           "region": "europe-west3"
         }
-      },
-      {
-        "source": "**",
-        "run": {
-          "serviceId": "pogo-tracker-backend",
-          "region": "europe-west3"
-        }
       }
     ]
   }
 }
-

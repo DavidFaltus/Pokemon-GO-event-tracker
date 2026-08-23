@@ -362,26 +362,33 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, onOpenGuide }) =
 
   return (
     <div className="rocket-guide">
-      <h1 className="tab-seo-title">{t.tabs_rocket}</h1>
-      <p className="tab-seo-description">{(t as any).seo_rocket_desc}</p>
+      {/* Unified Header Card */}
+      <header className="rocket-header-card guides-header">
+        <div className="guides-title-badge">
+          <Zap size={16} />
+          {lang === 'cs' ? 'Team GO Rocket Databáze' : lang === 'ja' ? 'GOロケット団 対策ガイド' : lang === 'ru' ? 'База данных Team GO Rocket' : 'Team GO Rocket Hub'}
+        </div>
+        <h1>{t.tabs_rocket}</h1>
+        <p>{(t as any).seo_rocket_desc}</p>
 
-      {/* Mode Switcher */}
-      <div className="mode-switcher">
-        <button 
-          className={`mode-btn ${mode === 'leaders' ? 'active' : ''}`}
-          onClick={() => setMode('leaders')}
-          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-          <Zap size={14} style={{ marginRight: '6px' }} /> {t.rocket_tab_leaders}
-        </button>
-        <button 
-          className={`mode-btn ${mode === 'grunts' ? 'active' : ''}`}
-          onClick={() => setMode('grunts')}
-          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-        >
-          <Users size={14} style={{ marginRight: '6px' }} /> {t.rocket_tab_grunts}
-        </button>
-      </div>
+        {/* Mode Switcher */}
+        <div className="mode-switcher">
+          <button 
+            className={`mode-btn ${mode === 'leaders' ? 'active' : ''}`}
+            onClick={() => setMode('leaders')}
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Zap size={14} style={{ marginRight: '6px' }} /> {t.rocket_tab_leaders}
+          </button>
+          <button 
+            className={`mode-btn ${mode === 'grunts' ? 'active' : ''}`}
+            onClick={() => setMode('grunts')}
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+          >
+            <Users size={14} style={{ marginRight: '6px' }} /> {t.rocket_tab_grunts}
+          </button>
+        </div>
+      </header>
 
       {mode === 'leaders' ? (
         <>
@@ -394,7 +401,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, onOpenGuide }) =
              >
                 <span className="emoji" style={{ display: 'inline-flex' }}>{getLeaderIcon('Giovanni', 14)}</span> {getPokemonName('Giovanni', lang)}
               </button>
-            {rocketData.leaders.map(leader => (
+            {rocketData.leaders.filter(leader => leader.name.toLowerCase() !== 'giovanni').map(leader => (
               <button
                 key={leader.name}
                 className={`rocket-tab-btn leader-btn ${selectedLeader === leader.name ? 'active' : ''}`}
@@ -534,7 +541,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, onOpenGuide }) =
                   <div className="counter-level-col mega">
                     <span className="level-badge mega">{t.details_level_mega}</span>
                     <ul>
-                      {currentMember.counters.megaCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                      {currentMember.counters.megaCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
                     </ul>
                   </div>
                 )}
@@ -542,7 +549,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, onOpenGuide }) =
                   <div className="counter-level-col advanced">
                     <span className="level-badge advanced">{t.details_level_advanced}</span>
                     <ul>
-                      {currentMember.counters.advancedCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                      {currentMember.counters.advancedCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
                     </ul>
                   </div>
                 )}
@@ -550,7 +557,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, onOpenGuide }) =
                   <div className="counter-level-col budget">
                     <span className="level-badge budget">{t.details_level_budget}</span>
                     <ul>
-                      {currentMember.counters.budgetCounters.map(c => <CounterItem key={c} counterStr={c} />)}
+                      {currentMember.counters.budgetCounters.map(c => <CounterItem key={c} counterStr={c} lang={lang} />)}
                     </ul>
                   </div>
                 )}

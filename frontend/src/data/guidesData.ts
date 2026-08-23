@@ -656,7 +656,6 @@ export const GUIDES_DATA: GuideArticle[] = [
     slug: "pokemon-evolution-quests-guide",
     iconName: "Sparkles",
     imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/865.png",
-    featured: true,
     author: "PoGo Events Team",
     readTime: "12 min",
     updatedAt: "2026-08-23",
@@ -752,32 +751,65 @@ export const GUIDES_DATA: GuideArticle[] = [
       {
         id: "unique-lure-item-mechanics",
         heading: {
-          cs: "3. Unikátní mechaniky: Gyroskop, Úplněk, Lure moduly a Kameny",
-          en: "3. Unique Mechanics: Gyroscope, Full Moon, Lures & Items",
-          ja: "3. 特殊ギミック：スマホ逆さま、満月、ルアーモジュール、進化アイテム",
-          ru: "3. Уникальные механики: Гироскоп, Полнолуние, Приманки и Камни"
+          cs: "3. Unikátní mechaniky: Gyroskop, Úplněk, Den/Noc a Mince",
+          en: "3. Unique Mechanics: Gyroscope, Full Moon, Day/Night & Coins",
+          ja: "3. 特殊ギミック：スマホ逆さま、満月、昼夜、コレクレーのコイン",
+          ru: "3. Уникальные механики: Гироскоп, Полнолуние, День/Ночь и Монеты"
         },
         content: {
-          cs: "Speciální fyzikální a herní podmínky:\n\n• Inkay ➔ Malamar: 50 Candy + Fyzicky otočit telefon vzhůru nohama (displejem dolů). Vyžaduje povolenou auto-rotaci a funkční gyroskop v mobilu!\n• Ursaring ➔ Ursaluna: 100 Candy během astronomického úplňku (Full Moon na noční obloze ve hře) nebo při vybraných eventech.\n• Sliggoo / Hisuian Sliggoo ➔ Goodra / Hisuian Goodra: 100 Candy za deštivého počasí (Rainy) NEBO v dosahu Rainy Lure Modulu.\n• Magneton / Nosepass / Charjabug ➔ Magnezone / Probopass / Vikavolt: V dosahu Magnetic Lure Modulu.\n• Eevee ➔ Leafeon / Glaceon: V dosahu Mossy / Glacial Lure Modulu (Name tricks: Linnea / Rea).\n• Crabrawler ➔ Crabominable: V dosahu Glacial Lure Modulu (50 Candy).\n• Combee (♀) ➔ Vespiquen & Salandit (♀) ➔ Salazzle: Pouze samičky mohou projít vývojem! Samci (♂) se vyvinout nemohou.\n• Kirlia (♂) ➔ Gallade (Sinnoh Stone) & Snorunt (♀) ➔ Froslass (Sinnoh Stone).\n• Tyrogue: Podle nejvyšší IV statistiky (Attack ➔ Hitmonlee, Defense ➔ Hitmonchan, HP ➔ Hitmontop).\n• Trade Evolution (0 Candy): Kadabra, Machoke, Graveler, Haunter, Boldore, Gurdurr, Karrablast, Shelmet, Phantump, Pumpkaboo.",
-          en: "Unique physical and situational evolution criteria:\n\n• Inkay ➔ Malamar: 50 Candy + physically turn your mobile device upside down! Ensure screen auto-rotate is enabled and gyro permissions are active.\n• Ursaring ➔ Ursaluna: 100 Candy during a real-world astronomical Full Moon phase (visible in the night sky in-game) or special event windows.\n• Sliggoo / Hisuian Sliggoo ➔ Goodra / Hisuian Goodra: 100 Candy during in-game Rainy weather OR while within range of a Rainy Lure Module.\n• Magneton / Nosepass / Charjabug ➔ Magnezone / Probopass / Vikavolt: Within range of a Magnetic Lure Module.\n• Eevee ➔ Leafeon / Glaceon: Within range of Mossy / Glacial Lure Modules (Name tricks: Linnea / Rea).\n• Crabrawler ➔ Crabominable: Within range of a Glacial Lure Module (50 Candy).\n• Female-Only Evolutions: Combee (♀) ➔ Vespiquen and Salandit (♀) ➔ Salazzle (males cannot evolve).\n• Gender + Sinnoh Stone: Kirlia (♂) ➔ Gallade and Snorunt (♀) ➔ Froslass.\n• Tyrogue IV Formula: Highest Attack ➔ Hitmonlee, highest Defense ➔ Hitmonchan, highest HP ➔ Hitmontop (ties are 50/50 random).\n• Free Trade Evolutions (0 Candy cost after trading): Kadabra, Machoke, Graveler, Haunter, Boldore, Gurdurr, Karrablast, Shelmet, Phantump, Pumpkaboo.",
-          ja: "物理的・環境的特殊ギミック進化一覧：\n\n• マーイーカ ➔ カラマネロ：アメ50個 ＋ スマホ本体を上下逆さまにする（画面の自動回転をONにしジャイロを有効にしてください）。\n• リングマ ➔ ガチグマ：アメ100個 ＋ 現実の「満月」の夜（ゲーム内の空に満月出現時）または特別イベント時。\n• ヌメイル / ヒスイヌメイル ➔ ヌメルゴン：アメ100個 ＋ ゲーム内天候「雨」または「レイニールアー」の有効範囲内。\n• レアコイル / ノズパス / デンヂムシ ➔ ジバコイル / ダイノーズ / クワガノン：「マグネットルアー」の範囲内。\n• イーブイ ➔ リーフィア / グレイシア：「ハーブルアー」/「アイスルアー」の範囲内（裏技名: Linnea / Rea）。\n• マケンカニ ➔ ケケンカニ：「アイスルアー」の範囲内（アメ50個）。\n• 性別限定進化：ミツハニー（♀限定 ➔ ビークイン）、ヤトウモリ（♀限定 ➔ エンニュート）※♂は進化不可。\n• 性別＋シンオウのいし：キルリア（♂限定 ➔ エルレイド）、ユキワラシ（♀限定 ➔ ユキメノコ）。\n• バルキー（個体値判定）：攻撃最高 ➔ サワムラー、防御最高 ➔ エビワラー、HP最高 ➔ カポエラー。\n• 交換進化（アメ0個）：ユンゲラー、ゴーリキー、ゴローン、ゴースト、ガントル、ドテッコツ、カブルモ、チョボマキ、ボクレー、バケッチャ。",
-          ru: "Уникальные механические и ситуационные условия эволюции:\n\n• Inkay ➔ Malamar: 50 конфет + физически перевернуть телефон вверх ногами (включите автоповорот экрана!).\n• Ursaring ➔ Ursaluna: 100 конфет во время реального полнолуния (Full Moon на небе в игре) или ивентов.\n• Sliggoo ➔ Goodra: 100 конфет в дождливую погоду (Rainy) ИЛИ у модуля Rainy Lure.\n• Magneton / Nosepass / Charjabug: В радиусе Magnetic Lure Modul.\n• Eevee ➔ Leafeon / Glaceon: В радиусе Mossy / Glacial Lure Modul (Имена: Linnea / Rea).\n• Crabrawler ➔ Crabominable: В радиусе Glacial Lure Modul (50 конфет).\n• Только самки: Combee (♀) ➔ Vespiquen и Salandit (♀) ➔ Salazzle (самцы не эволюционируют!).\n• Пол + Sinnoh Stone: Kirlia (♂) ➔ Gallade и Snorunt (♀) ➔ Froslass.\n• Tyrogue (по IV): Макс. Attack ➔ Hitmonlee, макс. Defense ➔ Hitmonchan, макс. HP ➔ Hitmontop.\n• Бесплатная эволюция после обмена (0 конфет): Kadabra, Machoke, Graveler, Haunter, Boldore, Gurdurr, Karrablast, Shelmet, Phantump, Pumpkaboo."
+          cs: "Speciální fyzikální a herní podmínky:\n\n• Inkay ➔ Malamar: 50 Candy + Fyzicky otočit telefon vzhůru nohama (displejem dolů). Vyžaduje povolenou auto-rotaci a funkční gyroskop v mobilu!\n• Ursaring ➔ Ursaluna: 100 Candy během astronomického úplňku (Full Moon na noční obloze ve hře) nebo při vybraných eventech.\n• Cosmoem ➔ Solgaleo (ve dne ☀️) / Lunala (v noci 🌙): 100 Candy.\n• Rockruff ➔ Lycanroc: Midday (ve dne ☀️), Midnight (v noci 🌙), Dusk (17:00–19:00 u Dusk Rockruffa).\n• Tyrunt ➔ Tyrantrum (ve dne ☀️) / Amaura ➔ Aurorus (v noci 🌙): 50 Candy.\n• Yungoos ➔ Gumshoos / Fomantis ➔ Lurantis: Ve dne ☀️ (50 Candy).\n• Tyrogue: Podle nejvyšší IV statistiky (Attack ➔ Hitmonlee, Defense ➔ Hitmonchan, HP ➔ Hitmontop).\n• Gimmighoul (Roaming Form) ➔ Gholdengo: 999 Gimmighoul Coins + 100 Candy (z Coin Bagu přes Nintendo Switch).\n• Tandemaus ➔ Maushold: 50 Candy (99% Family of Four, 1% ultra-vzácná Family of Three).",
+          en: "Unique physical and situational evolution criteria:\n\n• Inkay ➔ Malamar: 50 Candy + physically turn your mobile device upside down! Ensure screen auto-rotate is enabled and gyro permissions are active.\n• Ursaring ➔ Ursaluna: 100 Candy during a real-world astronomical Full Moon phase (visible in the night sky in-game) or special event windows.\n• Cosmoem ➔ Solgaleo (Daytime ☀️) / Lunala (Nighttime 🌙): 100 Candy.\n• Rockruff ➔ Lycanroc: Midday (Daytime ☀️), Midnight (Nighttime 🌙), Dusk (17:00–19:00 local with Dusk-capable Rockruff).\n• Tyrunt ➔ Tyrantrum (Daytime ☀️) / Amaura ➔ Aurorus (Nighttime 🌙): 50 Candy.\n• Yungoos ➔ Gumshoos / Fomantis ➔ Lurantis: Daytime ☀️ (50 Candy).\n• Tyrogue IV Formula: Highest Attack ➔ Hitmonlee, highest Defense ➔ Hitmonchan, highest HP ➔ Hitmontop (ties are 50/50 random).\n• Gimmighoul (Roaming Form) ➔ Gholdengo: 999 Gimmighoul Coins + 100 Candy (via Coin Bag and Golden Lures).\n• Tandemaus ➔ Maushold: 50 Candy (99% Family of Four, 1% ultra-rare Family of Three).",
+          ja: "物理的・環境的特殊ギミック進化一覧：\n\n• マーイーカ ➔ カラマネロ：アメ50個 ＋ スマホ本体を上下逆さまにする（画面の自動回転をONにしジャイロを有効にしてください）。\n• リングマ ➔ ガチグマ：アメ100個 ＋ 現実の「満月」の夜（ゲーム内の空に満月出現時）または特別イベント時。\n• コスモウム ➔ ソルガレオ（昼 ☀️）/ ルナアーラ（夜 🌙）：アメ100個。\n• イワンコ ➔ ルガルガン：まひる（昼 ☀️）、まよなか（夜 🌙）、たそがれ（17:00〜19:00・限定個体）。\n• チゴラス ➔ ガチゴラス（昼 ☀️）/ アマルス ➔ アマルルガ（夜 🌙）：アメ50個。\n• ヤングース ➔ デカグース / カリキリ ➔ ラランテス：昼間 ☀️（アメ50個）。\n• バルキー（個体値判定）：攻撃最高 ➔ サワムラー、防御最高 ➔ エビワラー、HP最高 ➔ カポエラー。\n• コレクレー（とほフォルム）➔ サーフゴー：コレクレーのコイン999枚＋アメ100個。\n• ワッカネズミ ➔ イッカネズミ：アメ50個（99% 4ひきかぞく、1% 超激レア 3びきかぞく）。",
+          ru: "Уникальные механические и ситуационные условия эволюции:\n\n• Inkay ➔ Malamar: 50 конфет + физически перевернуть телефон вверх ногами (включите автоповорот экрана!).\n• Ursaring ➔ Ursaluna: 100 конфет во время реального полнолуния (Full Moon на небе в игре) или ивентов.\n• Cosmoem ➔ Solgaleo (днем ☀️) / Lunala (ночью 🌙): 100 конфет.\n• Rockruff ➔ Lycanroc: Midday (днем ☀️), Midnight (ночью 🌙), Dusk (17:00–19:00 у Dusk Rockruff).\n• Tyrunt ➔ Tyrantrum (днем ☀️) / Amaura ➔ Aurorus (ночью 🌙): 50 конфет.\n• Yungoos ➔ Gumshoos / Fomantis ➔ Lurantis: Днем ☀️ (50 конфет).\n• Tyrogue (по IV): Макс. Attack ➔ Hitmonlee, макс. Defense ➔ Hitmonchan, макс. HP ➔ Hitmontop.\n• Gimmighoul ➔ Gholdengo: 999 Gimmighoul Coins + 100 конфет.\n• Tandemaus ➔ Maushold: 50 конфет (99% Family of Four, 1% редкая Family of Three)."
         },
         tips: {
           cs: [
             "Při Inkay evoluci: Pokud se tlačítko Evolve nezaktivuje po otočení, vypněte a znovu zapněte zámek rotace displeje v nastavení telefonu.",
-            "Při Trade výměnách vždy měňte Pokémona chyceného 100+ km daleko pro garanci 1× Candy XL a ušetření až 200 Candy na evoluci!"
+            "Pro Gholdengo: Odesílejte denně pohlednici (Postcard) do Nintendo Switch pro získání Coin Bagu a Golden Lure Modulu!"
           ],
           en: [
             "Inkay Inversion Fix: If the Evolve button does not highlight upside down, toggle your phone's screen auto-rotate lock off and on in system quick settings.",
-            "Trading Pro-Tip: Trade Pokémon caught 100+ km apart to secure guaranteed Candy XL while unlocking the 0-Candy evolution cost!"
+            "For Gholdengo: Send a daily Postcard to Nintendo Switch to refresh your Coin Bag and earn Golden Lure Modules!"
           ],
           ja: [
             "マーイーカが進化できない場合：スマホの画面回転ロックを解除し、OSの設定でジャイロセンサーが許可されているか確認してください。",
-            "交換進化のコツ：100km以上離れた場所で捕まえたポケモンをトレードすると、確定でアメXLを貰いつつ進化のアメ（最大200個）を無料にできます！"
+            "サーフゴー入手：毎日ポストカードをニンテンドースイッチに送ることで「だいじなたからばこ」が復活しコインを大量に集められます！"
           ],
           ru: [
             "Если Inkay не эволюционирует: отключите блокировку ориентации экрана в шторке смартфона.",
+            "Для Gholdengo: Ежедневно отправляйте открытку на Nintendo Switch для обновления мешка с монетами!"
+          ]
+        }
+      },
+      {
+        id: "lures-stones-trade-evolutions",
+        heading: {
+          cs: "4. Lure Moduly, Evoluční Kameny a Trade Evoluce (0 Candy)",
+          en: "4. Lure Modules, Evolution Stones & Trade Evolutions (0 Candy)",
+          ja: "4. 特別ルアー、進化アイテム、交換進化（アメ0個）",
+          ru: "4. Специальные приманки, Камни эволюции и Трейд-эволюции (0 конфет)"
+        },
+        content: {
+          cs: "Podmínky pro speciální moduly, kameny a obchodování:\n\n• Rainy Lure / Déšť: Sliggoo ➔ Goodra / Hisuian Goodra (100 Candy).\n• Magnetic Lure: Magneton ➔ Magnezone, Nosepass ➔ Probopass, Charjabug ➔ Vikavolt (100 Candy).\n• Mossy Lure: Eevee ➔ Leafeon (Name trick: Linnea).\n• Glacial Lure: Eevee ➔ Glaceon (Name trick: Rea), Crabrawler ➔ Crabominable (50 Candy).\n• Sinnoh Stone: Kirlia (♂) ➔ Gallade, Snorunt (♀) ➔ Froslass, Togetic ➔ Togekiss, Roselia ➔ Roserade, Murkrow ➔ Honchkrow, Misdreavus ➔ Mismagius, Gligar ➔ Gliscor, Sneasel ➔ Weavile, Swinub ➔ Mamoswine, Porygon2 ➔ Porygon-Z, Dusclops ➔ Dusknoir, Rhydon ➔ Rhyperior, Electabuzz ➔ Electivire, Magmar ➔ Magmortar, Tangela ➔ Tangrowth, Yanma ➔ Yanmega, Lickitung ➔ Lickilicky, Aipom ➔ Ambipom.\n• Unova Stone: Lampent ➔ Chandelure, Minccino ➔ Cinccino, Eelektrik ➔ Eelektross, Pansear/Pansage/Panpour, Munna ➔ Musharna.\n• Sun Stone: Gloom ➔ Bellossom, Sunkern ➔ Sunflora, Cottonee ➔ Whimsicott, Petilil ➔ Lilligant, Helioptile ➔ Heliolisk.\n• King's Rock: Poliwhirl ➔ Politoed, Slowpoke ➔ Slowking.\n• Metal Coat: Scyther ➔ Scizor, Onix ➔ Steelix.\n• Dragon Scale: Seadra ➔ Kingdra.\n• Up-Grade: Porygon ➔ Porygon2.\n• Trade Evolution (0 Candy po výměně): Kadabra ➔ Alakazam, Machoke ➔ Machamp, Graveler ➔ Golem, Haunter ➔ Gengar, Boldore ➔ Gigalith, Gurdurr ➔ Conkeldurr, Karrablast ➔ Escavalier, Shelmet ➔ Accelgor, Phantump ➔ Trevenant, Pumpkaboo ➔ Gourgeist.\n• Random 50/50 & 33% Evoluce: Eevee ➔ Vaporeon/Jolteon/Flareon (33%), Wurmple ➔ Silcoon/Cascoon (50%), Clamperl ➔ Huntail/Gorebyss (50%).",
+          en: "Requirements for module lures, items, trade discounts, and random paths:\n\n• Rainy Lure / Rain: Sliggoo ➔ Goodra / Hisuian Goodra (100 Candy).\n• Magnetic Lure: Magneton ➔ Magnezone, Nosepass ➔ Probopass, Charjabug ➔ Vikavolt (100 Candy).\n• Mossy Lure: Eevee ➔ Leafeon (Name trick: Linnea).\n• Glacial Lure: Eevee ➔ Glaceon (Name trick: Rea), Crabrawler ➔ Crabominable (50 Candy).\n• Sinnoh Stone: Kirlia (♂) ➔ Gallade, Snorunt (♀) ➔ Froslass, Togetic ➔ Togekiss, Roselia ➔ Roserade, Murkrow ➔ Honchkrow, Misdreavus ➔ Mismagius, Gligar ➔ Gliscor, Sneasel ➔ Weavile, Swinub ➔ Mamoswine, Porygon2 ➔ Porygon-Z, Dusclops ➔ Dusknoir, Rhydon ➔ Rhyperior, Electabuzz ➔ Electivire, Magmar ➔ Magmortar, Tangela ➔ Tangrowth, Yanma ➔ Yanmega, Lickitung ➔ Lickilicky, Aipom ➔ Ambipom.\n• Unova Stone: Lampent ➔ Chandelure, Minccino ➔ Cinccino, Eelektrik ➔ Eelektross, Pansear/Pansage/Panpour, Munna ➔ Musharna.\n• Sun Stone: Gloom ➔ Bellossom, Sunkern ➔ Sunflora, Cottonee ➔ Whimsicott, Petilil ➔ Lilligant, Helioptile ➔ Heliolisk.\n• King's Rock: Poliwhirl ➔ Politoed, Slowpoke ➔ Slowking.\n• Metal Coat: Scyther ➔ Scizor, Onix ➔ Steelix.\n• Dragon Scale: Seadra ➔ Kingdra.\n• Up-Grade: Porygon ➔ Porygon2.\n• Free Trade Evolutions (0 Candy cost after trading): Kadabra, Machoke, Graveler, Haunter, Boldore, Gurdurr, Karrablast, Shelmet, Phantump, Pumpkaboo.\n• Random Evolutions: Eevee ➔ Vaporeon/Jolteon/Flareon (33%), Wurmple ➔ Silcoon/Cascoon (50%), Clamperl ➔ Huntail/Gorebyss (50%).",
+          ja: "ルアーモジュール、進化アイテム、交換進化、ランダム分岐進化一覧：\n\n• レイニールアー / 雨天：ヌメイル ➔ ヌメルゴン（アメ100個）\n• マグネットルアー：レアコイル ➔ ジバコイル、ノズパス ➔ ダイノーズ、デンヂムシ ➔ クワガノン（アメ100個）\n• ハーブルアー：イーブイ ➔ リーフィア（裏技名: Linnea）\n• アイスルアー：イーブイ ➔ グレイシア（裏技名: Rea）、マケンカニ ➔ ケケンカニ（アメ50個）\n• シンオウのいし：キルリア（♂）➔ エルレイド、ユキワラシ（♀）➔ ユキメノコ、トゲチック ➔ トゲキッス、ロゼリア ➔ ロズレイド、ヤミカラス ➔ ドンカラス、ムウマ ➔ ムウマージ、グライガー ➔ グライオン、ニューラ ➔ マニューラ、ウリムー ➔ マンムー、ポリゴン2 ➔ ポリゴンZ、サマヨール ➔ ヨノワール、サイドン ➔ ドサイドン、エレブー ➔ エレキブル、ブーバー ➔ ブーバーン、モンジャラ ➔ モジャンボ、ヤンヤンマ ➔ メガヤンマ、ベロリンガ ➔ ベロベルト、エイパム ➔ エテボース。\n• イッシュのいし：ランプラー ➔ シャンデラ、チラーミィ ➔ チラチーノ、シビビール ➔ シビルドン、バオップ/ヤナップ/ヒヤップ ➔ バオッキー/ヤナッキー/ヒヤッキー、ムンナ ➔ ムシャーナ。\n• たいようのいし：クサイハナ ➔ キレイハナ、ヒマナッツ ➔ キマワリ、モンメン ➔ エルフーン、チュリネ ➔ ドレディア、エリキテル ➔ エレザード。\n• おうじゃのしるし：ニョロゾ ➔ ニョロトノ、ヤドン ➔ ヤドキング。\n• メタルコート：ストライク ➔ ハッサム、イワーク ➔ ハガネール。\n• りゅうのウロコ：シードラ ➔ キングドラ。\n• アップグレード：ポリゴン ➔ ポリゴン2。\n• 交換進化（交換後アメ0個）：ユンゲラー、ゴーリキー、ゴローン、ゴースト、ガントル、ドテッコツ、カブルモ、チョボマキ、ボクレー、バケッチャ。\n• ランダム分岐進化：イーブイ ➔ シャワーズ/サンダース/ブースター（各33%）、ケムッソ ➔ カラサリス/マユルド（各50%）、パールル ➔ ハンテール/サクラビス（各50%）。",
+          ru: "Модули приманок, камни эволюции, трейд-эволюции и случайные развилки:\n\n• Rainy Lure / Дождь: Sliggoo ➔ Goodra (100 конфет).\n• Magnetic Lure: Magneton ➔ Magnezone, Nosepass ➔ Probopass, Charjabug ➔ Vikavolt (100 конфет).\n• Mossy Lure: Eevee ➔ Leafeon (Имя: Linnea).\n• Glacial Lure: Eevee ➔ Glaceon (Имя: Rea), Crabrawler ➔ Crabominable (50 конфет).\n• Sinnoh Stone: Kirlia (♂) ➔ Gallade, Snorunt (♀) ➔ Froslass, Togetic ➔ Togekiss, Roselia ➔ Roserade, Murkrow ➔ Honchkrow, Misdreavus ➔ Mismagius, Gligar ➔ Gliscor, Sneasel ➔ Weavile, Swinub ➔ Mamoswine, Porygon2 ➔ Porygon-Z, Dusclops ➔ Dusknoir, Rhydon ➔ Rhyperior, Electabuzz ➔ Electivire, Magmar ➔ Magmortar, Tangela ➔ Tangrowth, Yanma ➔ Yanmega, Lickitung ➔ Lickilicky, Aipom ➔ Ambipom.\n• Unova Stone: Lampent ➔ Chandelure, Minccino ➔ Cinccino, Eelektrik ➔ Eelektross, Pansear/Pansage/Panpour, Munna ➔ Musharna.\n• Sun Stone: Gloom ➔ Bellossom, Sunkern ➔ Sunflora, Cottonee ➔ Whimsicott, Petilil ➔ Lilligant, Helioptile ➔ Heliolisk.\n• King's Rock: Poliwhirl ➔ Politoed, Slowpoke ➔ Slowking.\n• Metal Coat: Scyther ➔ Scizor, Onix ➔ Steelix.\n• Dragon Scale: Seadra ➔ Kingdra.\n• Up-Grade: Porygon ➔ Porygon2.\n• Бесплатная эволюция после обмена (0 конфет): Kadabra, Machoke, Graveler, Haunter, Boldore, Gurdurr, Karrablast, Shelmet, Phantump, Pumpkaboo.\n• Случайная эволюция: Eevee ➔ Vaporeon/Jolteon/Flareon (33%), Wurmple ➔ Silcoon/Cascoon (50%), Clamperl ➔ Huntail/Gorebyss (50%)."
+        },
+        tips: {
+          cs: [
+            "Při vývoji u Lure Modulu: Vždy nejprve zkontrolujte, zda ikona evoluce změnila siluetu z otazníku na konkrétního Pokémona.",
+            "Při výměnách vždy měňte Pokémona chyceného 100+ km daleko pro garanci 1× Candy XL a ušetření až 200 Candy na evoluci!"
+          ],
+          en: [
+            "Lure Module Tip: Always ensure the evolution button preview displays the specific target Pokémon silhouette instead of a generic question mark before evolving.",
+            "Trading Pro-Tip: Trade Pokémon caught 100+ km apart to secure guaranteed Candy XL while unlocking the 0-Candy evolution cost!"
+          ],
+          ja: [
+            "特別なルアー進化：進化ボタンを押す前に、進化先が「？」ではなく目的のポケモンのシルエットになっていることを必ず確認してください。",
+            "交換進化のコツ：100km以上離れた場所で捕まえたポケモンをトレードすると、確定でアメXLを貰いつつ進化のアメ（最大200個）を無料にできます！"
+          ],
+          ru: [
+            "При эволюции у Lure-модуля: Убедитесь, что на кнопке виден силуэт нужного покемона, а не знак вопроса (?).",
             "Совет по трейдам: Меняйтесь покемонами с дистанцией 100+ км для гарантированной Candy XL и экономии до 200 конфет на эволюции!"
           ]
         }
@@ -789,7 +821,6 @@ export const GUIDES_DATA: GuideArticle[] = [
     slug: "vivillon-patterns-postcard-guide",
     iconName: "BookOpen",
     imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/666.png",
-    featured: true,
     author: "PoGo Events Team",
     readTime: "10 min",
     updatedAt: "2026-08-23",

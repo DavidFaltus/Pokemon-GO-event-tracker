@@ -5,16 +5,6 @@ import { NavigatorProvider } from '@/hooks/useAppNavigate';
 import '../index.css';
 import '../App.css';
 import './globals.css';
-import '../components/RocketGuide.css';
-import '../components/RaidView.css';
-import '../components/EventCard.css';
-import '../components/DittoEggsView.css';
-import '../components/PokemonRankingsView.css';
-import '../components/FilterGeneratorView.css';
-import '../components/NotificationSettings.css';
-import '../components/AdminPanelView.css';
-import '../components/CalendarView.css';
-import '../components/ActiveBonuses.css';
 import type { Metadata, Viewport } from 'next';
 
 const outfit = Outfit({
@@ -57,24 +47,19 @@ export default function RootLayout({
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
         {/* Preconnect & DNS prefetch for image CDNs to accelerate LCP & asset downloads */}
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://raw.githubusercontent.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://img.pokemondb.net" crossOrigin="anonymous" />
-        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        <link rel="dns-prefetch" href="https://fastly.jsdelivr.net" />
         <link rel="dns-prefetch" href="https://cdn.leekduck.com" />
-        {/* Google AdSense - native async script to avoid data-nscript attribute warning from next/script */}
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8800056915088711"
-          crossOrigin="anonymous"
-        ></script>
       </head>
       <body className={outfit.className}>
-        {/* Google Tag (gtag.js) - afterInteractive loads analytics early without blocking initial render */}
+        {/* Google Tag (gtag.js) - lazyOnload loads analytics without competing for initial render */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-17PT93VMXQ"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="google-analytics" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
@@ -84,6 +69,15 @@ export default function RootLayout({
             gtag('config', 'G-MKGYZSS7GK');
           `}
         </Script>
+
+        {/* Google AdSense - lazyOnload ensures zero impact on Total Blocking Time and LCP */}
+        <Script
+          id="google-adsense"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8800056915088711"
+          strategy="lazyOnload"
+          crossOrigin="anonymous"
+        />
+
         <div id="root">
           <NavigatorProvider>
             {children}
@@ -93,4 +87,3 @@ export default function RootLayout({
     </html>
   );
 }
-

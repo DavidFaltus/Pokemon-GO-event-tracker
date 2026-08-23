@@ -33,6 +33,13 @@ import {
   FriendListing
 } from './storage';
 import { generateBotHtml, generate404Html, RouteTarget, Language } from './ssr';
+import {
+  generateEventsMarkdown,
+  generateRaidsMarkdown,
+  generateResearchMarkdown,
+  generateSummaryMarkdown,
+  AgentLanguage
+} from './agent/markdownGenerator';
 
 // Simple in-memory rate limiter
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -763,6 +770,11 @@ app.get('/api/events', async (req, res) => {
   try {
     const forceNoCache = req.query.nocache === 'true';
     const data = await getEnrichedEventsList(forceNoCache);
+    if (req.headers.accept?.includes('text/markdown') || req.query.format === 'md') {
+      const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+      res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+      return res.send(generateEventsMarkdown(data, lang));
+    }
     res.json(data);
   } catch (error: any) {
     console.error('Error fetching events:', error.message);
@@ -845,6 +857,11 @@ app.get('/api/raids', async (req, res) => {
   try {
     const forceNoCache = req.query.nocache === 'true';
     const data = await getRaidBossesList(forceNoCache);
+    if (req.headers.accept?.includes('text/markdown') || req.query.format === 'md') {
+      const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+      res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+      return res.send(generateRaidsMarkdown(data, lang));
+    }
     res.json(data);
   } catch (error: any) {
     console.error('Error fetching raid bosses:', error.message);
@@ -887,11 +904,82 @@ app.get('/api/research', async (req, res) => {
   try {
     const forceNoCache = req.query.nocache === 'true';
     const data = await getFieldResearchList(forceNoCache);
+    if (req.headers.accept?.includes('text/markdown') || req.query.format === 'md') {
+      const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+      res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+      return res.send(generateResearchMarkdown(data, lang));
+    }
     res.json(data);
   } catch (error: any) {
     console.error('Error fetching field research:', error.message);
     const stale = getStaleCache<any[]>('field_research') || (await loadResearchCache().catch(() => []));
     res.json(stale);
+  }
+});
+
+// ==========================================
+// AI Agent & LLM Crawling Markdown Endpoints
+// ==========================================
+
+// GET /api/agent/events.md - Live Events in Token-Efficient Markdown
+app.get('/api/agent/events.md', async (req, res) => {
+  try {
+    const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+    const events = await getEnrichedEventsList(false).catch(() => []);
+    const md = generateEventsMarkdown(events, lang);
+    res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=1800, stale-while-revalidate=86400');
+    res.send(md);
+  } catch (err: any) {
+    res.status(500).send(`# Error generating events markdown: ${err.message}`);
+  }
+});
+
+// GET /api/agent/raids.md - Live Raids & Battle Counters in Markdown
+app.get('/api/agent/raids.md', async (req, res) => {
+  try {
+    const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+    const raids = await getRaidBossesList(false).catch(() => []);
+    const md = generateRaidsMarkdown(raids, lang);
+    res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=1800, stale-while-revalidate=86400');
+    res.send(md);
+  } catch (err: any) {
+    res.status(500).send(`# Error generating raids markdown: ${err.message}`);
+  }
+});
+
+// GET /api/agent/research.md - Field Research in Markdown
+app.get('/api/agent/research.md', async (req, res) => {
+  try {
+    const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+    const tasks = await getFieldResearchList(false).catch(() => []);
+    const md = generateResearchMarkdown(tasks, lang);
+    res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=1800, stale-while-revalidate=86400');
+    res.send(md);
+  } catch (err: any) {
+    res.status(500).send(`# Error generating research markdown: ${err.message}`);
+  }
+});
+
+// GET /api/agent/summary.md - Full Executive Live Summary in Markdown
+app.get('/api/agent/summary.md', async (req, res) => {
+  try {
+    const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+    const [events, raids, rocket, eggs, research] = await Promise.all([
+      getEnrichedEventsList(false).catch(() => []),
+      getRaidBossesList(false).catch(() => []),
+      getRocketLineupsList(false).catch(() => null),
+      getEggPoolList(false).catch(() => []),
+      getFieldResearchList(false).catch(() => [])
+    ]);
+    const md = generateSummaryMarkdown(events, raids, rocket, eggs, research, lang);
+    res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=1800, stale-while-revalidate=86400');
+    res.send(md);
+  } catch (err: any) {
+    res.status(500).send(`# Error generating summary markdown: ${err.message}`);
   }
 });
 

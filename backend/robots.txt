@@ -3,7 +3,16 @@ Allow: /
 Disallow: /admin
 Disallow: /api/private/
 
+User-Agent: GPTBot
+User-Agent: ChatGPT-User
+User-Agent: ClaudeBot
+User-Agent: Claude-Web
+User-Agent: PerplexityBot
+User-Agent: Google-Extended
+User-Agent: Applebot-Extended
+User-Agent: Amazonbot
 User-Agent: Mediapartners-Google
 Allow: /
 
+Host: https://pogoevents.app
 Sitemap: https://pogoevents.app/sitemap.xml
