@@ -71,7 +71,7 @@ setInterval(() => {
 
 const app = express();
 app.set('trust proxy', true);
-const PORT = process.env.PORT || 4000;
+const PORT = Number(process.env.PORT) || 8080;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'pogo2026admin';
 const activeAdminTokens = new Set<string>();
 
@@ -1629,8 +1629,8 @@ app.get('*', async (req, res, next) => {
 // Start Server + Schedule + Initial Scrape
 // ==========================================
 
-app.listen(PORT, () => {
-  console.log(`\n🚀 Server running on port ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`\n🚀 Server running on port ${PORT} (0.0.0.0:${PORT})`);
 
   // Schedule scraper every 3 hours (at minute 0: 00:00, 03:00, 06:00, ...)
   cron.schedule('0 */3 * * *', () => {

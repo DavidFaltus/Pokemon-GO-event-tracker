@@ -36,8 +36,12 @@ export function createDataStore(options?: { cacheDir?: string; gcs?: Storage; bu
   const bucketName = options?.bucketName;
 
   // Ensure cache directory exists
-  if (!fs.existsSync(cacheDir)) {
-    fs.mkdirSync(cacheDir, { recursive: true });
+  try {
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
+  } catch (err: any) {
+    console.warn(`[DataStore] Warning: Could not create local cache directory ${cacheDir}: ${err.message}. Operating with in-memory cache.`);
   }
 
   return {
