@@ -39,7 +39,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 1. Core Section Pages
     const sections = [
       { path: '', priority: 1.0, changeFrequency: 'hourly' as const },
-      { path: '/events', priority: 0.95, changeFrequency: 'hourly' as const },
       { path: '/friends', priority: 0.92, changeFrequency: 'daily' as const },
       { path: '/raids', priority: 0.9, changeFrequency: 'daily' as const },
       { path: '/rankings', priority: 0.9, changeFrequency: 'daily' as const },

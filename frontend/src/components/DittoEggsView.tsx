@@ -9,7 +9,7 @@ import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { TypeBadge } from './EventCard';
 import { Sparkles } from 'lucide-react';
 import { getPokemonName } from '../utils/pokemonTranslator';
-import { API_BASE_URL } from '../config';
+import { apiFetch } from '../config';
 
 interface DittoEggsViewProps {
   lang: Language;
@@ -47,7 +47,7 @@ export const DittoEggsView: React.FC<DittoEggsViewProps> = ({ lang, mode }) => {
 
   useEffect(() => {
     if (mode !== 'eggs') return;
-    fetch(`${API_BASE_URL}/api/eggs`)
+    apiFetch('/api/eggs')
       .then(res => res.json())
       .then((data: any[]) => {
         if (Array.isArray(data) && data.length > 0) {

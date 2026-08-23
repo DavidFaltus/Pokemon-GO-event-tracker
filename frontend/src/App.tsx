@@ -10,7 +10,7 @@ import { NotificationSettings } from './components/NotificationSettings';
 import type { VisibleEventsPreference } from './components/NotificationSettings';
 import { translations } from './data/translations';
 import type { Language } from './data/translations';
-import { API_BASE_URL } from './config';
+import { apiFetch } from './config';
 import { AdContainer } from './components/AdContainer';
 import { setPokemonIconOverrides } from './utils/imageResolver';
 import { useAppNavigate } from './hooks/useAppNavigate';
@@ -310,7 +310,7 @@ const getUrlPathForTab = (tab: TabType, l: Language, eventID?: string | null, po
     case 'settings': return `${prefix}/settings`;
     case '404': return `${prefix}/404`;
     case 'events':
-    default: return `${prefix}/events`;
+    default: return `${prefix}`;
   }
 };
 
@@ -353,7 +353,7 @@ const updateHeadMeta = (tab: TabType, lang: string, eventId?: string | null): vo
   link.href = canonicalUrl;
 };
 
-function App({ initialLang, initialTab, initialArticleSlug, initialEventId, initialPokemonSearch }: { initialLang?: Language; initialTab?: TabType; initialArticleSlug?: string; initialEventId?: string; initialPokemonSearch?: string } = {}) {
+function App({ initialLang, initialTab, initialArticleSlug, initialEventId, initialPokemonSearch, initialEvents }: { initialLang?: Language; initialTab?: TabType; initialArticleSlug?: string; initialEventId?: string; initialPokemonSearch?: string; initialEvents?: EventData[] } = {}) {
   const [activeTab, setActiveTab] = useState<TabType>(initialTab || 'events');
   const [expandedEventId, setExpandedEventId] = useState<string | null>(initialEventId || null);
   const [pokemonSearch, setPokemonSearch] = useState<string | null>(initialPokemonSearch || null);
@@ -364,7 +364,12 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
   const ENABLE_ADS = false;
   const showAds = ENABLE_ADS && activeTab !== 'settings' && activeTab !== 'admin';
 
-  const [events, setEvents] = useState<EventData[]>(() => sanitizeEvents(MOCK_EVENTS));
+  const [events, setEvents] = useState<EventData[]>(() => {
+    if (initialEvents && initialEvents.length > 0) {
+      return sanitizeEvents(initialEvents);
+    }
+    return sanitizeEvents(MOCK_EVENTS);
+  });
   const [filterType, setFilterType] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<'active' | 'upcoming'>('active');
   const [viewMode, setViewMode] = useState<'list' | 'timeline'>('timeline');
@@ -663,7 +668,7 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
   useEffect(() => {
     const fetchScraperStatus = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/scraper/status`);
+        const res = await apiFetch('/api/scraper/status');
         if (res.ok) {
           const data = await res.json();
           setScraperStatus(data);
@@ -767,7 +772,7 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
         localStorage.setItem('pogo_tracker_seen_event_ids', JSON.stringify(updatedIds));
       };
 
-      fetch(`${API_BASE_URL}/api/pokemon-icons`)
+      apiFetch('/api/pokemon-icons')
         .then(res => (res.ok ? res.json() : null))
         .then(data => {
           if (data && data.overrides) setPokemonIconOverrides(data.overrides);
@@ -800,10 +805,10 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
         }
       }
 
-      // 2. If no cache or cache is older than 8 hours, fetch fresh data
+      // 2. Fetch from backend if cache is missing or stale
       if (!isCacheValid) {
         try {
-          const response = await fetch(`${API_BASE_URL}/api/events`);
+          const response = await apiFetch('/api/events');
           if (!response.ok) throw new Error('API request failed');
           const data = await response.json();
           
@@ -844,7 +849,7 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
       localStorage.removeItem('pogo_events_cache');
       localStorage.removeItem('pogo_events_cache_time');
       try {
-        const response = await fetch(`${API_BASE_URL}/api/events?nocache=true`);
+        const response = await apiFetch('/api/events?nocache=true');
         if (response.ok) {
           const data = await response.json();
           if (Array.isArray(data) && data.length > 0) {

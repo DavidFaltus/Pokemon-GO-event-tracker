@@ -13,7 +13,7 @@ export const MultiBossAvatar: React.FC<MultiBossAvatarProps> = ({
   bosses = [],
   eventName = '',
   eventType = '',
-  size = 56
+  size = 86
 }) => {
   // Extract all pokemon names featured in this event
   const extracted = extractEventPokemonNames({ name: eventName, eventType, extraData: { bosses } });
@@ -73,10 +73,10 @@ export const MultiBossAvatar: React.FC<MultiBossAvatarProps> = ({
             width={size}
             height={size}
             style={{
-              width: '90%',
-              height: '90%',
+              width: '95%',
+              height: '95%',
               objectFit: 'contain',
-              filter: 'drop-shadow(0 0 6px rgba(244, 63, 94, 0.9))'
+              filter: 'drop-shadow(0 0 8px rgba(244, 63, 94, 0.95))'
             }}
             onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, pokeName)}
           />
@@ -90,15 +90,15 @@ export const MultiBossAvatar: React.FC<MultiBossAvatarProps> = ({
         alt={pokeName}
         width={size}
         height={size}
-        style={{ width: `${size}px`, height: `${size}px`, objectFit: 'contain' }}
+        style={{ width: `${size}px`, height: `${size}px`, objectFit: 'contain', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.5))' }}
         onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, pokeName)}
       />
     );
   }
 
   // Multi-boss composite badge (2-3 overlapping 3D Pokemon sprites)
-  const spriteSize = Math.round(size * 0.76);
-  const stepOffset = Math.round(size * 0.32);
+  const spriteSize = Math.round(size * 0.82);
+  const stepOffset = Math.round(size * 0.35);
   const totalWidth = size + (namesList.length - 1) * stepOffset;
 
   return (

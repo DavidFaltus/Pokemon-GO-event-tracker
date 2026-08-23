@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const canonicalUrl = `https://pogoevents.app/cs/${first}`;
+  const canonicalUrl = first === 'events' ? 'https://pogoevents.app/cs' : `https://pogoevents.app/cs/${first}`;
   return {
     alternates: {
       canonical: canonicalUrl,

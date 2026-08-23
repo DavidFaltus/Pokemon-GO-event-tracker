@@ -98,7 +98,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
       case 'download': return `${prefix}/download`;
       case 'settings': return `${prefix}/settings`;
       case 'events':
-      default: return `${prefix}/events`;
+      default: return `${prefix}`;
     }
   };
 
@@ -110,7 +110,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
           <PokeballLogo size={28} />
           <h1>PoGo Events</h1>
         </div>
-        <div className="sidebar-stats">
+        <div className="sidebar-stats" style={{ minHeight: '44px' }}>
           {scraperStatus.lastScrapedAt && (
             <span
               title={scraperStatus.isRunning

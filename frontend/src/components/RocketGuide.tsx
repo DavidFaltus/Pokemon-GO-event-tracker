@@ -7,7 +7,7 @@ import type { Language } from '../data/translations';
 import { TypeBadge } from './EventCard';
 import { CounterItem } from './CounterItem';
 import { getPokemonName } from '../utils/pokemonTranslator';
-import { API_BASE_URL } from '../config';
+import { apiFetch } from '../config';
 import { Zap, Users, Gift, Flame, Swords, Shield, MessageSquare, Gem, Moon, Glasses, Trophy, BookOpen, ChevronRight } from 'lucide-react';
 import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
 import { resolveImage, getPokemonIconUrl, handlePokemonImageError, SHADOW_ICON_URL, handleShadowIconError } from '../utils/imageResolver';
@@ -268,7 +268,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, onOpenGuide }) =
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${API_BASE_URL}/api/rocket?nocache=true`);
+        const response = await apiFetch('/api/rocket?nocache=true');
         if (!response.ok) throw new Error('Failed to fetch rocket lineups');
         const data = await response.json();
         setRocketData(data);

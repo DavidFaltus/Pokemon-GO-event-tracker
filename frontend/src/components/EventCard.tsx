@@ -901,7 +901,7 @@ export const EventCard: React.FC<EventCardProps> = ({
               event.name?.toLowerCase().includes('max monday') ||
               event.name?.toLowerCase().includes('max battle') ||
               bosses.length > 1) ? (
-              <MultiBossAvatar bosses={bosses} eventName={event.name} eventType={event.eventType} size={56} />
+              <MultiBossAvatar bosses={bosses} eventName={event.name} eventType={event.eventType} size={86} />
             ) : (
               <img 
                 src={resolveImage(event.image, event.eventType, event.name)} 

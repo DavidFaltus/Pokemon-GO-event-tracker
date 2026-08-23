@@ -53,7 +53,7 @@ export async function GET() {
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Pokémon GO Event Tracker - Live Události</title>
-    <link>${baseUrl}/cs/events</link>
+    <link>${baseUrl}/cs</link>
     <description>Aktuální a nadcházející události, Community Days, Raid Hours a bonusy v Pokémon GO.</description>
     <language>cs</language>
     <lastBuildDate>${now}</lastBuildDate>

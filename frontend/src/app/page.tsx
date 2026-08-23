@@ -12,7 +12,7 @@ export default function Home() {
     if (typeof window !== 'undefined') {
       const savedLang = localStorage.getItem('pogo_tracker_lang') as Language | null;
       const targetLang = (savedLang === 'cs' || savedLang === 'ja' || savedLang === 'ru' || savedLang === 'en') ? savedLang : 'en';
-      const targetPath = `/${targetLang}/events`;
+      const targetPath = `/${targetLang}`;
       if (window.location.pathname === '/' || window.location.pathname === '') {
         navigate.replace(targetPath);
       }

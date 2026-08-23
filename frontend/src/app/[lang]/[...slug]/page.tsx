@@ -2,6 +2,8 @@ import App from '@/App';
 import type { Language } from '@/data/translations';
 import { notFound } from 'next/navigation';
 
+import type { Metadata } from 'next';
+
 export const revalidate = 300;
 
 export async function generateStaticParams() {
@@ -39,6 +41,30 @@ const getTabFromSlug = (slug?: string[]): TabType => {
 
 interface PageProps {
   params: Promise<{ lang: string; slug?: string[] }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const unwrappedParams = await params;
+  const rawLang = unwrappedParams.lang || 'cs';
+  const validLanguages: Language[] = ['cs', 'en', 'ja', 'ru'];
+  const lang: Language = validLanguages.includes(rawLang as Language) ? (rawLang as Language) : 'cs';
+  const first = unwrappedParams.slug?.[0]?.toLowerCase() || '';
+
+  const canonicalUrl = first === 'events' || first === ''
+    ? `https://pogoevents.app/${lang}`
+    : `https://pogoevents.app/${lang}/${first}`;
+
+  return {
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'cs': first === 'events' ? `https://pogoevents.app/cs` : `https://pogoevents.app/cs/${first}`,
+        'en': first === 'events' ? `https://pogoevents.app/en` : `https://pogoevents.app/en/${first}`,
+        'ja': first === 'events' ? `https://pogoevents.app/ja` : `https://pogoevents.app/ja/${first}`,
+        'ru': first === 'events' ? `https://pogoevents.app/ru` : `https://pogoevents.app/ru/${first}`,
+      },
+    },
+  };
 }
 
 export default async function CatchAllLangPage({ params }: PageProps) {

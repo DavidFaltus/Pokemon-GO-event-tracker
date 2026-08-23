@@ -6,12 +6,14 @@ import { translations, type Language } from '../data/translations';
 import { resolveImage, handlePokemonImageError } from '../utils/imageResolver';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { Sparkles, Search, CheckCircle2 } from 'lucide-react';
-import { API_BASE_URL } from '../config';
+import { apiFetch } from '../config';
 
 interface ResearchReward {
+  type: 'pokemon' | 'item' | 'stardust' | 'mega_energy' | 'candy';
   name: string;
-  image: string;
-  canBeShiny: boolean;
+  image?: string;
+  canBeShiny?: boolean;
+  isShinyAvailable?: boolean;
   minCp?: number;
   maxCp?: number;
   amount?: number;
@@ -39,7 +41,7 @@ export const FieldResearchView: React.FC<FieldResearchViewProps> = ({ lang }) =>
 
   useEffect(() => {
     let isMounted = true;
-    fetch(`${API_BASE_URL}/api/research`)
+    apiFetch('/api/research')
       .then(res => res.json())
       .then((data: ResearchTask[]) => {
         if (isMounted && Array.isArray(data)) {

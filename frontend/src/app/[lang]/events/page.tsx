@@ -72,12 +72,12 @@ async function getInitialEvents() {
   return [];
 }
 
-export default async function HomePage({ params }: PageProps) {
+export default async function EventsListPage({ params }: PageProps) {
   const unwrappedParams = await params;
   const rawLang = unwrappedParams.lang || 'cs';
   const validLanguages: Language[] = ['cs', 'en', 'ja', 'ru'];
   const lang: Language = validLanguages.includes(rawLang as Language) ? (rawLang as Language) : 'cs';
   const initialEvents = await getInitialEvents();
 
-  return <App initialLang={lang} initialEvents={initialEvents} />;
+  return <App initialLang={lang} initialTab="events" initialEvents={initialEvents} />;
 }

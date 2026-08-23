@@ -7,7 +7,7 @@ import type { Language } from '../data/translations';
 import { TypeBadge } from './EventCard';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import type { EventData } from './EventCard';
-import { API_BASE_URL } from '../config';
+import { apiFetch } from '../config';
 import { Sparkles, Trophy, BookOpen, ChevronRight, Swords } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
 import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
@@ -202,8 +202,8 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator,
       setLoading(true);
       setError(null);
       try {
-        const url = `${API_BASE_URL}/api/raids${forceNoCache ? '?nocache=true' : ''}`;
-        const response = await fetch(url, { cache: 'no-store' });
+        const url = `/api/raids${forceNoCache ? '?nocache=true' : ''}`;
+        const response = await apiFetch(url, { cache: 'no-store' });
         if (!response.ok) throw new Error('Failed to fetch raids');
         const data = await response.json();
         if (isMounted && Array.isArray(data)) {
