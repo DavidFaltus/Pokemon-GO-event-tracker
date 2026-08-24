@@ -910,5 +910,164 @@ export const GUIDES_DATA: GuideArticle[] = [
         }
       }
     ]
+  },
+  {
+    id: "regional-pokemon-world-guide",
+    slug: "regional-pokemon-world-guide",
+    iconName: "Globe",
+    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/439.png",
+    author: "PoGo Events Team",
+    readTime: "15 min",
+    updatedAt: "2026-08-24",
+    category: {
+      cs: "Regionální Pokémoni",
+      en: "Regional Exclusives",
+      ja: "地域限定ポケモン",
+      ru: "Региональные Покемоны"
+    },
+    title: {
+      cs: "Komplexní průvodce regionálními Pokémony v Pokémon GO 2026",
+      en: "Comprehensive 2026 Guide to Regional Exclusive Pokémon in Pokémon GO",
+      ja: "2026年版 ポケモンGO 地域限定ポケモン完全ガイド",
+      ru: "Подробный гайд по региональным эксклюзивам в Pokémon GO 2026"
+    },
+    subtitle: {
+      cs: "Vše, co potřebujete vědět o lokacích, rotacích hemisfér a způsobech získání regionálních Pokémonů bez cestování.",
+      en: "Everything you need to know about locations, hemisphere rotations, and how to get regional Pokémon without traveling.",
+      ja: "出現場所、半球ローテーション、そして旅行せずに地域限定ポケモンを入手する方法に関する全情報。",
+      ru: "Все, что нужно знать о локациях, ротациях полушарий и способах получить региональных покемонов без путешествий."
+    },
+    sections: [
+      {
+        id: "gen1-kanto-regionals",
+        heading: {
+          cs: "1. Kanto Regionální Pokémoni (Gen 1)",
+          en: "1. Kanto Regional Exclusives (Gen 1)",
+          ja: "1. カントー地方の地域限定（第1世代）",
+          ru: "1. Региональные покемоны Канто (Ген 1)"
+        },
+        content: {
+          cs: "Kanto regionální Pokémoni byli první exkluzivní Pokémoni ve hře. Zahrnují Taurose (Severní Amerika), Mr. Mima (Evropa), Kangaskhana (Austrálie a Oceánie) a Farfetch'da (Východní Asie). Heracross je dostupný v Latinské Americe, jižní Floridě a Texasu. Corsola se nachází v tropických zeměpisných šířkách podél rovníku.",
+          en: "Kanto regionals were the first exclusive Pokémon introduced to the game. They include Tauros (North America), Mr. Mime (Europe), Kangaskhan (Australia/Oceania), and Farfetch'd (East Asia). Heracross is available in Latin America, South Florida, and Texas. Corsola can be found in tropical latitudes along the equator.",
+          ja: "カントー地方の地域限定ポケモンは、ゲームで最初に実装された限定ポケモンです。ケンタロス（北米）、バリヤード（ヨーロッパ）、ガルーラ（オーストラリア/オセアニア）、カモネギ（東アジア）が含まれます。ヘラクロスは中南米、南フロリダ、テキサスで出現します。サニーゴは赤道付近の熱帯地域で捕獲できます。",
+          ru: "Региональные покемоны Канто стали первыми эксклюзивами в игре. Среди них Таурос (Северная Америка), Мистер Майм (Европа), Кангасхан (Австралия и Океания) и Фарфетчд (Восточная Азия). Геракросс доступен в Латинской Америке, южной Флориде и Техасе. Корсолу можно найти в тропических широтах вдоль экватора."
+        },
+        pokemon: ['Tauros', 'Mr-Mime', 'Kangaskhan', 'Farfetchd', 'Heracross', 'Corsola'],
+        tips: {
+          cs: ["Mr. Mime (Galarian) a Farfetch'd (Galarian) někdy rotují ve vajíčkách globálně."],
+          en: ["Galarian Mr. Mime and Galarian Farfetch'd sometimes rotate globally in eggs."],
+          ja: ["ガラルバリヤードやガラルカモネギは、世界中のタマゴから孵化することがあります。"],
+          ru: ["Галарские формы Мистера Майма и Фарфетчда иногда появляются в яйцах по всему миру."]
+        }
+      },
+      {
+        id: "gen2-gen3-regionals",
+        heading: {
+          cs: "2. Johto & Hoenn Regionální Pokémoni (Gen 2-3)",
+          en: "2. Johto & Hoenn Regional Exclusives (Gen 2-3)",
+          ja: "2. ジョウト＆ホウエン地方の地域限定（第2-3世代）",
+          ru: "2. Региональные покемоны Джото и Хоэнн (Ген 2-3)"
+        },
+        content: {
+          cs: "V těchto generacích najdeme Torkoala (Jižní/Jihovýchodní Asie, Indie), Tropiuse (Afrika, Blízký Východ, Středomoří), Relicantha (Nový Zéland, Fidži), Pachirisu (Severní Kanada, Rusko, Skandinávie), Chatota (Jižní polokoule), Carnivina (Jihovýchod USA). Dále Pokémoni rotující po polokoulích: Zangoose/Seviper, Illumise/Volbeat a Solrock/Lunatone. Elementární opice (Pansage/Pansear/Panpour) jsou rozděleny na Ameriky, Evropu/Afriku a Asii/Pacifik.",
+          en: "These generations feature Torkoal (South/Southeast Asia, India), Tropius (Africa, Middle East, Mediterranean), Relicanth (New Zealand, Fiji), Pachirisu (Northern Canada, Russia, Scandinavia), Chatot (Southern Hemisphere), and Carnivine (US Southeast). Hemisphere rotators include Zangoose/Seviper, Illumise/Volbeat, and Solrock/Lunatone. The elemental monkeys (Pansage/Pansear/Panpour) are split across the Americas, Europe/Africa, and Asia/Pacific.",
+          ja: "これらの世代にはコータス（南/東南アジア、インド）、トロピウス（アフリカ、中東、地中海）、ジーランス（ニュージーランド、フィジー）、パチリス（カナダ北部、ロシア、北欧）、ペラップ（南半球）、マスキッパ（アメリカ南東部）が含まれます。ザングース/ハブネーク、イルミーゼ/バルビート、ソルロック/ルナトーンは半球でローテーションします。ヤナップ/バオップ/ヒヤップは南北アメリカ、欧州/アフリカ、アジア/太平洋に分かれています。",
+          ru: "В этих поколениях представлены Торкоал (Южная/Юго-Восточная Азия, Индия), Тропиус (Африка, Ближний Восток, Средиземноморье), Реликант (Новая Зеландия, Фиджи), Пачирису (Северная Канада, Россия, Скандинавия), Чатот (Южное полушарие) и Карнивайн (Юго-Восток США). По полушариям ротируются: Зангус/Севипер, Иллюмис/Волбит, Солрок/Лунатон. Обезьяны (Пансейдж/Пансир/Панпур) разделены на Америку, Европу/Африку и Азию/Океанию."
+        },
+        pokemon: ['Torkoal', 'Tropius', 'Relicanth', 'Zangoose', 'Seviper', 'Pachirisu', 'Chatot', 'Carnivine'],
+        tips: {
+          cs: ["Zangoose/Seviper a podobní se často mění při speciálních eventech jako je Rivals' Week."],
+          en: ["Hemisphere pairs like Zangoose and Seviper often swap during special events like Rivals' Week."],
+          ja: ["ザングースやハブネークのようなペアは、「ライバルウィーク」などの特別イベントで入れ替わることがあります。"],
+          ru: ["Пары по полушариям, такие как Зангус и Севипер, часто меняются местами во время специальных ивентов (Rivals' Week)."]
+        }
+      },
+      {
+        id: "gen5-gen6-regionals",
+        heading: {
+          cs: "3. Unova & Kalos Regionální Pokémoni (Gen 5-6)",
+          en: "3. Unova & Kalos Regional Exclusives (Gen 5-6)",
+          ja: "3. イッシュ＆カロス地方の地域限定（第5-6世代）",
+          ru: "3. Региональные покемоны Юнова и Калос (Ген 5-6)"
+        },
+        content: {
+          cs: "Mezi novější exkluzivní Pokémony patří Bouffalant (Oblast New York City), Sigilyph (Egypt, Řecko), Maractus (Mexiko, Střední a Jižní Amerika), Klefki (Francie). Heatmor/Durant a Throh/Sawk rotují podle hemisfér. Flabébé má také regionální formy: Červená, Modrá a Žlutá barva květu se nachází v různých částech světa.",
+          en: "Newer exclusives include Bouffalant (New York City area), Sigilyph (Egypt, Greece), Maractus (Mexico, Central/South America), and Klefki (France). Heatmor/Durant and Throh/Sawk are hemisphere rotators. Flabébé also has regional forms: Red, Blue, and Yellow flowers are split across different continents.",
+          ja: "比較的新しい限定ポケモンには、バッフロン（ニューヨーク周辺）、シンボラー（エジプト、ギリシャ）、マラカッチ（メキシコ、中南米）、クレッフィ（フランス）がいます。クイタラン/アイアント、ナゲキ/ダゲキは半球ローテーション枠です。フラベベの花の色（赤、青、黄）も地域ごとに異なります。",
+          ru: "К более новым эксклюзивам относятся Буффалант (Нью-Йорк), Сигилиф (Египет, Греция), Марактус (Мексика, Центральная и Южная Америка) и Клефки (Франция). Хитмор/Дюрант и Троу/Соук ротируются по полушариям. Флабебе также имеет региональные формы: Красный, Синий и Желтый цветы распределены по континентам."
+        },
+        pokemon: ['Bouffalant', 'Heatmor', 'Durant', 'Throh', 'Sawk', 'Sigilyph', 'Maractus', 'Klefki'],
+        tips: {
+          cs: ["Klefkiho lze vzácně najít i kousek za hranicemi Francie, např. v jižní Anglii nebo západním Německu."],
+          en: ["Klefki can occasionally be found slightly beyond the French border, such as in southern England or western Germany."],
+          ja: ["クレッフィは、イギリス南部やドイツ西部など、フランス国境をわずかに越えた地域でも出現することがあります。"],
+          ru: ["Клефки иногда можно найти немного за границей Франции, например, на юге Англии или на западе Германии."]
+        }
+      },
+      {
+        id: "gen7-gen8-gen9-regionals",
+        heading: {
+          cs: "4. Alola, Galar & Paldea Regionální Pokémoni (Gen 7-9)",
+          en: "4. Alola, Galar & Paldea Regional Exclusives (Gen 7-9)",
+          ja: "4. アローラ、ガラル、パルデア地方の地域限定（第7-9世代）",
+          ru: "4. Региональные покемоны Алола, Галар и Палдея (Ген 7-9)"
+        },
+        content: {
+          cs: "Nejnovější generace přinesly Comfeyho (Havaj), formy Oricoria (závislé na regionu), Hawluchu (Mexiko), Stonjournera (Velká Británie/Severní Evropa), Eiscueho (Jižní polokoule), Flamiga (Florida, Karibik) a Wigletta (Kalifornie, pobřežní oblasti).",
+          en: "The latest generations introduced Comfey (Hawaii), Oricorio forms (region-dependent), Hawlucha (Mexico), Stonjourner (UK/Northern Europe), Eiscue (Southern Hemisphere), Flamigo (Florida, Caribbean), and Wiglett (California, coastal areas).",
+          ja: "最新世代では、キュワワー（ハワイ）、オドリドリのフォルム（地域依存）、ルチャブル（メキシコ）、イシヘンジン（イギリス/北欧）、コオリッポ（南半球）、カラミンゴ（フロリダ、カリブ海）、ウミディグダ（カリフォルニア、沿岸部）が登場しました。",
+          ru: "Последние поколения принесли Комфея (Гавайи), формы Орикорио (зависят от региона), Хавлучу (Мексика), Стонджурнера (Великобритания/Северная Европа), Эйскью (Южное полушарие), Фламиго (Флорида, Карибы) и Виглетта (Калифорния, побережье)."
+        },
+        pokemon: ['Comfey', 'Oricorio', 'Hawlucha', 'Stonjourner', 'Eiscue', 'Flamigo'],
+        tips: {
+          cs: ["Oricorio může změnit svou formu po přenosu do Pokémon HOME, ale v Pokémon GO je zachycen ve své lokální formě."],
+          en: ["Oricorio can change forms in main series games, but in Pokémon GO it is permanently locked to its local catch form."],
+          ja: ["オドリドリは本家ゲームではフォルムチェンジ可能ですが、ポケモンGOでは捕獲時の地域フォルムで固定されます。"],
+          ru: ["Формы Орикорио фиксируются при поимке в Pokémon GO, их нельзя изменить без перевода в Pokémon HOME."]
+        }
+      },
+      {
+        id: "how-to-get-regionals",
+        heading: {
+          cs: "5. Jak získat regionální Pokémony bez cestování",
+          en: "5. How to Obtain Regionals Without Traveling",
+          ja: "5. 旅行せずに地域限定ポケモンを入手する方法",
+          ru: "5. Как получить региональных покемонов без путешествий"
+        },
+        content: {
+          cs: "Eventy: Go Fest, Safari Zone a speciální turné (Tour events) obvykle rotují regionální Pokémony po celém světě. Vejce: 5km, 7km nebo 10km vejce z dárků od přátel mohou během eventů obsahovat regionály. Výměny: Měňte s hráči, kteří cestovali - získáte navíc bonus k Candy XL za vzdálenost (Distance trade). Remote Raidy: Někteří regionální Pokémoni se objevují v 3-hvězdičkových raidech.",
+          en: "Events: Go Fest, Safari Zone, and special Tour events typically rotate regional Pokémon worldwide. Eggs: 5km, 7km, or 10km eggs from gifts can sometimes contain regionals during specific events. Trading: Trade with travelers to get them and earn distance Candy XL bonuses. Remote Raids: Some regionals appear in 3-star remote raids during regional events.",
+          ja: "イベント：GO Fest、サファリゾーン、GO Tourなどの特別イベントでは、地域限定ポケモンが世界中で出現します。タマゴ：イベント期間中、フレンドからのギフト（5km/7km/10km）から孵化することがあります。交換：旅行者と交換し、距離ボーナスでアメXLも獲得しましょう。リモートレイド：一部の地域限定ポケモンは、イベント中に星3レイドボスとして登場します。",
+          ru: "Ивенты: Go Fest, Safari Zone и ивенты Tour обычно делают региональных покемонов доступными по всему миру. Яйца: Во время ивентов 5км, 7км и 10км яйца из подарков могут содержать регионалов. Обмен: Меняйтесь с путешественниками для получения дистанционного бонуса Candy XL. Удаленные рейды: Некоторые регионалы иногда появляются в рейдах."
+        },
+        tips: {
+          cs: ["Sledujte oficiální novinky a nenechte si ujít každoroční Pokémon GO Tour (např. Johto Tour, Hoenn Tour)."],
+          en: ["Follow official news and don't miss the annual Pokémon GO Tour events which guarantee global regionals."],
+          ja: ["公式ニュースをチェックし、地域限定が世界中で解禁される毎年恒例の「Pokémon GO Tour」を見逃さないようにしましょう。"],
+          ru: ["Следите за новостями и не пропускайте ежегодные Pokémon GO Tour, где всегда дают региональных покемонов."]
+        }
+      },
+      {
+        id: "regional-map-overview",
+        heading: {
+          cs: "6. Shrnutí mapy světa a rychlá reference",
+          en: "6. World Map Overview & Quick Reference",
+          ja: "6. 世界マップの概要とクイックリファレンス",
+          ru: "6. Обзор карты мира и краткая справка"
+        },
+        content: {
+          cs: "Vyhledejte si interaktivní mapu níže a objevte přesné hranice výskytu. Hemisphere rotace (např. Zangoose / Seviper) se obvykle mění jednou ročně nebo během velkých herních updatů. Cestovatelům doporučujeme zapnout Incense (Kadidlo) při přestupech na letištích pro maximální šanci na úlovek místních regionálů.",
+          en: "Check our interactive map below to discover exact spawn boundaries. Hemisphere rotations (like Zangoose / Seviper) usually swap annually or during major season updates. For travelers, popping an Incense during airport layovers is the best way to secure local regionals quickly.",
+          ja: "下のインタラクティブマップで正確な出現境界線を確認してください。半球ローテーション（ザングース/ハブネークなど）は通常、年に1回または大規模アップデート時に切り替わります。旅行中の方は、空港での乗り継ぎ時におこうを使うのが最も効率的です。",
+          ru: "Используйте интерактивную карту ниже, чтобы узнать точные границы. Ротации полушарий (например, Зангус/Севипер) обычно происходят раз в год. Путешественникам рекомендуем использовать Incense во время пересадок в аэропортах."
+        },
+        tips: {
+          cs: ["Na letištích u PokéStopů vždy zkuste použít Glacial, Mossy nebo Magnetic Lure Modul."],
+          en: ["Always drop a Glacial, Mossy, or Magnetic Lure at airport PokéStops to maximize spawns."],
+          ja: ["空港のポケストップでは、特別なルアーモジュール（アイス、ハーブル、マグネット）を使うと出現率が上がります。"],
+          ru: ["Всегда используйте особые Lure-модули (Glacial, Mossy, Magnetic) на покестопах в аэропортах."]
+        }
+      }
+    ]
   }
 ];

@@ -602,6 +602,186 @@ const EVOLUTION_QUEST_ITEMS = [
       ru: 'Подключите игру к Nintendo Switch для получения мешка с монетами и Golden Lure.'
     },
     badge: '999 Coins 🪙'
+  },
+  {
+    base: 'Kadabra',
+    evolved: 'Alakazam',
+    category: 'trade',
+    task: {
+      cs: '0 Candy po výměně s jiným hráčem (normálně 100 Candy)',
+      en: '0 Candy cost after trading with another trainer (normally 100 Candy)',
+      ja: '交換後にアメ０個で進化可能（通常アメ100個）',
+      ru: '0 конфет после обмена (обычно 100 конфет)'
+    },
+    tip: {
+      cs: 'Jeden z nejlepších psychických útočníků. Vyměňte přebytečné Abry z Community Day.',
+      en: 'One of the most powerful Psychic attackers. Trade excess Abras from Community Day.',
+      ja: '強力なエスパータイプのアタッカー。コミュニティ・デイで余ったケーシィを交換しましょう。',
+      ru: 'Один из самых мощных психических атакующих. Обменивайте лишних Абр с Community Day.'
+    },
+    badge: '0 Candy Trade'
+  },
+  {
+    base: 'Machoke',
+    evolved: 'Machamp',
+    category: 'trade',
+    task: {
+      cs: '0 Candy po výměně s jiným hráčem (normálně 100 Candy)',
+      en: '0 Candy cost after trading with another trainer (normally 100 Candy)',
+      ja: '交換後にアメ０個で進化可能（通常アメ100個）',
+      ru: '0 конфет после обмена (обычно 100 конфет)'
+    },
+    tip: {
+      cs: 'Špičkový bojový PvE útočník. Machop je velmi běžný – ušetřete Candy výměnou.',
+      en: 'Top Fighting-type PvE attacker. Machop is very common — save Candy by trading.',
+      ja: 'PvEでトップクラスのかくとうタイプアタッカー。ワンリキーはよく出現するので、交換でアメを節約しましょう。',
+      ru: 'Лучший боевой PvE атакующий. Мачоп очень распространен — экономьте конфеты обменом.'
+    },
+    badge: '0 Candy Trade'
+  },
+  {
+    base: 'Graveler',
+    evolved: 'Golem',
+    category: 'trade',
+    task: {
+      cs: '0 Candy po výměně s jiným hráčem (normálně 100 Candy)',
+      en: '0 Candy cost after trading with another trainer (normally 100 Candy)',
+      ja: '交換後にアメ０個で進化可能（通常アメ100個）',
+      ru: '0 конфет после обмена (обычно 100 конфет)'
+    },
+    tip: {
+      cs: 'Solidní kamenný útočník po výměně.',
+      en: 'Solid Rock-type attacker after trade.',
+      ja: '交換後の優秀ないわタイプアタッカー。',
+      ru: 'Надежный каменный атакующий после обмена.'
+    },
+    badge: '0 Candy Trade'
+  },
+  {
+    base: 'Haunter',
+    evolved: 'Gengar',
+    category: 'trade',
+    task: {
+      cs: '0 Candy po výměně s jiným hráčem (normálně 100 Candy)',
+      en: '0 Candy cost after trading with another trainer (normally 100 Candy)',
+      ja: '交換後にアメ０個で進化可能（通常アメ100個）',
+      ru: '0 конфет после обмена (обычно 100 конфет)'
+    },
+    tip: {
+      cs: 'Elitní duchový/jedový útočník, obzvláště s útokem Shadow Claw.',
+      en: 'Elite Ghost/Poison attacker, especially with Shadow Claw legacy move.',
+      ja: 'エリートゴースト/どくタイプアタッカー。特に特別なわざ「シャドークロー」が強力。',
+      ru: 'Элитный призрачный/ядовитый атакующий, особенно с легаси-атакой Shadow Claw.'
+    },
+    badge: '0 Candy Trade'
+  },
+  {
+    base: 'Boldore',
+    evolved: 'Gigalith',
+    category: 'trade',
+    task: {
+      cs: '0 Candy po výměně s jiným hráčem (normálně 200 Candy)',
+      en: '0 Candy cost after trading with another trainer (normally 200 Candy)',
+      ja: '交換後にアメ０個で進化可能（通常アメ200個）',
+      ru: '0 конфет после обмена (обычно 200 конфет)'
+    },
+    tip: {
+      cs: 'Solidní kamenný útočník po výměně.',
+      en: 'Solid Rock-type attacker after trade.',
+      ja: '交換後に優秀ないわタイプアタッカーとして活躍します。',
+      ru: 'Надежный каменный атакующий после обмена.'
+    },
+    badge: '0 Candy Trade'
+  },
+  {
+    base: 'Gurdurr',
+    evolved: 'Conkeldurr',
+    category: 'trade',
+    task: {
+      cs: '0 Candy po výměně s jiným hráčem (normálně 200 Candy)',
+      en: '0 Candy cost after trading with another trainer (normally 200 Candy)',
+      ja: '交換後にアメ０個で進化可能（通常アメ200個）',
+      ru: '0 конфет после обмена (обычно 200 конфет)'
+    },
+    tip: {
+      cs: 'Nejlepší bojový útočník konkurující Machampovi.',
+      en: 'Best Fighting-type DPS rivaling Machamp.',
+      ja: 'カイリキーに匹敵する最高のかくとうタイプDPSアタッカー。',
+      ru: 'Лучший боевой DPS, соперничающий с Мачампом.'
+    },
+    badge: '0 Candy Trade'
+  },
+  {
+    base: 'Karrablast',
+    evolved: 'Escavalier',
+    category: 'trade',
+    task: {
+      cs: '0 Candy po výměně s jiným hráčem (normálně 200 Candy)',
+      en: '0 Candy cost after trading with another trainer (normally 200 Candy)',
+      ja: '交換後にアメ０個で進化可能（通常アメ200個）',
+      ru: '0 конфет после обмена (обычно 200 конфет)'
+    },
+    tip: {
+      cs: 'Inspirováno mechanikou výměny z původních her.',
+      en: 'Inspired by original games\' trade evolution mechanic.',
+      ja: '原作ゲームの交換進化の仕組みに基づいています。',
+      ru: 'Вдохновлено механикой эволюции через обмен из оригинальных игр.'
+    },
+    badge: '0 Candy Trade'
+  },
+  {
+    base: 'Shelmet',
+    evolved: 'Accelgor',
+    category: 'trade',
+    task: {
+      cs: '0 Candy po výměně s jiným hráčem (normálně 200 Candy)',
+      en: '0 Candy cost after trading with another trainer (normally 200 Candy)',
+      ja: '交換後にアメ０個で進化可能（通常アメ200個）',
+      ru: '0 конфет после обмена (обычно 200 конфет)'
+    },
+    tip: {
+      cs: 'Inspirováno mechanikou výměny z původních her.',
+      en: 'Inspired by original games\' trade evolution mechanic.',
+      ja: '原作ゲームの交換進化の仕組みに基づいています。',
+      ru: 'Вдохновлено механикой эволюции через обмен из оригинальных игр.'
+    },
+    badge: '0 Candy Trade'
+  },
+  {
+    base: 'Phantump',
+    evolved: 'Trevenant',
+    category: 'trade',
+    task: {
+      cs: '0 Candy po výměně s jiným hráčem (normálně 200 Candy)',
+      en: '0 Candy cost after trading with another trainer (normally 200 Candy)',
+      ja: '交換後にアメ０個で進化可能（通常アメ200個）',
+      ru: '0 конфет после обмена (обычно 200 конфет)'
+    },
+    tip: {
+      cs: 'Skvělá volba pro PvP Great League.',
+      en: 'Great PvP pick for Great League.',
+      ja: 'PvPのスーパーリーグで非常に優秀なポケモンです。',
+      ru: 'Отличный выбор для PvP Great League.'
+    },
+    badge: '0 Candy Trade'
+  },
+  {
+    base: 'Pumpkaboo',
+    evolved: 'Gourgeist',
+    category: 'trade',
+    task: {
+      cs: '0 Candy po výměně s jiným hráčem (normálně 200 Candy)',
+      en: '0 Candy cost after trading with another trainer (normally 200 Candy)',
+      ja: '交換後にアメ０個で進化可能（通常アメ200個）',
+      ru: '0 конфет после обмена (обычно 200 конфет)'
+    },
+    tip: {
+      cs: 'Více velikostních forem, všechny profitují z vývoje za 0 Candy po výměně.',
+      en: 'Multiple size forms, all benefit from 0-Candy trade evolution.',
+      ja: '複数のサイズがあり、すべてが交換によるアメ０個進化の恩恵を受けます。',
+      ru: 'Несколько размеров, и все получают выгоду от эволюции за 0 конфет после обмена.'
+    },
+    badge: '0 Candy Trade'
   }
 ];
 
@@ -612,8 +792,9 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedArticleSlug, setSelectedArticleSlug] = useState<string | null>(initialArticleSlug || null);
-  const [evolutionCategoryFilter, setEvolutionCategoryFilter] = useState<'all' | 'buddy' | 'combat' | 'walk' | 'special'>('all');
+  const [evolutionCategoryFilter, setEvolutionCategoryFilter] = useState<'all' | 'buddy' | 'combat' | 'walk' | 'special' | 'trade'>('all');
   const [vivillonRarityFilter, setVivillonRarityFilter] = useState<'all' | 'rare' | 'common'>('all');
+  const [regionalFilter, setRegionalFilter] = useState<'all' | 'kanto' | 'johto-hoenn' | 'unova-kalos' | 'alola-galar' | 'hemisphere'>('all');
 
   const getCategoryIcon = (iconName: string) => {
     switch (iconName) {
@@ -622,6 +803,7 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
       case 'Calendar': return <Calendar size={16} />;
       case 'Sparkles': return <Sparkles size={16} />;
       case 'Trophy': return <Trophy size={16} />;
+      case 'Globe': return <Globe size={16} />;
       default: return <BookOpen size={16} />;
     }
   };
@@ -711,7 +893,13 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
                 className={`widget-tab-btn ${evolutionCategoryFilter === 'special' ? 'active' : ''}`}
                 onClick={() => setEvolutionCategoryFilter('special')}
               >
-                {lang === 'cs' ? '🌀 Speciální (Gyro/Měsíc)' : '🌀 Special (Gyro/Moon)'}
+                {lang === 'cs' ? '🌀 Speciální' : '🌀 Special'}
+              </button>
+              <button 
+                className={`widget-tab-btn ${evolutionCategoryFilter === 'trade' ? 'active' : ''}`}
+                onClick={() => setEvolutionCategoryFilter('trade')}
+              >
+                {lang === 'cs' ? '🔄 Trade' : lang === 'ja' ? '🔄 交換進化' : lang === 'ru' ? '🔄 Трейд' : '🔄 Trade'}
               </button>
             </div>
           </div>
@@ -1138,6 +1326,101 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
               <span style={{ fontWeight: 800, color: '#10b981' }}>Tier 3 (Max):</span>
               <span>+2 Candy, +25% Candy XL, 3 dny cooldown</span>
             </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (slug === 'regional-pokemon-world-guide') {
+      const REGIONAL_POKEMON_DATA = [
+        { name: 'Tauros', region: 'kanto', area: { cs: 'Severní Amerika', en: 'North America', ja: '北米', ru: 'Северная Америка' }, note: { cs: 'Běžný ve volné přírodě v USA a Kanadě', en: 'Common wild spawn in USA and Canada', ja: 'アメリカ・カナダで野生出現', ru: 'Часто встречается в США и Канаде' }, emoji: '🇺🇸', mapPosition: { x: 22, y: 38 } },
+        { name: 'Mr-Mime', region: 'kanto', area: { cs: 'Evropa', en: 'Europe', ja: 'ヨーロッパ', ru: 'Европа' }, note: { cs: 'Vyskytuje se po celé Evropě', en: 'Found throughout Europe', ja: 'ヨーロッパ全域で出現', ru: 'Встречается по всей Европе' }, emoji: '🇪🇺', mapPosition: { x: 50, y: 30 } },
+        { name: 'Kangaskhan', region: 'kanto', area: { cs: 'Austrálie/Oceánie', en: 'Australia/Oceania', ja: 'オーストラリア/オセアニア', ru: 'Австралия/Океания' }, note: { cs: 'Běžný v australských městech', en: 'Common in Australian cities', ja: 'オーストラリアの都市部で出現', ru: 'Часто встречается в городах Австралии' }, emoji: '🇦🇺', mapPosition: { x: 80, y: 75 } },
+        { name: 'Farfetchd', region: 'kanto', area: { cs: 'Východní Asie', en: 'East Asia', ja: '東アジア', ru: 'Восточная Азия' }, note: { cs: 'Japonsko, Jižní Korea, Tchaj-wan', en: 'Japan, South Korea, Taiwan', ja: '日本、韓国、台湾', ru: 'Япония, Южная Корея, Тайвань' }, emoji: '🇯🇵', mapPosition: { x: 83, y: 35 } },
+        { name: 'Heracross', region: 'johto-hoenn', area: { cs: 'Latinská Amerika', en: 'Latin America', ja: '中南米', ru: 'Латинская Америка' }, note: { cs: 'Od jižní Floridy po Jižní Ameriku', en: 'From South Florida through South America', ja: '南フロリダから南米全域', ru: 'От южной Флориды до Южной Америки' }, emoji: '🇧🇷', mapPosition: { x: 30, y: 65 } },
+        { name: 'Corsola', region: 'johto-hoenn', area: { cs: 'Tropický pás', en: 'Tropical Latitudes', ja: '熱帯地域', ru: 'Тропические широты' }, note: { cs: 'Mezi obratníky (Florida, severní Austrálie)', en: 'Between tropics (Florida, Northern Australia)', ja: '赤道付近（フロリダ、オーストラリア北部等）', ru: 'Между тропиками' }, emoji: '🏖️', mapPosition: { x: 70, y: 55 } },
+        { name: 'Torkoal', region: 'johto-hoenn', area: { cs: 'Indie/Jihovýchodní Asie', en: 'India/SE Asia', ja: 'インド/東南アジア', ru: 'Индия/ЮВ Азия' }, note: { cs: 'Indie, Pákistán, SAE', en: 'India, Pakistan, UAE', ja: 'インド、パキスタン、UAE', ru: 'Индия, Пакистан, ОАЭ' }, emoji: '🇮🇳', mapPosition: { x: 67, y: 45 } },
+        { name: 'Tropius', region: 'johto-hoenn', area: { cs: 'Afrika/Blízký Východ', en: 'Africa/Middle East', ja: 'アフリカ/中東', ru: 'Африка/Ближний Восток' }, note: { cs: 'Zahrnuje i jižní Španělsko (Malaga)', en: 'Includes southern Spain (Malaga)', ja: 'スペイン南部（マラガ等）も含む', ru: 'Включая южную Испанию (Малага)' }, emoji: '🌍', mapPosition: { x: 53, y: 55 } },
+        { name: 'Relicanth', region: 'johto-hoenn', area: { cs: 'Nový Zéland', en: 'New Zealand', ja: 'ニュージーランド', ru: 'Новая Зеландия' }, note: { cs: 'Také Fidži a Vanuatu', en: 'Also Fiji and Vanuatu', ja: 'フィジー、バヌアツでも出現', ru: 'Также Фиджи и Вануату' }, emoji: '🇳🇿', mapPosition: { x: 92, y: 80 } },
+        { name: 'Pachirisu', region: 'johto-hoenn', area: { cs: 'Arktická zóna', en: 'Arctic Zone', ja: '北極圏', ru: 'Арктическая зона' }, note: { cs: 'Severní Kanada, Aljaška, Rusko', en: 'Northern Canada, Alaska, Russia', ja: 'カナダ北部、アラスカ、ロシア', ru: 'Северная Канада, Аляска, Россия' }, emoji: '🇨🇦', mapPosition: { x: 18, y: 20 } },
+        { name: 'Chatot', region: 'johto-hoenn', area: { cs: 'Jižní polokoule', en: 'Southern Hemisphere', ja: '南半球', ru: 'Южное полушарие' }, note: { cs: 'Běžný všude pod rovníkem', en: 'Common anywhere below the equator', ja: '赤道以南で出現', ru: 'Часто встречается ниже экватора' }, emoji: '🦜', mapPosition: { x: 30, y: 75 } },
+        { name: 'Carnivine', region: 'johto-hoenn', area: { cs: 'Jihovýchod USA', en: 'US Southeast', ja: 'アメリカ南東部', ru: 'Юго-Восток США' }, note: { cs: 'Florida, Georgia, Carolinas', en: 'Florida, Georgia, Carolinas', ja: 'フロリダ、ジョージア、カロライナ周辺', ru: 'Флорида, Джорджия, Каролина' }, emoji: '🌴', mapPosition: { x: 24, y: 42 } },
+        { name: 'Zangoose', region: 'hemisphere', area: { cs: 'Evropa, Asie, Austrálie', en: 'Europe, Asia, Australia', ja: '欧州、アジア、オーストラリア', ru: 'Европа, Азия, Австралия' }, note: { cs: 'Rotuje se Seviperem', en: 'Rotates with Seviper', ja: 'ハブネークとローテーション', ru: 'Ротируется с Севипером' }, emoji: '🔄', mapPosition: { x: 65, y: 35 } },
+        { name: 'Seviper', region: 'hemisphere', area: { cs: 'Ameriky, Afrika', en: 'Americas, Africa', ja: '南北アメリカ、アフリカ', ru: 'Америка, Африка' }, note: { cs: 'Rotuje se Zangoosem', en: 'Rotates with Zangoose', ja: 'ザングースとローテーション', ru: 'Ротируется с Зангусом' }, emoji: '🔄', mapPosition: { x: 25, y: 50 } },
+        { name: 'Bouffalant', region: 'unova-kalos', area: { cs: 'New York Area', en: 'New York Area', ja: 'ニューヨーク周辺', ru: 'Окрестности Нью-Йорка' }, note: { cs: 'NY, NJ, CT, MA, PA, MD', en: 'NY, NJ, CT, MA, PA, MD', ja: 'NY、NJ、CT、MA、PA、MD州', ru: 'NY, NJ, CT, MA, PA, MD' }, emoji: '🗽', mapPosition: { x: 26, y: 37 } },
+        { name: 'Sigilyph', region: 'unova-kalos', area: { cs: 'Egypt, Řecko', en: 'Egypt, Greece', ja: 'エジプト、ギリシャ', ru: 'Египет, Греция' }, note: { cs: 'Východní Středomoří', en: 'Eastern Mediterranean', ja: '東地中海地域', ru: 'Восточное Средиземноморье' }, emoji: '🏛️', mapPosition: { x: 56, y: 40 } },
+        { name: 'Maractus', region: 'unova-kalos', area: { cs: 'Střední Amerika', en: 'Central America', ja: '中米', ru: 'Центральная Америка' }, note: { cs: 'Mexiko, Karibik, severní Jižní Amerika', en: 'Mexico, Caribbean, northern South America', ja: 'メキシコ、カリブ海、南米北部', ru: 'Мексика, Карибы, север Южной Америки' }, emoji: '🌵', mapPosition: { x: 23, y: 50 } },
+        { name: 'Klefki', region: 'unova-kalos', area: { cs: 'Francie', en: 'France', ja: 'フランス', ru: 'Франция' }, note: { cs: 'Přesahuje mírně i do okolních zemí', en: 'Bleeds slightly into neighboring countries', ja: '隣接国にもわずかに出現', ru: 'Немного заходит в соседние страны' }, emoji: '🗝️', mapPosition: { x: 48, y: 31 } },
+        { name: 'Comfey', region: 'alola-galar', area: { cs: 'Havaj', en: 'Hawaii', ja: 'ハワイ', ru: 'Гавайи' }, note: { cs: 'Exkluzivně na Havajských ostrovech', en: 'Exclusive to the Hawaiian islands', ja: 'ハワイ諸島限定', ru: 'Эксклюзивно на Гавайских островах' }, emoji: '🌺', mapPosition: { x: 5, y: 48 } },
+        { name: 'Hawlucha', region: 'alola-galar', area: { cs: 'Mexiko', en: 'Mexico', ja: 'メキシコ', ru: 'Мексика' }, note: { cs: 'Zasáhne i kousek do jižní Kalifornie a Texasu', en: 'Reaches slightly into SoCal and Texas', ja: '南カリフォルニアやテキサスの一部にも出現', ru: 'Немного заходит в Южную Калифорнию и Техас' }, emoji: '🦅', mapPosition: { x: 21, y: 46 } },
+        { name: 'Stonjourner', region: 'alola-galar', area: { cs: 'UK/Severní Evropa', en: 'UK/Northern Europe', ja: 'イギリス/北欧', ru: 'Великобритания/Северная Европа' }, note: { cs: 'Velká Británie, Irsko', en: 'United Kingdom, Ireland', ja: 'イギリス、アイルランド', ru: 'Великобритания, Ирландия' }, emoji: '🗿', mapPosition: { x: 47, y: 27 } },
+        { name: 'Eiscue', region: 'alola-galar', area: { cs: 'Jižní polokoule', en: 'Southern Hemisphere', ja: '南半球', ru: 'Южное полушарие' }, note: { cs: 'Společně s Chatotem', en: 'Shares space with Chatot', ja: 'ペラップと同じ地域', ru: 'Делит пространство с Чатотом' }, emoji: '🐧', mapPosition: { x: 40, y: 82 } },
+        { name: 'Flamigo', region: 'alola-galar', area: { cs: 'Florida/Karibik', en: 'Florida/Caribbean', ja: 'フロリダ/カリブ海', ru: 'Флорида/Карибы' }, note: { cs: 'Sdílí lokace s Carnivine, Heracrossem a Maractusem', en: 'Shares spots with Carnivine, Heracross, Maractus', ja: 'マスキッパやヘラクロスと同じ地域', ru: 'Делит места с Карнивайном, Геракроссом, Марактусом' }, emoji: '🦩', mapPosition: { x: 26, y: 45 } },
+      ];
+
+      const filterTabs = [
+        { id: 'all', label: { cs: 'Vše', en: 'All', ja: 'すべて', ru: 'Все' } },
+        { id: 'kanto', label: { cs: 'Gen 1 (Kanto)', en: 'Gen 1 (Kanto)', ja: '第1世代(カントー)', ru: 'Ген 1 (Канто)' } },
+        { id: 'johto-hoenn', label: { cs: 'Gen 2-3', en: 'Gen 2-3', ja: '第2-3世代', ru: 'Ген 2-3' } },
+        { id: 'unova-kalos', label: { cs: 'Gen 5-6', en: 'Gen 5-6', ja: '第5-6世代', ru: 'Ген 5-6' } },
+        { id: 'alola-galar', label: { cs: 'Gen 7+', en: 'Gen 7+', ja: '第7世代+', ru: 'Ген 7+' } },
+        { id: 'hemisphere', label: { cs: 'Hemisféry', en: 'Hemispheres', ja: '半球ローテ', ru: 'Полушария' } }
+      ];
+
+      const visiblePokemon = REGIONAL_POKEMON_DATA.filter(p => regionalFilter === 'all' || p.region === regionalFilter);
+
+      return (
+        <div className="guide-regional-widget">
+          <div className="widget-header">
+            <h3>{lang === 'cs' ? 'Mapa regionálních Pokémonů' : lang === 'ja' ? '地域限定ポケモンマップ' : lang === 'ru' ? 'Карта региональных покемонов' : 'Regional Pokémon Map'}</h3>
+            <div className="widget-tabs">
+              {filterTabs.map(tab => (
+                <button
+                  key={tab.id}
+                  className={`widget-tab ${regionalFilter === tab.id ? 'active' : ''}`}
+                  onClick={() => setRegionalFilter(tab.id as any)}
+                >
+                  {tab.label[lang] || tab.label.en}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="regional-world-map-wrapper">
+            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="regional-map-svg">
+              <path d="M15,20 Q25,10 35,25 T40,40 Q30,50 25,70 Q20,80 15,60 T15,20 Z" fill="#0d1117" stroke="#242836" strokeWidth="0.5"/>
+              <path d="M45,25 Q55,15 60,30 T75,40 Q85,50 80,60 T60,55 Q50,60 45,45 T45,25 Z" fill="#0d1117" stroke="#242836" strokeWidth="0.5"/>
+              <path d="M70,65 Q80,60 85,75 T95,85 Q85,90 75,80 T70,65 Z" fill="#0d1117" stroke="#242836" strokeWidth="0.5"/>
+              
+              {visiblePokemon.map((p, idx) => (
+                <g key={idx} className="regional-marker" transform={`translate(${p.mapPosition.x}, ${p.mapPosition.y})`}>
+                  <circle cx="0" cy="0" r="1.5" fill="var(--accent-color)" opacity="0.6" />
+                  <circle cx="0" cy="0" r="0.8" fill="var(--accent-color)" />
+                  <image 
+                    href={getPokemonIconUrl(p.name)} 
+                    x="-2" y="-2" width="4" height="4"
+                  />
+                </g>
+              ))}
+            </svg>
+          </div>
+
+          <div className="regional-cards-grid">
+            {visiblePokemon.map((p, idx) => (
+              <div key={idx} className="regional-card">
+                <div className="regional-card-avatar">
+                  <img src={getPokemonIconUrl(p.name)} alt={p.name} />
+                </div>
+                <div className="regional-card-info">
+                  <div className="regional-card-title">
+                    <h4>{p.name.replace('-', ' ')}</h4>
+                    <span>{p.emoji}</span>
+                  </div>
+                  <div className="regional-card-area">{p.area[lang] || p.area.en}</div>
+                  <div className="regional-card-note">{p.note[lang] || p.note.en}</div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       );

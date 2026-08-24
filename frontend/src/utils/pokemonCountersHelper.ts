@@ -507,6 +507,25 @@ export function getPokemonTypesByName(bossName: string): string[] {
   return ['Normal'];
 }
 
+export interface RaidFilterOptions {
+  tierMode?: 'universal' | 'hardcore' | 'budget' | 'weather';
+  includeFrustrationExclusion?: boolean; // default true: !@frustration
+  ivFilter?: '3*,4*' | '4*' | 'all';     // default 'all' for universal/budget, '3*,4*' for hardcore
+  minCp?: number;                         // e.g. 2000 or 2500
+  dualMoveCheck?: boolean;                // default true: @1type & @2type,@3type
+  weatherBoosted?: boolean;               // default false: @weather
+  filterStrategy?: 'resistant' | 'max_dps';
+  maxCountersCount?: number;             // default 25
+}
+
+export interface TieredCountersResult {
+  tierS: PokemonRankData[];
+  tierA: PokemonRankData[];
+  tierB: PokemonRankData[];
+  tierC: PokemonRankData[];
+  allPokedexIds: number[];
+}
+
 export function getTopCountersByName(bossName: string, limit: number = 20): PokemonRankData[] {
   const clean = bossName.toLowerCase().replace(/^(shadow|mega|primal)\s+/, '').trim();
   const resolvedTypes = getPokemonTypesByName(bossName);
@@ -530,27 +549,193 @@ export function getCounterTypesForName(bossName: string): string[] {
   return counterInfos.map(c => c.type);
 }
 
-export function getTopCountersFilterString(bossName: string, includeMoves: boolean = true, includeStars: boolean = true): string {
-  const topCounters = getTopCountersByName(bossName, 20);
-  if (topCounters.length === 0) return '';
+/**
+ * Categorizes PvE counters into 4 tiers (Tier S: Megas/Shadows, Tier A: Legendaries, Tier B: Standard Meta, Tier C: Budget)
+ */
+export function getTieredCountersForBoss(
+  bossName: string,
+  filterStrategy: 'resistant' | 'max_dps' = 'resistant'
+): TieredCountersResult {
+  const clean = bossName.toLowerCase().replace(/^(shadow|mega|primal)\s+/, '').trim();
+  const resolvedTypes = getPokemonTypesByName(bossName);
   
-  const uniqueIds = Array.from(new Set(topCounters.map(c => c.pokedexId)));
-  const counterTypes = getCounterTypesForName(bossName);
-  
+  const targetPoke = pokemonRankings.find(p => p.name.toLowerCase().includes(clean)) || {
+    name: bossName,
+    pokedexId: 9999,
+    types: resolvedTypes,
+    attack: 250, defense: 200, stamina: 200, maxCp: 3800, pveScore: 90, dps: 25,
+    bestFastMove: { name: 'Tackle', type: resolvedTypes[0] || 'Normal' },
+    bestChargedMove: { name: 'Body Slam', type: resolvedTypes[0] || 'Normal' }
+  };
+
+  const detailed = getTopCountersForPokemonDetailed(targetPoke, pokemonRankings, 40, filterStrategy);
+  const counterTypes = getCounterTypesForName(bossName).map(t => t.toLowerCase());
+  const counterTypeSet = new Set(counterTypes);
+
+  // Group into tiers
+  const tierS: PokemonRankData[] = [];
+  const tierA: PokemonRankData[] = [];
+  const tierB: PokemonRankData[] = [];
+  const tierC: PokemonRankData[] = [];
+
+  const seenIdsS = new Set<number>();
+  const seenIdsA = new Set<number>();
+  const seenIdsB = new Set<number>();
+  const seenIdsC = new Set<number>();
+
+  for (const item of detailed) {
+    const p = item.pokemon;
+    const isMegaPrimal = p.isMega || p.isPrimal;
+    const isShadow = p.isShadow;
+    const score = item.counterRating;
+
+    if (isMegaPrimal || (isShadow && score >= 130)) {
+      if (!seenIdsS.has(p.pokedexId) && tierS.length < 8) {
+        seenIdsS.add(p.pokedexId);
+        tierS.push(p);
+      }
+    } else if (score >= 120 || (isShadow && score >= 110)) {
+      if (!seenIdsA.has(p.pokedexId) && tierA.length < 8) {
+        seenIdsA.add(p.pokedexId);
+        tierA.push(p);
+      }
+    } else if (score >= 95) {
+      if (!seenIdsB.has(p.pokedexId) && tierB.length < 10) {
+        seenIdsB.add(p.pokedexId);
+        tierB.push(p);
+      }
+    } else {
+      if (!seenIdsC.has(p.pokedexId) && tierC.length < 10) {
+        seenIdsC.add(p.pokedexId);
+        tierC.push(p);
+      }
+    }
+  }
+
+  // Also supplement Tier C (budget wild spawns & common evolutions) if weak to boss
+  const budgetCandidates = pokemonRankings.filter(p => 
+    !p.isMega && !p.isPrimal && !p.isShadow &&
+    p.pokedexId <= 900 &&
+    counterTypeSet.has((p.bestChargedMove?.type || '').toLowerCase()) &&
+    !seenIdsS.has(p.pokedexId) && !seenIdsA.has(p.pokedexId) && !seenIdsB.has(p.pokedexId) && !seenIdsC.has(p.pokedexId)
+  ).sort((a, b) => b.pveScore - a.pveScore).slice(0, 8);
+
+  budgetCandidates.forEach(p => {
+    if (tierC.length < 12) {
+      seenIdsC.add(p.pokedexId);
+      tierC.push(p);
+    }
+  });
+
+  const allIds = Array.from(new Set([
+    ...tierS.map(p => p.pokedexId),
+    ...tierA.map(p => p.pokedexId),
+    ...tierB.map(p => p.pokedexId),
+    ...tierC.map(p => p.pokedexId),
+  ])).filter(id => id > 0 && id < 9999);
+
+  return { tierS, tierA, tierB, tierC, allPokedexIds: allIds };
+}
+
+/**
+ * Generates an advanced, player-friendly Pokémon GO search filter string.
+ * Supports: Universal (all players), Hardcore (top IV/CP), Budget, Weather Boost,
+ * with dual Fast+Charged move validation (@1type & @2type,@3type) and !@frustration exclusion.
+ */
+export function generateRaidSearchString(bossName: string, options: RaidFilterOptions = {}): string {
+  const {
+    tierMode = 'universal',
+    includeFrustrationExclusion = true,
+    ivFilter,
+    minCp,
+    dualMoveCheck = true,
+    weatherBoosted = false,
+    filterStrategy = 'resistant',
+    maxCountersCount = 25
+  } = options;
+
+  const tiered = getTieredCountersForBoss(bossName, filterStrategy);
+  const counterTypes = getCounterTypesForName(bossName).map(t => t.toLowerCase());
+
+  if (tiered.allPokedexIds.length === 0 && counterTypes.length === 0) return '';
+
   const parts: string[] = [];
 
-  if (includeStars) {
+  // 1. IV Filter (3*, 4*)
+  if (ivFilter && ivFilter !== 'all') {
+    parts.push(ivFilter);
+  } else if (tierMode === 'hardcore') {
     parts.push('3*,4*');
   }
 
-  if (includeMoves && counterTypes.length > 0) {
-    const moveTypesStr = counterTypes.map(t => `@${t.toLowerCase()}`).join(',');
-    parts.push(moveTypesStr);
+  // 2. CP Threshold
+  if (minCp && minCp > 0) {
+    parts.push(`cp${minCp}-`);
+  } else if (tierMode === 'hardcore') {
+    parts.push('cp2500-');
+  } else if (tierMode === 'budget') {
+    parts.push('cp1800-');
   }
 
-  parts.push(uniqueIds.join(','));
+  // 3. Weather Boost
+  if (weatherBoosted || tierMode === 'weather') {
+    parts.push('@weather');
+  }
+
+  // 4. Selected Pokedex IDs based on Tier
+  let selectedIds: number[] = [];
+  if (tierMode === 'hardcore') {
+    selectedIds = Array.from(new Set([
+      ...tiered.tierS.map(p => p.pokedexId),
+      ...tiered.tierA.map(p => p.pokedexId)
+    ]));
+  } else if (tierMode === 'budget') {
+    selectedIds = Array.from(new Set([
+      ...tiered.tierB.map(p => p.pokedexId),
+      ...tiered.tierC.map(p => p.pokedexId)
+    ]));
+  } else {
+    // Universal: Include S, A, B, C to ensure all players find effective counters
+    selectedIds = tiered.allPokedexIds.slice(0, maxCountersCount);
+  }
+
+  if (selectedIds.length > 0) {
+    parts.push(selectedIds.join(','));
+  }
+
+  // 5. Dual Moveset Validation: Fast Move (@1type) AND Charged Move (@2type, @3type)
+  if (counterTypes.length > 0) {
+    if (dualMoveCheck) {
+      const fastMoves = counterTypes.map(t => `@1${t}`).join(',');
+      const chargedMoves = counterTypes.flatMap(t => [`@2${t}`, `@3${t}`]).join(',');
+      parts.push(fastMoves);
+      parts.push(chargedMoves);
+    } else {
+      parts.push(counterTypes.map(t => `@${t}`).join(','));
+    }
+  }
+
+  // 6. Anti-Frustration Filter: Excludes Shadow Pokemon with un-TM'd Frustration
+  if (includeFrustrationExclusion) {
+    parts.push('!@frustration');
+  }
 
   return parts.join('&');
+}
+
+export function getTopCountersFilterString(
+  bossName: string,
+  includeMoves: boolean = true,
+  includeStars: boolean = false,
+  options?: RaidFilterOptions
+): string {
+  return generateRaidSearchString(bossName, {
+    tierMode: 'universal',
+    includeFrustrationExclusion: true,
+    dualMoveCheck: includeMoves,
+    ivFilter: includeStars ? '3*,4*' : 'all',
+    ...options
+  });
 }
 
 /**

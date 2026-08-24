@@ -28,11 +28,14 @@ export function useInfographicExport(): UseInfographicExportResult {
       return;
     }
 
+    const posterNode = posterRef.current;
+    posterNode.classList.add('is-exporting');
+
     const originalSrcs: { img: HTMLImageElement; origSrc: string }[] = [];
     let restoreClipping: (() => void) | null = null;
 
     try {
-      const imgs = Array.from(posterRef.current.querySelectorAll('img'));
+      const imgs = Array.from(posterNode.querySelectorAll('img'));
 
       await Promise.all(
         imgs.map(async (img) => {
@@ -58,14 +61,14 @@ export function useInfographicExport(): UseInfographicExportResult {
       }
       if (!posterRef.current) return;
 
-      restoreClipping = disableTextClipping(posterRef.current);
+      restoreClipping = disableTextClipping(posterNode);
       const fontEmbedCSS = await getFontEmbedCSS();
       
-      const rect = posterRef.current.getBoundingClientRect();
-      const w = Math.round(rect.width) || posterRef.current.offsetWidth || 480;
+      const rect = posterNode.getBoundingClientRect();
+      const w = Math.round(rect.width) || posterNode.offsetWidth || 480;
       const h = Math.round(w * 1.25);
 
-      const dataUrl = await toPng(posterRef.current, { 
+      const dataUrl = await toPng(posterNode, { 
         cacheBust: false,
         skipFonts: !fontEmbedCSS,
         fontEmbedCSS: fontEmbedCSS || undefined,
@@ -75,6 +78,21 @@ export function useInfographicExport(): UseInfographicExportResult {
         canvasHeight: 1350,
         pixelRatio: 1080 / w,
         backgroundColor: '#0d1117',
+        filter: (domNode) => {
+          if (domNode instanceof HTMLElement) {
+            if (
+              domNode.classList.contains('edit-toolbar') ||
+              domNode.classList.contains('editable-image-overlay') ||
+              domNode.classList.contains('editable-text-icon') ||
+              domNode.classList.contains('image-edit-overlay') ||
+              domNode.classList.contains('editable-image-badge') ||
+              domNode.classList.contains('pokemon-picker-modal')
+            ) {
+              return false;
+            }
+          }
+          return true;
+        },
         style: {
           width: `${w}px`,
           height: `${h}px`,
@@ -102,6 +120,7 @@ export function useInfographicExport(): UseInfographicExportResult {
     } catch (err) {
       console.error('Export failed', err);
     } finally {
+      posterNode.classList.remove('is-exporting');
       originalSrcs.forEach(({ img, origSrc }) => {
         img.src = origSrc;
       });

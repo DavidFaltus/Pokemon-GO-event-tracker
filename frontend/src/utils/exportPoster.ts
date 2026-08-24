@@ -122,6 +122,7 @@ export async function exportPosterToPng(
   // Small delay to ensure DOM and editor state are stabilized
   await new Promise((r) => setTimeout(r, 100));
 
+  node.classList.add('is-exporting');
   const originalSrcs: { img: HTMLImageElement; origSrc: string }[] = [];
 
   try {
@@ -175,6 +176,21 @@ export async function exportPosterToPng(
       canvasHeight: targetHeight,
       pixelRatio,
       backgroundColor: options.backgroundColor || '#090d16',
+      filter: (domNode) => {
+        if (domNode instanceof HTMLElement) {
+          if (
+            domNode.classList.contains('edit-toolbar') ||
+            domNode.classList.contains('editable-image-overlay') ||
+            domNode.classList.contains('editable-text-icon') ||
+            domNode.classList.contains('image-edit-overlay') ||
+            domNode.classList.contains('editable-image-badge') ||
+            domNode.classList.contains('pokemon-picker-modal')
+          ) {
+            return false;
+          }
+        }
+        return true;
+      },
       style: {
         width: `${width}px`,
         height: `${height}px`,
@@ -203,6 +219,7 @@ export async function exportPosterToPng(
     console.error('exportPosterToPng failed:', err);
     throw err;
   } finally {
+    node.classList.remove('is-exporting');
     // Always restore original image sources
     originalSrcs.forEach(({ img, origSrc }) => {
       img.src = origSrc;

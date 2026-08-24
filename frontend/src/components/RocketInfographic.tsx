@@ -46,7 +46,7 @@ export const RocketInfographic: React.FC<RocketInfographicProps> = ({ event, lan
 
   return (
     <div className="rocket-infographic-wrapper">
-      <div className={`rocket-poster-container ${editor.isExporting ? 'is-exporting' : ''}`} ref={posterRef}>
+      <div className={`rocket-poster-container ${isExporting ? 'is-exporting' : ''}`} ref={posterRef}>
         {isAdmin && (
           <EditToolbar isEditing={editor.isEditing} onToggleEdit={() => editor.setIsEditing(!editor.isEditing)} hasOverrides={editor.hasOverrides} onReset={editor.resetAll} lang={lang} />
         )}

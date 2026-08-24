@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { getPokemonRankingInfo, isLegacyMove } from './pokemonCountersHelper';
+import { 
+  getPokemonRankingInfo, 
+  isLegacyMove, 
+  generateRaidSearchString, 
+  getTieredCountersForBoss,
+  getTopCountersFilterString
+} from './pokemonCountersHelper';
 import { pokemonRankings } from '../data/pokemonRankings';
 
 describe('getPokemonRankingInfo & Metas', () => {
@@ -154,5 +160,48 @@ describe('getPokemonRankingInfo & Metas', () => {
     expect(mewtwo).toBeDefined();
     expect(mewtwo!.attack).toBe(300);
     expect(mewtwo!.dps).toBeGreaterThan(35);
+  });
+
+  it('generates Universal raid search string with dual moves, multiple tiers and !@frustration', () => {
+    const searchString = generateRaidSearchString('Mesprit', { tierMode: 'universal' });
+
+    expect(searchString).toBeDefined();
+    // Must contain !@frustration
+    expect(searchString).toContain('!@frustration');
+    // Must contain Fast moves (@1) and Charged moves (@2, @3) for Ghost/Dark/Bug
+    expect(searchString).toContain('@1ghost');
+    expect(searchString).toContain('@2ghost');
+    expect(searchString).toContain('@3ghost');
+    // Must NOT force 3*,4* in universal mode so wild 0-2* level 35 catches work
+    expect(searchString).not.toContain('3*,4*');
+    // Must include multiple dex IDs
+    expect(searchString.split('&').length).toBeGreaterThanOrEqual(3);
+  });
+
+  it('generates Hardcore raid search string with 3*,4*, cp2500- and high tier counters', () => {
+    const searchString = generateRaidSearchString('Rayquaza', { tierMode: 'hardcore' });
+
+    expect(searchString).toContain('3*,4*');
+    expect(searchString).toContain('cp2500-');
+    expect(searchString).toContain('!@frustration');
+    expect(searchString).toContain('@1ice');
+  });
+
+  it('generates Budget raid search string with cp1800- and accessible counters', () => {
+    const searchString = generateRaidSearchString('Kyogre', { tierMode: 'budget' });
+
+    expect(searchString).toContain('cp1800-');
+    expect(searchString).toContain('!@frustration');
+    expect(searchString).toContain('@1electric');
+  });
+
+  it('correctly categorizes counters into 4 tiers via getTieredCountersForBoss', () => {
+    const tiered = getTieredCountersForBoss('Dialga');
+
+    expect(tiered.allPokedexIds.length).toBeGreaterThan(5);
+    expect(tiered.tierS.length).toBeGreaterThanOrEqual(1);
+    expect(tiered.tierA.length).toBeGreaterThanOrEqual(1);
+    expect(tiered.tierB.length).toBeGreaterThanOrEqual(1);
+    expect(tiered.tierC.length).toBeGreaterThanOrEqual(1);
   });
 });

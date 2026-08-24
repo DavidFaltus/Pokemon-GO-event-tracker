@@ -105,7 +105,7 @@ export const MaxInfographic: React.FC<MaxInfographicProps> = ({ event, lang = 'e
 
   return (
     <div className="max-infographic-wrapper">
-      <div className={`max-poster-container ${editor.isExporting ? 'is-exporting' : ''}`} ref={posterRef}>
+      <div className={`max-poster-container ${isExporting ? 'is-exporting' : ''}`} ref={posterRef}>
         {isAdmin && (
           <EditToolbar 
             isEditing={editor.isEditing} 

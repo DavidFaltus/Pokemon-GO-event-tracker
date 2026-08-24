@@ -128,14 +128,14 @@ export interface FriendListing {
 const DEFAULT_SAMPLE_FRIENDS: FriendListing[] = [];
 
 export async function loadFriendListings(): Promise<FriendListing[]> {
-  const now = Date.now();
   let rawList = await dataStore.get<FriendListing[]>('friends_listings', { defaultValue: DEFAULT_SAMPLE_FRIENDS });
   if (!rawList || rawList.length === 0) {
     rawList = DEFAULT_SAMPLE_FRIENDS;
   }
   
-  const activeList = rawList.filter(item => item.expiresAt > now);
-  return activeList.sort((a, b) => b.createdAt - a.createdAt);
+  // No expiry filtering — friend codes persist permanently.
+  // Capacity is managed by the 300-entry cap in addFriendListing().
+  return rawList.sort((a, b) => b.createdAt - a.createdAt);
 }
 
 export async function saveFriendListings(listings: FriendListing[]): Promise<boolean> {
@@ -167,7 +167,7 @@ export async function addFriendListing(data: {
     country: (data.country || '').trim().substring(0, 50),
     note: (data.note || '').trim().substring(0, 150),
     createdAt: now,
-    expiresAt: now + 7 * 24 * 3600 * 1000
+    expiresAt: 0 // Permanent — no automatic expiration
   };
 
   const currentList = await loadFriendListings();

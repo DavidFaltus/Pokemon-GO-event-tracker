@@ -279,7 +279,7 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
 
       {/* Poster Canvas */}
       <div
-        className={`ei-poster ${editor.isExporting ? 'is-exporting' : ''}`}
+        className={`ei-poster ${isExporting ? 'is-exporting' : ''}`}
         ref={posterRef}
         style={{ borderColor: `${theme.accent}55` }}
       >

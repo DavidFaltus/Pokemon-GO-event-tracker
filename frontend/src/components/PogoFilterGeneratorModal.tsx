@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import './PogoFilterGeneratorModal.css';
 import type { Language } from '../data/translations';
-import { getTopCountersByName, getCounterTypesForName } from '../utils/pokemonCountersHelper';
+import { getTopCountersByName, getCounterTypesForName, generateRaidSearchString } from '../utils/pokemonCountersHelper';
 import { Copy, Check, Filter, Zap, Sparkles, Shield, X, Search, Award } from 'lucide-react';
 import type { EventData } from './EventCard';
 
@@ -130,27 +130,15 @@ export const PogoFilterGeneratorModal: React.FC<PogoFilterGeneratorModalProps> =
     return counterTypes.map(t => `@${t.toLowerCase()}`).join(',');
   }, [counterTypes]);
 
-  // Generate full combined search string
+  // Generate full combined search string with anti-Frustration and dual move validation
   const fullSearchString = useMemo(() => {
-    if (!idSearchString) return '';
-    const parts: string[] = [];
-    if (minIVStar) parts.push('3*,4*');
-    
-    let prefix = '';
-    if (includeMega && includeShadow) prefix = 'mega,shadow';
-    else if (includeMega) prefix = 'mega';
-    else if (includeShadow) prefix = 'shadow';
-
-    if (prefix) parts.push(prefix);
-
-    if (includeMoves && moveTypesString) {
-      parts.push(moveTypesString);
-    }
-
-    parts.push(idSearchString);
-
-    return parts.join('&');
-  }, [idSearchString, includeMega, includeShadow, minIVStar, includeMoves, moveTypesString]);
+    return generateRaidSearchString(selectedBoss, {
+      tierMode: 'universal',
+      includeFrustrationExclusion: true,
+      dualMoveCheck: includeMoves,
+      ivFilter: minIVStar ? '3*,4*' : 'all'
+    });
+  }, [selectedBoss, includeMoves, minIVStar]);
 
   // ─── ACTIVE EVENT MEGA EVOLUTION LOGIC ─────────────────────────────────
   const activeEventsList = useMemo(() => {

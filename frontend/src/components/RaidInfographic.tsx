@@ -263,7 +263,7 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
       )}
 
       {/* 4:5 Aspect Ratio Poster Element */}
-      <div className={`raid-poster-container-4x5 ${editor.isExporting ? 'is-exporting' : ''}`} ref={posterRef}>
+      <div className={`raid-poster-container-4x5 ${isExporting ? 'is-exporting' : ''}`} ref={posterRef}>
         {isAdmin && (
           <EditToolbar isEditing={editor.isEditing} onToggleEdit={() => editor.setIsEditing(!editor.isEditing)} hasOverrides={editor.hasOverrides} onReset={editor.resetAll} lang={lang} />
         )}

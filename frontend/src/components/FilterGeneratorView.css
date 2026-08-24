@@ -256,6 +256,140 @@
   box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
 }
 
+/* Tier Mode Selector (Universal vs Hardcore vs Budget vs Weather) */
+.filter-tier-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.filter-tier-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted, #94a3b8);
+}
+
+.filter-tier-pills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.filter-tier-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+  border-radius: 12px;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.filter-tier-pill-btn:hover {
+  background: rgba(168, 85, 247, 0.12);
+  border-color: rgba(168, 85, 247, 0.35);
+  color: #c084fc;
+}
+
+.filter-tier-pill-btn.active {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(124, 58, 237, 0.25));
+  border-color: #a855f7;
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.25);
+}
+
+/* Options Toolbar (!@frustration, Dual Moves, IV) */
+.filter-options-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  margin-top: 4px;
+}
+
+.filter-toggle-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.80rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.filter-toggle-chip:hover {
+  background: rgba(168, 85, 247, 0.12);
+  border-color: rgba(168, 85, 247, 0.3);
+  color: #e9d5ff;
+}
+
+.filter-toggle-chip.active {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+}
+
+.toggle-check-icon {
+  color: #4ade80;
+}
+
+.filter-iv-selector-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.iv-selector-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted, #94a3b8);
+}
+
+.filter-iv-pill {
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: var(--text-muted, #94a3b8);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-iv-pill:hover {
+  background: rgba(168, 85, 247, 0.12);
+  color: #e9d5ff;
+}
+
+.filter-iv-pill.active {
+  background: rgba(168, 85, 247, 0.25);
+  border-color: #a855f7;
+  color: #ffffff;
+}
+
 /* Counters Showcase Grid with Defensive Resistance Badges (Task #3) */
 .filter-counters-showcase {
   display: flex;
@@ -525,4 +659,45 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+}
+
+/* Light Mode Overrides */
+body.light-mode .filter-tier-pill-btn {
+  background: #f1f5f9;
+  border-color: rgba(15, 23, 42, 0.15);
+  color: #475569;
+}
+
+body.light-mode .filter-tier-pill-btn.active {
+  background: rgba(168, 85, 247, 0.18);
+  border-color: #a855f7;
+  color: #6b21a8;
+}
+
+body.light-mode .filter-options-toolbar {
+  background: #f8fafc;
+  border-color: rgba(15, 23, 42, 0.12);
+}
+
+body.light-mode .filter-toggle-chip {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.15);
+  color: #475569;
+}
+
+body.light-mode .filter-toggle-chip.active {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: #16a34a;
+  color: #15803d;
+}
+
+body.light-mode .filter-iv-pill {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.15);
+  color: #475569;
+}
+
+body.light-mode .filter-iv-pill.active {
+  background: #a855f7;
+  color: #ffffff;
 }

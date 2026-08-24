@@ -188,7 +188,7 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
         country: formCountry,
         note: formNote,
         createdAt: Date.now(),
-        expiresAt: Date.now() + 7 * 24 * 3600 * 1000
+        expiresAt: 0
       };
       setListings(prev => [localListing, ...prev]);
       setShowPostModal(false);

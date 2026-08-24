@@ -512,7 +512,7 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
 
       <div className="month-summary-modal-body">
         <div 
-          className={`month-summary-poster aspect-4-5 mode-${summaryMode} theme-${summaryMode === 'monthly' ? currentSlide?.theme : 'weekly'} ${editor.isExporting ? 'is-exporting' : ''}`} 
+          className={`month-summary-poster aspect-4-5 mode-${summaryMode} theme-${summaryMode === 'monthly' ? currentSlide?.theme : 'weekly'} ${isExporting ? 'is-exporting' : ''}`} 
           ref={posterRef}
         >
           {isAdmin && (

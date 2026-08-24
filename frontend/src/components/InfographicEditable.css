@@ -333,6 +333,7 @@ textarea.editable-text-input {
 /* ── Export: hide edit UI elements during export ── */
 .is-exporting .edit-toolbar,
 .is-exporting .editable-image-badge,
-.is-exporting .image-edit-overlay {
+.is-exporting .image-edit-overlay,
+.is-exporting .pokemon-picker-modal {
   display: none !important;
 }

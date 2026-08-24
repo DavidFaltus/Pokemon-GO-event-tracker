@@ -205,7 +205,7 @@ export const CommunityDayInfographic: React.FC<CommunityDayInfographicProps> = (
   return (
     <div className="cd-infographic-wrapper">
       {/* Main Infographic Poster (Canvas Target) */}
-      <div className={`cd-poster-container ${editor.isExporting ? 'is-exporting' : ''}`} ref={posterRef}>
+      <div className={`cd-poster-container ${isExporting ? 'is-exporting' : ''}`} ref={posterRef}>
         {isAdmin && (
           <EditToolbar isEditing={editor.isEditing} onToggleEdit={() => editor.setIsEditing(!editor.isEditing)} hasOverrides={editor.hasOverrides} onReset={editor.resetAll} lang={lang} />
         )}

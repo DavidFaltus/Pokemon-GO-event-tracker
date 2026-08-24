@@ -4,13 +4,20 @@ import React, { useState, useEffect, useMemo } from 'react';
 import './FilterGeneratorView.css';
 import type { Language } from '../data/translations';
 import type { EventData } from './EventCard';
-import { getTopCountersForPokemonDetailed, getCounterTypesForName, getPokemonTypesByName } from '../utils/pokemonCountersHelper';
+import { 
+  getTopCountersForPokemonDetailed, 
+  getCounterTypesForName, 
+  getPokemonTypesByName, 
+  generateRaidSearchString,
+  getTieredCountersForBoss,
+  type RaidFilterOptions
+} from '../utils/pokemonCountersHelper';
 import { handlePokemonImageError, getPokemonIconUrl, getBasePokemonName } from '../utils/imageResolver';
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { pokemonRankings } from '../data/pokemonRankings';
 import { getRecommendedMegaForEvents } from '../utils/megaFilterHelper';
 import { API_BASE_URL } from '../config';
-import { Copy, Check, Search, Filter, Zap, Sparkles, Dna, ShieldCheck } from 'lucide-react';
+import { Copy, Check, Search, Filter, Zap, Sparkles, Dna, ShieldCheck, ShieldAlert, Sliders, Globe, Crown, Sprout, CloudSun } from 'lucide-react';
 
 interface FilterGeneratorViewProps {
   lang: Language;
@@ -189,6 +196,11 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
       .slice(0, 10);
   }, [selectedBoss, currentRaidBosses]);
 
+  const [tierMode, setTierMode] = useState<'universal' | 'hardcore' | 'budget' | 'weather'>('universal');
+  const [excludeFrustration, setExcludeFrustration] = useState<boolean>(true);
+  const [dualMoves, setDualMoves] = useState<boolean>(true);
+  const [ivFilter, setIvFilter] = useState<'all' | '3*,4*' | '4*'>('all');
+
   // Detailed Top Counters algorithm dynamically recalculating based on filterStrategy (Resistant vs Max DPS)
   const topCountersDetailed = useMemo(() => {
     const clean = selectedBoss.toLowerCase().replace(/^(shadow|mega|primal)\s+/, '').trim();
@@ -206,18 +218,16 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
   }, [selectedBoss]);
 
   const searchFilterString = useMemo(() => {
-    if (topCountersDetailed.length === 0) return '';
-    const uniqueIds = Array.from(new Set(topCountersDetailed.map(c => c.pokemon.pokedexId)));
-    const parts: string[] = ['3*,4*'];
-
-    if (counterTypes.length > 0) {
-      const moveTypesStr = counterTypes.map(t => `@${t.toLowerCase()}`).join(',');
-      parts.push(moveTypesStr);
-    }
-
-    parts.push(uniqueIds.join(','));
-    return parts.join('&');
-  }, [topCountersDetailed, counterTypes]);
+    return generateRaidSearchString(selectedBoss, {
+      tierMode,
+      includeFrustrationExclusion: excludeFrustration,
+      dualMoveCheck: dualMoves,
+      ivFilter: ivFilter,
+      filterStrategy,
+      weatherBoosted: tierMode === 'weather',
+      maxCountersCount: tierMode === 'universal' ? 25 : 16
+    });
+  }, [selectedBoss, tierMode, excludeFrustration, dualMoves, ivFilter, filterStrategy]);
 
   const handleCopyRaid = () => {
     if (!searchFilterString) return;
@@ -272,7 +282,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
         return 'Top Doporučení Counterři:';
       case 'filter_output':
         if (lang === 'ja') return 'レイド対策検索フィルター';
-        if (lang === 'ru') return 'Фильтр контр-ポケモン';
+        if (lang === 'ru') return 'Фильтр контр-покемонов';
         if (lang === 'en') return 'Raid Counter Filter';
         return 'Vyhledávací filtr Raid Counterů';
       case 'mega_title':
@@ -290,6 +300,16 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
         if (lang === 'ru') return 'Скопировано!';
         if (lang === 'en') return 'Copied!';
         return 'Zkopírováno!';
+      case 'tier_select_title':
+        if (lang === 'ja') return 'プレイヤータイプ・フィルターモード:';
+        if (lang === 'ru') return 'Профиль игрока и режим фильтра:';
+        if (lang === 'en') return 'Player Tier & Filter Mode:';
+        return 'Profil hráče & Režim filtru:';
+      case 'options_title':
+        if (lang === 'ja') return '高度な絞り込み設定:';
+        if (lang === 'ru') return 'Дополнительные настройки фильтра:';
+        if (lang === 'en') return 'Advanced Filter Controls:';
+        return 'Pokročilé nastavení vyhledávání:';
       default:
         return '';
     }
@@ -418,6 +438,110 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
               <span>{getPokemonName(boss, lang)}</span>
             </button>
           ))}
+        </div>
+
+        {/* Tier Mode Selector (Universal vs Hardcore vs Budget vs Weather) */}
+        <div className="filter-tier-section">
+          <div className="filter-tier-header">
+            <Sliders size={14} style={{ color: 'var(--accent-purple, #a855f7)' }} />
+            <span>{getText('tier_select_title')}</span>
+          </div>
+          <div className="filter-tier-pills-grid">
+            <button
+              type="button"
+              className={`filter-tier-pill-btn ${tierMode === 'universal' ? 'active' : ''}`}
+              onClick={() => {
+                setTierMode('universal');
+                setIvFilter('all');
+              }}
+            >
+              <Globe size={14} />
+              <span>{lang === 'cs' ? '🌐 Univerzální (Doporučeno)' : lang === 'ja' ? '🌐 万能型（おすすめ）' : lang === 'ru' ? '🌐 Универсальный' : '🌐 Universal (Recommended)'}</span>
+            </button>
+
+            <button
+              type="button"
+              className={`filter-tier-pill-btn ${tierMode === 'hardcore' ? 'active' : ''}`}
+              onClick={() => {
+                setTierMode('hardcore');
+                setIvFilter('3*,4*');
+              }}
+            >
+              <Crown size={14} />
+              <span>{lang === 'cs' ? '👑 Hardcore Meta (3*, 4*, CP 2500+)' : lang === 'ja' ? '👑 トップメタ (3*, 4*, 2500+)' : lang === 'ru' ? '👑 Топ-Мета (3*, 4*)' : '👑 Hardcore Meta (3*, 4*, CP 2500+)'}</span>
+            </button>
+
+            <button
+              type="button"
+              className={`filter-tier-pill-btn ${tierMode === 'budget' ? 'active' : ''}`}
+              onClick={() => {
+                setTierMode('budget');
+                setIvFilter('all');
+              }}
+            >
+              <Sprout size={14} />
+              <span>{lang === 'cs' ? '🌱 Budget & Wild (Dostupní)' : lang === 'ja' ? '🌱 育成コスト低・野生捕獲' : lang === 'ru' ? '🌱 Бюджетный / Дикие' : '🌱 Budget & Wild Spawns'}</span>
+            </button>
+
+            <button
+              type="button"
+              className={`filter-tier-pill-btn ${tierMode === 'weather' ? 'active' : ''}`}
+              onClick={() => setTierMode('weather')}
+            >
+              <CloudSun size={14} />
+              <span>{lang === 'cs' ? '☀️ Weather Boost (@weather)' : lang === 'ja' ? '☀️ 天候ブースト (@weather)' : lang === 'ru' ? '☀️ Погодный буст' : '☀️ Weather Boosted (@weather)'}</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Advanced Filter Toggles (Anti-Frustration, Dual STAB Moves, IV) */}
+        <div className="filter-options-toolbar">
+          <button
+            type="button"
+            className={`filter-toggle-chip ${excludeFrustration ? 'active' : ''}`}
+            onClick={() => setExcludeFrustration(prev => !prev)}
+            title={lang === 'cs' ? 'Vyloučí Shadow Pokémony s neupraveným útokem Frustration' : 'Excludes Shadow Pokémon with un-TMd Frustration'}
+          >
+            <ShieldAlert size={14} />
+            <span>{lang === 'cs' ? '🚫 Bez Frustrace (!@frustration)' : lang === 'ja' ? '🚫 やつあたり除外 (!@frustration)' : lang === 'ru' ? '🚫 Без Фрустрации' : '🚫 Exclude Frustration (!@frustration)'}</span>
+            {excludeFrustration && <Check size={12} className="toggle-check-icon" />}
+          </button>
+
+          <button
+            type="button"
+            className={`filter-toggle-chip ${dualMoves ? 'active' : ''}`}
+            onClick={() => setDualMoves(prev => !prev)}
+            title={lang === 'cs' ? 'Filtruje rychlý útok (@1) i nabitý útok (@2,@3) se Super Effective bonusem' : 'Validates both Fast move (@1) and Charged move (@2,@3)'}
+          >
+            <Zap size={14} />
+            <span>{lang === 'cs' ? '⚔️ Rychlý i Nabitý (@1 & @2,@3)' : lang === 'ja' ? '⚔️ 通常＆ゲージ技両方一致' : lang === 'ru' ? '⚔️ Быстрая и заряжаемая (@1 & @2,@3)' : '⚔️ Dual Fast+Charged (@1 & @2,@3)'}</span>
+            {dualMoves && <Check size={12} className="toggle-check-icon" />}
+          </button>
+
+          <div className="filter-iv-selector-group">
+            <span className="iv-selector-label">⭐ IV:</span>
+            <button
+              type="button"
+              className={`filter-iv-pill ${ivFilter === 'all' ? 'active' : ''}`}
+              onClick={() => setIvFilter('all')}
+            >
+              {lang === 'cs' ? 'Všechna IV' : lang === 'ja' ? 'すべて' : lang === 'ru' ? 'Все IV' : 'All IV'}
+            </button>
+            <button
+              type="button"
+              className={`filter-iv-pill ${ivFilter === '3*,4*' ? 'active' : ''}`}
+              onClick={() => setIvFilter('3*,4*')}
+            >
+              3*,4*
+            </button>
+            <button
+              type="button"
+              className={`filter-iv-pill ${ivFilter === '4*' ? 'active' : ''}`}
+              onClick={() => setIvFilter('4*')}
+            >
+              100% (4*)
+            </button>
+          </div>
         </div>
 
         {/* Recommended Counters Showcase Grid with Defensive Resistance Badges */}
