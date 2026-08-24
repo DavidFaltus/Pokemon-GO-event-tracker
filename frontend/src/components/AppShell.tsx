@@ -193,14 +193,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
       category: 'db',
       keywords: ['guides', 'průvodce', 'návody', 'infografiky', 'infographics', 'tips', 'гайды', 'ガイド']
     },
-    {
-      tab: 'types',
-      icon: <Zap size={20} style={{ color: '#eab308' }} />,
-      title: t.tabs_types || 'Typy & Slabosti',
-      description: lang === 'cs' ? 'Tabulka slabostí a odolností' : (lang === 'ja' ? 'タイプ相性と弱点一覧' : (lang === 'ru' ? 'Таблица эффективности и слабостей' : 'Type Chart & Counters')),
-      category: 'db',
-      keywords: ['types', 'typy', 'slabosti', 'odolnosti', 'weakness', 'effectiveness', 'chart', 'counters', 'типы', 'слабости', '相性']
-    },
     // Tools & More
     {
       tab: 'filter',
@@ -352,11 +344,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
           <Link href={getSectionPath(lang, 'guides')} className={`sidebar-nav-item ${activeTab === 'guides' ? 'active' : ''}`}>
             <BookOpen size={18} />
             <span>{t.tabs_guides || 'Průvodce'}</span>
-          </Link>
-
-          <Link href={getSectionPath(lang, 'types')} className={`sidebar-nav-item ${activeTab === 'types' ? 'active' : ''}`}>
-            <Zap size={18} />
-            <span>{t.tabs_types || 'Typy & Slabosti'}</span>
           </Link>
 
           <Link href={getSectionPath(lang, 'friends')} className={`sidebar-nav-item ${activeTab === 'friends' ? 'active' : ''}`}>
