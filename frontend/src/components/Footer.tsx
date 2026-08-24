@@ -128,9 +128,8 @@ export const Footer: React.FC<FooterProps> = ({ lang, onOpenTab, onOpenLegalModa
         <div className="footer-top">
           <div className="footer-brand">
             <div className="footer-logo">
-              <PokeballLogo size={22} />
-              <span style={{ color: '#ef4444' }}>PoGo</span>
-              <span style={{ color: '#38bdf8' }}>Events</span>
+              <PokeballLogo size={24} />
+              <span className="brand-title">PoGo Events</span>
             </div>
             <p>{getTranslation('brandDesc')}</p>
           </div>

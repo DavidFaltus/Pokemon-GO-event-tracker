@@ -7,10 +7,10 @@ import { translations, type Language } from '../data/translations';
 import { PokeballLogo } from './PokeballLogo';
 import { Footer } from './Footer';
 import { LegalModals, type LegalModalType } from './LegalModals';
-import { Calendar, Swords, Shield, Clock, Egg, Sparkles, Trophy, Filter, Settings, BookOpen, Download, Users, ScrollText } from 'lucide-react';
+import { Calendar, Swords, Shield, Clock, Egg, Sparkles, Trophy, Filter, Settings, BookOpen, Download, Users, ScrollText, Zap, X, Search, ChevronRight } from 'lucide-react';
 import { API_BASE_URL } from '../config';
 
-export type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'research' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin' | 'download' | '404';
+export type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'research' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin' | 'download' | 'types' | '404';
 
 const InstagramLogo = ({ size = 15, color = '#ffffff' }: { size?: number; color?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, display: 'inline-block', verticalAlign: 'middle' }}>
@@ -74,6 +74,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
     if (cleanPath.includes('/eggs')) return 'eggs';
     if (cleanPath.includes('/rankings') || cleanPath.includes('/pokemon')) return 'ranking';
     if (cleanPath.includes('/filter')) return 'filter';
+    if (cleanPath.includes('/types')) return 'types';
     if (cleanPath.includes('/download') || cleanPath.includes('/app')) return 'download';
     if (cleanPath.includes('/settings')) return 'settings';
     return 'events';
@@ -95,12 +96,146 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
       case 'ditto': return `${prefix}/ditto`;
       case 'eggs': return `${prefix}/eggs`;
       case 'filter': return `${prefix}/filter`;
+      case 'types': return `${prefix}/types`;
       case 'download': return `${prefix}/download`;
       case 'settings': return `${prefix}/settings`;
       case 'events':
       default: return `${prefix}`;
     }
   };
+
+  // Mobile Hub Menu State
+  const [isHubOpen, setIsHubOpen] = useState(false);
+  const [hubSearch, setHubSearch] = useState('');
+
+  // Lock body scroll when mobile Hub is open
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      if (isHubOpen) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
+    return () => {
+      if (typeof document !== 'undefined') {
+        document.body.style.overflow = '';
+      }
+    };
+  }, [isHubOpen]);
+
+  // Close Hub on ESC key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isHubOpen) {
+        setIsHubOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isHubOpen]);
+
+  // Close Hub whenever pathname changes
+  useEffect(() => {
+    setIsHubOpen(false);
+    setHubSearch('');
+  }, [pathname]);
+
+  interface HubMenuItem {
+    tab: TabType;
+    icon: React.ReactNode;
+    title: string;
+    description?: string;
+    category: 'live' | 'db' | 'tools';
+    keywords: string[];
+  }
+
+  const hubMenuItems: HubMenuItem[] = [
+    // Live events & research
+    {
+      tab: 'rocket',
+      icon: <Shield size={20} style={{ color: '#ef4444' }} />,
+      title: t.tabs_rocket || 'Rocket',
+      description: lang === 'cs' ? 'Grunti, lídři & Giovanni' : (lang === 'ja' ? 'したっぱ・リーダー・サカキ' : (lang === 'ru' ? 'Лидеры, бойцы и Джованни' : 'Grunts, Leaders & Giovanni')),
+      category: 'live',
+      keywords: ['rocket', 'rakeťáci', 'giovanni', 'cliff', 'sierra', 'arlo', 'shadow', 'grunt', 'stín', 'ракета', 'ロケット団']
+    },
+    {
+      tab: 'research',
+      icon: <ScrollText size={20} style={{ color: '#38bdf8' }} />,
+      title: t.tabs_research || 'Výzkum',
+      description: lang === 'cs' ? 'Polní úkoly z Pokéstopů' : (lang === 'ja' ? 'フィールドリサーチタスク' : (lang === 'ru' ? 'Полевые исследования и квесты' : 'Field Research & Rewards')),
+      category: 'live',
+      keywords: ['research', 'výzkum', 'úkoly', 'field', 'odměny', 'pokestop', 'quest', 'квесты', 'リサーチ']
+    },
+    // Database & mechanics
+    {
+      tab: 'eggs',
+      icon: <Egg size={20} style={{ color: '#fbbf24' }} />,
+      title: t.tabs_eggs || 'Vejce',
+      description: lang === 'cs' ? 'Líhnutí 2km, 5km, 7km, 10km, 12km' : (lang === 'ja' ? 'タマゴ孵化一覧 (2-12km)' : (lang === 'ru' ? 'Вылупление яиц 2-12 км' : 'Egg Hatches 2km-12km')),
+      category: 'db',
+      keywords: ['eggs', 'vejce', 'líhnutí', 'hatch', '2km', '5km', '7km', '10km', '12km', 'яйца', 'タマゴ']
+    },
+    {
+      tab: 'ditto',
+      icon: <Sparkles size={20} style={{ color: '#ec4899' }} />,
+      title: t.tabs_ditto || 'Ditto',
+      description: lang === 'cs' ? 'Aktuální maskování v divočině' : (lang === 'ja' ? 'へんしん・変装リスト' : (lang === 'ru' ? 'Текущие маскировки в дикой природе' : 'Current wild disguises')),
+      category: 'db',
+      keywords: ['ditto', 'maskování', 'disguise', 'proměna', 'transform', 'метаморф', 'メタモン']
+    },
+    {
+      tab: 'guides',
+      icon: <BookOpen size={20} style={{ color: '#a855f7' }} />,
+      title: t.tabs_guides || 'Průvodce',
+      description: lang === 'cs' ? 'Infografiky a herní návody' : (lang === 'ja' ? 'インフォグラフィックと攻略' : (lang === 'ru' ? 'Инфографика и гайды' : 'Infographics & Guides')),
+      category: 'db',
+      keywords: ['guides', 'průvodce', 'návody', 'infografiky', 'infographics', 'tips', 'гайды', 'ガイド']
+    },
+    {
+      tab: 'types',
+      icon: <Zap size={20} style={{ color: '#eab308' }} />,
+      title: t.tabs_types || 'Typy & Slabosti',
+      description: lang === 'cs' ? 'Tabulka slabostí a odolností' : (lang === 'ja' ? 'タイプ相性と弱点一覧' : (lang === 'ru' ? 'Таблица эффективности и слабостей' : 'Type Chart & Counters')),
+      category: 'db',
+      keywords: ['types', 'typy', 'slabosti', 'odolnosti', 'weakness', 'effectiveness', 'chart', 'counters', 'типы', 'слабости', '相性']
+    },
+    // Tools & More
+    {
+      tab: 'filter',
+      icon: <Filter size={20} style={{ color: '#06b6d4' }} />,
+      title: t.tabs_filter || 'Generátor filtrů',
+      description: lang === 'cs' ? 'Tvorba vlastních filtrů do hry' : (lang === 'ja' ? 'カスタム検索コード生成' : (lang === 'ru' ? 'Генератор поисковых строк' : 'Custom search strings')),
+      category: 'tools',
+      keywords: ['filter', 'filtr', 'generátor', 'search string', 'iv', 'hundo', 'pvp', 'фильтры', 'フィルター']
+    },
+    {
+      tab: 'download',
+      icon: <Download size={20} style={{ color: '#10b981' }} />,
+      title: t.tabs_download || 'Stáhnout aplikaci',
+      description: lang === 'cs' ? 'Instalace PWA nebo Android APK' : (lang === 'ja' ? 'PWA / APKアプリをインストール' : (lang === 'ru' ? 'Установка PWA / APK' : 'Install PWA or Android APK')),
+      category: 'tools',
+      keywords: ['download', 'stáhnout', 'aplikace', 'pwa', 'apk', 'install', 'приложение', 'アプリ']
+    },
+    {
+      tab: 'settings',
+      icon: <Settings size={20} style={{ color: '#94a3b8' }} />,
+      title: t.tabs_settings || 'Nastavení',
+      description: lang === 'cs' ? 'Notifikace, jazyk & téma' : (lang === 'ja' ? '通知、言語、テーマ設定' : (lang === 'ru' ? 'Уведомления, язык и тема' : 'Notifications, language & theme')),
+      category: 'tools',
+      keywords: ['settings', 'nastavení', 'jazyk', 'language', 'theme', 'notifications', 'notifikace', 'настройки', '設定']
+    },
+  ];
+
+  const searchNormalized = hubSearch.trim().toLowerCase();
+  const filteredHubItems = searchNormalized
+    ? hubMenuItems.filter(item =>
+        item.title.toLowerCase().includes(searchNormalized) ||
+        (item.description && item.description.toLowerCase().includes(searchNormalized)) ||
+        item.keywords.some(k => k.toLowerCase().includes(searchNormalized))
+      )
+    : hubMenuItems;
 
   return (
     <div className="web-app-layout">
@@ -217,6 +352,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
           <Link href={getSectionPath(lang, 'guides')} className={`sidebar-nav-item ${activeTab === 'guides' ? 'active' : ''}`}>
             <BookOpen size={18} />
             <span>{t.tabs_guides || 'Průvodce'}</span>
+          </Link>
+
+          <Link href={getSectionPath(lang, 'types')} className={`sidebar-nav-item ${activeTab === 'types' ? 'active' : ''}`}>
+            <Zap size={18} />
+            <span>{t.tabs_types || 'Typy & Slabosti'}</span>
           </Link>
 
           <Link href={getSectionPath(lang, 'friends')} className={`sidebar-nav-item ${activeTab === 'friends' ? 'active' : ''}`}>
@@ -341,63 +481,221 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
         {/* Footer */}
         <Footer lang={lang} onOpenTab={() => {}} onOpenLegalModal={(type) => setLegalModal(type)} />
 
-        {/* Mobile Bottom Navigation Bar */}
-        <nav className="bottom-nav">
-          <Link href={getSectionPath(lang, 'events')} className={`nav-item ${activeTab === 'events' ? 'active' : ''}`}>
-            <span className="nav-icon"><Calendar size={18} /></span>
+        {/* Mobile Bottom Navigation Bar (4 Pillars + Center Pokéball Hub) */}
+        <nav className="bottom-nav" aria-label="Mobile Navigation">
+          {/* Pillar 1: Events */}
+          <Link
+            href={getSectionPath(lang, 'events')}
+            className={`nav-item ${activeTab === 'events' && !isHubOpen ? 'active' : ''}`}
+            onClick={() => setIsHubOpen(false)}
+          >
+            <span className="nav-icon"><Calendar size={20} /></span>
             <span className="nav-text">{t.tabs_events}</span>
           </Link>
 
-          <Link href={getSectionPath(lang, 'raid')} className={`nav-item ${activeTab === 'raid' ? 'active' : ''}`}>
-            <span className="nav-icon"><Swords size={18} /></span>
+          {/* Pillar 2: Raids */}
+          <Link
+            href={getSectionPath(lang, 'raid')}
+            className={`nav-item ${activeTab === 'raid' && !isHubOpen ? 'active' : ''}`}
+            onClick={() => setIsHubOpen(false)}
+          >
+            <span className="nav-icon"><Swords size={20} /></span>
             <span className="nav-text">{t.tabs_raid}</span>
           </Link>
 
-          <Link href={getSectionPath(lang, 'rocket')} className={`nav-item ${activeTab === 'rocket' ? 'active' : ''}`}>
-            <span className="nav-icon"><Shield size={18} /></span>
-            <span className="nav-text">{t.tabs_rocket}</span>
-          </Link>
+          {/* Pillar Center: Pokéball Hub Button */}
+          <button
+            type="button"
+            className={`nav-item nav-hub-trigger ${isHubOpen ? 'hub-active' : ''} ${
+              !['events', 'raid', 'ranking', 'friends', 'admin'].includes(activeTab) ? 'subpage-active' : ''
+            }`}
+            onClick={() => setIsHubOpen(prev => !prev)}
+            aria-label={t.tabs_menu || 'Menu'}
+            aria-expanded={isHubOpen}
+          >
+            <div className="nav-hub-icon-wrapper">
+              <PokeballLogo size={28} />
+            </div>
+            <span className="nav-text">{t.tabs_menu || 'Menu'}</span>
+          </button>
 
-          <Link href={getSectionPath(lang, 'research')} className={`nav-item ${activeTab === 'research' ? 'active' : ''}`}>
-            <span className="nav-icon"><ScrollText size={18} /></span>
-            <span className="nav-text">{t.tabs_research || 'Výzkum'}</span>
-          </Link>
-
-          <Link href={getSectionPath(lang, 'ranking')} className={`nav-item ${activeTab === 'ranking' ? 'active' : ''}`}>
-            <span className="nav-icon"><Trophy size={18} /></span>
+          {/* Pillar 3: Rankings */}
+          <Link
+            href={getSectionPath(lang, 'ranking')}
+            className={`nav-item ${activeTab === 'ranking' && !isHubOpen ? 'active' : ''}`}
+            onClick={() => setIsHubOpen(false)}
+          >
+            <span className="nav-icon"><Trophy size={20} /></span>
             <span className="nav-text">{t.tabs_ranking}</span>
           </Link>
 
-          <Link href={getSectionPath(lang, 'guides')} className={`nav-item ${activeTab === 'guides' ? 'active' : ''}`}>
-            <span className="nav-icon"><BookOpen size={18} /></span>
-            <span className="nav-text">{t.tabs_guides || 'Průvodce'}</span>
-          </Link>
-
-          <Link href={getSectionPath(lang, 'friends')} className={`nav-item ${activeTab === 'friends' ? 'active' : ''}`}>
-            <span className="nav-icon"><Users size={18} /></span>
-            <span className="nav-text">{t.tabs_friends || 'Přátelé'}</span>
-          </Link>
-
-          <Link href={getSectionPath(lang, 'ditto')} className={`nav-item ${activeTab === 'ditto' ? 'active' : ''}`}>
-            <span className="nav-icon"><Sparkles size={18} /></span>
-            <span className="nav-text">{t.tabs_ditto}</span>
-          </Link>
-
-          <Link href={getSectionPath(lang, 'eggs')} className={`nav-item ${activeTab === 'eggs' ? 'active' : ''}`}>
-            <span className="nav-icon"><Egg size={18} /></span>
-            <span className="nav-text">{t.tabs_eggs}</span>
-          </Link>
-
-          <Link href={getSectionPath(lang, 'filter')} className={`nav-item ${activeTab === 'filter' ? 'active' : ''}`}>
-            <span className="nav-icon"><Filter size={18} /></span>
-            <span className="nav-text">{t.tabs_filter}</span>
-          </Link>
-
-          <Link href={getSectionPath(lang, 'settings')} className={`nav-item ${activeTab === 'settings' ? 'active' : ''}`}>
-            <span className="nav-icon"><Settings size={18} /></span>
-            <span className="nav-text">{t.tabs_settings || 'Nastavení'}</span>
+          {/* Pillar 4: Friends */}
+          <Link
+            href={getSectionPath(lang, 'friends')}
+            className={`nav-item ${activeTab === 'friends' && !isHubOpen ? 'active' : ''}`}
+            onClick={() => setIsHubOpen(false)}
+          >
+            <span className="nav-icon"><Users size={20} /></span>
+            <span className="nav-text">
+              {lang === 'en' ? 'Friends' : (t.tabs_friends ? t.tabs_friends.split('&')[0].trim() : 'Přátelé')}
+            </span>
           </Link>
         </nav>
+
+        {/* Mobile Nav Backdrop */}
+        <div
+          className={`mobile-nav-backdrop ${isHubOpen ? 'open' : ''}`}
+          onClick={() => setIsHubOpen(false)}
+          aria-hidden="true"
+        />
+
+        {/* Mobile Glass Hub Sheet */}
+        <div
+          className={`mobile-hub-sheet ${isHubOpen ? 'open' : ''}`}
+          role="dialog"
+          aria-modal="true"
+          aria-label={t.tabs_menu || 'Menu'}
+        >
+          {/* Drag Handle & Header */}
+          <div className="hub-sheet-header">
+            <div className="hub-drag-pill" />
+            <div className="hub-title-row">
+              <div className="hub-brand-badge">
+                <PokeballLogo size={24} />
+                <span className="brand-title">PoGo Events</span>
+              </div>
+              <button
+                type="button"
+                className="hub-close-btn"
+                onClick={() => setIsHubOpen(false)}
+                aria-label={t.nav_close || 'Zavřít'}
+              >
+                <X size={18} />
+              </button>
+            </div>
+          </div>
+
+          {/* In-Menu Instant Search Bar */}
+          <div className="hub-search-container">
+            <Search size={16} className="hub-search-icon" />
+            <input
+              type="text"
+              className="hub-search-input"
+              value={hubSearch}
+              onChange={(e) => setHubSearch(e.target.value)}
+              placeholder={t.nav_search_placeholder || 'Hledat sekci nebo nástroj...'}
+              autoComplete="off"
+            />
+            {hubSearch && (
+              <button
+                type="button"
+                className="hub-search-clear"
+                onClick={() => setHubSearch('')}
+                aria-label="Vymazat"
+              >
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          {/* Categorized Menu Items */}
+          <div className="hub-sheet-content">
+            {filteredHubItems.length === 0 ? (
+              <div className="hub-empty-state">
+                <p>{t.nav_no_results || 'Žádná sekce neodpovídá hledání'}</p>
+              </div>
+            ) : hubSearch.trim() ? (
+              <div className="hub-category-section">
+                <div className="hub-category-title">{t.nav_quick_access || 'Nalezené sekce'}</div>
+                <div className="hub-grid">
+                  {filteredHubItems.map((item) => (
+                    <Link
+                      key={item.tab}
+                      href={getSectionPath(lang, item.tab)}
+                      className={`hub-grid-item ${activeTab === item.tab ? 'active' : ''}`}
+                      onClick={() => setIsHubOpen(false)}
+                    >
+                      <span className="hub-item-icon">{item.icon}</span>
+                      <div className="hub-item-info">
+                        <span className="hub-item-title">{item.title}</span>
+                        {item.description && <span className="hub-item-desc">{item.description}</span>}
+                      </div>
+                      <ChevronRight size={16} className="hub-item-arrow" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* 1. Live Events & Research */}
+                <div className="hub-category-section">
+                  <div className="hub-category-title">{t.nav_cat_live || 'Živé akce & Výzkum'}</div>
+                  <div className="hub-grid">
+                    {hubMenuItems.filter(i => i.category === 'live').map((item) => (
+                      <Link
+                        key={item.tab}
+                        href={getSectionPath(lang, item.tab)}
+                        className={`hub-grid-item ${activeTab === item.tab ? 'active' : ''}`}
+                        onClick={() => setIsHubOpen(false)}
+                      >
+                        <span className="hub-item-icon">{item.icon}</span>
+                        <div className="hub-item-info">
+                          <span className="hub-item-title">{item.title}</span>
+                          {item.description && <span className="hub-item-desc">{item.description}</span>}
+                        </div>
+                        <ChevronRight size={16} className="hub-item-arrow" />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 2. Database & Mechanics */}
+                <div className="hub-category-section">
+                  <div className="hub-category-title">{t.nav_cat_db || 'Databáze & Mechaniky'}</div>
+                  <div className="hub-grid">
+                    {hubMenuItems.filter(i => i.category === 'db').map((item) => (
+                      <Link
+                        key={item.tab}
+                        href={getSectionPath(lang, item.tab)}
+                        className={`hub-grid-item ${activeTab === item.tab ? 'active' : ''}`}
+                        onClick={() => setIsHubOpen(false)}
+                      >
+                        <span className="hub-item-icon">{item.icon}</span>
+                        <div className="hub-item-info">
+                          <span className="hub-item-title">{item.title}</span>
+                          {item.description && <span className="hub-item-desc">{item.description}</span>}
+                        </div>
+                        <ChevronRight size={16} className="hub-item-arrow" />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 3. Tools & More */}
+                <div className="hub-category-section">
+                  <div className="hub-category-title">{t.nav_cat_tools || 'Nástroje & Ostatní'}</div>
+                  <div className="hub-grid">
+                    {hubMenuItems.filter(i => i.category === 'tools').map((item) => (
+                      <Link
+                        key={item.tab}
+                        href={getSectionPath(lang, item.tab)}
+                        className={`hub-grid-item ${activeTab === item.tab ? 'active' : ''}`}
+                        onClick={() => setIsHubOpen(false)}
+                      >
+                        <span className="hub-item-icon">{item.icon}</span>
+                        <div className="hub-item-info">
+                          <span className="hub-item-title">{item.title}</span>
+                          {item.description && <span className="hub-item-desc">{item.description}</span>}
+                        </div>
+                        <ChevronRight size={16} className="hub-item-arrow" />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
 
         {/* Legal Modals */}
         <LegalModals modalType={legalModal} lang={lang} onClose={() => setLegalModal(null)} />
