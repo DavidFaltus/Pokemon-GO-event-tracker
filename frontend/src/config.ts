@@ -50,13 +50,17 @@ export async function apiFetch(pathOrUrl: string, options?: RequestInit): Promis
   const queryString = pathOrUrl.includes('?') ? `?${pathOrUrl.split('?')[1]}` : '';
   const primaryUrl = isFullUrl ? pathOrUrl : `${API_BASE_URL}${cleanPath}${queryString}`;
 
+  let lastResponse: Response | null = null;
+  let lastError: unknown = null;
+
   // 1. Try Primary URL
   try {
     const res = await fetch(primaryUrl, options);
     if (res.ok) return res;
+    lastResponse = res;
     // If not OK (e.g. 404/500/502) and we have fallbacks, proceed to fallbacks
   } catch (primaryErr) {
-    // Network error on primary (e.g. localhost:4000 not running)
+    lastError = primaryErr;
   }
 
   // 2. Try Cloud Run production backend (if different from primary)
@@ -65,24 +69,36 @@ export async function apiFetch(pathOrUrl: string, options?: RequestInit): Promis
       const fallbackUrl = `${CLOUD_RUN_BACKEND_URL}${cleanPath}${queryString}`;
       const res = await fetch(fallbackUrl, options);
       if (res.ok) return res;
-    } catch {
-      // Cloud Run failed
+      if (!lastResponse) lastResponse = res;
+    } catch (cloudErr) {
+      if (!lastError) lastError = cloudErr;
     }
   }
 
-  // 3. Try ScrapedDuck CDN mirrors
-  const cdnMirrors = SCRAPED_DUCK_FALLBACKS[cleanPath];
+  // 3. Try ScrapedDuck CDN mirrors (for read endpoints)
+  const isReadMethod = !options?.method || options.method.toUpperCase() === 'GET';
+  const cdnMirrors = isReadMethod ? SCRAPED_DUCK_FALLBACKS[cleanPath] : undefined;
   if (cdnMirrors && cdnMirrors.length > 0) {
     for (const cdnUrl of cdnMirrors) {
       try {
         const res = await fetch(`${cdnUrl}?t=${Math.floor(Date.now() / 60000)}`);
         if (res.ok) return res;
-      } catch {
-        // try next CDN
+        if (!lastResponse) lastResponse = res;
+      } catch (cdnErr) {
+        if (!lastError) lastError = cdnErr;
       }
     }
   }
 
-  // Final attempt: fallback directly to primary fetch
+  // If any endpoint returned an HTTP response (e.g. 400 validation error or 404), return it
+  if (lastResponse) {
+    return lastResponse;
+  }
+
+  // If all attempts failed with network errors, throw the captured error
+  if (lastError) {
+    throw lastError;
+  }
+
   return fetch(primaryUrl, options);
 }

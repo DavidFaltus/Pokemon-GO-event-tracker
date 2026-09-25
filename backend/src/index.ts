@@ -30,6 +30,7 @@ import {
   saveEventDetailsCache,
   loadFriendListings,
   addFriendListing,
+  deleteFriendListing,
   FriendListing
 } from './storage';
 import { generateBotHtml, generate404Html, RouteTarget, Language } from './ssr';
@@ -1062,6 +1063,31 @@ app.post('/api/friends', rateLimit(10 * 60 * 1000, 5), express.json(), async (re
   } catch (error: any) {
     console.error('Error in POST /api/friends:', error.message);
     res.status(500).json({ success: false, error: 'Internal server error submitting friend code' });
+  }
+});
+
+// DELETE /api/friends/:code - Delete a friend code listing
+app.delete('/api/friends/:code', rateLimit(10 * 60 * 1000, 10), async (req, res) => {
+  try {
+    const { code } = req.params;
+    if (!code) {
+      return res.status(400).json({ success: false, error: 'Trainer code is required.' });
+    }
+
+    const clean = code.replace(/\D/g, '');
+    if (clean.length !== 12) {
+      return res.status(400).json({ success: false, error: 'Invalid trainer code format.' });
+    }
+
+    const deleted = await deleteFriendListing(clean);
+    if (!deleted) {
+      return res.status(404).json({ success: false, error: 'Trainer code not found.' });
+    }
+
+    res.json({ success: true, message: 'Trainer code deleted successfully.' });
+  } catch (error: any) {
+    console.error('Error in DELETE /api/friends:', error.message);
+    res.status(500).json({ success: false, error: 'Internal server error deleting friend code.' });
   }
 });
 

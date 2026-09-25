@@ -35,3 +35,6 @@ frontend/.firebase/
 .cache
 events_list.json
 raid_bosses.json
+*.tsbuildinfo
+scratch/
+

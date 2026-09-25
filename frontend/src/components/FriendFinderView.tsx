@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { translations, type Language } from '../data/translations';
-import { API_BASE_URL } from '../config';
+import { apiFetch } from '../config';
 import { 
   Users, 
   Copy, 
@@ -21,9 +21,12 @@ import {
   Flame, 
   Zap, 
   Shield,
-  ChevronRight
+  ChevronRight,
+  Edit3,
+  Trash2
 } from 'lucide-react';
 import './FriendFinderView.css';
+import { SEED_COMMUNITY_FRIENDS } from '../data/seedFriends';
 
 export interface FriendListing {
   id: string;
@@ -64,8 +67,6 @@ export const getVivillonSpriteUrl = (patternId: string): string => {
   return `https://img.pokemondb.net/sprites/home/normal/vivillon-${clean}.png`;
 };
 
-const FALLBACK_LISTINGS: FriendListing[] = [];
-
 interface FriendFinderViewProps {
   lang: Language;
 }
@@ -73,7 +74,14 @@ interface FriendFinderViewProps {
 export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
   const t = translations[lang] || translations.en;
 
-  const [listings, setListings] = useState<FriendListing[]>(FALLBACK_LISTINGS);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  // Stored own trainer code (hydrated from localStorage after mount)
+  const [myTrainerCode, setMyTrainerCode] = useState<string | null>(null);
+
+  // Listings initialized with verified community seed data to match SSR render exactly
+  const [listings, setListings] = useState<FriendListing[]>(SEED_COMMUNITY_FRIENDS);
+
   const [loading, setLoading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [showQrModal, setShowQrModal] = useState<FriendListing | null>(null);
@@ -97,25 +105,51 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Fetch from API
+  // Fetch live active friends from backend with automatic local cache backup & client hydration
   useEffect(() => {
+    setHasMounted(true);
+
+    // Read stored user's trainer code from localStorage post-mount
+    try {
+      const storedCode = localStorage.getItem('pogo_my_trainer_code');
+      if (storedCode) {
+        setMyTrainerCode(storedCode);
+      }
+    } catch {}
+
+    // Read cached listings from localStorage if available
+    try {
+      const cached = localStorage.getItem('pogo_cached_friend_listings');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setListings(parsed);
+        }
+      }
+    } catch {}
+
+    let isMounted = true;
     const fetchFriends = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${API_BASE_URL}/api/friends`);
+        const res = await apiFetch('/api/friends');
         if (res.ok) {
           const data = await res.json();
-          if (data.listings && Array.isArray(data.listings) && data.listings.length > 0) {
+          if (isMounted && data.listings && Array.isArray(data.listings) && data.listings.length > 0) {
             setListings(data.listings);
+            try {
+              localStorage.setItem('pogo_cached_friend_listings', JSON.stringify(data.listings));
+            } catch {}
           }
         }
       } catch (err) {
         console.warn('Could not load friends from API, using fallback:', err);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
     fetchFriends();
+    return () => { isMounted = false; };
   }, []);
 
   // Format Trainer Code input as XXXX XXXX XXXX
@@ -134,6 +168,53 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
     setTimeout(() => setToastMessage(null), 3000);
   };
 
+  // Find user's own listing if published (client-only after mount to guarantee identical SSR DOM)
+  const myListing = useMemo(() => {
+    if (!hasMounted || !myTrainerCode) return null;
+    const cleanMy = myTrainerCode.replace(/\s/g, '');
+    return listings.find(f => f.trainerCode.replace(/\s/g, '') === cleanMy) || null;
+  }, [hasMounted, listings, myTrainerCode]);
+
+  // Open edit modal for user's code
+  const handleOpenEdit = (listing: FriendListing) => {
+    setFormCode(listing.trainerCode);
+    setFormName(listing.trainerName);
+    setFormPattern(listing.vivillonPattern);
+    setFormTeam(listing.team);
+    setFormPurpose(listing.purpose);
+    setFormCountry(listing.country || '');
+    setFormNote(listing.note || '');
+    setFormError(null);
+    setShowPostModal(true);
+  };
+
+  // Delete user's own code from central API and local storage
+  const handleDeleteMyCode = async (codeToDelete: string) => {
+    const confirmMsg = t.friends_my_code_delete_confirm || 'Opravdu chcete svůj kód trvale odstranit z veřejného katalogu?';
+    if (!window.confirm(confirmMsg)) {
+      return;
+    }
+    const clean = codeToDelete.replace(/\D/g, '');
+    try {
+      await apiFetch(`/api/friends/${clean}`, { method: 'DELETE' });
+    } catch (err) {
+      console.warn('Failed to delete on server:', err);
+    }
+    setListings(prev => {
+      const updated = prev.filter(f => f.trainerCode.replace(/\s/g, '') !== clean);
+      try {
+        localStorage.setItem('pogo_cached_friend_listings', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+    setMyTrainerCode(null);
+    try {
+      localStorage.removeItem('pogo_my_trainer_code');
+    } catch {}
+    setToastMessage(t.friends_delete_success || 'Váš kód byl úspěšně odstraněn.');
+    setTimeout(() => setToastMessage(null), 3000);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
@@ -148,13 +229,14 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
       return;
     }
 
+    const formattedCode = formCode.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
     setIsSubmitting(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/friends`, {
+      const res = await apiFetch('/api/friends', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          trainerCode: formCode,
+          trainerCode: formattedCode,
           trainerName: formName,
           vivillonPattern: formPattern,
           team: formTeam,
@@ -166,21 +248,33 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
 
       const json = await res.json();
       if (res.ok && json.listing) {
-        setListings(prev => [json.listing, ...prev]);
+        const newListing: FriendListing = json.listing;
+        setListings(prev => {
+          const filtered = prev.filter(f => f.trainerCode.replace(/\s/g, '') !== clean);
+          const updated = [newListing, ...filtered];
+          try {
+            localStorage.setItem('pogo_cached_friend_listings', JSON.stringify(updated));
+          } catch {}
+          return updated;
+        });
+
+        // Remember own code
+        setMyTrainerCode(newListing.trainerCode);
+        try {
+          localStorage.setItem('pogo_my_trainer_code', newListing.trainerCode);
+        } catch {}
+
         setShowPostModal(false);
-        setFormCode('');
-        setFormName('');
-        setFormNote('');
         setToastMessage(t.friends_copied_toast || 'Code published successfully!');
         setTimeout(() => setToastMessage(null), 3000);
       } else {
         setFormError(json.error || 'Failed to submit code.');
       }
     } catch (err) {
-      // Fallback local addition if offline
+      // Local optimistic fallback if offline
       const localListing: FriendListing = {
         id: `local-${Date.now()}`,
-        trainerCode: formCode,
+        trainerCode: formattedCode,
         trainerName: formName,
         vivillonPattern: formPattern,
         team: formTeam,
@@ -190,9 +284,21 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
         createdAt: Date.now(),
         expiresAt: 0
       };
-      setListings(prev => [localListing, ...prev]);
+      setListings(prev => {
+        const filtered = prev.filter(f => f.trainerCode.replace(/\s/g, '') !== clean);
+        const updated = [localListing, ...filtered];
+        try {
+          localStorage.setItem('pogo_cached_friend_listings', JSON.stringify(updated));
+        } catch {}
+        return updated;
+      });
+      setMyTrainerCode(localListing.trainerCode);
+      try {
+        localStorage.setItem('pogo_my_trainer_code', localListing.trainerCode);
+      } catch {}
+
       setShowPostModal(false);
-      setToastMessage('Code added to your local list!');
+      setToastMessage(t.friends_copied_toast || 'Code added successfully!');
       setTimeout(() => setToastMessage(null), 3000);
     } finally {
       setIsSubmitting(false);
@@ -291,8 +397,8 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
               <Plus size={18} />
               <span>{t.friends_share_btn}</span>
             </button>
-            <div className="auto-expire-tag">
-              <Clock size={13} />
+            <div className="auto-expire-tag active-community">
+              <Globe size={13} />
               <span>{t.friends_auto_expire_notice}</span>
             </div>
           </div>
@@ -424,6 +530,66 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
         </div>
       </div>
 
+      {/* Pinned Card: User's Own Trainer Code */}
+      {hasMounted && myListing && (
+        <div className="my-code-pinned-banner animate-fade-in">
+          <div className="my-code-pinned-header">
+            <div className="my-code-badge-title">
+              <Sparkles size={16} className="my-code-sparkle-icon" />
+              <span>{t.friends_my_code_title || 'Váš zveřejněný Trainer Code'}</span>
+            </div>
+            <div className="my-code-btn-group">
+              <button 
+                type="button" 
+                className="btn-my-action edit" 
+                onClick={() => handleOpenEdit(myListing)}
+                title={t.friends_my_code_edit}
+              >
+                <Edit3 size={14} />
+                <span>{t.friends_my_code_edit}</span>
+              </button>
+              <button 
+                type="button" 
+                className="btn-my-action delete" 
+                onClick={() => handleDeleteMyCode(myListing.trainerCode)}
+                title={t.friends_my_code_delete}
+              >
+                <Trash2 size={14} />
+                <span>{t.friends_my_code_delete}</span>
+              </button>
+            </div>
+          </div>
+          <div className="my-code-pinned-body">
+            <div className="my-code-display-group">
+              <div className="my-trainer-code-digits">{myListing.trainerCode}</div>
+              <div className="my-trainer-name-row">
+                <span className="my-trainer-name">{myListing.trainerName}</span>
+                {getTeamBadge(myListing.team)}
+                {myListing.country && <span className="trainer-location"><Globe size={12} /> {myListing.country}</span>}
+              </div>
+            </div>
+            <div className="my-code-actions-row">
+              <button
+                type="button"
+                className={`btn-copy-code ${copiedId === myListing.id ? 'copied' : ''}`}
+                onClick={() => copyToClipboard(myListing)}
+              >
+                {copiedId === myListing.id ? <Check size={16} /> : <Copy size={16} />}
+                <span>{copiedId === myListing.id ? t.friends_copied_toast : t.friends_copy_btn}</span>
+              </button>
+              <button
+                type="button"
+                className="btn-qr-code"
+                title={t.friends_show_qr}
+                onClick={() => setShowQrModal(myListing)}
+              >
+                <QrCode size={18} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Listings Grid */}
       <div className="friend-cards-grid">
         {filteredListings.length === 0 ? (
@@ -438,14 +604,18 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
           filteredListings.map(listing => {
             const isCopied = copiedId === listing.id;
             const pat = VIVILLON_PATTERNS.find(p => p.id === listing.vivillonPattern);
+            const isMyCode = hasMounted && Boolean(myTrainerCode && (myTrainerCode.replace(/\s/g, '') === listing.trainerCode.replace(/\s/g, '')));
+            const isNew = hasMounted && (Date.now() - listing.createdAt < 48 * 3600 * 1000 && listing.createdAt > 1770000020000);
 
             return (
-              <div key={listing.id} className="friend-card animate-fade-in">
+              <div key={listing.id} className={`friend-card animate-fade-in ${isMyCode ? 'is-my-code' : ''}`}>
                 <div className="card-top-row">
                   <div className="trainer-info">
                     <div className="trainer-name-row">
                       <span className="trainer-name">{listing.trainerName}</span>
                       {getTeamBadge(listing.team)}
+                      {isMyCode && <span className="badge-my-code">{t.friends_badge_my}</span>}
+                      {isNew && <span className="badge-new-code">{t.friends_badge_new}</span>}
                     </div>
                     {listing.country && (
                       <span className="trainer-location">
@@ -453,9 +623,21 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
                       </span>
                     )}
                   </div>
-                  <span className="posted-time">
-                    <Clock size={11} /> {formatHoursAgo(listing.createdAt)}
-                  </span>
+                  <div className="card-top-right">
+                    <span className="posted-time" suppressHydrationWarning>
+                      <Clock size={11} /> {formatHoursAgo(listing.createdAt)}
+                    </span>
+                    {isMyCode && (
+                      <div className="card-owner-quick-actions">
+                        <button className="owner-quick-btn edit" onClick={() => handleOpenEdit(listing)} title={t.friends_my_code_edit}>
+                          <Edit3 size={13} />
+                        </button>
+                        <button className="owner-quick-btn delete" onClick={() => handleDeleteMyCode(listing.trainerCode)} title={t.friends_my_code_delete}>
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="card-tags-row">

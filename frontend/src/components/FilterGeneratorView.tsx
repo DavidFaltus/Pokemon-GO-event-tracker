@@ -16,7 +16,7 @@ import { handlePokemonImageError, getPokemonIconUrl, getBasePokemonName } from '
 import { getPokemonName } from '../utils/pokemonTranslator';
 import { pokemonRankings } from '../data/pokemonRankings';
 import { getRecommendedMegaForEvents } from '../utils/megaFilterHelper';
-import { API_BASE_URL } from '../config';
+import { apiFetch } from '../config';
 import { Copy, Check, Search, Filter, Zap, Sparkles, Dna, ShieldCheck, ShieldAlert, Sliders, Globe, Crown, Sprout, CloudSun } from 'lucide-react';
 
 interface FilterGeneratorViewProps {
@@ -79,11 +79,14 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
   const [filterStrategy, setFilterStrategy] = useState<'resistant' | 'max_dps'>('resistant');
   const [apiRaidBosses, setApiRaidBosses] = useState<string[]>([]);
 
-  // Fetch live active raid bosses directly from /api/raids endpoint (same source as Raids section)
+  // Fetch live active raid bosses directly via resilient apiFetch (with Cloud Run and CDN fallback)
   useEffect(() => {
     let isMounted = true;
-    fetch(`${API_BASE_URL}/api/raids`)
-      .then(res => res.json())
+    apiFetch('/api/raids')
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then(data => {
         if (isMounted && Array.isArray(data)) {
           const fetchedNames: string[] = [];
@@ -104,7 +107,10 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
           }
         }
       })
-      .catch(err => console.error('FilterGeneratorView live raid fetch error:', err));
+      .catch(err => {
+        // Fallback to static/event data cleanly without triggering Next.js dev error overlay
+        console.warn('FilterGeneratorView live raid fetch fallback:', err?.message || err);
+      });
 
     return () => { isMounted = false; };
   }, [initialRaidBoss]);

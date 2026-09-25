@@ -7,7 +7,10 @@ import {
   loadResearchCache,
   saveResearchCache,
   loadRaidBossesCache,
-  saveRaidBossesCache
+  saveRaidBossesCache,
+  loadFriendListings,
+  addFriendListing,
+  deleteFriendListing
 } from './storage';
 import { dataStore } from './dataStore';
 import { EnrichedEggGroup, EnrichedResearchTask, ScrapedRaidBoss } from './types';
@@ -91,5 +94,39 @@ describe('Storage & Disk Cache Persistence', () => {
     await dataStore.delete('raids_cache');
     const raids = await loadRaidBossesCache();
     expect(raids).toEqual([]);
+  });
+
+  it('loads seed community friend listings when store is empty', async () => {
+    await dataStore.delete('friends_listings');
+    const friends = await loadFriendListings();
+    expect(friends.length).toBeGreaterThanOrEqual(18);
+    expect(friends.some(f => f.vivillonPattern === 'sandstorm')).toBe(true);
+    expect(friends.some(f => f.vivillonPattern === 'ocean')).toBe(true);
+  });
+
+  it('adds and deletes friend listing with permanent retention and 1000 cap', async () => {
+    const testCode = '9999 8888 7777';
+    const added = await addFriendListing({
+      trainerCode: testCode,
+      trainerName: 'AshKetchum',
+      vivillonPattern: 'continental',
+      team: 'valor',
+      purpose: 'raids',
+      country: 'Pallet Town',
+      note: 'Gotta catch em all'
+    });
+
+    expect(added).not.toBeNull();
+    expect(added?.trainerCode).toBe('9999 8888 7777');
+    expect(added?.expiresAt).toBe(0);
+
+    const list = await loadFriendListings();
+    expect(list[0].trainerCode).toBe('9999 8888 7777');
+
+    const deleted = await deleteFriendListing(testCode);
+    expect(deleted).toBe(true);
+
+    const listAfterDelete = await loadFriendListings();
+    expect(listAfterDelete.some(f => f.trainerCode === testCode)).toBe(false);
   });
 });

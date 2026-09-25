@@ -125,16 +125,16 @@ export interface FriendListing {
   expiresAt: number;
 }
 
-const DEFAULT_SAMPLE_FRIENDS: FriendListing[] = [];
+import { SEED_COMMUNITY_FRIENDS } from './data/seedFriends';
 
 export async function loadFriendListings(): Promise<FriendListing[]> {
-  let rawList = await dataStore.get<FriendListing[]>('friends_listings', { defaultValue: DEFAULT_SAMPLE_FRIENDS });
+  let rawList = await dataStore.get<FriendListing[]>('friends_listings', { defaultValue: SEED_COMMUNITY_FRIENDS });
   if (!rawList || rawList.length === 0) {
-    rawList = DEFAULT_SAMPLE_FRIENDS;
+    rawList = SEED_COMMUNITY_FRIENDS;
   }
   
   // No expiry filtering — friend codes persist permanently.
-  // Capacity is managed by the 300-entry cap in addFriendListing().
+  // Capacity is managed by the 1000-entry cap in addFriendListing().
   return rawList.sort((a, b) => b.createdAt - a.createdAt);
 }
 
@@ -176,7 +176,23 @@ export async function addFriendListing(data: {
   );
   filtered.unshift(newListing);
 
-  const trimmed = filtered.slice(0, 300);
+  const trimmed = filtered.slice(0, 1000);
   await saveFriendListings(trimmed);
   return newListing;
+}
+
+export async function deleteFriendListing(trainerCode: string): Promise<boolean> {
+  const cleanCode = trainerCode.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+  const currentList = await loadFriendListings();
+  const initialLength = currentList.length;
+  const filtered = currentList.filter(item => 
+    item.trainerCode.replace(/\s/g, '') !== cleanCode.replace(/\s/g, '')
+  );
+
+  if (filtered.length === initialLength) {
+    return false;
+  }
+
+  await saveFriendListings(filtered);
+  return true;
 }

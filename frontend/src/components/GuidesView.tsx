@@ -1,6 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import './GuidesView.css';
 import { GUIDES_DATA } from '../data/guidesData';
+import { ADVENTURE_EFFECT_ITEMS } from '../data/adventureEffectsData';
+import { POKELID_PREFECTURES, SPECIAL_BACKGROUNDS_CATALOG } from '../data/specialBackgroundsData';
+import { 
+  ALL_POKELIDS, 
+  JAPAN_REGIONS, 
+  getAllPokelidsList, 
+  getPokelidsByPrefecture,
+  getPokelidsByRegion,
+  type PokelidDetailItem 
+} from '../data/pokelidDetailsData';
+import { 
+  ALL_JAPAN_PREFECTURES_PATHS, 
+  PREFECTURE_LOCAL_MAPS, 
+  POKELID_MAP_PINS,
+  projectCoordinatesToLocalMap 
+} from '../data/japanPrefecturesMapData';
 import type { Language } from '../data/translations';
 import { 
   getPokemonIconUrl, 
@@ -23,6 +40,7 @@ import {
   Sparkles, 
   Trophy, 
   ChevronRight,
+  ChevronLeft,
   User,
   Zap,
   Target,
@@ -35,7 +53,10 @@ import {
   Compass,
   Moon,
   CloudRain,
-  RotateCw
+  RotateCw,
+  MapPin,
+  X,
+  ZoomIn
 } from 'lucide-react';
 
 interface GuidesViewProps {
@@ -796,6 +817,179 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
   const [vivillonRarityFilter, setVivillonRarityFilter] = useState<'all' | 'rare' | 'common'>('all');
   const [regionalFilter, setRegionalFilter] = useState<'all' | 'europe' | 'north-america' | 'latin-america' | 'asia-oceania' | 'africa' | 'hemisphere'>('all');
   const [regionalSearch, setRegionalSearch] = useState('');
+  const [adventureFilter, setAdventureFilter] = useState<'all' | 'time-space' | 'sun-moon' | 'combat'>('all');
+  const [pokelidFilter, setPokelidFilter] = useState<'all' | 'full-coverage' | 'hokkaido' | 'tohoku' | 'kanto' | 'chubu' | 'kansai' | 'chugoku' | 'shikoku' | 'kyushu' | 'okinawa'>('all');
+  const [selectedPrefectureId, setSelectedPrefectureId] = useState<string>('all');
+  const [pokelidSearch, setPokelidSearch] = useState('');
+  const [pokelidLidSearch, setPokelidLidSearch] = useState('');
+  const [hoveredPrefectureId, setHoveredPrefectureId] = useState<string | null>(null);
+  const [hoveredLocalLidId, setHoveredLocalLidId] = useState<string | null>(null);
+  const [specialBgFilter, setSpecialBgFilter] = useState<'all' | 'global' | 'go-tour' | 'go-fest' | 'city-safari' | 'heritage'>('all');
+  const [specialBgSearch, setSpecialBgSearch] = useState('');
+
+  // Upgraded Lightbox Gallery with Prev/Next and Miniature Thumbnails
+  const [lightboxGallery, setLightboxGallery] = useState<{
+    items: {
+      url: string;
+      thumb?: string;
+      title: string;
+      subtitle?: string;
+      badge?: string;
+      city?: string;
+      prefecture?: string;
+      descId?: string;
+      lat?: number;
+      lng?: number;
+    }[];
+    currentIndex: number;
+  } | null>(null);
+
+  // Backward compatible helper for single-image previews
+  const setPreviewModalImg = (data: { url: string; title: string } | null) => {
+    if (!data) {
+      setLightboxGallery(null);
+    } else {
+      setLightboxGallery({
+        items: [{ url: data.url, thumb: data.url, title: data.title }],
+        currentIndex: 0
+      });
+    }
+  };
+
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Lightbox loaded URLs cache & refs
+  const [loadedLightboxUrls, setLoadedLightboxUrls] = useState<Set<string>>(() => new Set());
+  const thumbStripRef = useRef<HTMLDivElement | null>(null);
+  const activeThumbBtnRef = useRef<HTMLButtonElement | null>(null);
+  const touchStartXRef = useRef<number | null>(null);
+
+  const markLightboxUrlLoaded = useCallback((url: string) => {
+    setLoadedLightboxUrls(prev => {
+      if (prev.has(url)) return prev;
+      const next = new Set(prev);
+      next.add(url);
+      return next;
+    });
+  }, []);
+
+  // Keyboard navigation & body scroll lock support for gallery
+  useEffect(() => {
+    if (!lightboxGallery) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setLightboxGallery(null);
+      } else if (e.key === 'ArrowRight' && lightboxGallery.items.length > 1) {
+        setLightboxGallery(prev => prev ? {
+          ...prev,
+          currentIndex: (prev.currentIndex + 1) % prev.items.length
+        } : null);
+      } else if (e.key === 'ArrowLeft' && lightboxGallery.items.length > 1) {
+        setLightboxGallery(prev => prev ? {
+          ...prev,
+          currentIndex: (prev.currentIndex - 1 + prev.items.length) % prev.items.length
+        } : null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [lightboxGallery]);
+
+  // Proactively preload current and adjacent images (±1, ±2) for instant switching
+  useEffect(() => {
+    if (!lightboxGallery || lightboxGallery.items.length === 0) return;
+    const items = lightboxGallery.items;
+    const cur = lightboxGallery.currentIndex;
+    const indicesToPreload = items.length === 1 ? [0] : [
+      cur,
+      (cur + 1) % items.length,
+      (cur - 1 + items.length) % items.length,
+      (cur + 2) % items.length,
+      (cur - 2 + items.length) % items.length,
+    ];
+
+    indicesToPreload.forEach(idx => {
+      const url = items[idx]?.url;
+      if (url) {
+        const img = new Image();
+        img.src = url;
+        if (img.complete && img.naturalWidth > 0) {
+          markLightboxUrlLoaded(url);
+        } else {
+          img.onload = () => markLightboxUrlLoaded(url);
+        }
+      }
+    });
+  }, [lightboxGallery?.currentIndex, lightboxGallery?.items, markLightboxUrlLoaded]);
+
+  // Background gallery warmup: progressively prefetch all lids in the active prefecture during idle time
+  useEffect(() => {
+    if (!lightboxGallery || lightboxGallery.items.length <= 1) return;
+    const timer = setTimeout(() => {
+      lightboxGallery.items.forEach(item => {
+        if (item.url) {
+          const img = new Image();
+          img.src = item.url;
+          if (img.complete && img.naturalWidth > 0) {
+            markLightboxUrlLoaded(item.url);
+          } else {
+            img.onload = () => markLightboxUrlLoaded(item.url);
+          }
+        }
+      });
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [lightboxGallery?.items, markLightboxUrlLoaded]);
+
+  // Synchronize active thumbnail in bottom strip to center smoothly
+  useEffect(() => {
+    if (activeThumbBtnRef.current && thumbStripRef.current) {
+      const container = thumbStripRef.current;
+      const btn = activeThumbBtnRef.current;
+      const btnLeft = btn.offsetLeft;
+      const btnWidth = btn.offsetWidth;
+      const containerWidth = container.offsetWidth;
+      const scrollTarget = btnLeft - (containerWidth / 2) + (btnWidth / 2);
+      container.scrollTo({
+        left: Math.max(0, scrollTarget),
+        behavior: 'smooth'
+      });
+    }
+  }, [lightboxGallery?.currentIndex]);
+
+  // Touch handlers for mobile swipe navigation
+  const handleLightboxTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+
+  const handleLightboxTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null || !lightboxGallery || lightboxGallery.items.length <= 1) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchEndX - touchStartXRef.current;
+    if (diff > 45) {
+      // Swipe right -> Previous
+      setLightboxGallery(prev => prev ? {
+        ...prev,
+        currentIndex: (prev.currentIndex - 1 + prev.items.length) % prev.items.length
+      } : null);
+    } else if (diff < -45) {
+      // Swipe left -> Next
+      setLightboxGallery(prev => prev ? {
+        ...prev,
+        currentIndex: (prev.currentIndex + 1) % prev.items.length
+      } : null);
+    }
+    touchStartXRef.current = null;
+  };
 
   const getCategoryIcon = (iconName: string) => {
     switch (iconName) {
@@ -805,6 +999,7 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
       case 'Sparkles': return <Sparkles size={16} />;
       case 'Trophy': return <Trophy size={16} />;
       case 'Globe': return <Globe size={16} />;
+      case 'MapPin': return <MapPin size={16} />;
       default: return <BookOpen size={16} />;
     }
   };
@@ -1709,6 +1904,1183 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
       );
     }
 
+    // 5. Adventure Effects Master Interactive Widget
+    if (slug === 'adventure-effects-master-guide') {
+      const filteredEffects = ADVENTURE_EFFECT_ITEMS.filter(item => {
+        if (adventureFilter === 'all') return true;
+        return item.category === adventureFilter;
+      });
+
+      return (
+        <div className="guide-visual-widget guide-adventure-widget">
+          <div className="widget-header-row">
+            <h3>
+              <Sparkles size={20} color="#a855f7" />
+              {lang === 'cs' ? 'Interaktivní Roster: Všech 11 Pokémonů s Adventure Effecty' : 'Interactive Roster: All 11 Pokémon with Adventure Effects'}
+            </h3>
+            <div className="widget-filter-tabs">
+              <button 
+                className={`widget-tab-btn ${adventureFilter === 'all' ? 'active' : ''}`}
+                onClick={() => setAdventureFilter('all')}
+              >
+                {lang === 'cs' ? 'Všech 11 Pokémonů' : lang === 'ja' ? '全11匹一覧' : lang === 'ru' ? 'Все 11 покемонов' : 'All 11 Pokémon'}
+              </button>
+              <button 
+                className={`widget-tab-btn ${adventureFilter === 'time-space' ? 'active' : ''}`}
+                onClick={() => setAdventureFilter('time-space')}
+              >
+                {lang === 'cs' ? '⏳ Čas & Prostor' : lang === 'ja' ? '⏳ 時間＆空間' : lang === 'ru' ? '⏳ Время и Пространство' : '⏳ Time & Space'}
+              </button>
+              <button 
+                className={`widget-tab-btn ${adventureFilter === 'sun-moon' ? 'active' : ''}`}
+                onClick={() => setAdventureFilter('sun-moon')}
+              >
+                {lang === 'cs' ? '☀️ Slunce & Měsíc' : lang === 'ja' ? '☀️ 太陽＆月' : lang === 'ru' ? '☀️ Солнце и Луна' : '☀️ Sun & Moon'}
+              </button>
+              <button 
+                className={`widget-tab-btn ${adventureFilter === 'combat' ? 'active' : ''}`}
+                onClick={() => setAdventureFilter('combat')}
+              >
+                {lang === 'cs' ? '⚔️ Boj & Chytání' : lang === 'ja' ? '⚔️ 戦闘＆捕獲' : lang === 'ru' ? '⚔️ Бой и Ловля' : '⚔️ Combat & Catch'}
+              </button>
+            </div>
+          </div>
+
+          <div className="guide-adventure-grid">
+            {filteredEffects.map((item) => (
+              <div key={item.id} className={`guide-adventure-card category-${item.category}`}>
+                <div className="adventure-card-top">
+                  <div className="adventure-sprite-box">
+                    <img 
+                      src={item.pokemonSprite} 
+                      alt={item.name[lang] || item.name.en} 
+                      className="adventure-pokemon-sprite"
+                      onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, item.id)}
+                      loading="lazy"
+                    />
+                  </div>
+                  <div className="adventure-card-meta">
+                    <div className="adventure-name-row">
+                      <h4>{item.name[lang] || item.name.en}</h4>
+                      <span className="adventure-form-tag">{item.form[lang] || item.form.en}</span>
+                    </div>
+                    <div className="adventure-type-pills">
+                      {item.types.map(t => (
+                        <span key={t} className={`poke-type-pill type-${t}`}>{t.toUpperCase()}</span>
+                      ))}
+                    </div>
+                    <div className="adventure-move-row">
+                      <span className="adventure-move-pill">
+                        <Zap size={12} />
+                        <strong>{item.move.name[lang] || item.move.name.en}</strong>
+                      </span>
+                      <span className="adventure-cost-pill">
+                        {item.cost.duration} • {item.cost.stardust} Dust
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="adventure-card-body">
+                  <div className="adventure-effect-desc">
+                    <p>{item.effect[lang] || item.effect.en}</p>
+                  </div>
+                  <div className="adventure-card-footer">
+                    <div className="adventure-stack-info">
+                      <Clock size={12} />
+                      <span><strong>{lang === 'cs' ? 'Max stack:' : lang === 'ja' ? '最大持続:' : lang === 'ru' ? 'Макс:' : 'Max stack:'}</strong> {item.maxStack[lang] || item.maxStack.en}</span>
+                    </div>
+                    {item.proTip && (
+                      <div className="adventure-pro-tip">
+                        <Lightbulb size={13} color="#eab308" />
+                        <span>{item.proTip[lang] || item.proTip.en}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Quick Rules Banner */}
+          <div className="adventure-rules-box">
+            <div className="rules-header">
+              <Shield size={16} color="#38bdf8" />
+              <strong>{lang === 'cs' ? 'Základní pravidla Adventure Effectů:' : lang === 'ja' ? 'アドベンチャーエフェクト共通ルール：' : lang === 'ru' ? 'Общие правила Adventure Effects:' : 'Universal Adventure Effect Rules:'}</strong>
+            </div>
+            <div className="rules-grid">
+              <div className="rule-item">
+                <span className="rule-badge">1. {lang === 'cs' ? 'Pravidlo' : 'Rule'}</span>
+                <p>{lang === 'cs' ? 'Pouze 1 aktivní efekt v jeden okamžik (nelze mít aktivní Dialgu i Palkii současně).' : 'Only 1 active effect at a time (cannot run Dialga & Palkia concurrently).'}</p>
+              </div>
+              <div className="rule-item">
+                <span className="rule-badge">2. {lang === 'cs' ? 'Pravidlo' : 'Rule'}</span>
+                <p>{lang === 'cs' ? 'Maximální délka prodloužení je 24 hodin v kuse (1 440 minut).' : 'Maximum continuous stacking is capped at 24 hours (1,440 minutes).'}</p>
+              </div>
+              <div className="rule-item">
+                <span className="rule-badge">3. {lang === 'cs' ? 'Pravidlo' : 'Rule'}</span>
+                <p>{lang === 'cs' ? 'Mega Evoluce a Primal Reversion fungují současně s Adventure Effecty.' : 'Mega Evolution & Primal Reversion are 100% compatible and stack concurrently.'}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (slug === 'pokelid-stamp-rally-japan-guide') {
+      const pokelidFilterTabs = [
+        { id: 'all', label: { cs: '🗾 Všechny (482)', en: '🗾 All (482)', ja: '🗾 全国（482）', ru: '🗾 Все (482)' } },
+        { id: 'full-coverage', label: { cs: '⭐ 100% Pokrytí (7)', en: '⭐ 100% Coverage (7)', ja: '⭐ 全域コンプ（7）', ru: '⭐ 100% Покрытие (7)' } },
+        { id: 'hokkaido', label: { cs: '❄️ Hokkaidó (50)', en: '❄️ Hokkaido (50)', ja: '❄️ 北海道（50）', ru: '❄️ Хоккайдо (50)' } },
+        { id: 'tohoku', label: { cs: '🏔️ Tóhoku (128)', en: '🏔️ Tohoku (128)', ja: '🏔️ 東北地方（128）', ru: '🏔️ Тохоку (128)' } },
+        { id: 'kanto', label: { cs: '⚡ Kanto (33)', en: '⚡ Kanto (33)', ja: '⚡ 関東地方（33）', ru: '⚡ Канто (33)' } },
+        { id: 'chubu', label: { cs: '🦖 Čúbu (57)', en: '🦖 Chubu (57)', ja: '🦖 中部地方（57）', ru: '🦖 Тюбу (57)' } },
+        { id: 'kansai', label: { cs: '🦦 Kansai (62)', en: '🦦 Kansai (62)', ja: '🦦 近畿地方（62）', ru: '🦦 Кансай (62)' } },
+        { id: 'chugoku', label: { cs: '🏜️ Čúgoku (33)', en: '🏜️ Chugoku (33)', ja: '🏜️ 中国地方（33）', ru: '🏜️ Тюгоку (33)' } },
+        { id: 'shikoku', label: { cs: '🍜 Šikoku (41)', en: '🍜 Shikoku (41)', ja: '🍜 四国地方（41）', ru: '🍜 Сикоку (41)' } },
+        { id: 'kyushu', label: { cs: '⚡ Kjúšú (61)', en: '⚡ Kyushu (61)', ja: '⚡ 九州地方（61）', ru: '⚡ Кюсю (61)' } },
+        { id: 'okinawa', label: { cs: '🌺 Okinawa (17)', en: '🌺 Okinawa (17)', ja: '🌺 沖縄地方（17）', ru: '🌺 Окинава (17)' } },
+      ];
+
+      const prefectureNameMap: Record<string, string> = {};
+      POKELID_PREFECTURES.forEach(p => {
+        prefectureNameMap[p.id] = p.prefecture[lang] || p.prefecture.en;
+      });
+
+      // Filtered Prefectures
+      const filteredPokelids = POKELID_PREFECTURES.filter(item => {
+        if (selectedPrefectureId !== 'all') {
+          return item.id === selectedPrefectureId;
+        }
+        if (pokelidFilter === 'full-coverage' && !item.hasFullCoverage) return false;
+        if (pokelidFilter !== 'all' && pokelidFilter !== 'full-coverage') {
+          const regionObj = JAPAN_REGIONS.find(r => r.id === pokelidFilter);
+          if (regionObj && !regionObj.prefectures.includes(item.id)) return false;
+        }
+        
+        if (pokelidSearch.trim()) {
+          const q = pokelidSearch.toLowerCase();
+          const matchPref = (item.prefecture[lang] || item.prefecture.en).toLowerCase().includes(q);
+          const matchAmb = (item.ambassadorName[lang] || item.ambassadorName.en).toLowerCase().includes(q) || item.ambassadorPokemon.toLowerCase().includes(q);
+          const matchTheme = (item.backgroundTheme[lang] || item.backgroundTheme.en).toLowerCase().includes(q);
+          if (!matchPref && !matchAmb && !matchTheme) return false;
+        }
+        return true;
+      });
+
+      // Active Lids Resolution
+      let activeLidsList: PokelidDetailItem[] = [];
+      if (selectedPrefectureId !== 'all') {
+        activeLidsList = getPokelidsByPrefecture(selectedPrefectureId);
+      } else {
+        if (pokelidFilter === 'full-coverage') {
+          const fullCoverageIds = POKELID_PREFECTURES.filter(p => p.hasFullCoverage).map(p => p.id);
+          activeLidsList = getPokelidsByRegion(fullCoverageIds);
+        } else if (pokelidFilter !== 'all') {
+          const regionObj = JAPAN_REGIONS.find(r => r.id === pokelidFilter);
+          if (regionObj) {
+            activeLidsList = getPokelidsByRegion(regionObj.prefectures);
+          } else {
+            activeLidsList = getAllPokelidsList();
+          }
+        } else {
+          activeLidsList = getAllPokelidsList();
+        }
+      }
+
+      // Live search filter on municipality lids
+      const filteredLids = activeLidsList.filter(lid => {
+        if (!pokelidLidSearch.trim()) return true;
+        const q = pokelidLidSearch.toLowerCase().trim();
+        const matchCity = lid.city.toLowerCase().includes(q);
+        const matchCityEn = lid.cityEn.toLowerCase().includes(q);
+        const matchId = lid.descId.includes(q);
+        const prefName = (prefectureNameMap[lid.prefectureId] || '').toLowerCase();
+        return matchCity || matchCityEn || matchId || prefName.includes(q);
+      });
+
+      const openPokelidsInLightbox = (lidsList: PokelidDetailItem[], startIndex: number) => {
+        const items = lidsList.map((lid, idx) => {
+          const prefTitle = prefectureNameMap[lid.prefectureId] || lid.prefectureId;
+          const cityTitle = lid.cityEn && lid.cityEn !== lid.city 
+            ? `${lid.city} (${lid.cityEn})` 
+            : lid.city;
+          return {
+            url: lid.largeImage,
+            thumb: lid.smallImage,
+            title: `${cityTitle} — ${prefTitle}`,
+            subtitle: `${lang === 'cs' ? 'Poké Lid' : lang === 'ja' ? 'ポケふた' : lang === 'ru' ? 'Люк' : 'Poké Lid'} #${lid.descId} • ${idx + 1} / ${lidsList.length}`,
+            badge: `#${lid.descId}`,
+            city: cityTitle,
+            prefecture: prefTitle,
+            descId: lid.descId,
+            lat: lid.lat,
+            lng: lid.lng
+          };
+        });
+        setLightboxGallery({
+          items,
+          currentIndex: startIndex
+        });
+      };
+
+      const selectedPrefItem = POKELID_PREFECTURES.find(p => p.id === selectedPrefectureId);
+
+      return (
+        <div className="guide-pokelid-widget">
+          {/* Header Banner */}
+          <div className="pokelid-hero-banner">
+            <div className="pokelid-hero-badge">
+              <MapPin size={16} />
+              <span>{lang === 'cs' ? 'Japonská oficiální iniciativa Pokémon Local Acts' : lang === 'ja' ? 'ポケモンローカルActs・全国ポケふた' : lang === 'ru' ? 'Японская официальная инициатива Pokémon Local Acts' : 'Official Japanese Pokémon Local Acts'}</span>
+            </div>
+            <h3>{lang === 'cs' ? 'Poké Lid Stamp Rally & Ambasadoři prefektur' : lang === 'ja' ? 'ポケふたスタンプラリー＆推しポケモン名鑑' : lang === 'ru' ? 'Poké Lid Stamp Rally и покемоны-амбассадоры' : 'Poké Lid Stamp Rally & Regional Ambassadors'}</h3>
+            <p>
+              {lang === 'cs' 
+                ? 'Navštivte skutečné litinové poklopy v Japonsku, sbírejte žlutá razítka v albu Scrapbook a za každé 2 razítka získejte garantovaného Pikachu s lokačním pozadím dané prefektury!' 
+                : lang === 'ja'
+                ? '実在する世界に1枚のポケふたを巡り、現地スピンで黄色いスタンプを収集。同一県内で2個集めるごとに、限定ロケーション背景付きピカチュウを確定ゲット！'
+                : lang === 'ru'
+                ? 'Посещайте чугунные люки в Японии, собирайте желтые штампы и за каждые 2 штампа получайте гарантированного Пикачу с фоном префектуры!'
+                : 'Explore authentic utility hole covers in Japan, collect Yellow Border stamps in your Scrapbook, and unlock guaranteed Pikachu encounters with exclusive prefectural Location Cards every 2 stamps!'}
+            </p>
+          </div>
+
+          {/* Stamp Distinction Mechanics Box */}
+          <div className="pokelid-stamps-explainer">
+            <div className="stamp-card yellow-stamp-card">
+              <div className="stamp-badge yellow-badge">
+                <span className="stamp-dot yellow-dot" />
+                <strong>{lang === 'cs' ? 'ŽLUTÉ RAZÍTKO (Na místě)' : lang === 'ja' ? '黄色いスタンプ（現地スピン）' : lang === 'ru' ? 'ЖЕЛТЫЙ ШТАМП (Личный визит)' : 'YELLOW STAMP (In-Person)'}</strong>
+              </div>
+              <h4>{lang === 'cs' ? 'Fyzické zatočení v Japonsku' : lang === 'ja' ? '現地でポケストップを直接スピン' : lang === 'ru' ? 'Прокрутка покестопа в Японии' : 'Physical Spin On-Site'}</h4>
+              <p>
+                {lang === 'cs' 
+                  ? 'Získáno POUZE fyzickou přítomností u poklopu v dosahu GPS. POUZE tato razítka se počítají k odměně Pikachu!' 
+                  : lang === 'ja' 
+                  ? '現地のGPS範囲内でスピンした時のみ獲得。ピカチュウの報酬カウントが進むのはこのスタンプだけ！' 
+                  : lang === 'ru' 
+                  ? 'Выдается ТОЛЬКО при личном визите к люку. Только эти штампы продвигают награду Пикачу!' 
+                  : 'Awarded ONLY by physically spinning within GPS range. ONLY Yellow stamps progress Pikachu encounters!'}
+              </p>
+              <div className="stamp-status-pill yellow-pill">
+                <CheckCircle2 size={14} />
+                <span>{lang === 'cs' ? 'Započítává se do odměny (100% platné)' : lang === 'ja' ? 'リワード進行対象（有効）' : lang === 'ru' ? 'Засчитывается в награду' : 'Counts toward reward'}</span>
+              </div>
+            </div>
+
+            <div className="stamp-card blue-stamp-card">
+              <div className="stamp-badge blue-badge">
+                <span className="stamp-dot blue-dot" />
+                <strong>{lang === 'cs' ? 'MODRÉ RAZÍTKO (Dárek od přítele)' : lang === 'ja' ? '青いスタンプ（ギフト受取）' : lang === 'ru' ? 'СИНИЙ ШТАМП (Подарок от друга)' : 'BLUE STAMP (Friend Gift)'}</strong>
+              </div>
+              <h4>{lang === 'cs' ? 'Otevření dárku s pohlednicí' : lang === 'ja' ? 'フレンドから届いたポストカードを開封' : lang === 'ru' ? 'Открытие открытки из подарка' : 'Opening Gift Postcards'}</h4>
+              <p>
+                {lang === 'cs' 
+                  ? 'Získáno z pohlednice od přítele. Slouží jako suvenýr v albu. Počítadlo odměn je 0, ale při budoucí osobní návštěvě se upgraduje na žluté!' 
+                  : lang === 'ja' 
+                  ? 'フレンドのギフトから記録。コレクション用（カウント0）。後日現地へ行けば黄色に自動昇格！' 
+                  : lang === 'ru' 
+                  ? 'Заносится в альбом на память. Не дает прогресса (0), но при личном визите станет желтым!' 
+                  : 'Acquired from friend gifts. Souvenir only (0 progress). Automatically upgrades to Yellow upon future physical visits!'}
+              </p>
+              <div className="stamp-status-pill blue-pill">
+                <span>{lang === 'cs' ? 'Suvenýr (0 bodů do odměny)' : lang === 'ja' ? '記念用（進行カウント0）' : lang === 'ru' ? 'Сувенир (0 в награду)' : 'Souvenir (0 progress)'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Reward Banner */}
+          <div className="pokelid-reward-callout">
+            <div className="reward-icon-frame">
+              <img 
+                src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" 
+                alt="Pikachu" 
+                className="reward-pikachu-img" 
+              />
+            </div>
+            <div className="reward-callout-text">
+              <span className="reward-tag">🎁 {lang === 'cs' ? 'Garantovaná Odměna' : lang === 'ja' ? '確定リワード遭遇' : lang === 'ru' ? 'Гарантированная награда' : 'Guaranteed Encounter'}</span>
+              <h4>{lang === 'cs' ? 'Každá 2 Žlutá Razítka = Pikachu s Lokačním Pozadím' : lang === 'ja' ? '黄色いスタンプ2個ごとに限定背景ピカチュウ確定！' : lang === 'ru' ? 'Каждые 2 желтых штампа = Пикачу с фоном локации' : 'Every 2 Yellow Stamps = Location Background Pikachu'}</h4>
+              <p>
+                {lang === 'cs' 
+                  ? 'Střetnutí s Pikachu, který má na obrazovce shrnutí originální umělecké pozadí dané prefektury. Může být Shiny! Opakovatelné bez omezení.' 
+                  : lang === 'ja' 
+                  ? '詳細画面にご当地の名所が描かれた限定背景ピカチュウが出現！色違い判定あり、回数無制限で何度でも獲得可能。' 
+                  : lang === 'ru' 
+                  ? 'Пикачу с уникальным фоном префектуры на экране. Может быть Shiny! Безлимитный сбор.' 
+                  : 'Encounter Pikachu bearing custom regional backdrop art. Can be Shiny! Fully repeatable without cap.'}
+              </p>
+            </div>
+          </div>
+
+          {/* Interactive Japan Poké Lids Map Card */}
+          <div className="pokelid-interactive-map-card">
+            <div className="map-card-header">
+              <div className="map-title-badge">
+                <MapPin size={15} />
+                <span>{lang === 'cs' ? 'Interaktivní Mapa & Regiony' : lang === 'ja' ? 'インタラクティブ日本地図' : lang === 'ru' ? 'Интерактивная карта Японии' : 'Interactive Japan Map'}</span>
+              </div>
+              <h3>
+                {selectedPrefectureId === 'all'
+                  ? (lang === 'cs' ? 'Mapa Poké Lids v Japonsku (47 prefektur)' : lang === 'ja' ? '全国47都道府県ポケふた設置マップ' : lang === 'ru' ? 'Карта люков Poké Lids в Японии (47 префектур)' : 'Japan Poké Lids Map (47 Prefectures)')
+                  : (selectedPrefItem ? `${selectedPrefItem.prefecture[lang] || selectedPrefItem.prefecture.en} — ${lang === 'cs' ? 'Detailní mapa poklopů' : lang === 'ja' ? '地域詳細マップ' : lang === 'ru' ? 'Подробная карта люков' : 'Municipality Map'}` : 'Poké Lids Map')
+                }
+              </h3>
+              <p>
+                {selectedPrefectureId === 'all'
+                    ? (lang === 'cs' 
+                    ? 'Prohlédněte si všech 47 prefektur Japonska. 42 aktivních prefektur má vlastní oficiální Poké Lids (482 poklopů). Kliknutím na prefekturu na mapě nebo v rychlém výběru níže otevřete její detail se všemi umístěnými poklopy.' 
+                    : lang === 'ja' 
+                    ? '日本全国47都道府県の境界を正確に表示。ポケふたが配備された42都道府県をクリックすると、設置位置をプロットした詳細マップが開きます。' 
+                    : lang === 'ru' 
+                    ? 'Все 47 префектур Японии. Нажмите на любую из 42 префектур с люками Poké Lids для перехода к подробной карте с точным расположением.' 
+                    : 'Explore all 47 Japanese prefectures. Click any of the 42 official prefectures with Poké Lids to zoom into high-detail vector map with exact lid coordinates.')
+                  : (lang === 'cs'
+                    ? 'Všechny poklopy jsou umístěny na reálných GPS souřadnicích. Kliknutím na poklop na mapě otevřete jeho detail ve vysokém rozlišení nebo navigaci v Google Maps.'
+                    : lang === 'ja'
+                    ? 'すべてのポケふたが実際のGPS座標に正確に配置されています。ピンをクリックすると高解像度ビューが起動します。'
+                    : lang === 'ru'
+                    ? 'Все люки нанесены на карту по реальным координатам GPS. Нажмите на люк для детального просмотра и навигации.'
+                    : 'All Poké Lids plotted at verified real-world GPS coordinates. Click any lid pin on the map to inspect in full resolution or navigate.')
+                }
+              </p>
+
+              {/* Stats Bar */}
+              <div className="map-stats-strip">
+                <div className="map-stat-badge">
+                  <span className="stat-num">{selectedPrefectureId === 'all' ? getAllPokelidsList().length : activeLidsList.length}</span>
+                  <span className="stat-label">{lang === 'cs' ? 'Litinových poklopů' : lang === 'ja' ? '設置ポケふた' : lang === 'ru' ? 'Люков' : 'Poké Lids'}</span>
+                </div>
+                <div className="map-stat-badge">
+                  <span className="stat-num">{selectedPrefectureId === 'all' ? POKELID_PREFECTURES.length : '1'}</span>
+                  <span className="stat-label">{lang === 'cs' ? 'Aktivních prefektur' : lang === 'ja' ? '参加都道府県' : lang === 'ru' ? 'Префектур' : 'Prefectures'}</span>
+                </div>
+                {selectedPrefItem?.hasFullCoverage ? (
+                  <div className="map-stat-badge highlight-stat">
+                    <span className="stat-num">⭐ 100%</span>
+                    <span className="stat-label">{lang === 'cs' ? 'Plné pokrytí obcí' : lang === 'ja' ? '市町村全域コンプ' : lang === 'ru' ? '100% Покрытие' : '100% Coverage'}</span>
+                  </div>
+                ) : (
+                  <div className="map-stat-badge highlight-stat">
+                    <span className="stat-num">⭐ 7</span>
+                    <span className="stat-label">{lang === 'cs' ? '100% Pokrytí obcí' : lang === 'ja' ? '全域配備完了' : lang === 'ru' ? '100% Покрытие' : '100% Coverage'}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Region Selector Pills (in National Map Mode) */}
+            {selectedPrefectureId === 'all' ? (
+              <div className="map-region-filter-pills">
+                {pokelidFilterTabs.map(tab => (
+                  <button
+                    key={tab.id}
+                    className={`map-region-pill ${pokelidFilter === tab.id ? 'active' : ''}`}
+                    onClick={() => {
+                      setPokelidFilter(tab.id as any);
+                    }}
+                  >
+                    {tab.label[lang] || tab.label.en}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              /* Prefecture Detail Navigation Header */
+              <div className="local-map-nav-header">
+                <button
+                  className="local-back-to-japan-btn"
+                  onClick={() => setSelectedPrefectureId('all')}
+                >
+                  <ArrowLeft size={16} />
+                  <span>{lang === 'cs' ? 'Zpět na celou mapu Japonska' : lang === 'ja' ? '全国マップに戻る' : lang === 'ru' ? 'Назад ко всей карте' : 'Back to Japan Map'}</span>
+                </button>
+                {selectedPrefItem && (
+                  <div className="local-header-title-badge">
+                    <img 
+                      src={getPokemonIconUrl(selectedPrefItem.ambassadorPokemon)} 
+                      alt={selectedPrefItem.ambassadorName[lang] || selectedPrefItem.ambassadorName.en}
+                      className="local-ambassador-badge-avatar"
+                      onError={(e) => handlePokemonImageError(e.currentTarget, selectedPrefItem.ambassadorPokemon)}
+                    />
+                    <span className="local-header-pref-name">{selectedPrefItem.prefecture[lang] || selectedPrefItem.prefecture.en}</span>
+                    <span className="local-header-count-tag">{activeLidsList.length} {lang === 'cs' ? 'poklopů' : lang === 'ja' ? '枚' : lang === 'ru' ? 'люков' : 'lids'}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* SVG Visual Map Container */}
+            <div className="pokelid-svg-viewport">
+              {selectedPrefectureId === 'all' ? (
+                /* NATIONAL MAP: Accurate 47 Prefectures Boundaries */
+                <svg viewBox="15 15 580 465" className="pokelid-japan-svg" preserveAspectRatio="xMidYMid meet">
+                  {/* All 47 Japanese Prefectures */}
+                  <g className="map-all-prefectures-layer">
+                    {ALL_JAPAN_PREFECTURES_PATHS.map(pref => {
+                      if (pref.id === 'okinawa') return null; // Rendered in dedicated inset box in top-left corner
+                      const isPokelidPref = pref.hasPokelid;
+                      const isHovered = hoveredPrefectureId === pref.id;
+                      const prefName = pref.name[lang] || pref.name.en;
+                      const isRegionActive = 
+                        (pokelidFilter === 'hokkaido' && pref.id === 'hokkaido') ||
+                        (pokelidFilter === 'tohoku' && ['iwate', 'miyagi', 'fukushima'].includes(pref.id)) ||
+                        (pokelidFilter === 'chubu' && pref.id === 'fukui') ||
+                        (pokelidFilter === 'kansai' && pref.id === 'mie') ||
+                        (pokelidFilter === 'chugoku' && pref.id === 'tottori') ||
+                        (pokelidFilter === 'shikoku' && ['kagawa', 'kochi'].includes(pref.id)) ||
+                        (pokelidFilter === 'kyushu' && ['nagasaki', 'miyazaki', 'kagoshima'].includes(pref.id)) ||
+                        (pokelidFilter === 'full-coverage' && ['miyagi', 'kagawa', 'tottori', 'miyazaki'].includes(pref.id));
+
+                      return (
+                        <path
+                          key={pref.id}
+                          d={pref.path}
+                          className={`map-pref-path ${isPokelidPref ? 'has-pokelid' : 'subtle-prefecture'} ${isRegionActive ? 'region-highlighted' : ''} ${isHovered ? 'is-hovered' : ''}`}
+                          onMouseEnter={() => {
+                            if (isPokelidPref) setHoveredPrefectureId(pref.id);
+                          }}
+                          onMouseLeave={() => {
+                            if (isPokelidPref) setHoveredPrefectureId(null);
+                          }}
+                          onClick={() => {
+                            if (isPokelidPref) {
+                              setSelectedPrefectureId(pref.id);
+                              const el = document.getElementById('pokelid-gallery-anchor');
+                              if (el) el.scrollIntoView({ behavior: 'smooth' });
+                            }
+                          }}
+                          style={{ cursor: isPokelidPref ? 'pointer' : 'default' }}
+                        >
+                          <title>{prefName}{isPokelidPref ? ` • ${pref.pokelidCount} Poké Lids (${lang === 'cs' ? 'Kliknutím zobrazit detail' : 'Click to view detail'})` : ''}</title>
+                        </path>
+                      );
+                    })}
+                  </g>
+
+                  {/* Okinawa Inset Box (Moved to Top-Left Corner) */}
+                  <g 
+                    className={`map-okinawa-inset-group ${hoveredPrefectureId === 'okinawa' ? 'is-hovered' : ''}`}
+                    onMouseEnter={() => setHoveredPrefectureId('okinawa')}
+                    onMouseLeave={() => setHoveredPrefectureId(null)}
+                    onClick={() => {
+                      setSelectedPrefectureId('okinawa');
+                      const el = document.getElementById('pokelid-gallery-anchor');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <rect x="24" y="24" width="120" height="92" rx="10" className="map-okinawa-box" />
+                    <text x="32" y="40" className="map-inset-tag">OKINAWA / 沖縄</text>
+                    <g 
+                      transform="translate(28, 40) scale(0.15)" 
+                    >
+                      <path 
+                        d={PREFECTURE_LOCAL_MAPS['okinawa']?.path} 
+                        className={`map-pref-path has-pokelid okinawa-inset-path ${pokelidFilter === 'okinawa' ? 'region-highlighted' : ''} ${hoveredPrefectureId === 'okinawa' ? 'is-hovered' : ''}`} 
+                      >
+                        <title>Okinawa (17 Poké Lids)</title>
+                      </path>
+                    </g>
+                  </g>
+
+                  {/* Connecting rally routes */}
+                  <path 
+                    d="M 475,95 L 424,215 L 415,245 L 390,276 L 291,323 L 303,362 L 237,335 L 241,364 L 223,395 L 132,393 L 180,425 L 155,451" 
+                    className="map-route-line" 
+                  />
+                  <path 
+                    d="M 155,451 C 60,420 30,220 84,116" 
+                    className="map-route-line map-route-okinawa-line" 
+                  />
+
+                  {/* Subtle location markers for Pokélid Prefectures (when not hovered) */}
+                  {POKELID_MAP_PINS.map(pin => {
+                    if (hoveredPrefectureId === pin.id) return null;
+                    return (
+                      <g 
+                        key={`subtle-dot-${pin.id}`} 
+                        transform={`translate(${pin.x}, ${pin.y})`}
+                        className="map-subtle-dot-group"
+                        style={{ pointerEvents: 'none' }}
+                      >
+                        <circle r="4" className="pin-subtle-dot-halo" />
+                        <circle r="2.5" className="pin-subtle-dot-center" />
+                      </g>
+                    );
+                  })}
+
+                  {/* Regional Pokémon Pin: Revealed ONLY on hover over a specific prefecture */}
+                  {hoveredPrefectureId && (() => {
+                    const activePin = POKELID_MAP_PINS.find(p => p.id === hoveredPrefectureId);
+                    if (!activePin) return null;
+                    const labelText = activePin.label[lang] || activePin.label.en;
+                    const prefData = POKELID_PREFECTURES.find(p => p.id === activePin.id);
+                    const ambName = prefData ? (prefData.ambassadorName[lang] || prefData.ambassadorName.en) : activePin.pokemon;
+                    const fullLabel = `${labelText} • ${ambName}`;
+
+                    return (
+                      <g 
+                        key={`hovered-pin-${activePin.id}`} 
+                        className="map-pin-group hovered"
+                        transform={`translate(${activePin.x}, ${activePin.y})`}
+                        style={{ pointerEvents: 'none' }}
+                      >
+                        <circle r="24" className="pin-pulse-ring" />
+                        <circle r="18" className="pin-circle" />
+                        <image 
+                          href={getPokemonIconUrl(activePin.pokemon)} 
+                          x="-15" 
+                          y="-15" 
+                          width="30" 
+                          height="30" 
+                          className="pin-pokemon-img"
+                        />
+                        {/* Label Badge */}
+                        <g transform="translate(0, 26)">
+                          <rect 
+                            x={-fullLabel.length * 4.2 - 12} 
+                            y="-9" 
+                            width={fullLabel.length * 8.4 + 24} 
+                            height="18" 
+                            rx="9" 
+                            className="pin-label-bg" 
+                          />
+                          <text textAnchor="middle" y="4" className="pin-label-text">
+                            {fullLabel}
+                          </text>
+                        </g>
+                        {/* Count Pill */}
+                        <text textAnchor="middle" y="44" className="pin-count-text">
+                          {activePin.count} 🕳️ {lang === 'cs' ? 'poklopů' : lang === 'ja' ? '枚' : lang === 'ru' ? 'люков' : 'lids'}
+                        </text>
+                      </g>
+                    );
+                  })()}
+                </svg>
+              ) : (
+                /* LOCAL PREFECTURE DETAIL MAP WITH PLOTTED POKÉ LIDS */
+                <div className="local-prefecture-map-wrapper">
+                  {PREFECTURE_LOCAL_MAPS[selectedPrefectureId] && (
+                    <svg viewBox="0 0 500 400" className="pokelid-local-prefecture-svg" preserveAspectRatio="xMidYMid meet">
+                      <defs>
+                        <clipPath id="localLidPinClip">
+                          <circle cx="0" cy="0" r="14" />
+                        </clipPath>
+                        <filter id="localPinShadow" x="-30%" y="-30%" width="160%" height="160%">
+                          <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#000000" floodOpacity="0.7" />
+                        </filter>
+                      </defs>
+
+                      {/* Prefecture Boundary Polygon */}
+                      <path 
+                        d={PREFECTURE_LOCAL_MAPS[selectedPrefectureId].path} 
+                        className="local-prefecture-boundary-path" 
+                      />
+
+                      {/* Plotted Poké Lids at Real GPS Positions (Covers only, names/numbers hidden until hover) */}
+                      {activeLidsList.map((lid, idx) => {
+                        const { x, y } = projectCoordinatesToLocalMap(lid.lat, lid.lng, PREFECTURE_LOCAL_MAPS[selectedPrefectureId]);
+                        const isLidHovered = hoveredLocalLidId === lid.id;
+                        const cityDisplay = lid.cityEn && lid.cityEn !== lid.city ? `${lid.city} (${lid.cityEn})` : lid.city;
+                        return (
+                          <g
+                            key={lid.id}
+                            className={`local-lid-pin-group ${isLidHovered ? 'is-hovered' : ''}`}
+                            transform={`translate(${x}, ${y})`}
+                            onMouseEnter={() => setHoveredLocalLidId(lid.id)}
+                            onMouseLeave={() => setHoveredLocalLidId(null)}
+                            onClick={() => {
+                              openPokelidsInLightbox(activeLidsList, idx);
+                            }}
+                            tabIndex={0}
+                            role="button"
+                            aria-label={`#${lid.descId} • ${cityDisplay}`}
+                          >
+                            <title>{`#${lid.descId} • ${cityDisplay} (GPS: ${lid.lat.toFixed(4)}, ${lid.lng.toFixed(4)})`}</title>
+
+                            {/* Invisible Stable Hit-Test Target: Guarantees stable mouse interaction without jitter */}
+                            <circle r="22" fill="transparent" stroke="none" className="local-lid-hit-target" />
+
+                            {/* Visual Scaled Pin Container */}
+                            <g className="local-lid-pin-visual" transform={isLidHovered ? 'scale(1.25)' : 'scale(1)'}>
+                              {/* Halo / Base circle */}
+                              <circle r="17" className="local-lid-pin-halo" />
+                              <circle r="15" className="local-lid-pin-bg" />
+
+                              {/* Circular Cover Thumbnail */}
+                              <image
+                                href={lid.smallImage}
+                                x="-14"
+                                y="-14"
+                                width="28"
+                                height="28"
+                                clipPath="url(#localLidPinClip)"
+                                className="local-lid-cover-image"
+                              />
+                            </g>
+                          </g>
+                        );
+                      })}
+
+                      {/* Topmost Floating Tooltip for Hovered Lid (Renders above all pins) */}
+                      {hoveredLocalLidId && (() => {
+                        const lid = activeLidsList.find(l => l.id === hoveredLocalLidId);
+                        if (!lid) return null;
+                        const { x, y } = projectCoordinatesToLocalMap(lid.lat, lid.lng, PREFECTURE_LOCAL_MAPS[selectedPrefectureId]);
+                        const cityDisplay = lid.cityEn && lid.cityEn !== lid.city ? `${lid.city} (${lid.cityEn})` : lid.city;
+                        return (
+                          <g
+                            className="local-lid-active-overlay"
+                            transform={`translate(${x}, ${y})`}
+                            style={{ pointerEvents: 'none' }}
+                          >
+                            {/* Active Glowing Ring */}
+                            <circle r="20" className="local-lid-active-ring" />
+
+                            {/* Prominent #ID Badge above Pin */}
+                            <g transform="translate(0, -22)">
+                              <rect
+                                x={-String(lid.descId).length * 4.5 - 10}
+                                y="-8"
+                                width={String(lid.descId).length * 9 + 20}
+                                height="16"
+                                rx="8"
+                                className="local-lid-id-rect"
+                              />
+                              <text textAnchor="middle" y="4" className="local-lid-id-text">
+                                #{lid.descId}
+                              </text>
+                            </g>
+
+                            {/* City Label Below */}
+                            <g transform="translate(0, 26)">
+                              <rect
+                                x={-Math.min(cityDisplay.length * 4 + 10, 80)}
+                                y="-8"
+                                width={Math.min(cityDisplay.length * 8 + 20, 160)}
+                                height="16"
+                                rx="8"
+                                className="local-lid-city-rect"
+                              />
+                              <text textAnchor="middle" y="4" className="local-lid-city-text">
+                                {cityDisplay}
+                              </text>
+                            </g>
+                          </g>
+                        );
+                      })()}
+                    </svg>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* 13 Prefecture Quick Selector Chips */}
+            <div className="map-prefecture-chips-strip">
+              <span className="chips-title">{lang === 'cs' ? 'Rychlý výběr prefektury:' : lang === 'ja' ? '都道府県クイック選択：' : lang === 'ru' ? 'Быстрый выбор:' : 'Select Prefecture:'}</span>
+              <div className="chips-container">
+                <button
+                  className={`pref-chip-btn ${selectedPrefectureId === 'all' ? 'active' : ''}`}
+                  onClick={() => setSelectedPrefectureId('all')}
+                >
+                  <span>🗾 {lang === 'cs' ? 'Všechny (337)' : lang === 'ja' ? '全国（337）' : lang === 'ru' ? 'Все (337)' : 'All (337)'}</span>
+                </button>
+                {POKELID_PREFECTURES.map(pref => {
+                  const isChipActive = selectedPrefectureId === pref.id;
+                  return (
+                    <button
+                      key={pref.id}
+                      className={`pref-chip-btn ${isChipActive ? 'active' : ''}`}
+                      onMouseEnter={() => setHoveredPrefectureId(pref.id)}
+                      onMouseLeave={() => setHoveredPrefectureId(null)}
+                      onClick={() => {
+                        setSelectedPrefectureId(pref.id);
+                        const el = document.getElementById('pokelid-gallery-anchor');
+                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                    >
+                      <img 
+                        src={getPokemonIconUrl(pref.ambassadorPokemon)} 
+                        alt={pref.ambassadorName[lang] || pref.ambassadorName.en}
+                        className="pref-chip-avatar"
+                        onError={(e) => handlePokemonImageError(e.currentTarget, pref.ambassadorPokemon)}
+                      />
+                      <span>{pref.prefecture[lang] || pref.prefecture.en}</span>
+                      <span className="pref-chip-count">{pref.manholeCount}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Active Prefecture Showcase or All Prefectures Cards */}
+          <div className="pokelid-grid">
+            {filteredPokelids.map(item => (
+              <div key={item.id} className={`pokelid-card ${selectedPrefectureId === item.id ? 'highlighted-prefecture' : ''}`}>
+                <div className="pokelid-card-header">
+                  <div className="pokelid-pref-title">
+                    <h4>{item.prefecture[lang] || item.prefecture.en}</h4>
+                    <span className="pokelid-region-badge">{item.region[lang] || item.region.en}</span>
+                  </div>
+                  {item.hasFullCoverage && (
+                    <span className="pokelid-coverage-badge" title="100% municipal coverage">
+                      ⭐ 100% {lang === 'cs' ? 'Pokrytí' : lang === 'ja' ? '全域配備' : lang === 'ru' ? 'Покрытие' : 'Coverage'}
+                    </span>
+                  )}
+                </div>
+
+                <div className="pokelid-ambassador-row">
+                  <div className="pokelid-avatar-frame">
+                    <img
+                      src={getPokemonIconUrl(item.ambassadorPokemon)}
+                      alt={item.ambassadorName[lang] || item.ambassadorName.en}
+                      className="pokelid-avatar-img"
+                      onError={(e) => handlePokemonImageError(e.currentTarget, item.ambassadorPokemon)}
+                    />
+                  </div>
+                  <div className="pokelid-ambassador-info">
+                    <span className="pokelid-amb-label">{lang === 'cs' ? 'Oficiální Ambasador' : lang === 'ja' ? '推しポケモン' : lang === 'ru' ? 'Амбассадор' : 'Official Ambassador'}</span>
+                    <strong>{item.ambassadorName[lang] || item.ambassadorName.en}</strong>
+                    <span className="pokelid-count-pill">{item.manholeCount} {lang === 'cs' ? 'poklopů Poké Lids' : lang === 'ja' ? '箇所のポケふた' : lang === 'ru' ? 'люков' : 'Poké Lids'}</span>
+                  </div>
+                </div>
+
+                {/* Visual Card Artwork Showcase */}
+                <div className="pokelid-visual-showcase">
+                  {item.locationCardUrl && (
+                    <div 
+                      className="pokelid-card-frame" 
+                      title={lang === 'cs' ? 'Kliknutím zvětšit herní pozadí' : 'Click to enlarge in-game card'}
+                      onClick={() => setLightboxGallery({
+                        items: [{
+                          url: item.locationCardUrl!,
+                          thumb: item.locationCardUrl!,
+                          title: `${item.prefecture[lang] || item.prefecture.en} — ${lang === 'cs' ? 'Herní Lokační Pozadí' : 'In-game Location Background'}`,
+                          subtitle: lang === 'cs' ? 'Odměna za 2 žlutá razítka' : 'Reward for 2 Yellow Stamps'
+                        }],
+                        currentIndex: 0
+                      })}
+                    >
+                      <img 
+                        src={item.locationCardUrl} 
+                        alt={`${item.prefecture[lang] || item.prefecture.en} Location Background`} 
+                        className="pokelid-card-img" 
+                        loading="lazy" 
+                      />
+                      <span className="visual-badge card-badge">📱 {lang === 'cs' ? 'Herní pozadí' : 'Location Card'}</span>
+                      <span className="visual-zoom-indicator"><ZoomIn size={12} /></span>
+                    </div>
+                  )}
+                  {item.manholeImageUrl && (
+                    <div 
+                      className="pokelid-manhole-frame" 
+                      title={lang === 'cs' ? 'Kliknutím zvětšit oficiální poklop' : 'Click to enlarge Poké Lid cover'}
+                      onClick={() => {
+                        const lids = getPokelidsByPrefecture(item.id);
+                        if (lids.length > 0) {
+                          openPokelidsInLightbox(lids, 0);
+                        } else {
+                          setLightboxGallery({
+                            items: [{
+                              url: item.manholeImageUrl!,
+                              thumb: item.manholeImageUrl!,
+                              title: `${item.prefecture[lang] || item.prefecture.en} — ${lang === 'cs' ? 'Oficiální Poklop Poké Lid' : 'Official Poké Lid Manhole Cover'}`,
+                              subtitle: `${item.manholeCount} ${lang === 'cs' ? 'poklopů' : 'lids'}`
+                            }],
+                            currentIndex: 0
+                          });
+                        }
+                      }}
+                    >
+                      <img 
+                        src={item.manholeImageUrl} 
+                        alt={`${item.prefecture[lang] || item.prefecture.en} Poké Lid`} 
+                        className="pokelid-manhole-img" 
+                        loading="lazy" 
+                      />
+                      <span className="visual-badge manhole-badge">🕳️ {lang === 'cs' ? 'Oficiální Poklop' : 'Poké Lid'}</span>
+                      <span className="visual-zoom-indicator"><ZoomIn size={12} /></span>
+                    </div>
+                  )}
+                </div>
+
+                <p className="pokelid-rationale">
+                  {item.culturalRationale[lang] || item.culturalRationale.en}
+                </p>
+
+                <div className="pokelid-bg-theme-row">
+                  <span className="bg-theme-label">{lang === 'cs' ? 'Vzhled Lokačního pozadí:' : lang === 'ja' ? 'ロケーション背景テーマ：' : lang === 'ru' ? 'Тема фона локации:' : 'Location Card Motif:'}</span>
+                  <p className="bg-theme-text">{item.backgroundTheme[lang] || item.backgroundTheme.en}</p>
+                </div>
+
+                <div className="pokelid-card-footer">
+                  <button 
+                    className="pokelid-view-lids-btn"
+                    onClick={() => {
+                      setSelectedPrefectureId(item.id);
+                      const el = document.getElementById('pokelid-gallery-anchor');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                  >
+                    <span>🕳️ {lang === 'cs' ? `Zobrazit všech ${item.manholeCount} poklopů` : lang === 'ja' ? `全${item.manholeCount}枚のポケふたを見る` : lang === 'ru' ? `Смотреть все ${item.manholeCount} люков` : `View all ${item.manholeCount} Poké Lids`}</span>
+                    <ChevronRight size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* DEDICATED POKÉ LID EXPLORER GALLERY */}
+          <div id="pokelid-gallery-anchor" className="pokelid-lids-explorer-section">
+            <div className="explorer-header">
+              <div className="explorer-header-left">
+                <div className="explorer-badge">
+                  <Sparkles size={14} />
+                  <span>{lang === 'cs' ? 'Katalog všech poklopů' : lang === 'ja' ? 'ポケふた一覧図鑑' : lang === 'ru' ? 'Каталог люков' : 'Poké Lids Catalog'}</span>
+                </div>
+                <h3>
+                  {selectedPrefItem 
+                    ? `${selectedPrefItem.prefecture[lang] || selectedPrefItem.prefecture.en} — ${selectedPrefItem.manholeCount} ${lang === 'cs' ? 'originálních poklopů' : lang === 'ja' ? '枚のポケふた' : lang === 'ru' ? 'оригинальных люков' : 'Authentic Poké Lids'}`
+                    : `${lang === 'cs' ? 'Všech 337 originálních poklopů Poké Lids' : lang === 'ja' ? '全国337枚のポケふた一覧' : lang === 'ru' ? 'Все 337 люков Poké Lids' : 'All 337 Japan Poké Lids'}`
+                  }
+                </h3>
+                <p className="explorer-subtitle">
+                  {lang === 'cs'
+                    ? 'Kliknutím na kterýkoliv poklop otevřete detailní zobrazení ve vysokém rozlišení s možností plynulého listování šipkami (← / →) a spodním pásem miniatur.'
+                    : lang === 'ja'
+                    ? 'サムネイルをクリックすると高解像度ビューが開き、矢印キーや下のミニチュア一覧で快適にスライド閲覧できます。'
+                    : lang === 'ru'
+                    ? 'Нажмите на любой люк, чтобы открыть просмотр в высоком разрешении с перелистыванием стрелками и лентой миниатюр.'
+                    : 'Click any Poké Lid thumbnail to open high-resolution modal with arrow key navigation (← / →) and thumbnail preview strip.'}
+                </p>
+              </div>
+
+              {/* Action: Open Lightbox from beginning */}
+              {filteredLids.length > 0 && (
+                <button
+                  className="explorer-fullscreen-btn"
+                  onClick={() => openPokelidsInLightbox(filteredLids, 0)}
+                >
+                  <ZoomIn size={16} />
+                  <span>{lang === 'cs' ? 'Prohlížet ve velkém (Spustit galerii)' : lang === 'ja' ? '大画面ギャラリーを起動' : lang === 'ru' ? 'Открыть галерею во весь экран' : 'Open Fullscreen Gallery'}</span>
+                </button>
+              )}
+            </div>
+
+            {/* Search within Municipality Lids */}
+            <div className="explorer-search-bar">
+              <Search size={16} color="#94a3b8" />
+              <input
+                type="text"
+                placeholder={lang === 'cs' ? 'Hledat město nebo obec (např. Sendai, Betsukai, Naha)...' : lang === 'ja' ? '市区町村名で検索（例：仙台市、別海町、那覇市）...' : lang === 'ru' ? 'Поиск города или муниципалитета (напр. Sendai, Naha)...' : 'Search municipality (e.g. Sendai, Betsukai, Naha)...'}
+                value={pokelidLidSearch}
+                onChange={e => setPokelidLidSearch(e.target.value)}
+              />
+              {pokelidLidSearch && (
+                <button className="clear-search-btn" onClick={() => setPokelidLidSearch('')}>
+                  <X size={14} />
+                </button>
+              )}
+              <span className="lids-count-tag">
+                {filteredLids.length} {lang === 'cs' ? 'poklopů' : lang === 'ja' ? '枚' : lang === 'ru' ? 'люков' : 'lids'}
+              </span>
+            </div>
+
+            {/* Poké Lids Grid */}
+            {filteredLids.length === 0 ? (
+              <div className="pokelid-empty-search">
+                <p>{lang === 'cs' ? 'Žádné poklopy neodpovídají zadanému filtru.' : lang === 'ja' ? '該当するポケふたが見つかりませんでした。' : lang === 'ru' ? 'По вашему запросу ничего не найдено.' : 'No Poké Lids matched your search query.'}</p>
+                <button className="reset-filter-btn" onClick={() => { setPokelidLidSearch(''); setSelectedPrefectureId('all'); setPokelidFilter('all'); }}>
+                  {lang === 'cs' ? 'Zobrazit všechny poklopy' : lang === 'ja' ? '全ポケふたを表示' : lang === 'ru' ? 'Показать все' : 'Show All Poké Lids'}
+                </button>
+              </div>
+            ) : (
+              <div className="pokelid-lids-grid">
+                {filteredLids.map((lid, idx) => {
+                  const prefTitle = prefectureNameMap[lid.prefectureId] || lid.prefectureId;
+                  const cityDisplay = lid.cityEn && lid.cityEn !== lid.city 
+                    ? `${lid.city} (${lid.cityEn})` 
+                    : lid.city;
+                  return (
+                    <div 
+                      key={lid.id}
+                      id={`pokelid-card-${lid.descId}`}
+                      className={`pokelid-lid-item-card ${hoveredLocalLidId === lid.id ? 'is-hovered' : ''}`}
+                      onMouseEnter={() => setHoveredLocalLidId(lid.id)}
+                      onMouseLeave={() => setHoveredLocalLidId(null)}
+                      onClick={() => openPokelidsInLightbox(filteredLids, idx)}
+                      title={lang === 'cs' ? `Zvětšit: #${lid.descId} • ${cityDisplay} (${prefTitle})` : `Enlarge: #${lid.descId} • ${cityDisplay}`}
+                    >
+                      {/* Prominent Header with #ID Badge & Google Maps Navigation Link */}
+                      <div className="lid-card-top-bar">
+                        <div className="lid-card-id-pill">
+                          <span className="lid-card-hash">#</span>
+                          <span className="lid-card-id-number">{lid.descId}</span>
+                        </div>
+                        {lid.lat && lid.lng && (
+                          <a
+                            href={`https://maps.google.com/maps?q=${lid.lat},${lid.lng}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="lid-card-map-btn"
+                            onClick={(e) => e.stopPropagation()}
+                            title={lang === 'cs' ? 'Navigovat / Otevřít v Google Maps' : 'Open in Google Maps'}
+                          >
+                            <MapPin size={11} />
+                            <span>Maps</span>
+                          </a>
+                        )}
+                      </div>
+
+                      <div className="lid-thumbnail-frame">
+                        <img 
+                          src={lid.smallImage} 
+                          alt={cityDisplay}
+                          className="lid-thumb-img"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div className="lid-item-info">
+                        <strong className="lid-city-name">{cityDisplay}</strong>
+                        <span className="lid-pref-tag">{prefTitle}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Cross Link Banner to Special Backgrounds */}
+          <div className="guide-crosslink-banner">
+            <div className="crosslink-content">
+              <Sparkles size={20} color="#aa3bff" />
+              <div>
+                <h4>{lang === 'cs' ? 'Zajímají vás globální Speciální pozadí a Lokační karty z celého světa?' : lang === 'ja' ? '世界各国のGO Festやウルトラホールのスペシャル背景もチェック！' : lang === 'ru' ? 'Интересуют глобальные фоны и карточки с GO Fest по всему миру?' : 'Explore Global Special Backgrounds & City Location Cards worldwide!'}</h4>
+                <p>{lang === 'cs' ? 'Přečtěte si o kartách z Madridu, New Yorku, Ultra Space červích dírách a fúzích Necrozmy.' : 'Learn about Madrid, NYC, Ultra Space Wormholes, and Necrozma & Kyurem fusion mechanics.'}</p>
+              </div>
+            </div>
+            <button 
+              className="crosslink-btn"
+              onClick={() => handleArticleClick('special-backgrounds-location-cards-guide')}
+            >
+              <span>{lang === 'cs' ? 'Otevřít Velký Průvodce Pozadími' : lang === 'ja' ? 'スペシャル背景ガイドを開く' : lang === 'ru' ? 'Открыть гайд по фонам' : 'Open Special Backgrounds Guide'}</span>
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (slug === 'special-backgrounds-location-cards-guide') {
+      const specialBgFilterTabs = [
+        { id: 'all', label: { cs: '🌐 Všechna pozadí', en: '🌐 All Backgrounds', ja: '🌐 全ての背景', ru: '🌐 Все фоны' } },
+        { id: 'global', label: { cs: '🌌 Globální (Ultra, Týmy)', en: '🌌 Global (Ultra, Teams)', ja: '🌌 グローバル背景', ru: '🌌 Глобальные' } },
+        { id: 'go-fest', label: { cs: '🎪 GO Fest (Města)', en: '🎪 GO Fest (Cities)', ja: '🎪 GO Fest（都市）', ru: '🎪 GO Fest (Города)' } },
+        { id: 'city-safari', label: { cs: '🧭 City Safari (Eevee)', en: '🧭 City Safari (Eevee)', ja: '🧭 City Safari', ru: '🧭 City Safari' } },
+        { id: 'go-tour', label: { cs: '⏳ GO Tour (Legendy)', en: '⏳ GO Tour', ja: '⏳ GO Tour', ru: '⏳ GO Tour' } },
+        { id: 'heritage', label: { cs: '🏛️ Partnerství & WCS', en: '🏛️ Heritage & WCS', ja: '🏛️ 提携史跡・WCS', ru: '🏛️ Партнеры и WCS' } }
+      ];
+
+      const filteredBackgrounds = SPECIAL_BACKGROUNDS_CATALOG.filter(item => {
+        if (specialBgFilter !== 'all' && item.category !== specialBgFilter) return false;
+
+        if (specialBgSearch.trim()) {
+          const q = specialBgSearch.toLowerCase();
+          const matchTitle = (item.title[lang] || item.title.en).toLowerCase().includes(q);
+          const matchEvent = (item.event[lang] || item.event.en).toLowerCase().includes(q);
+          const matchLoc = (item.location[lang] || item.location.en).toLowerCase().includes(q);
+          const matchArt = (item.backgroundArtwork[lang] || item.backgroundArtwork.en).toLowerCase().includes(q);
+          const matchPkm = item.featuredPokemon.some(p => p.toLowerCase().includes(q));
+          if (!matchTitle && !matchEvent && !matchLoc && !matchArt && !matchPkm) return false;
+        }
+        return true;
+      });
+
+      return (
+        <div className="guide-special-bg-widget">
+          {/* Prominent Pokélid Link Banner */}
+          <div className="special-bg-pokelid-callout">
+            <div className="callout-flag-col">
+              <span className="callout-flag-icon">🗾</span>
+            </div>
+            <div className="callout-main-col">
+              <div className="callout-badge">
+                <MapPin size={14} />
+                <span>{lang === 'cs' ? 'Hledáte Poké Lids v Japonsku?' : lang === 'ja' ? '日本のポケふたをお探しの方へ' : lang === 'ru' ? 'Ищете Poké Lids в Японии?' : 'Looking for Poké Lids in Japan?'}</span>
+              </div>
+              <h4>{lang === 'cs' ? 'Pokélid (Pokéfuta) Stamp Rally v Japonsku má samostatného průvodce!' : lang === 'ja' ? '全国41都道府県のポケふたスタンプラリーは専用ガイドで徹底解説！' : lang === 'ru' ? 'Для Poké Lid Stamp Rally в Японии есть отдельный гайд!' : 'Poké Lid Stamp Rally in Japan has its own dedicated master guide!'}</h4>
+              <p>
+                {lang === 'cs' 
+                  ? 'Všechny litinové manhole poklopy, žlutá a modrá razítka, 100% pokryté prefektury a postup zisku Pikachu s lokačním pozadím naleznete v samostatném článku.' 
+                  : lang === 'ja' 
+                  ? '黄色・青スタンプの違い、全国の推しポケモン、各都道府県の限定背景ピカチュウ入手方法は専用ページをご覧ください。' 
+                  : lang === 'ru' 
+                  ? 'Все о японских люках, желтых и синих штампах и получении Пикачу с фоном префектуры читайте в отдельном руководстве.' 
+                  : 'All cast-iron manhole covers, Yellow vs. Blue border stamps, and prefecture-specific Pikachu encounter mechanics are detailed in our specialized guide.'}
+              </p>
+            </div>
+            <div className="callout-action-col">
+              <button 
+                className="callout-nav-btn"
+                onClick={() => handleArticleClick('pokelid-stamp-rally-japan-guide')}
+              >
+                <span>{lang === 'cs' ? 'Otevřít Pokélid Průvodce' : lang === 'ja' ? 'ポケふたガイドを見る' : lang === 'ru' ? 'Открыть гайд Pokélid' : 'Open Poké Lid Guide'}</span>
+                <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
+
+          {/* Core Rules Quick Summary Bar */}
+          <div className="special-bg-rules-banner">
+            <div className="rules-header">
+              <Shield size={16} color="#38bdf8" />
+              <strong>{lang === 'cs' ? '4 Zlatá pravidla Lokačních karet a Speciálních pozadí:' : lang === 'ja' ? '記念背景システムの4大重要ルール：' : lang === 'ru' ? '4 главных правила карточек локаций и фонов:' : '4 Golden Rules of Location & Special Backgrounds:'}</strong>
+            </div>
+            <div className="rules-grid">
+              <div className="rule-item">
+                <span className="rule-badge">1. {lang === 'cs' ? 'Special Trade' : 'Special Trade'}</span>
+                <p>{lang === 'cs' ? 'Každá výměna Pokémona s pozadím VŽDY spotřebuje 1 denní Special Trade slot!' : 'Always consumes a daily Special Trade slot!'}</p>
+              </div>
+              <div className="rule-item">
+                <span className="rule-badge">2. {lang === 'cs' ? '100% Trvalost' : '100% Permanent'}</span>
+                <p>{lang === 'cs' ? 'Pozadí se NIKDY nesmaže při výměně ani při evoluci na vyšší vývojové stádium.' : 'Background is 100% preserved upon trading and evolution.'}</p>
+              </div>
+              <div className="rule-item">
+                <span className="rule-badge">3. {lang === 'cs' ? 'Pouze Na Místě' : 'In-Person Only'}</span>
+                <p>{lang === 'cs' ? 'Lokační karty měst padají POUZE z osobních raidů na místě (Remote Raid Passy je NIKDY nedají!).' : 'City cards drop ONLY from in-person raids. Never Remote!'}</p>
+              </div>
+              <div className="rule-item">
+                <span className="rule-badge danger-badge">4. ⚠️ Pokémon HOME</span>
+                <p>{lang === 'cs' ? 'Převod do Pokémon HOME pozadí NAVŽDY A NENÁVRATNĚ SMAŽE!' : 'Transferring to Pokémon HOME permanently DELETES the background!'}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Filter Controls & Search */}
+          <div className="special-bg-controls">
+            <div className="special-bg-filter-tabs">
+              {specialBgFilterTabs.map(tab => (
+                <button
+                  key={tab.id}
+                  className={`special-bg-tab-btn ${specialBgFilter === tab.id ? 'active' : ''}`}
+                  onClick={() => setSpecialBgFilter(tab.id as any)}
+                >
+                  {tab.label[lang] || tab.label.en}
+                </button>
+              ))}
+            </div>
+
+            <div className="special-bg-search-box">
+              <Search size={15} color="#94a3b8" />
+              <input
+                type="text"
+                placeholder={lang === 'cs' ? 'Hledat město, Pokémona, událost, rok...' : lang === 'ja' ? '都市名、ポケモン名、イベント、年号を検索...' : lang === 'ru' ? 'Поиск города, покемона, ивента...' : 'Search city, Pokémon, event, year...'}
+                value={specialBgSearch}
+                onChange={e => setSpecialBgSearch(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Backgrounds Grid */}
+          <div className="special-bg-grid">
+            {filteredBackgrounds.map(item => (
+              <div key={item.id} className="special-bg-card">
+                <div className="special-bg-card-top">
+                  <span className="special-bg-year-tag">{item.year}</span>
+                  <span className={`special-bg-category-badge cat-${item.category}`}>
+                    {item.isGlobal ? '🌌 Global' : '📍 In-Person'}
+                  </span>
+                  <span className="special-bg-loc-pill">
+                    {item.location[lang] || item.location.en}
+                  </span>
+                </div>
+
+                {item.cardImageUrl && (
+                  <div 
+                    className="special-bg-preview-banner"
+                    title={lang === 'cs' ? 'Kliknutím zvětšit pozadí' : 'Click to enlarge background'}
+                    onClick={() => setPreviewModalImg({
+                      url: item.cardImageUrl!,
+                      title: `${item.title[lang] || item.title.en} (${item.year})`
+                    })}
+                  >
+                    <img 
+                      src={item.cardImageUrl} 
+                      alt={item.title[lang] || item.title.en} 
+                      className="special-bg-banner-img" 
+                      loading="lazy" 
+                    />
+                    <div className="special-bg-banner-overlay" />
+                    <span className="special-bg-banner-tag">
+                      {item.isGlobal ? '🌌 Special Background' : '📍 Location Card'}
+                    </span>
+                    <span className="special-bg-zoom-badge">
+                      <ZoomIn size={13} />
+                      <span>{lang === 'cs' ? 'Zvětšit' : 'Enlarge'}</span>
+                    </span>
+                  </div>
+                )}
+
+                <h4 className="special-bg-title">{item.title[lang] || item.title.en}</h4>
+                <p className="special-bg-event">{item.event[lang] || item.event.en}</p>
+
+                <div className="special-bg-featured-row">
+                  <span className="featured-label">{lang === 'cs' ? 'Dostupní Pokémoni:' : lang === 'ja' ? '対象ポケモン：' : lang === 'ru' ? 'Покемоны:' : 'Featured Pokémon:'}</span>
+                  <div className="special-bg-pokemon-chips">
+                    {item.featuredPokemon.map(p => renderPokemonChip(p))}
+                  </div>
+                </div>
+
+                <div className="special-bg-artwork-box">
+                  <span className="art-label">{lang === 'cs' ? 'Vizuální motiv pozadí:' : lang === 'ja' ? '背景アート内容：' : lang === 'ru' ? 'Мотив фона:' : 'Background Visual Motif:'}</span>
+                  <p className="art-desc">{item.backgroundArtwork[lang] || item.backgroundArtwork.en}</p>
+                </div>
+
+                <div className="special-bg-card-bottom">
+                  <div className="special-bg-acq-pill">
+                    <Zap size={13} color="#38bdf8" />
+                    <span>{item.acquisitionMethod[lang] || item.acquisitionMethod.en}</span>
+                  </div>
+                  <div className="special-bg-trade-pill">
+                    <CheckCircle2 size={13} color="#22c55e" />
+                    <span>100% {lang === 'cs' ? 'Zachováno při Trade' : lang === 'ja' ? 'トレード維持' : lang === 'ru' ? 'Сохраняется при обмене' : 'Trade Permanent'}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Fusion Rules Explainer Card */}
+          <div className="fusion-genetics-card">
+            <div className="fusion-card-header">
+              <RotateCw size={18} color="#aa3bff" />
+              <h4>{lang === 'cs' ? 'Pravidla fúze pozadí: Dusk Mane / Dawn Wings Necrozma & Kyurem' : lang === 'ja' ? '合体ポケモンの背景遺伝ルール（ネクロズマ＆キュレム）' : lang === 'ru' ? 'Генетика фонов при слиянии: Necrozma и Kyurem' : 'Fusion Background Genetics: Necrozma & Kyurem'}</h4>
+            </div>
+            <div className="fusion-scenarios-grid">
+              <div className="fusion-scenario">
+                <span className="scenario-badge badge-resonance">🌌 {lang === 'cs' ? 'Fúzní Rezonance' : 'Fusion Resonance'}</span>
+                <strong>Wormhole Necrozma + Sun / Moon Partner</strong>
+                <p>{lang === 'cs' ? 'Vzniká exkluzivní pozadí Solar Eclipse (Zatmění Slunce) nebo Lunar Eclipse (Zatmění Měsíce)!' : 'Produces exclusive Solar Eclipse or Lunar Eclipse fusion background!'}</p>
+              </div>
+              <div className="fusion-scenario">
+                <span className="scenario-badge badge-city">🏙️ {lang === 'cs' ? 'Priorita Města' : 'City Card Priority'}</span>
+                <strong>Městská Karta Necrozmy (Sendai/Madrid/NYC)</strong>
+                <p>{lang === 'cs' ? 'Městská lokační karta má přednost a fúzní forma si zachová panorama města.' : 'The City Location Card takes priority, preserving the host city skyline.'}</p>
+              </div>
+              <div className="fusion-scenario">
+                <span className="scenario-badge badge-safe">🛡️ {lang === 'cs' ? '100% Bezpečné Rozpojení' : 'Safe Unfuse'}</span>
+                <strong>Rozpojení fúze (Unfuse)</strong>
+                <p>{lang === 'cs' ? 'Kdykoliv zdarma. Oba Pokémoni se vrátí do boxu se svými původními pozadími!' : 'Completely free. Both Pokémon return to storage with original backgrounds!'}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return null;
   };
 
@@ -1848,6 +3220,143 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
               </section>
             ))}
           </main>
+
+          {/* Lightbox Image Preview Modal (Rendered via Portal directly to body for fixed viewport positioning) */}
+          {isMounted && typeof document !== 'undefined' && lightboxGallery && createPortal(
+            <div 
+              className="guide-lightbox-backdrop"
+              onClick={() => setLightboxGallery(null)}
+            >
+              <div 
+                className="guide-lightbox-modal"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="lightbox-modal-header">
+                  <div className="lightbox-header-titles">
+                    <div className="lightbox-title-row">
+                      {lightboxGallery.items[lightboxGallery.currentIndex]?.badge && (
+                        <span className="lightbox-hero-id-badge">
+                          {lightboxGallery.items[lightboxGallery.currentIndex].badge}
+                        </span>
+                      )}
+                      <h4>{lightboxGallery.items[lightboxGallery.currentIndex]?.title}</h4>
+                    </div>
+                    <div className="lightbox-meta-row">
+                      {lightboxGallery.items[lightboxGallery.currentIndex]?.subtitle && (
+                        <span className="lightbox-counter-badge">
+                          {lightboxGallery.items[lightboxGallery.currentIndex].subtitle}
+                        </span>
+                      )}
+                      {lightboxGallery.items[lightboxGallery.currentIndex]?.lat && 
+                       lightboxGallery.items[lightboxGallery.currentIndex]?.lng && (
+                        <a
+                          href={`https://maps.google.com/maps?q=${lightboxGallery.items[lightboxGallery.currentIndex].lat},${lightboxGallery.items[lightboxGallery.currentIndex].lng}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="lightbox-maps-action-btn"
+                          title={lang === 'cs' ? 'Navigovat v Google Maps' : 'Open in Google Maps'}
+                        >
+                          <MapPin size={13} />
+                          <span>{lang === 'cs' ? 'Navigovat v Google Maps' : lang === 'ja' ? 'Google マップでナビ' : lang === 'ru' ? 'Навигация в Google Maps' : 'Open in Google Maps'}</span>
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                  <button 
+                    className="lightbox-close-btn"
+                    onClick={() => setLightboxGallery(null)}
+                    aria-label="Close image preview"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+                <div 
+                  className="lightbox-image-container"
+                  onTouchStart={handleLightboxTouchStart}
+                  onTouchEnd={handleLightboxTouchEnd}
+                >
+                  {lightboxGallery.items.length > 1 && (
+                    <button 
+                      className="lightbox-nav-btn lightbox-prev-btn"
+                      onClick={() => setLightboxGallery(prev => prev ? {
+                        ...prev,
+                        currentIndex: (prev.currentIndex - 1 + prev.items.length) % prev.items.length
+                      } : null)}
+                      title={lang === 'cs' ? 'Předchozí (←)' : lang === 'ja' ? '前へ (←)' : lang === 'ru' ? 'Предыдущий (←)' : 'Previous (←)'}
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft size={28} />
+                    </button>
+                  )}
+
+                  <div className="lightbox-image-stage">
+                    {/* Instant 0ms cached thumbnail underlay while full image decodes */}
+                    {lightboxGallery.items[lightboxGallery.currentIndex]?.thumb && 
+                     lightboxGallery.items[lightboxGallery.currentIndex].thumb !== lightboxGallery.items[lightboxGallery.currentIndex].url && (
+                      <img 
+                        src={lightboxGallery.items[lightboxGallery.currentIndex].thumb} 
+                        alt="" 
+                        aria-hidden="true"
+                        className={`lightbox-stage-thumb ${loadedLightboxUrls.has(lightboxGallery.items[lightboxGallery.currentIndex]?.url || '') ? 'is-covered' : 'is-visible'} ${lightboxGallery.items[lightboxGallery.currentIndex]?.descId || lightboxGallery.items[lightboxGallery.currentIndex]?.url?.includes('manhole') ? 'is-pokelid' : 'is-card'}`}
+                      />
+                    )}
+
+                    <img 
+                      key={lightboxGallery.items[lightboxGallery.currentIndex]?.url}
+                      src={lightboxGallery.items[lightboxGallery.currentIndex]?.url} 
+                      alt={lightboxGallery.items[lightboxGallery.currentIndex]?.title} 
+                      decoding="async"
+                      className={`lightbox-full-img ${loadedLightboxUrls.has(lightboxGallery.items[lightboxGallery.currentIndex]?.url || '') ? 'loaded' : 'loading'} ${lightboxGallery.items[lightboxGallery.currentIndex]?.descId || lightboxGallery.items[lightboxGallery.currentIndex]?.url?.includes('manhole') ? 'is-pokelid' : 'is-card'}`} 
+                      onLoad={() => {
+                        const url = lightboxGallery.items[lightboxGallery.currentIndex]?.url;
+                        if (url) markLightboxUrlLoaded(url);
+                      }}
+                    />
+                  </div>
+
+                  {lightboxGallery.items.length > 1 && (
+                    <button 
+                      className="lightbox-nav-btn lightbox-next-btn"
+                      onClick={() => setLightboxGallery(prev => prev ? {
+                        ...prev,
+                        currentIndex: (prev.currentIndex + 1) % prev.items.length
+                      } : null)}
+                      title={lang === 'cs' ? 'Další (→)' : lang === 'ja' ? '次へ (→)' : lang === 'ru' ? 'Следующий (→)' : 'Next (→)'}
+                      aria-label="Next image"
+                    >
+                      <ChevronRight size={28} />
+                    </button>
+                  )}
+                </div>
+
+                {/* Navigation hint */}
+                {lightboxGallery.items.length > 1 && (
+                  <div className="lightbox-nav-hint">
+                    <span>{lang === 'cs' ? 'Použijte šipky ← / →, tažení prstem nebo náhledy níže pro okamžité procházení' : lang === 'ja' ? '矢印キー（← / →）、スワイプ、下のサムネイルで即座に切り替え' : lang === 'ru' ? 'Стрелки ← / →, свайп или миниатюры внизу для быстрого просмотра' : 'Use ← / → arrow keys, swipe, or click thumbnails below'}</span>
+                  </div>
+                )}
+
+                {/* Miniature Thumbnail Preview Strip */}
+                {lightboxGallery.items.length > 1 && (
+                  <div className="lightbox-thumbnail-strip" ref={thumbStripRef}>
+                    {lightboxGallery.items.map((item, idx) => (
+                      <button
+                        key={`${item.badge || idx}-${item.url}`}
+                        ref={idx === lightboxGallery.currentIndex ? activeThumbBtnRef : null}
+                        className={`lightbox-thumb-btn ${idx === lightboxGallery.currentIndex ? 'active' : ''}`}
+                        onClick={() => setLightboxGallery(prev => prev ? { ...prev, currentIndex: idx } : null)}
+                        title={item.title}
+                      >
+                        <img src={item.thumb || item.url} alt={item.title} className="lightbox-thumb-img" />
+                        {item.badge && <span className="lightbox-thumb-badge">{item.badge}</span>}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>,
+            document.body
+          )}
         </div>
       </div>
     );

@@ -8,7 +8,7 @@ import { PokeballLogo } from './PokeballLogo';
 import { Footer } from './Footer';
 import { LegalModals, type LegalModalType } from './LegalModals';
 import { Calendar, Swords, Shield, Clock, Egg, Sparkles, Trophy, Filter, Settings, BookOpen, Download, Users, ScrollText, Zap, X, Search, ChevronRight } from 'lucide-react';
-import { API_BASE_URL } from '../config';
+import { apiFetch } from '../config';
 
 export type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'research' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin' | 'download' | 'types' | '404';
 
@@ -54,7 +54,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/scraper/status`);
+        const res = await apiFetch('/api/scraper/status');
         if (res.ok) setScraperStatus(await res.json());
       } catch {}
     };

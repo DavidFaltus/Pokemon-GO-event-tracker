@@ -138,6 +138,134 @@
   font-weight: 600;
 }
 
+.auto-expire-tag.active-community {
+  color: #c084fc;
+  background: rgba(170, 59, 255, 0.12);
+  border: 1px solid rgba(170, 59, 255, 0.3);
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-weight: 650;
+}
+
+/* Pinned Card: User's Own Trainer Code */
+.my-code-pinned-banner {
+  background: linear-gradient(135deg, rgba(170, 59, 255, 0.16) 0%, rgba(22, 27, 44, 0.95) 100%);
+  border: 1px solid rgba(170, 59, 255, 0.45);
+  border-radius: 16px;
+  padding: 18px 22px;
+  box-shadow: 0 4px 20px rgba(170, 59, 255, 0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.my-code-pinned-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.my-code-badge-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #d8b4fe;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.my-code-sparkle-icon {
+  color: #aa3bff;
+}
+
+.my-code-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-my-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.btn-my-action.edit {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+.btn-my-action.edit:hover {
+  background: rgba(56, 189, 248, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-my-action.delete {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.btn-my-action.delete:hover {
+  background: rgba(239, 68, 68, 0.25);
+  transform: translateY(-1px);
+}
+
+.my-code-pinned-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.my-code-display-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.my-trainer-code-digits {
+  font-size: 1.5rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  color: #f8fafc;
+  font-family: monospace;
+}
+
+.my-trainer-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.my-trainer-name {
+  font-weight: 750;
+  color: #e2e8f0;
+  font-size: 0.95rem;
+}
+
+.my-code-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 /* Controls Panel */
 .friend-controls-panel {
   background: var(--bg-card, rgba(22, 27, 44, 0.8));
@@ -521,6 +649,75 @@
   transform: translateY(-2px);
   border-color: rgba(168, 85, 247, 0.4);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.friend-card.is-my-code {
+  border-color: rgba(170, 59, 255, 0.55);
+  box-shadow: 0 4px 20px rgba(170, 59, 255, 0.15);
+  background: linear-gradient(135deg, rgba(170, 59, 255, 0.08) 0%, var(--bg-card, rgba(22, 27, 44, 0.8)) 100%);
+}
+
+.badge-my-code {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(170, 59, 255, 0.25);
+  color: #d8b4fe;
+  border: 1px solid rgba(170, 59, 255, 0.5);
+  font-size: 0.68rem;
+  font-weight: 800;
+  border-radius: 9999px;
+  padding: 2px 7px;
+  text-transform: uppercase;
+}
+
+.badge-new-code {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.45);
+  font-size: 0.68rem;
+  font-weight: 800;
+  border-radius: 9999px;
+  padding: 2px 7px;
+  text-transform: uppercase;
+}
+
+.card-top-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-owner-quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.owner-quick-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 3px 6px;
+  color: var(--text-muted, #94a3b8);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.owner-quick-btn.edit:hover {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.owner-quick-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.4);
 }
 
 .card-top-row {
@@ -1018,4 +1215,23 @@ body.light-mode .friend-finder-container .purpose-tab-btn.active {
 
 body.light-mode .friend-finder-container .trainer-name {
   color: #0f172a !important;
+}
+
+body.light-mode .friend-finder-container .my-code-pinned-banner {
+  background: linear-gradient(135deg, rgba(170, 59, 255, 0.08) 0%, #ffffff 100%) !important;
+  border-color: rgba(170, 59, 255, 0.35) !important;
+  box-shadow: 0 4px 16px rgba(170, 59, 255, 0.08) !important;
+}
+
+body.light-mode .friend-finder-container .my-trainer-code-digits {
+  color: #0f172a !important;
+}
+
+body.light-mode .friend-finder-container .my-trainer-name {
+  color: #1e293b !important;
+}
+
+body.light-mode .friend-finder-container .friend-card.is-my-code {
+  border-color: rgba(170, 59, 255, 0.45) !important;
+  background-color: #faf5ff !important;
 }
