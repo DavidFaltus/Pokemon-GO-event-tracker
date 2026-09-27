@@ -695,24 +695,32 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
       {/* Modal: Post Trainer Code */}
       {showPostModal && (
         <div className="friend-modal-overlay animate-fade-in" onClick={() => setShowPostModal(false)}>
-          <div className="friend-modal-card" onClick={(e) => e.stopPropagation()}>
+          <form 
+            onSubmit={handleSubmit} 
+            className="friend-modal-card" 
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-header">
               <div className="modal-title-row">
                 <Users size={20} className="modal-header-icon" />
                 <h2>{t.friends_form_title}</h2>
               </div>
-              <button className="modal-close-btn" onClick={() => setShowPostModal(false)}>
+              <button 
+                type="button" 
+                className="modal-close-btn" 
+                onClick={() => setShowPostModal(false)}
+                title={t.friends_form_cancel_btn || 'Close'}
+              >
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="friend-submit-form">
-              <div className="modal-form-scrollable">
-                {formError && (
-                  <div className="form-error-banner">
-                    {formError}
-                  </div>
-                )}
+            <div className="modal-form-scrollable">
+              {formError && (
+                <div className="form-error-banner">
+                  {formError}
+                </div>
+              )}
 
                 <div className="form-group">
                   <label>{t.friends_form_code_label} *</label>
@@ -841,8 +849,7 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
               </div>
             </form>
           </div>
-        </div>
-      )}
+        )}
 
       {/* Modal: QR Code Scanner */}
       {showQrModal && (
