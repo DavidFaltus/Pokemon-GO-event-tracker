@@ -313,6 +313,37 @@ describe('Backend Scraper Utilities & Parsers', () => {
       expect(bosses.length).toBeGreaterThanOrEqual(5);
       expect(bosses.some(b => b.name === 'Rayquaza' && b.tier === '5')).toBe(true);
     });
+
+    it('parseComplexEventHtml extracts Catch Mastery throw bonuses and shiny boost', () => {
+      const masteryHtml = `
+        <h2 id="throw-bonuses">Catch Mastery Throw Bonuses</h2>
+        <p>2x Catch XP for Nice, Great, and Excellent Throws.</p>
+        <h2>Wild Encounters</h2>
+        <ul class="pkmn-list-flex"><li class="pkmn-list-item"><span class="pkmn-name">Phantump</span></li></ul>
+      `;
+
+      const result = parseComplexEventHtml(masteryHtml, 'phantump-catch-mastery');
+      expect(result.catchMastery).toBeDefined();
+      expect(result.catchMastery?.shinyRateBoosted).toBe(true);
+      expect(result.catchMastery?.estimatedShinyRate).toBe('~1/128');
+      expect(result.catchMastery?.throwBonuses).toHaveLength(3);
+      expect(result.catchMastery?.timedResearchStagesCount).toBe(10);
+    });
+
+    it('parseComplexEventHtml extracts Harvest Festival mossy lure and size variants', () => {
+      const harvestHtml = `
+        <h2 id="mossy-lure-attraction">Mossy Lure Modules</h2>
+        <p>Mossy Lure Modules will attract Applin and drop Sweet and Tart Apples.</p>
+        <h2 id="pumpkaboo-sizes">Pumpkaboo Size Variants</h2>
+        <p>Encounter Small, Average, Large, and Super Size Pumpkaboo.</p>
+      `;
+
+      const result = parseComplexEventHtml(harvestHtml, 'harvest-festival-2026');
+      expect(result.mechanics).toBeDefined();
+      expect(result.mechanics?.lureMechanics?.lureType).toBe('mossy');
+      expect(result.mechanics?.sizeVariants).toBeDefined();
+      expect(result.mechanics?.sizeVariants?.some(s => s.sizeCategory === 'Super Size' && s.isBestForShowcase)).toBe(true);
+    });
   });
 });
 

@@ -144,8 +144,8 @@ export function createDataStore(options?: { cacheDir?: string; gcs?: Storage; bu
       const ttlMs = setOptions?.ttlMs ?? (365 * 24 * 60 * 60 * 1000); // Default long TTL
       const now = Date.now();
 
-      // Empty array protection
-      if (Array.isArray(data) && data.length === 0) {
+      // Empty array protection for scraper caches (user-managed data like friends_listings can legitimately become empty)
+      if (key !== 'friends_listings' && Array.isArray(data) && data.length === 0) {
         const existing = await this.get<any>(key, { swr: true, ttlMs: 0 }); // Get any existing data
         if (existing && Array.isArray(existing) && existing.length > 0) {
           return false; // Skip write

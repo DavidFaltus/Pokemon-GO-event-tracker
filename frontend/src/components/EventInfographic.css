@@ -723,3 +723,177 @@
   }
 }
 
+/* ── Dynamic Thematic Background Layer ───────────────────────────────────── */
+.ei-thematic-bg-layer {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.28;
+  filter: saturate(1.2) contrast(1.1);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ei-poster > *:not(.ei-thematic-bg-layer):not(.ei-glow-top) {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Catch Mastery Special Widget ────────────────────────────────────────── */
+.ei-catch-mastery-box {
+  background: rgba(168, 85, 247, 0.08);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ei-shiny-boost-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.2), rgba(245, 158, 11, 0.1));
+  border: 1px solid rgba(234, 179, 8, 0.4);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #facc15;
+}
+
+.ei-throw-matrix {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.ei-throw-cell {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 8px 6px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.ei-throw-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.ei-throw-label.nice { color: #60a5fa; }
+.ei-throw-label.great { color: #f59e0b; }
+.ei-throw-label.excellent { color: #ef4444; }
+
+.ei-throw-value {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #fff;
+}
+
+.ei-throw-sub {
+  font-size: 0.68rem;
+  color: #cbd5e1;
+}
+
+/* ── Harvest Festival Special Widget ─────────────────────────────────────── */
+.ei-harvest-box {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ei-pumpkaboo-sizes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.ei-size-card {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 6px 4px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.ei-size-card.best-showcase {
+  border-color: #facc15;
+  background: rgba(234, 179, 8, 0.12);
+}
+
+.ei-size-title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.ei-size-tag {
+  font-size: 0.62rem;
+  font-weight: 900;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+.ei-size-tag.gold {
+  background: #facc15;
+  color: #000;
+}
+
+/* ── GO Pass Section Widget ─────────────────────────────────────────────── */
+.ei-gopass-box {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ei-gopass-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #fbbf24;
+}
+
+.ei-gopass-ranks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 6px;
+}
+
+.ei-gopass-rank-pill {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.72rem;
+}
+

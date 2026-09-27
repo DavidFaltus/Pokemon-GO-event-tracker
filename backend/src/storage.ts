@@ -129,7 +129,7 @@ import { SEED_COMMUNITY_FRIENDS } from './data/seedFriends';
 
 export async function loadFriendListings(): Promise<FriendListing[]> {
   let rawList = await dataStore.get<FriendListing[]>('friends_listings', { defaultValue: SEED_COMMUNITY_FRIENDS });
-  if (!rawList || rawList.length === 0) {
+  if (!rawList) {
     rawList = SEED_COMMUNITY_FRIENDS;
   }
   

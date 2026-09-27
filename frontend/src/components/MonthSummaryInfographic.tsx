@@ -15,6 +15,7 @@ import {
   getSpotlightBonus,
   getWeekMondayToSundayRange
 } from '../utils/infographics';
+import { SeasonSummaryInfographic } from './SeasonSummaryInfographic';
 import './MonthSummaryInfographic.css';
 
 interface MonthSummaryInfographicProps {
@@ -82,7 +83,7 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
   const [generatedCaption, setGeneratedCaption] = useState<string>('');
   const [captionCopied, setCaptionCopied] = useState<boolean>(false);
 
-  const [summaryMode, setSummaryMode] = useState<'weekly' | 'monthly'>('weekly');
+  const [summaryMode, setSummaryMode] = useState<'weekly' | 'monthly' | 'season'>('weekly');
   const [selectedWeekNum, setSelectedWeekNum] = useState<number>(1);
   const [monthlySlideIndex, setMonthlySlideIndex] = useState<number>(0);
   const [selectedMonthOffset, setSelectedMonthOffset] = useState<number>(initialOffset);
@@ -424,22 +425,31 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
             >
               🗓️ {lang === 'cs' ? 'Měsíční Slidy' : 'Monthly Slides'}
             </button>
+            <button
+              type="button"
+              className={`month-select-btn ${summaryMode === 'season' ? 'active' : ''}`}
+              onClick={() => setSummaryMode('season')}
+            >
+              🏆 {lang === 'cs' ? 'Sezóna & GO Pass' : 'Season & GO Pass'}
+            </button>
           </div>
 
-          <div className="toolbar-group">
-            <button
-              className={`month-select-btn ${selectedMonthOffset === 0 ? 'active' : ''}`}
-              onClick={() => setSelectedMonthOffset(0)}
-            >
-              {MONTH_NAMES_EN[currentMonthIndex]}
-            </button>
-            <button
-              className={`month-select-btn ${selectedMonthOffset === 1 ? 'active' : ''}`}
-              onClick={() => setSelectedMonthOffset(1)}
-            >
-              ✨ {MONTH_NAMES_EN[nextMonthIndex]}
-            </button>
-          </div>
+          {summaryMode !== 'season' && (
+            <div className="toolbar-group">
+              <button
+                className={`month-select-btn ${selectedMonthOffset === 0 ? 'active' : ''}`}
+                onClick={() => setSelectedMonthOffset(0)}
+              >
+                {MONTH_NAMES_EN[currentMonthIndex]}
+              </button>
+              <button
+                className={`month-select-btn ${selectedMonthOffset === 1 ? 'active' : ''}`}
+                onClick={() => setSelectedMonthOffset(1)}
+              >
+                ✨ {MONTH_NAMES_EN[nextMonthIndex]}
+              </button>
+            </div>
+          )}
         </div>
 
         {summaryMode === 'weekly' ? (
@@ -458,7 +468,7 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
               </button>
             ))}
           </div>
-        ) : (
+        ) : summaryMode === 'monthly' ? (
           slides.length > 1 && (
             <div className="monthly-carousel-controls">
               <button
@@ -482,39 +492,48 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
               </button>
             </div>
           )
-        )}
+        ) : null}
       </div>
 
-      {showCaption && generatedCaption && (
-        <div className="summary-caption-box">
-          <div className="summary-caption-header">
-            <span className="caption-label">
-              <FileText size={15} />
-              {summaryMode === 'weekly' 
-                ? (lang === 'cs' ? 'Návrh popisku pro Týdenní příspěvek' : 'Suggested Weekly Post Caption')
-                : (lang === 'cs' ? `Návrh popisku pro Měsíční slide (${currentSlide?.title})` : `Suggested Monthly Caption (${currentSlide?.title})`)}
-            </span>
-            <button 
-              type="button" 
-              className="copy-caption-btn"
-              onClick={() => {
-                navigator.clipboard.writeText(generatedCaption);
-                setCaptionCopied(true);
-                setTimeout(() => setCaptionCopied(false), 2000);
-              }}
-            >
-              {captionCopied ? <Check size={14} className="copied-icon" /> : <Copy size={14} />}
-              <span>{captionCopied ? (lang === 'cs' ? 'Zkopírováno!' : 'Copied!') : (lang === 'cs' ? 'Kopírovat popisek' : 'Copy Caption')}</span>
-            </button>
-          </div>
-        </div>
-      )}
+      {summaryMode === 'season' ? (
+        <SeasonSummaryInfographic
+          events={events}
+          lang={lang}
+          isAdmin={isAdmin}
+          onClose={onClose}
+        />
+      ) : (
+        <>
+          {showCaption && generatedCaption && (
+            <div className="summary-caption-box">
+              <div className="summary-caption-header">
+                <span className="caption-label">
+                  <FileText size={15} />
+                  {summaryMode === 'weekly' 
+                    ? (lang === 'cs' ? 'Návrh popisku pro Týdenní příspěvek' : 'Suggested Weekly Post Caption')
+                    : (lang === 'cs' ? `Návrh popisku pro Měsíční slide (${currentSlide?.title})` : `Suggested Monthly Caption (${currentSlide?.title})`)}
+                </span>
+                <button 
+                  type="button" 
+                  className="copy-caption-btn"
+                  onClick={() => {
+                    navigator.clipboard.writeText(generatedCaption);
+                    setCaptionCopied(true);
+                    setTimeout(() => setCaptionCopied(false), 2000);
+                  }}
+                >
+                  {captionCopied ? <Check size={14} className="copied-icon" /> : <Copy size={14} />}
+                  <span>{captionCopied ? (lang === 'cs' ? 'Zkopírováno!' : 'Copied!') : (lang === 'cs' ? 'Kopírovat popisek' : 'Copy Caption')}</span>
+                </button>
+              </div>
+            </div>
+          )}
 
-      <div className="month-summary-modal-body">
-        <div 
-          className={`month-summary-poster aspect-4-5 mode-${summaryMode} theme-${summaryMode === 'monthly' ? currentSlide?.theme : 'weekly'} ${isExporting ? 'is-exporting' : ''}`} 
-          ref={posterRef}
-        >
+          <div className="month-summary-modal-body">
+            <div 
+              className={`month-summary-poster aspect-4-5 mode-${summaryMode} theme-${summaryMode === 'monthly' ? currentSlide?.theme : 'weekly'} ${isExporting ? 'is-exporting' : ''}`} 
+              ref={posterRef}
+            >
           {isAdmin && (
             <EditToolbar isEditing={editor.isEditing} onToggleEdit={() => editor.setIsEditing(!editor.isEditing)} hasOverrides={editor.hasOverrides} onReset={editor.resetAll} lang={lang} />
           )}
@@ -678,6 +697,8 @@ export const MonthSummaryInfographic: React.FC<MonthSummaryInfographicProps> = (
           </div>
         )}
       </div>
+      </>
+      )}
     </div>
   );
 };

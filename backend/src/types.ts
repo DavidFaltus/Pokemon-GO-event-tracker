@@ -110,6 +110,33 @@ export interface SpecialEventGoPass {
   milestones?: SpecialEventBonus[];
 }
 
+export interface SpecialEventCatchMastery {
+  featuredPokemon?: string;
+  shinyRateBoosted?: boolean;
+  estimatedShinyRate?: string;
+  throwBonuses?: {
+    throwType: 'nice' | 'great' | 'excellent' | 'curveball';
+    xpMultiplier?: string;
+    candyBonus?: string;
+    stardustBonus?: string;
+  }[];
+  timedResearchStagesCount?: number;
+  totalEncountersFromResearch?: number;
+}
+
+export interface SpecialEventMechanics {
+  lureMechanics?: {
+    lureType: string;
+    drops?: string[];
+    attractedPokemon?: string[];
+  };
+  sizeVariants?: {
+    speciesName: string;
+    sizeCategory: string;
+    isBestForShowcase?: boolean;
+  }[];
+}
+
 export interface SpecialEventDetails {
   eventID: string;
   officialLink?: string;
@@ -130,6 +157,8 @@ export interface SpecialEventDetails {
   showcases?: SpecialEventShowcase[];
   paidTicket?: SpecialEventPaidTicket;
   goPass?: SpecialEventGoPass;
+  catchMastery?: SpecialEventCatchMastery;
+  mechanics?: SpecialEventMechanics;
   highlights?: EventHighlights;
   sourcesMerged?: string[];
 }

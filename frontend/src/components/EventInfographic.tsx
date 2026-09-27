@@ -12,6 +12,8 @@ import { EditableText, EditableImage, EditToolbar } from './InfographicEditable'
 import { findRaidCounters } from '../data/raidCounters';
 import { getWeaknessesForPokemon, getPokemonTypesByName } from '../utils/pokemonCountersHelper';
 import { getBossDifficultyInfo } from './RaidDifficultyBox';
+import { getTypeBackgroundStyle } from '../utils/typeBackgroundHelper';
+import { resolveEventThematicBackground } from '../utils/thematicBackgroundResolver';
 import './EventInfographic.css';
 
 interface EventInfographicProps {
@@ -37,6 +39,26 @@ function getEventTheme(eventType: string, eventName: string): EventTheme {
   const type = (eventType || '').toLowerCase();
   const name = (eventName || '').toLowerCase();
 
+  if (name.includes('catch mastery') || type === 'catch-mastery') {
+    return {
+      accent: '#c084fc',
+      accentLight: 'rgba(192,132,252,0.18)',
+      accentGlow: 'rgba(192,132,252,0.30)',
+      badge: 'rgba(192,132,252,0.18)',
+      icon: <Sparkles size={14} />,
+      badgeLabel: (l) => l === 'cs' ? 'CATCH MASTERY' : 'CATCH MASTERY',
+    };
+  }
+  if (name.includes('harvest') || type === 'harvest-festival') {
+    return {
+      accent: '#34d399',
+      accentLight: 'rgba(52,211,153,0.18)',
+      accentGlow: 'rgba(52,211,153,0.30)',
+      badge: 'rgba(52,211,153,0.18)',
+      icon: <Leaf size={14} />,
+      badgeLabel: (l) => l === 'cs' ? 'HARVEST FESTIVAL' : 'HARVEST FESTIVAL',
+    };
+  }
   if (type === 'hatch-day' || name.includes('hatch')) {
     return {
       accent: '#fb923c',
@@ -126,9 +148,15 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
   const paidTicket: any = extraData?.paidTicket || specialDetails?.paidTicket;
   const goPass: any = extraData?.goPass || specialDetails?.goPass;
   const highlights: any = extraData?.highlights || specialDetails?.highlights;
-  const communitydaySpawns: any[] = extraData?.communityday?.spawns || [];
-  const rawRaids: any[] = extraData?.raids || specialDetails?.raids || [];
+  const getPokeName = (s: any): string => {
+    if (!s) return '';
+    if (typeof s === 'string') return s;
+    if (typeof s.name === 'object') return s.name.en || s.name.cs || '';
+    return s.name || '';
+  };
 
+  const rawRaids: any[] = extraData?.raids || specialDetails?.raids || [];
+  const communitydaySpawns: any[] = extraData?.communityday?.spawns || [];
   const allSpawns = spawns.length > 0 ? spawns : communitydaySpawns;
 
   const displaySpawns = editor.getListOverride('spawns', allSpawns);
@@ -166,6 +194,25 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
     });
   }
 
+  // Special Event Detections
+  const catchMastery: any = extraData?.catchMastery || specialDetails?.catchMastery;
+  const isCatchMastery = Boolean(catchMastery || event.name.toLowerCase().includes('catch mastery'));
+
+  const mechanics: any = extraData?.mechanics || specialDetails?.mechanics;
+  const isHarvest = Boolean(mechanics?.lureMechanics || mechanics?.sizeVariants || event.name.toLowerCase().includes('harvest'));
+
+  // Featured Pokemon for Element Type Theming
+  const featuredPokeName = isCatchMastery
+    ? (catchMastery?.featuredPokemon || event.name.replace(/catch\s*mastery/gi, '').trim() || (allSpawns[0] ? getPokeName(allSpawns[0]) : 'Phantump'))
+    : null;
+  const featuredTypes = featuredPokeName ? getPokemonTypesByName(featuredPokeName) : [];
+  const typeStyle = getTypeBackgroundStyle(featuredTypes);
+
+  // Dynamic Background Resolution
+  const bgOverride = editor.getBackgroundOverride();
+  const autoThematicBg = resolveEventThematicBackground(event);
+  const activeBgImage = bgOverride === 'none' ? null : (bgOverride || autoThematicBg);
+
   // Group spawns by habitat
   const habitatMap = new Map<string, any[]>();
   displaySpawns.forEach((s: any) => {
@@ -176,9 +223,9 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
   const habitatEntries = Array.from(habitatMap.entries());
 
   // Determine if event is extensive and calculate available parts
-  const isExtensive = displaySpawns.length >= 8 || habitatEntries.length > 1 || megaRaids.length > 0 || (displayEggs.length > 0 && displayBonuses.length > 0 && displayResearch.length > 0);
+  const isExtensive = displaySpawns.length >= 8 || habitatEntries.length > 1 || megaRaids.length > 0 || (displayEggs.length > 0 && displayBonuses.length > 0 && displayResearch.length > 0) || isCatchMastery || isHarvest || Boolean(goPass);
 
-  const hasOverview = displayBonuses.length > 0 || highlights !== undefined || paidTicket !== undefined || goPass !== undefined;
+  const hasOverview = displayBonuses.length > 0 || highlights !== undefined || paidTicket !== undefined || goPass !== undefined || isCatchMastery || isHarvest;
   const hasSpawns = displaySpawns.length > 0 || displayDebuts.length > 0 || displayShowcases.length > 0;
   const hasRaids = megaRaids.length > 0 || otherRaids.length > 0;
   const hasResearch = displayEggs.length > 0 || displayResearch.length > 0 || displayFeaturedAttacks.length > 0;
@@ -200,13 +247,6 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
   };
 
   // ── Helpers ───────────────────────────────────────────────────────────────
-  const getPokeName = (s: any): string => {
-    if (!s) return '';
-    if (typeof s === 'string') return s;
-    if (typeof s.name === 'object') return s.name.en || s.name.cs || '';
-    return s.name || '';
-  };
-
   const getBonusText = (b: any): string => {
     if (!b) return '';
     if (typeof b === 'string') return b;
@@ -281,8 +321,19 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
       <div
         className={`ei-poster ${isExporting ? 'is-exporting' : ''}`}
         ref={posterRef}
-        style={{ borderColor: `${theme.accent}55` }}
+        style={{
+          background: typeStyle.gradientBackground || '#0d1117',
+          borderColor: typeStyle.borderColor || `${theme.accent}55`
+        }}
       >
+        {activeBgImage && (
+          <div 
+            className="ei-thematic-bg-layer"
+            style={{
+              backgroundImage: `url(${activeBgImage})`,
+            }}
+          />
+        )}
         {isAdmin && (
           <EditToolbar 
             isEditing={editor.isEditing} 
@@ -290,11 +341,18 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
             hasOverrides={editor.hasOverrides} 
             onReset={editor.resetAll} 
             lang={lang} 
+            currentBackground={bgOverride}
+            onSelectBackground={(bg) => editor.setBackgroundOverride(bg)}
           />
         )}
 
         {/* Glow */}
-        <div className="ei-glow-top" style={{ background: `radial-gradient(circle, ${theme.accentGlow} 0%, transparent 70%)` }} />
+        <div 
+          className="ei-glow-top" 
+          style={{ 
+            background: `radial-gradient(circle, ${typeStyle.radialGlowColor || theme.accentGlow} 0%, transparent 70%)` 
+          }} 
+        />
 
         {/* ── Header ── */}
         <div className="ei-header">
@@ -356,6 +414,98 @@ export const EventInfographic: React.FC<EventInfographicProps> = ({ event, lang,
                       <li key={`hpvp-${idx}`} style={{ marginBottom: '3px' }}>🛡️ PvP: {p}</li>
                     ))}
                   </ul>
+                </div>
+              )}
+
+              {/* Catch Mastery Special Widget */}
+              {isCatchMastery && (
+                <div className="ei-catch-mastery-box">
+                  <div className="ei-shiny-boost-banner">
+                    <span>✨ {lang === 'cs' ? 'Zvýšená šance na Shiny!' : 'Boosted Shiny Rate!'}</span>
+                    <span>{catchMastery?.estimatedShinyRate || '~1/128'}</span>
+                  </div>
+                  <div className="ei-throw-matrix">
+                    <div className="ei-throw-cell">
+                      <span className="ei-throw-label nice">Nice Throw</span>
+                      <span className="ei-throw-value">2× XP</span>
+                      <span className="ei-throw-sub">+1 Candy</span>
+                    </div>
+                    <div className="ei-throw-cell">
+                      <span className="ei-throw-label great">Great Throw</span>
+                      <span className="ei-throw-value">2× XP</span>
+                      <span className="ei-throw-sub">+2 Candy • XL chance</span>
+                    </div>
+                    <div className="ei-throw-cell">
+                      <span className="ei-throw-label excellent">Excellent Throw</span>
+                      <span className="ei-throw-value">2× XP</span>
+                      <span className="ei-throw-sub">+3 Candy • 100% XL</span>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: '#cbd5e1', padding: '0 4px' }}>
+                    <span>🎯 {lang === 'cs' ? '10 sad Timed Research úkolů' : '10 Timed Research Stages'}</span>
+                    <span style={{ color: '#c084fc', fontWeight: 700 }}>~40 {lang === 'cs' ? 'odměn' : 'encounters'}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Harvest Festival & Mechanics Widget */}
+              {isHarvest && (
+                <div className="ei-harvest-box">
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#34d399', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      🌿 {lang === 'cs' ? 'Mossy Lure & Sklizeň jablek' : 'Mossy Lure & Apple Drops'}
+                    </span>
+                    <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>Applin • Flapple • Appletun</span>
+                  </div>
+                  <div className="ei-pumpkaboo-sizes">
+                    <div className="ei-size-card">
+                      <span className="ei-size-title">Small</span>
+                      <span className="ei-size-tag">~0.3m / 3kg</span>
+                    </div>
+                    <div className="ei-size-card">
+                      <span className="ei-size-title">Average</span>
+                      <span className="ei-size-tag">~0.4m / 5kg</span>
+                    </div>
+                    <div className="ei-size-card">
+                      <span className="ei-size-title">Large</span>
+                      <span className="ei-size-tag">~0.5m / 7.5kg</span>
+                    </div>
+                    <div className="ei-size-card best-showcase">
+                      <span className="ei-size-title" style={{ color: '#facc15' }}>Super Size 🏆</span>
+                      <span className="ei-size-tag gold">Showcase Top</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* GO Pass Milestones & Rewards */}
+              {goPass && (
+                <div className="ei-gopass-box">
+                  <div className="ei-gopass-header">
+                    <span>⭐ {lang === 'cs' ? 'GO Pass: Cesta odměn & Milníky' : 'GO Pass: Progression & Perks'}</span>
+                    <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Rank 1 – 100</span>
+                  </div>
+                  {goPass.milestones && goPass.milestones.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      {goPass.milestones.map((m: any, mi: number) => (
+                        <div key={mi} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: '#f1f5f9' }}>
+                          <span>{m.icon || '🎁'}</span>
+                          <span>{getLocalizedText(m.text, lang) || m.text}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {goPass.ranks && (
+                    <div className="ei-gopass-ranks-grid">
+                      {goPass.ranks.slice(0, 4).map((r: any, ri: number) => (
+                        <div key={ri} className="ei-gopass-rank-pill">
+                          <strong style={{ color: '#fbbf24' }}>Rank {r.rank} ({r.pointsRequired || 100 * r.rank} pts)</strong>
+                          {r.freeReward && <span style={{ color: '#cbd5e1' }}>Free: {r.freeReward.name}</span>}
+                          {r.deluxeReward && <span style={{ color: '#facc15' }}>Deluxe: {r.deluxeReward.name}</span>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 

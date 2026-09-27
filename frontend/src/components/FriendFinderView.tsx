@@ -122,8 +122,9 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
       const cached = localStorage.getItem('pogo_cached_friend_listings');
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setListings(parsed);
+        if (Array.isArray(parsed)) {
+          const realOnly = parsed.filter((l: any) => !l.id?.startsWith('seed-'));
+          setListings(realOnly);
         }
       }
     } catch {}
@@ -135,10 +136,11 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
         const res = await apiFetch('/api/friends');
         if (res.ok) {
           const data = await res.json();
-          if (isMounted && data.listings && Array.isArray(data.listings) && data.listings.length > 0) {
-            setListings(data.listings);
+          if (isMounted && data.listings && Array.isArray(data.listings)) {
+            const realOnly = data.listings.filter((l: any) => !l.id?.startsWith('seed-'));
+            setListings(realOnly);
             try {
-              localStorage.setItem('pogo_cached_friend_listings', JSON.stringify(data.listings));
+              localStorage.setItem('pogo_cached_friend_listings', JSON.stringify(realOnly));
             } catch {}
           }
         }

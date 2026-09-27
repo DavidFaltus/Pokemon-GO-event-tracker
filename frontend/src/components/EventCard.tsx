@@ -22,6 +22,7 @@ import { RaidInfographic } from './RaidInfographic';
 import { RocketInfographic } from './RocketInfographic';
 import { MaxInfographic } from './MaxInfographic';
 import { EventInfographic } from './EventInfographic';
+import { SeasonSummaryInfographic } from './SeasonSummaryInfographic';
 import { MultiBossAvatar } from './MultiBossAvatar';
 
 const EggIcon = ({ size = 16 }: { size?: number }) => (
@@ -829,6 +830,9 @@ export const EventCard: React.FC<EventCardProps> = ({
                 }
                 if (type.includes('max') || type.includes('dynamax') || name.includes('max monday') || name.includes('max battle') || name.includes('gigantamax')) {
                   return <MaxInfographic event={event} lang={lang} timezone={timezone} />;
+                }
+                if (type === 'season' || name.includes('season') || type === 'ticket-event' || name.includes('go pass') || name.includes('battle pass')) {
+                  return <SeasonSummaryInfographic lang={lang} />;
                 }
                 return (
                   <EventInfographic

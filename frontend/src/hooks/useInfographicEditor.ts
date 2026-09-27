@@ -4,6 +4,7 @@ interface InfographicOverrides {
   textOverrides: Record<string, string>;
   imageOverrides: Record<string, string>;
   listOverrides: Record<string, any[]>;
+  backgroundOverride?: string;
 }
 
 export function useInfographicEditor(eventId: string, infographicType: string) {
@@ -12,7 +13,8 @@ export function useInfographicEditor(eventId: string, infographicType: string) {
   const [overrides, setOverrides] = useState<InfographicOverrides>({
     textOverrides: {},
     imageOverrides: {},
-    listOverrides: {}
+    listOverrides: {},
+    backgroundOverride: undefined
   });
 
   const getStorageKey = useCallback(() => {
@@ -30,14 +32,16 @@ export function useInfographicEditor(eventId: string, infographicType: string) {
         setOverrides({
           textOverrides: {},
           imageOverrides: {},
-          listOverrides: {}
+          listOverrides: {},
+          backgroundOverride: undefined
         });
       }
     } else {
       setOverrides({
         textOverrides: {},
         imageOverrides: {},
-        listOverrides: {}
+        listOverrides: {},
+        backgroundOverride: undefined
       });
     }
   }, [getStorageKey]);
@@ -133,11 +137,27 @@ export function useInfographicEditor(eventId: string, infographicType: string) {
     });
   }, [getStorageKey]);
 
+  const getBackgroundOverride = useCallback((defaultBg?: string): string | undefined => {
+    return overrides.backgroundOverride !== undefined ? overrides.backgroundOverride : defaultBg;
+  }, [overrides.backgroundOverride]);
+
+  const setBackgroundOverride = useCallback((bgUrlOrKey: string | undefined) => {
+    setOverrides((prev) => {
+      const updated = {
+        ...prev,
+        backgroundOverride: bgUrlOrKey
+      };
+      localStorage.setItem(getStorageKey(), JSON.stringify(updated));
+      return updated;
+    });
+  }, [getStorageKey]);
+
   const resetAll = useCallback(() => {
     const emptyOverrides = {
       textOverrides: {},
       imageOverrides: {},
-      listOverrides: {}
+      listOverrides: {},
+      backgroundOverride: undefined
     };
     setOverrides(emptyOverrides);
     localStorage.removeItem(getStorageKey());
@@ -156,6 +176,9 @@ export function useInfographicEditor(eventId: string, infographicType: string) {
       if (newOverrides.listOverrides[fieldKey] !== undefined) {
         delete newOverrides.listOverrides[fieldKey];
       }
+      if (fieldKey === 'backgroundOverride') {
+        newOverrides.backgroundOverride = undefined;
+      }
       
       localStorage.setItem(getStorageKey(), JSON.stringify(newOverrides));
       return newOverrides;
@@ -164,7 +187,8 @@ export function useInfographicEditor(eventId: string, infographicType: string) {
 
   const hasOverrides = Object.keys(overrides.textOverrides).length > 0 || 
                        Object.keys(overrides.imageOverrides).length > 0 || 
-                       Object.keys(overrides.listOverrides).length > 0;
+                       Object.keys(overrides.listOverrides).length > 0 ||
+                       overrides.backgroundOverride !== undefined;
 
   return {
     getTextOverride,
@@ -173,6 +197,8 @@ export function useInfographicEditor(eventId: string, infographicType: string) {
     setImageOverride,
     getListOverride,
     setListOverride,
+    getBackgroundOverride,
+    setBackgroundOverride,
     addListItem,
     removeListItem,
     resetAll,

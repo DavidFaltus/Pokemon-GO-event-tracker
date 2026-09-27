@@ -34,6 +34,8 @@ import { classifyDocumentSections } from './parsers/semanticClassifier';
 import { parseSpawnsFromSections, isMetaRelevantPokemon } from './parsers/habitatParser';
 import { parseFeaturedAttacksFromSections } from './parsers/moveParser';
 import { parseGoPassFromSections } from './parsers/goPassParser';
+import { parseCatchMasteryFromSections } from './parsers/catchMasteryParser';
+import { parseMechanicsFromSections } from './parsers/mechanicsParser';
 import { parseRocketMechanicsFromSections } from './parsers/rocketParser';
 import { evaluateEventMetaAndHighlights } from './meta/metaEvaluator';
 import { evaluateBonusImpact } from './meta/bonusWeights';
@@ -46,6 +48,8 @@ export {
   isMetaRelevantPokemon,
   parseFeaturedAttacksFromSections,
   parseGoPassFromSections,
+  parseCatchMasteryFromSections,
+  parseMechanicsFromSections,
   parseRocketMechanicsFromSections,
   evaluateEventMetaAndHighlights,
   evaluateBonusImpact,
@@ -1845,6 +1849,8 @@ export function parseComplexEventHtml(html: string, eventID: string = 'event'): 
   parsedSpawns.forEach(sp => spawns.push(sp));
 
   const goPass = parseGoPassFromSections(classifiedSections, $, translateTextToCs);
+  const catchMastery = parseCatchMasteryFromSections(classifiedSections, $, eventID);
+  const mechanics = parseMechanicsFromSections(classifiedSections, $, eventID);
   const rocket = parseRocketMechanicsFromSections(classifiedSections, $, translateTextToCs);
   rocket.bonuses.forEach(b => bonuses.push(b));
   rocket.shadowDebuts.forEach(d => debuts.push(d));
@@ -1964,7 +1970,9 @@ export function parseComplexEventHtml(html: string, eventID: string = 'event'): 
     featuredAttacks: featuredAttacks.length > 0 ? featuredAttacks : undefined,
     showcases: showcases.length > 0 ? showcases : undefined,
     paidTicket: paidTicket || undefined,
-    goPass: goPass || undefined
+    goPass: goPass || undefined,
+    catchMastery: catchMastery || undefined,
+    mechanics: mechanics || undefined
   };
 
   parsedDetails.highlights = generateEventHighlights(parsedDetails, eventID);
@@ -2305,6 +2313,8 @@ export async function mergeEventDetails(
   merged.showcases = leekData?.showcases || pogoHubData?.showcases || [];
   merged.paidTicket = leekData?.paidTicket || pogoHubData?.paidTicket;
   merged.goPass = leekData?.goPass || pogoHubData?.goPass;
+  merged.catchMastery = leekData?.catchMastery || pogoHubData?.catchMastery;
+  merged.mechanics = leekData?.mechanics || pogoHubData?.mechanics;
 
   if (merged.debuts) {
     for (const d of merged.debuts) {

@@ -96,12 +96,10 @@ describe('Storage & Disk Cache Persistence', () => {
     expect(raids).toEqual([]);
   });
 
-  it('loads seed community friend listings when store is empty', async () => {
+  it('returns empty array when friend listings store is empty', async () => {
     await dataStore.delete('friends_listings');
     const friends = await loadFriendListings();
-    expect(friends.length).toBeGreaterThanOrEqual(18);
-    expect(friends.some(f => f.vivillonPattern === 'sandstorm')).toBe(true);
-    expect(friends.some(f => f.vivillonPattern === 'ocean')).toBe(true);
+    expect(friends).toEqual([]);
   });
 
   it('adds and deletes friend listing with permanent retention and 1000 cap', async () => {

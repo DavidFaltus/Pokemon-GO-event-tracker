@@ -18,6 +18,7 @@ import { RaidInfographic } from './RaidInfographic';
 import { RocketInfographic } from './RocketInfographic';
 import { MaxInfographic } from './MaxInfographic';
 import { EventInfographic } from './EventInfographic';
+import { SeasonSummaryInfographic } from './SeasonSummaryInfographic';
 import { getPokemonIconUrl, resolveImage, setPokemonIconOverrides } from '../utils/imageResolver';
 
 interface AdminPanelViewProps {
@@ -2671,6 +2672,9 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
                         }
                         if (type === 'team-go-rocket' || nameLower.includes('rocket')) {
                           return <RocketInfographic event={socialSelectedEvent} lang={lang} isAdmin={true} />;
+                        }
+                        if (type === 'season' || nameLower.includes('season') || type === 'ticket-event' || nameLower.includes('go pass') || nameLower.includes('battle pass')) {
+                          return <SeasonSummaryInfographic events={scrapedEvents} lang={lang} isAdmin={true} />;
                         }
 
                         return <EventInfographic event={socialSelectedEvent} lang={lang} isAdmin={true} />;

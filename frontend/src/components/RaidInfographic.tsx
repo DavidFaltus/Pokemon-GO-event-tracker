@@ -16,6 +16,8 @@ import { getPokemonTypesByName, getWeaknessesForPokemon, getPokemonRankingInfo, 
 import { getBossDifficultyInfo } from './RaidDifficultyBox';
 import { useInfographicEditor } from '../hooks/useInfographicEditor';
 import { EditableText, EditableImage, EditToolbar } from './InfographicEditable';
+import { getTypeBackgroundStyle } from '../utils/typeBackgroundHelper';
+import { resolveEventThematicBackground } from '../utils/thematicBackgroundResolver';
 import './RaidInfographic.css';
 
 interface RaidInfographicProps {
@@ -156,8 +158,14 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
     lang
   );
 
-  // Primary Boss Element Types for Title Badges
+  // Primary Boss Element Types for Title Badges & Dynamic Element Theming
   const primaryBossTypes = getPokemonTypesByName(primaryBossName);
+  const typeStyle = getTypeBackgroundStyle(primaryBossTypes);
+
+  // Background overrides and auto-resolution
+  const bgOverride = editor.getBackgroundOverride();
+  const autoThematicBg = resolveEventThematicBackground(event);
+  const activeBgImage = bgOverride === 'none' ? null : (bgOverride || autoThematicBg);
 
   // Attacker Tier Ranking Info (e.g. #1 DRAGON ATTACKER) from pokemonRankings
   const bossRankingInfo = getPokemonRankingInfo(primaryBossName);
@@ -263,11 +271,47 @@ export const RaidInfographic: React.FC<RaidInfographicProps> = ({ event, lang, s
       )}
 
       {/* 4:5 Aspect Ratio Poster Element */}
-      <div className={`raid-poster-container-4x5 ${isExporting ? 'is-exporting' : ''}`} ref={posterRef}>
-        {isAdmin && (
-          <EditToolbar isEditing={editor.isEditing} onToggleEdit={() => editor.setIsEditing(!editor.isEditing)} hasOverrides={editor.hasOverrides} onReset={editor.resetAll} lang={lang} />
+      <div 
+        className={`raid-poster-container-4x5 ${isExporting ? 'is-exporting' : ''}`} 
+        ref={posterRef}
+        style={{
+          background: typeStyle.gradientBackground,
+          borderColor: typeStyle.borderColor
+        }}
+      >
+        {activeBgImage && (
+          <div 
+            className="raid-thematic-bg-layer"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: `url(${activeBgImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              opacity: 0.28,
+              filter: 'saturate(1.2) contrast(1.1)',
+              pointerEvents: 'none',
+              zIndex: 0
+            }}
+          />
         )}
-        <div className="raid-poster-glow-top"></div>
+        {isAdmin && (
+          <EditToolbar 
+            isEditing={editor.isEditing} 
+            onToggleEdit={() => editor.setIsEditing(!editor.isEditing)} 
+            hasOverrides={editor.hasOverrides} 
+            onReset={editor.resetAll} 
+            lang={lang} 
+            currentBackground={bgOverride}
+            onSelectBackground={(bg) => editor.setBackgroundOverride(bg)}
+          />
+        )}
+        <div 
+          className="raid-poster-glow-top"
+          style={{
+            background: `radial-gradient(circle, ${typeStyle.radialGlowColor} 0%, rgba(0, 0, 0, 0) 70%)`
+          }}
+        />
 
         {/* Poster Header (With ICON-ONLY type badges in the main title) */}
         <div className="raid-poster-header">

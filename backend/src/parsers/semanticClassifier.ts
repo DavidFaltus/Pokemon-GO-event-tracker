@@ -2,6 +2,11 @@ import * as cheerio from 'cheerio';
 
 export type SectionType =
   | 'BONUSES'
+  | 'THROW_BONUSES'
+  | 'LURE_MECHANICS'
+  | 'SIZE_VARIANTS'
+  | 'SEASONAL_BIOMES'
+  | 'HEMISPHERE_SPAWNS'
   | 'SPAWNS_WILD'
   | 'SPAWNS_HABITAT'
   | 'DEBUTS'
@@ -57,7 +62,46 @@ export function classifyDocumentSections($: cheerio.CheerioAPI): ClassifiedSecti
         metadata.habitatName = text.replace(/habitat|biome/gi, '').trim();
       }
     }
-    // 2. GO Pass / Battle Pass
+    // 2. Throw Bonuses & Catch Mastery
+    else if (
+      id.includes('throw') ||
+      id.includes('mastery') ||
+      text.includes('catch mastery') ||
+      text.includes('nice throw') ||
+      text.includes('great throw') ||
+      text.includes('excellent throw')
+    ) {
+      type = 'THROW_BONUSES';
+    }
+    // 3. Lure Mechanics & Drops
+    else if (
+      id.includes('lure') ||
+      text.includes('mossy lure') ||
+      text.includes('magnetic lure') ||
+      text.includes('glacial lure') ||
+      text.includes('lure module')
+    ) {
+      type = 'LURE_MECHANICS';
+    }
+    // 4. Size Variants & Pumpkaboo
+    else if (
+      id.includes('size') ||
+      text.includes('size variant') ||
+      text.includes('pumpkaboo size') ||
+      text.includes('super size') ||
+      text.includes('xxl')
+    ) {
+      type = 'SIZE_VARIANTS';
+    }
+    // 5. Hemisphere Spawns
+    else if (
+      id.includes('hemisphere') ||
+      text.includes('northern hemisphere') ||
+      text.includes('southern hemisphere')
+    ) {
+      type = 'HEMISPHERE_SPAWNS';
+    }
+    // 6. GO Pass / Battle Pass
     else if (
       id.includes('go-pass') ||
       id.includes('battle-pass') ||
@@ -66,7 +110,7 @@ export function classifyDocumentSections($: cheerio.CheerioAPI): ClassifiedSecti
     ) {
       type = 'GO_PASS';
     }
-    // 3. Featured / Signature Attacks
+    // 7. Featured / Signature Attacks
     else if (
       id.includes('featured-attack') ||
       id.includes('exclusive-move') ||

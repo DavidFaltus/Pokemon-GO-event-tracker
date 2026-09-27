@@ -9,6 +9,9 @@ import { getPokemonName } from '../utils/pokemonTranslator';
 import { formatEventDateRange } from '../utils/infographicFormatters';
 import { useInfographicEditor } from '../hooks/useInfographicEditor';
 import { EditableText, EditableImage, EditToolbar } from './InfographicEditable';
+import { getPokemonTypesByName } from '../utils/pokemonCountersHelper';
+import { getTypeBackgroundStyle } from '../utils/typeBackgroundHelper';
+import { resolveEventThematicBackground } from '../utils/thematicBackgroundResolver';
 import './SpotlightInfographic.css';
 
 interface SpotlightInfographicProps {
@@ -85,6 +88,14 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
 
   const bonusInfo = getBonusText(rawBonus);
 
+  // Dynamic Pokemon Element Type & Thematic Background Theming
+  const types = getPokemonTypesByName(pokeName);
+  const typeStyle = getTypeBackgroundStyle(types);
+
+  const bgOverride = editor.getBackgroundOverride();
+  const autoThematicBg = resolveEventThematicBackground(event);
+  const activeBgImage = bgOverride === 'none' ? null : (bgOverride || autoThematicBg);
+
   // Download handler
   const handleDownload = async () => {
     editor.setIsExporting(true);
@@ -94,11 +105,47 @@ export const SpotlightInfographic: React.FC<SpotlightInfographicProps> = ({ even
 
   return (
     <div className="spotlight-infographic-wrapper">
-      <div className={`spotlight-poster-container ${isExporting ? 'is-exporting' : ''}`} ref={posterRef}>
-        {isAdmin && (
-          <EditToolbar isEditing={editor.isEditing} onToggleEdit={() => editor.setIsEditing(!editor.isEditing)} hasOverrides={editor.hasOverrides} onReset={editor.resetAll} lang={lang} />
+      <div 
+        className={`spotlight-poster-container ${isExporting ? 'is-exporting' : ''}`} 
+        ref={posterRef}
+        style={{
+          background: typeStyle.gradientBackground,
+          borderColor: typeStyle.borderColor
+        }}
+      >
+        {activeBgImage && (
+          <div 
+            className="spotlight-thematic-bg-layer"
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: `url(${activeBgImage})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              opacity: 0.28,
+              filter: 'saturate(1.2) contrast(1.1)',
+              pointerEvents: 'none',
+              zIndex: 0
+            }}
+          />
         )}
-        <div className="spotlight-poster-glow-top"></div>
+        {isAdmin && (
+          <EditToolbar 
+            isEditing={editor.isEditing} 
+            onToggleEdit={() => editor.setIsEditing(!editor.isEditing)} 
+            hasOverrides={editor.hasOverrides} 
+            onReset={editor.resetAll} 
+            lang={lang} 
+            currentBackground={bgOverride}
+            onSelectBackground={(bg) => editor.setBackgroundOverride(bg)}
+          />
+        )}
+        <div 
+          className="spotlight-poster-glow-top"
+          style={{
+            background: `radial-gradient(circle, ${typeStyle.radialGlowColor} 0%, rgba(0, 0, 0, 0) 70%)`
+          }}
+        />
 
         {/* Header */}
         <div className="spotlight-poster-header">
