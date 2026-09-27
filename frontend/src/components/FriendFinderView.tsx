@@ -105,6 +105,20 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
+  // Lock background body scroll when any modal is open
+  useEffect(() => {
+    if (showPostModal || Boolean(showQrModal)) {
+      const originalOverflow = document.body.style.overflow;
+      const originalTouchAction = document.body.style.touchAction;
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.touchAction = originalTouchAction;
+      };
+    }
+  }, [showPostModal, showQrModal]);
+
   // Fetch live active friends from backend with automatic local cache backup & client hydration
   useEffect(() => {
     setHasMounted(true);
