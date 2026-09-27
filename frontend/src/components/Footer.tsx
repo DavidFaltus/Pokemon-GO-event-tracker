@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import './Footer.css';
 import type { Language } from '../data/translations';
 import type { LegalModalType } from './LegalModals';
@@ -7,8 +8,8 @@ import { BookOpen } from 'lucide-react';
 
 interface FooterProps {
   lang: Language;
-  onOpenTab: (tab: string) => void;
-  onOpenLegalModal: (type: LegalModalType) => void;
+  onOpenTab?: (tab: string) => void;
+  onOpenLegalModal?: (type: LegalModalType) => void;
 }
 
 export const InstagramLogo = ({ size = 15, color = '#ffffff' }: { size?: number; color?: string }) => (
@@ -106,6 +107,24 @@ export const Footer: React.FC<FooterProps> = ({ lang, onOpenTab, onOpenLegalModa
         ja: "プライバシーポリシー",
         ru: "Конфиденциальность"
       },
+      terms: {
+        cs: "Podmínky použití",
+        en: "Terms of Use",
+        ja: "利用規約",
+        ru: "Условия использования"
+      },
+      disclaimer: {
+        cs: "Právní doložka",
+        en: "Disclaimer",
+        ja: "免責事項",
+        ru: "Отказ от ответственности"
+      },
+      contact: {
+        cs: "Kontakt",
+        en: "Contact",
+        ja: "お問い合わせ",
+        ru: "Контакты"
+      },
       tagline: {
         cs: "Vytvořeno s vášní pro trenéry po celém světě.",
         en: "Built with passion for trainers worldwide.",
@@ -137,19 +156,19 @@ export const Footer: React.FC<FooterProps> = ({ lang, onOpenTab, onOpenLegalModa
           <div className="footer-column">
             <h4>{getTranslation('navigation')}</h4>
             <ul>
-              <li><button onClick={() => onOpenTab('events')}>{getTranslation('navEvents')}</button></li>
-              <li><button onClick={() => onOpenTab('raid')}>{getTranslation('navRaids')}</button></li>
-              <li><button onClick={() => onOpenTab('rocket')}>{getTranslation('navRocket')}</button></li>
-              <li><button onClick={() => onOpenTab('ranking')}>{getTranslation('navRankings')}</button></li>
+              <li><Link href={`/${lang}`}>{getTranslation('navEvents')}</Link></li>
+              <li><Link href={`/${lang}/raids`}>{getTranslation('navRaids')}</Link></li>
+              <li><Link href={`/${lang}/rocket`}>{getTranslation('navRocket')}</Link></li>
+              <li><Link href={`/${lang}/rankings`}>{getTranslation('navRankings')}</Link></li>
             </ul>
           </div>
 
           <div className="footer-column">
             <h4>{getTranslation('guides')}</h4>
             <ul>
-              <li><button onClick={() => onOpenTab('guides')}><BookOpen size={13} style={{ display: 'inline', marginRight: '4px' }} />{getTranslation('allGuides')}</button></li>
-              <li><button onClick={() => onOpenTab('guides')}>{getTranslation('guideRocket')}</button></li>
-              <li><button onClick={() => onOpenTab('guides')}>{getTranslation('guideRaid')}</button></li>
+              <li><Link href={`/${lang}/guides`}><BookOpen size={13} style={{ display: 'inline', marginRight: '4px' }} />{getTranslation('allGuides')}</Link></li>
+              <li><Link href={`/${lang}/guides/team-go-rocket-leaders-counters-guide`}>{getTranslation('guideRocket')}</Link></li>
+              <li><Link href={`/${lang}/guides/raid-boss-counters-and-hundo-iv-guide`}>{getTranslation('guideRaid')}</Link></li>
             </ul>
           </div>
 
@@ -179,9 +198,12 @@ export const Footer: React.FC<FooterProps> = ({ lang, onOpenTab, onOpenLegalModa
                 </a>
               </li>
             </ul>
-            <div className="footer-sub-legal" style={{ marginTop: '10px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              <button onClick={() => onOpenLegalModal('privacy')} style={{ fontSize: '0.75rem', opacity: 0.7 }}>{getTranslation('privacy')}</button>
-              <button onClick={() => onOpenLegalModal('about')} style={{ fontSize: '0.75rem', opacity: 0.7 }}>{getTranslation('about')}</button>
+            <div className="footer-sub-legal" style={{ marginTop: '12px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <Link href={`/${lang}/privacy`} style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textDecoration: 'none' }}>{getTranslation('privacy')}</Link>
+              <Link href={`/${lang}/about`} style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textDecoration: 'none' }}>{getTranslation('about')}</Link>
+              <Link href={`/${lang}/terms`} style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textDecoration: 'none' }}>{getTranslation('terms')}</Link>
+              <Link href={`/${lang}/disclaimer`} style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textDecoration: 'none' }}>{getTranslation('disclaimer')}</Link>
+              <Link href={`/${lang}/contact`} style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textDecoration: 'none' }}>{getTranslation('contact')}</Link>
             </div>
           </div>
         </div>

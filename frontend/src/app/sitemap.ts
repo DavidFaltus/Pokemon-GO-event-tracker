@@ -64,6 +64,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/filter', priority: 0.8, changeFrequency: 'weekly' as const },
     { path: '/settings', priority: 0.7, changeFrequency: 'monthly' as const },
     { path: '/download', priority: 0.7, changeFrequency: 'monthly' as const },
+    { path: '/privacy', priority: 0.6, changeFrequency: 'monthly' as const },
+    { path: '/privacy-policy', priority: 0.6, changeFrequency: 'monthly' as const },
+    { path: '/about', priority: 0.6, changeFrequency: 'monthly' as const },
+    { path: '/terms', priority: 0.6, changeFrequency: 'monthly' as const },
+    { path: '/disclaimer', priority: 0.6, changeFrequency: 'monthly' as const },
+    { path: '/contact', priority: 0.6, changeFrequency: 'monthly' as const },
   ];
 
   rootSections.forEach((sec) => {
@@ -100,6 +106,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/filter', priority: 0.8, changeFrequency: 'weekly' as const },
       { path: '/settings', priority: 0.7, changeFrequency: 'monthly' as const },
       { path: '/download', priority: 0.7, changeFrequency: 'monthly' as const },
+      { path: '/privacy', priority: 0.6, changeFrequency: 'monthly' as const },
+      { path: '/privacy-policy', priority: 0.6, changeFrequency: 'monthly' as const },
+      { path: '/about', priority: 0.6, changeFrequency: 'monthly' as const },
+      { path: '/terms', priority: 0.6, changeFrequency: 'monthly' as const },
+      { path: '/disclaimer', priority: 0.6, changeFrequency: 'monthly' as const },
+      { path: '/contact', priority: 0.6, changeFrequency: 'monthly' as const },
     ];
 
     sections.forEach((sec) => {

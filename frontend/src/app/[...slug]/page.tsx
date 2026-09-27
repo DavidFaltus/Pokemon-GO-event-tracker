@@ -2,10 +2,14 @@ import App from '@/App';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
+import { LegalPageView } from '@/components/LegalPageView';
+import type { LegalPageType } from '@/data/legalData';
+
 export const revalidate = 3600;
 
 const VALID_ROOT_ROUTES = new Set([
-  'events', 'guides', 'raids', 'rocket', 'ditto', 'eggs', 'rankings', 'filter', 'settings', 'download', 'app', 'admin'
+  'events', 'guides', 'raids', 'rocket', 'ditto', 'eggs', 'rankings', 'filter', 'settings', 'download', 'app', 'admin',
+  'privacy', 'privacy-policy', 'about', 'terms', 'disclaimer', 'contact'
 ]);
 
 export async function generateStaticParams() {
@@ -30,7 +34,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const canonicalUrl = first === 'events' ? 'https://pogoevents.app/cs' : `https://pogoevents.app/cs/${first}`;
+  const canonicalUrl = first === 'events' ? 'https://pogoevents.app/cs' : `https://pogoevents.app/cs/${first === 'privacy-policy' ? 'privacy' : first}`;
   return {
     alternates: {
       canonical: canonicalUrl,
@@ -44,6 +48,22 @@ export default async function CatchAllRootPage({ params }: PageProps) {
 
   if (!first || !VALID_ROOT_ROUTES.has(first)) {
     notFound();
+  }
+
+  if (first === 'privacy' || first === 'privacy-policy') {
+    return <LegalPageView pageType="privacy" lang="cs" />;
+  }
+  if (first === 'about') {
+    return <LegalPageView pageType="about" lang="cs" />;
+  }
+  if (first === 'terms') {
+    return <LegalPageView pageType="terms" lang="cs" />;
+  }
+  if (first === 'disclaimer') {
+    return <LegalPageView pageType="disclaimer" lang="cs" />;
+  }
+  if (first === 'contact') {
+    return <LegalPageView pageType="contact" lang="cs" />;
   }
 
   return <App />;

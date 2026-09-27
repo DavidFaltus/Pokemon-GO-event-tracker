@@ -70,13 +70,7 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Google AdSense - lazyOnload ensures zero impact on Total Blocking Time and LCP */}
-        <Script
-          id="google-adsense"
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8800056915088711"
-          strategy="lazyOnload"
-          crossOrigin="anonymous"
-        />
+        {/* Google AdSense script removed/deactivated per monetization strategy */}
 
         <div id="root">
           <NavigatorProvider>
