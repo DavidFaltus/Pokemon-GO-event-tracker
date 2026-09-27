@@ -2379,6 +2379,30 @@ body.light-mode .adventure-rules-box .rule-item p {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+  max-height: 120px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.special-bg-pkm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 3px 8px 3px 5px;
+  border-radius: 14px;
+  font-size: 0.76rem;
+  font-weight: 650;
+  color: #f1f5f9;
+  line-height: 1.2;
+}
+
+.pkm-chip-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .special-bg-artwork-box {
@@ -2638,6 +2662,12 @@ body.light-mode .pokelid-bg-theme-row .bg-theme-text {
 body.light-mode .special-bg-artwork-box {
   background: #f1f5f9 !important;
   border-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+body.light-mode .special-bg-pkm-chip {
+  background: #f1f5f9 !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  color: #0f172a !important;
 }
 
 /* Responsive Breakpoints */
@@ -4368,5 +4398,166 @@ body.light-mode .lightbox-stage-thumb,
 body.light-mode .lightbox-full-img {
   filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.22)) !important;
 }
+
+/* Guide Inline Image Cards & Formatting */
+.guide-inline-image-card {
+  margin: 18px 0 22px 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  max-width: 620px;
+}
+
+.guide-inline-image-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(168, 85, 247, 0.45);
+  box-shadow: 0 10px 24px rgba(168, 85, 247, 0.2);
+}
+
+.guide-inline-image-frame {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  background: #060709;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guide-inline-image-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.35s ease;
+}
+
+.guide-inline-image-card:hover .guide-inline-image-frame img {
+  transform: scale(1.05);
+}
+
+.guide-inline-image-overlay {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(8px);
+  color: #38bdf8;
+  font-size: 0.75rem;
+  font-weight: 750;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  transition: all 0.2s ease;
+}
+
+.guide-inline-image-card:hover .guide-inline-image-overlay {
+  background: rgba(168, 85, 247, 0.9);
+  color: #ffffff;
+  border-color: #a855f7;
+}
+
+.guide-inline-image-caption {
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: var(--text-secondary);
+  background: rgba(22, 27, 44, 0.6);
+  border-top: 1px solid var(--border-color);
+}
+
+.guide-content-subheading {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 26px 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  letter-spacing: -0.01em;
+}
+
+.guide-inline-article-link {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(168, 85, 247, 0.12);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin: 0 3px;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  text-decoration: none;
+}
+
+.guide-inline-article-link:hover {
+  background: rgba(168, 85, 247, 0.25);
+  color: #ffffff;
+  border-color: #a855f7;
+}
+
+.guide-inline-link {
+  color: #38bdf8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 650;
+}
+
+.guide-inline-link:hover {
+  color: #7dd3fc;
+}
+
+.guide-bullet-point-row.sub-bullet {
+  padding-left: 24px;
+  opacity: 0.95;
+  margin-top: 4px;
+}
+
+.bullet-dot.sub-dot {
+  width: 5px;
+  height: 5px;
+  background: #38bdf8;
+}
+
+/* Light mode overrides */
+body.light-mode .guide-inline-image-card {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.14);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+body.light-mode .guide-inline-image-caption {
+  background: #f8fafc;
+  color: #334155;
+  border-top-color: rgba(15, 23, 42, 0.1);
+}
+
+body.light-mode .guide-content-subheading {
+  color: #0f172a;
+  border-bottom-color: rgba(15, 23, 42, 0.12);
+}
+
+body.light-mode .guide-inline-article-link {
+  background: rgba(168, 85, 247, 0.1);
+  color: #7e22ce;
+  border-color: rgba(168, 85, 247, 0.3);
+}
+
+body.light-mode .guide-inline-article-link:hover {
+  background: #aa3bff;
+  color: #ffffff;
+}
+
 
 

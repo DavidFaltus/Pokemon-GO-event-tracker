@@ -21,24 +21,74 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   let eventSlugs: string[] = [];
 
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/events`, { next: { revalidate: 3600 } });
-    if (res.ok) {
-      const data = await res.json();
-      const events: SimpleEvent[] = data.events || data || [];
-      eventSlugs = events.map((e) => e.eventID || e.id || '').filter(Boolean);
+  const eventSources = [
+    `${API_BASE_URL}/api/events`,
+    'https://pogo-tracker-backend-1084389140873.europe-west3.run.app/api/events',
+    'https://cdn.jsdelivr.net/gh/bigfoott/ScrapedDuck@data/events.min.json',
+    'https://fastly.jsdelivr.net/gh/bigfoott/ScrapedDuck@data/events.min.json',
+    'https://raw.githubusercontent.com/bigfoott/ScrapedDuck/data/events.min.json'
+  ];
+
+  for (const src of eventSources) {
+    try {
+      const res = await fetch(src, { next: { revalidate: 3600 } });
+      if (res.ok) {
+        const data = await res.json();
+        const events: SimpleEvent[] = data.events || data || [];
+        const foundSlugs = events.map((e) => e.eventID || e.id || '').filter(Boolean);
+        if (foundSlugs.length > 0) {
+          eventSlugs = foundSlugs;
+          break;
+        }
+      }
+    } catch {
+      // Continue to next mirror
     }
-  } catch (e) {
-    console.warn('Sitemap fetch failed, using fallback:', e);
   }
 
   const routes: MetadataRoute.Sitemap = [];
   const now = new Date();
 
+  // 0. Root Default Pages
+  const rootSections = [
+    { path: '', priority: 1.0, changeFrequency: 'hourly' as const },
+    { path: '/events', priority: 0.95, changeFrequency: 'hourly' as const },
+    { path: '/friends', priority: 0.92, changeFrequency: 'daily' as const },
+    { path: '/raids', priority: 0.9, changeFrequency: 'daily' as const },
+    { path: '/rankings', priority: 0.9, changeFrequency: 'daily' as const },
+    { path: '/rocket', priority: 0.9, changeFrequency: 'daily' as const },
+    { path: '/research', priority: 0.9, changeFrequency: 'daily' as const },
+    { path: '/guides', priority: 0.88, changeFrequency: 'weekly' as const },
+    { path: '/ditto', priority: 0.8, changeFrequency: 'daily' as const },
+    { path: '/eggs', priority: 0.8, changeFrequency: 'daily' as const },
+    { path: '/filter', priority: 0.8, changeFrequency: 'weekly' as const },
+    { path: '/settings', priority: 0.7, changeFrequency: 'monthly' as const },
+    { path: '/download', priority: 0.7, changeFrequency: 'monthly' as const },
+  ];
+
+  rootSections.forEach((sec) => {
+    routes.push({
+      url: `${baseUrl}${sec.path}`,
+      lastModified: now,
+      changeFrequency: sec.changeFrequency,
+      priority: sec.priority,
+    });
+  });
+
+  GUIDES_DATA.forEach((guide) => {
+    routes.push({
+      url: `${baseUrl}/guides/${guide.slug}`,
+      lastModified: now,
+      changeFrequency: 'weekly',
+      priority: 0.85,
+    });
+  });
+
   languages.forEach((lang) => {
     // 1. Core Section Pages
     const sections = [
       { path: '', priority: 1.0, changeFrequency: 'hourly' as const },
+      { path: '/events', priority: 0.95, changeFrequency: 'hourly' as const },
       { path: '/friends', priority: 0.92, changeFrequency: 'daily' as const },
       { path: '/raids', priority: 0.9, changeFrequency: 'daily' as const },
       { path: '/rankings', priority: 0.9, changeFrequency: 'daily' as const },
@@ -48,6 +98,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/ditto', priority: 0.8, changeFrequency: 'daily' as const },
       { path: '/eggs', priority: 0.8, changeFrequency: 'daily' as const },
       { path: '/filter', priority: 0.8, changeFrequency: 'weekly' as const },
+      { path: '/settings', priority: 0.7, changeFrequency: 'monthly' as const },
       { path: '/download', priority: 0.7, changeFrequency: 'monthly' as const },
     ];
 

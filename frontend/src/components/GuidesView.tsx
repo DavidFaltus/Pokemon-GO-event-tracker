@@ -827,6 +827,12 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
   const [specialBgFilter, setSpecialBgFilter] = useState<'all' | 'global' | 'go-tour' | 'go-fest' | 'city-safari' | 'heritage'>('all');
   const [specialBgSearch, setSpecialBgSearch] = useState('');
 
+  useEffect(() => {
+    if (initialArticleSlug) {
+      setSelectedArticleSlug(initialArticleSlug);
+    }
+  }, [initialArticleSlug]);
+
   // Upgraded Lightbox Gallery with Prev/Next and Miniature Thumbnails
   const [lightboxGallery, setLightboxGallery] = useState<{
     items: {
@@ -1020,6 +1026,63 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
       onSelectArticle(slug);
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const renderBoldText = (text: string): React.ReactNode => {
+    const boldParts = text.split(/(\*\*[^*]+\*\*)/g);
+    return boldParts.map((chunk, i) => {
+      if (chunk.startsWith('**') && chunk.endsWith('**')) {
+        return <strong key={i}>{chunk.slice(2, -2)}</strong>;
+      }
+      return chunk;
+    });
+  };
+
+  const renderFormattedText = (text: string): React.ReactNode => {
+    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+    const parts: React.ReactNode[] = [];
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = linkRegex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(renderBoldText(text.slice(lastIndex, match.index)));
+      }
+      const label = match[1];
+      const url = match[2];
+      if (url.startsWith('/guides/')) {
+        const targetSlug = url.replace('/guides/', '');
+        parts.push(
+          <button
+            key={match.index}
+            type="button"
+            className="guide-inline-article-link"
+            onClick={() => handleArticleClick(targetSlug)}
+          >
+            {label}
+          </button>
+        );
+      } else {
+        parts.push(
+          <a
+            key={match.index}
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="guide-inline-link"
+          >
+            {label}
+          </a>
+        );
+      }
+      lastIndex = match.index + match[0].length;
+    }
+
+    if (lastIndex < text.length) {
+      parts.push(renderBoldText(text.slice(lastIndex)));
+    }
+
+    return parts;
   };
 
   const renderPokemonChip = (name: string, isShadow = false, isShiny = false) => {
@@ -3195,15 +3258,64 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
                 <div className="article-text-flow">
                   {(section.content[lang] || section.content.en).split('\n').map((paragraph, pIdx) => {
                     if (!paragraph.trim()) return null;
+
+                    const imgMatch = paragraph.match(/^!\[(.*?)\]\((.*?)\)$/);
+                    if (imgMatch) {
+                      const alt = imgMatch[1];
+                      const url = imgMatch[2];
+                      return (
+                        <div
+                          key={pIdx}
+                          className="guide-inline-image-card"
+                          onClick={() => setPreviewModalImg({ url, title: alt })}
+                          title={lang === 'cs' ? 'Kliknutím zvětšit pozadí' : 'Click to enlarge background'}
+                        >
+                          <div className="guide-inline-image-frame">
+                            <img src={url} alt={alt} loading="lazy" />
+                            <div className="guide-inline-image-overlay">
+                              <ZoomIn size={15} />
+                              <span>{lang === 'cs' ? 'Zvětšit' : 'Enlarge'}</span>
+                            </div>
+                          </div>
+                          {alt && <div className="guide-inline-image-caption">{alt}</div>}
+                        </div>
+                      );
+                    }
+
+                    if (paragraph.startsWith('### ')) {
+                      return (
+                        <h3 key={pIdx} className="guide-content-subheading">
+                          {renderFormattedText(paragraph.replace(/^###\s*/, ''))}
+                        </h3>
+                      );
+                    }
+                    if (paragraph.startsWith('## ')) {
+                      return (
+                        <h3 key={pIdx} className="guide-content-subheading">
+                          {renderFormattedText(paragraph.replace(/^##\s*/, ''))}
+                        </h3>
+                      );
+                    }
+
+                    if (/^\s{2,}[•-]\s*/.test(paragraph)) {
+                      const cleanText = paragraph.replace(/^\s+[•-]\s*/, '');
+                      return (
+                        <div key={pIdx} className="guide-bullet-point-row sub-bullet">
+                          <span className="bullet-dot sub-dot" />
+                          <span>{renderFormattedText(cleanText)}</span>
+                        </div>
+                      );
+                    }
+
                     if (paragraph.startsWith('•') || paragraph.startsWith('-')) {
                       return (
                         <div key={pIdx} className="guide-bullet-point-row">
                           <span className="bullet-dot" />
-                          <span>{paragraph.replace(/^[•-]\s*/, '')}</span>
+                          <span>{renderFormattedText(paragraph.replace(/^[•-]\s*/, ''))}</span>
                         </div>
                       );
                     }
-                    return <p key={pIdx}>{paragraph}</p>;
+                    return <p key={pIdx}>{renderFormattedText(paragraph)}</p>;
                   })}
                 </div>
 

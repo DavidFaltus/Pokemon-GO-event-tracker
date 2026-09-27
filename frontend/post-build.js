@@ -70,19 +70,23 @@ if (sourceHtml) {
     fs.copyFileSync(adminHtml, adminIndexHtml);
   }
 
-  // Copy sitemap.xml & robots.txt to backend root and backend/dist
+  // Copy sitemap.xml & robots.txt to public/, backend root and backend/dist
   const sitemapOut = path.join(outDir, 'sitemap.xml');
   const robotsOut = path.join(outDir, 'robots.txt');
+  const publicSitemap = path.join(__dirname, 'public', 'sitemap.xml');
+  const publicRobots = path.join(__dirname, 'public', 'robots.txt');
   const backendSitemap = path.join(__dirname, '..', 'backend', 'sitemap.xml');
   const backendRobots = path.join(__dirname, '..', 'backend', 'robots.txt');
   const backendDistSitemap = path.join(__dirname, '..', 'backend', 'dist', 'sitemap.xml');
   const backendDistRobots = path.join(__dirname, '..', 'backend', 'dist', 'robots.txt');
 
   if (fs.existsSync(sitemapOut)) {
+    fs.copyFileSync(sitemapOut, publicSitemap);
     fs.copyFileSync(sitemapOut, backendSitemap);
     fs.copyFileSync(sitemapOut, backendDistSitemap);
   }
   if (fs.existsSync(robotsOut)) {
+    fs.copyFileSync(robotsOut, publicRobots);
     fs.copyFileSync(robotsOut, backendRobots);
     fs.copyFileSync(robotsOut, backendDistRobots);
   }
