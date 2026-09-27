@@ -905,19 +905,7 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
         </div>
       )}
 
-      {/* Mobile Floating Action Button (FAB) — always visible when scrolling on mobile */}
-      <button
-        type="button"
-        className="friend-mobile-fab"
-        onClick={() => {
-          setFormError(null);
-          setShowPostModal(true);
-        }}
-        aria-label={t.friends_share_btn}
-      >
-        <Plus size={20} />
-        <span>{t.friends_share_btn}</span>
-      </button>
+
     </div>
   );
 };
