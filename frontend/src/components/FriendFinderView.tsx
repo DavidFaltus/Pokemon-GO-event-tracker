@@ -706,118 +706,120 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
               </button>
             </div>
 
-            {formError && (
-              <div className="form-error-banner">
-                {formError}
-              </div>
-            )}
-
             <form onSubmit={handleSubmit} className="friend-submit-form">
-              <div className="form-group">
-                <label>{t.friends_form_code_label} *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="1234 5678 9012"
-                  value={formCode}
-                  onChange={handleCodeChange}
-                  className="form-input code-input"
-                  maxLength={14}
-                />
-              </div>
+              <div className="modal-form-scrollable">
+                {formError && (
+                  <div className="form-error-banner">
+                    {formError}
+                  </div>
+                )}
 
-              <div className="form-row-2">
                 <div className="form-group">
-                  <label>{t.friends_form_name_label} *</label>
+                  <label>{t.friends_form_code_label} *</label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. AshKetchum99"
-                    value={formName}
-                    onChange={(e) => setFormName(e.target.value)}
+                    placeholder="1234 5678 9012"
+                    value={formCode}
+                    onChange={handleCodeChange}
+                    className="form-input code-input"
+                    maxLength={14}
+                  />
+                </div>
+
+                <div className="form-row-2">
+                  <div className="form-group">
+                    <label>{t.friends_form_name_label} *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. AshKetchum99"
+                      value={formName}
+                      onChange={(e) => setFormName(e.target.value)}
+                      className="form-input"
+                      maxLength={30}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>{t.friends_form_team_label}</label>
+                    <select
+                      value={formTeam}
+                      onChange={(e) => setFormTeam(e.target.value as any)}
+                      className="form-select"
+                    >
+                      <option value="mystic">Mystic (Blue)</option>
+                      <option value="valor">Valor (Red)</option>
+                      <option value="instinct">Instinct (Yellow)</option>
+                      <option value="any">Any / Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>{t.friends_form_purpose_label}</label>
+                  <select
+                    value={formPurpose}
+                    onChange={(e) => setFormPurpose(e.target.value as any)}
+                    className="form-select"
+                  >
+                    <option value="vivillon">{t.friends_purpose_vivillon}</option>
+                    <option value="raids">{t.friends_purpose_raids}</option>
+                    <option value="xp">{t.friends_purpose_xp}</option>
+                    <option value="trades">{t.friends_purpose_trades}</option>
+                    <option value="all">{t.friends_purpose_all}</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>{t.friends_form_pattern_label}</label>
+                  <div className="form-vivillon-picker-grid">
+                    {VIVILLON_PATTERNS.map(pat => (
+                      <button
+                        key={pat.id}
+                        type="button"
+                        className={`vivillon-picker-tile ${formPattern === pat.id ? 'selected' : ''} ${pat.rare ? 'rare' : ''}`}
+                        onClick={() => setFormPattern(pat.id)}
+                        title={pat.name[lang] || pat.name.en}
+                      >
+                        <img
+                          src={getVivillonSpriteUrl(pat.id)}
+                          alt={pat.id}
+                          className="picker-tile-sprite"
+                          loading="lazy"
+                          width={36}
+                          height={36}
+                        />
+                        <span className="picker-tile-label">{pat.id.replace(/-/g, ' ')}</span>
+                        {pat.rare && <span className="picker-tile-rare-dot" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>{t.friends_form_country_label}</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Prague, Czechia or Dubai, UAE"
+                    value={formCountry}
+                    onChange={(e) => setFormCountry(e.target.value)}
                     className="form-input"
-                    maxLength={30}
+                    maxLength={50}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>{t.friends_form_team_label}</label>
-                  <select
-                    value={formTeam}
-                    onChange={(e) => setFormTeam(e.target.value as any)}
-                    className="form-select"
-                  >
-                    <option value="mystic">Mystic (Blue)</option>
-                    <option value="valor">Valor (Red)</option>
-                    <option value="instinct">Instinct (Yellow)</option>
-                    <option value="any">Any / Other</option>
-                  </select>
+                  <label>{t.friends_form_note_label}</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Daily gifts & raid invites! Looking for Sandstorm."
+                    value={formNote}
+                    onChange={(e) => setFormNote(e.target.value)}
+                    className="form-input"
+                    maxLength={120}
+                  />
                 </div>
-              </div>
-
-              <div className="form-group">
-                <label>{t.friends_form_purpose_label}</label>
-                <select
-                  value={formPurpose}
-                  onChange={(e) => setFormPurpose(e.target.value as any)}
-                  className="form-select"
-                >
-                  <option value="vivillon">{t.friends_purpose_vivillon}</option>
-                  <option value="raids">{t.friends_purpose_raids}</option>
-                  <option value="xp">{t.friends_purpose_xp}</option>
-                  <option value="trades">{t.friends_purpose_trades}</option>
-                  <option value="all">{t.friends_purpose_all}</option>
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label>{t.friends_form_pattern_label}</label>
-                <div className="form-vivillon-picker-grid">
-                  {VIVILLON_PATTERNS.map(pat => (
-                    <button
-                      key={pat.id}
-                      type="button"
-                      className={`vivillon-picker-tile ${formPattern === pat.id ? 'selected' : ''} ${pat.rare ? 'rare' : ''}`}
-                      onClick={() => setFormPattern(pat.id)}
-                      title={pat.name[lang] || pat.name.en}
-                    >
-                      <img
-                        src={getVivillonSpriteUrl(pat.id)}
-                        alt={pat.id}
-                        className="picker-tile-sprite"
-                        loading="lazy"
-                        width={36}
-                        height={36}
-                      />
-                      <span className="picker-tile-label">{pat.id.replace(/-/g, ' ')}</span>
-                      {pat.rare && <span className="picker-tile-rare-dot" />}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>{t.friends_form_country_label}</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Prague, Czechia or Dubai, UAE"
-                  value={formCountry}
-                  onChange={(e) => setFormCountry(e.target.value)}
-                  className="form-input"
-                  maxLength={50}
-                />
-              </div>
-
-              <div className="form-group">
-                <label>{t.friends_form_note_label}</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Daily gifts & raid invites! Looking for Sandstorm."
-                  value={formNote}
-                  onChange={(e) => setFormNote(e.target.value)}
-                  className="form-input"
-                  maxLength={120}
-                />
               </div>
 
               <div className="form-actions-row">
@@ -881,6 +883,20 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
           </div>
         </div>
       )}
+
+      {/* Mobile Floating Action Button (FAB) — always visible when scrolling on mobile */}
+      <button
+        type="button"
+        className="friend-mobile-fab"
+        onClick={() => {
+          setFormError(null);
+          setShowPostModal(true);
+        }}
+        aria-label={t.friends_share_btn}
+      >
+        <Plus size={20} />
+        <span>{t.friends_share_btn}</span>
+      </button>
     </div>
   );
 };
