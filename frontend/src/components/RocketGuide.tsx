@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import './RocketGuide.css';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
@@ -81,6 +82,8 @@ const getLeaderIcon = (name: string, size = 16) => {
 
 interface RocketGuideProps {
   lang: Language;
+  initialRocketData?: { giovanni: RocketMember; leaders: RocketMember[]; grunts: GruntData[] } | null;
+  initialLeader?: string;
   onOpenGuide?: (slug: string) => void;
 }
 
@@ -90,7 +93,7 @@ interface LineupPokemon {
   image: string;
 }
 
-interface RocketMember {
+export interface RocketMember {
   name: string;
   avatar: string;
   reward: {
@@ -114,7 +117,7 @@ interface RocketMember {
   };
 }
 
-interface GruntData {
+export interface GruntData {
   phraseCs: string;
   phraseEn: string;
   type: string;
@@ -123,6 +126,147 @@ interface GruntData {
   shadowPokemon: string[];
   counters: string[];
 }
+
+export const DEFAULT_ROCKET_DATA: { giovanni: RocketMember; leaders: RocketMember[]; grunts: GruntData[] } = {
+  giovanni: {
+    name: 'Giovanni',
+    avatar: '👑',
+    reward: {
+      name: 'Heatran',
+      pveRating: 'S',
+      pvpRating: 'A',
+      worthGrinding: true,
+      reason: 'Shadow Heatran (Fire Spin + Magma Storm) patří mezi nejsilnější ohnivé PvE útočníky v Pokémon GO.',
+      hubRating: 'S',
+    },
+    lineup: {
+      slot1: [{ name: 'Persian', types: ['Normal'], image: '' }],
+      slot2: [
+        { name: 'Kingdra', types: ['Water', 'Dragon'], image: '' },
+        { name: 'Rhyperior', types: ['Ground', 'Rock'], image: '' },
+        { name: 'Nidoking', types: ['Poison', 'Ground'], image: '' },
+      ],
+      slot3: [{ name: 'Heatran', types: ['Fire', 'Steel'], image: '' }],
+    },
+    counters: {
+      megaCounters: ['Primal Groudon (Mud Shot / Precipice Blades)', 'Mega Garchomp (Mud Shot / Earth Power)', 'Mega Lucario (Force Palm / Aura Sphere)'],
+      advancedCounters: ['Terrakion (Double Kick / Sacred Sword)', 'Groudon (Mud Shot / Precipice Blades)', 'Shadow Rhyperior (Mud-Slap / Earthquake)'],
+      budgetCounters: ['Machamp (Counter / Cross Chop)', 'Excadrill (Mud-Slap / Scorching Sands)', 'Swampert (Mud Shot / Hydro Cannon)'],
+    },
+  },
+  leaders: [
+    {
+      name: 'Cliff',
+      avatar: '💪',
+      reward: {
+        name: 'Lileep',
+        pveRating: 'B',
+        pvpRating: 'A',
+        worthGrinding: true,
+        reason: 'Shadow Cradily je výborný meta výběr do Great League a Ultra League.',
+        hubRating: 'A',
+      },
+      lineup: {
+        slot1: [{ name: 'Lileep', types: ['Rock', 'Grass'], image: '' }],
+        slot2: [
+          { name: 'Marowak', types: ['Ground'], image: '' },
+          { name: 'Kingdra', types: ['Water', 'Dragon'], image: '' },
+          { name: 'Machamp', types: ['Fighting'], image: '' },
+        ],
+        slot3: [
+          { name: 'Tyranitar', types: ['Rock', 'Dark'], image: '' },
+          { name: 'Aerodactyl', types: ['Rock', 'Flying'], image: '' },
+          { name: 'Crobat', types: ['Poison', 'Flying'], image: '' },
+        ],
+      },
+      counters: {
+        megaCounters: ['Mega Lucario (Force Palm / Aura Sphere)', 'Mega Gardevoir (Charm / Triple Axel)', 'Primal Kyogre (Waterfall / Origin Pulse)'],
+        advancedCounters: ['Terrakion (Double Kick / Sacred Sword)', 'Shadow Mamoswine (Powder Snow / Avalanche)', 'Mewtwo (Psycho Cut / Psystrike)'],
+        budgetCounters: ['Machamp (Counter / Dynamic Punch)', 'Gardevoir (Charm / Dazzling Gleam)', 'Mamoswine (Powder Snow / Avalanche)'],
+      },
+    },
+    {
+      name: 'Sierra',
+      avatar: '🧣',
+      reward: {
+        name: 'Trapinch',
+        pveRating: 'B',
+        pvpRating: 'A',
+        worthGrinding: true,
+        reason: 'Shadow Flygon vyniká v Great a Ultra League díky rychlému nabíjení Dragon Claw a Scorching Sands.',
+        hubRating: 'A',
+      },
+      lineup: {
+        slot1: [{ name: 'Trapinch', types: ['Ground'], image: '' }],
+        slot2: [
+          { name: 'Milotic', types: ['Water'], image: '' },
+          { name: 'Sableye', types: ['Dark', 'Ghost'], image: '' },
+          { name: 'Ferrothorn', types: ['Grass', 'Steel'], image: '' },
+        ],
+        slot3: [
+          { name: 'Houndoom', types: ['Dark', 'Fire'], image: '' },
+          { name: 'Victreebel', types: ['Grass', 'Poison'], image: '' },
+          { name: 'Alakazam', types: ['Psychic'], image: '' },
+        ],
+      },
+      counters: {
+        megaCounters: ['Mega Rayquaza (Dragon Tail / Dragon Ascent)', 'Mega Swampert (Mud Shot / Hydro Cannon)', 'Mega Blaziken (Counter / Blaze Kick)'],
+        advancedCounters: ['Shadow Mamoswine (Powder Snow / Avalanche)', 'Kartana (Razor Leaf / Leaf Blade)', 'Lucario (Force Palm / Aura Sphere)'],
+        budgetCounters: ['Mamoswine (Powder Snow / Avalanche)', 'Machamp (Counter / Cross Chop)', 'Roserade (Razor Leaf / Grass Knot)'],
+      },
+    },
+    {
+      name: 'Arlo',
+      avatar: '👓',
+      reward: {
+        name: 'Beldum',
+        pveRating: 'S',
+        pvpRating: 'A',
+        worthGrinding: true,
+        reason: 'Shadow Metagross (Meteor Mash) je absolutní S-Tier ocelový raid counter v celé hře!',
+        hubRating: 'S',
+      },
+      lineup: {
+        slot1: [{ name: 'Beldum', types: ['Steel', 'Psychic'], image: '' }],
+        slot2: [
+          { name: 'Hypno', types: ['Psychic'], image: '' },
+          { name: 'Gyarados', types: ['Water', 'Flying'], image: '' },
+          { name: 'Crobat', types: ['Poison', 'Flying'], image: '' },
+        ],
+        slot3: [
+          { name: 'Scizor', types: ['Bug', 'Steel'], image: '' },
+          { name: 'Snorlax', types: ['Normal'], image: '' },
+          { name: 'magnezone', types: ['Electric', 'Steel'], image: '' },
+        ],
+      },
+      counters: {
+        megaCounters: ['Mega Tyranitar (Bite / Brutal Swing)', 'Mega Blaziken (Fire Spin / Blast Burn)', 'Primal Groudon (Mud Shot / Precipice Blades)'],
+        advancedCounters: ['Hydreigon (Bite / Brutal Swing)', 'Reshiram (Fire Fang / Fusion Flare)', 'Terrakion (Double Kick / Sacred Sword)'],
+        budgetCounters: ['Chandelure (Incinerate / Shadow Ball)', 'Excadrill (Mud-Slap / Drill Run)', 'Machamp (Counter / Dynamic Punch)'],
+      },
+    },
+  ],
+  grunts: [
+    { phraseCs: 'Tihle dračí Pokémoni se jen tak nevzdají!', phraseEn: 'ROAR! ...How\'d that sound?', type: 'Dragon', difficulty: 'Hard', worthFighting: true, shadowPokemon: ['Bagon', 'Dratini', 'Gible'], counters: ['Mamoswine', 'Gardevoir', 'Togekiss'] },
+    { phraseCs: 'Víš, jak horký může být pokémoní dech?', phraseEn: 'Do you know how hot Pokémon fire breath can get?', type: 'Fire', difficulty: 'Easy', worthFighting: true, shadowPokemon: ['Darumaka', 'Litwick', 'Torchic'], counters: ['Kyogre', 'Rhyperior', 'Swampert'] },
+    { phraseCs: 'Tyto vody jsou zrádné!', phraseEn: 'These waters are treacherous!', type: 'Water', difficulty: 'Medium', worthFighting: true, shadowPokemon: ['Mudkip', 'Totodile', 'Magikarp'], counters: ['Kartana', 'Xurkitree', 'Roserade'] },
+    { phraseCs: 'Země tě pohltí!', phraseEn: 'You\'ll be defeated into the ground!', type: 'Ground', difficulty: 'Medium', worthFighting: true, shadowPokemon: ['Drilbur', 'Swinub', 'Rhyhorn'], counters: ['Kyogre', 'Mamoswine', 'Kartana'] },
+    { phraseCs: 'Tenhle svalnatý vzhled není jen na okrasu!', phraseEn: 'This buff physique isn\'t just for show!', type: 'Fighting', difficulty: 'Medium', worthFighting: true, shadowPokemon: ['Machop', 'Timburr', 'Makuhita'], counters: ['Mewtwo', 'Gardevoir', 'Rayquaza'] },
+    { phraseCs: 'Kde je světlo, tam je i stín.', phraseEn: 'Wherever there is light, there is also shadow.', type: 'Dark', difficulty: 'Medium', worthFighting: true, shadowPokemon: ['Deino', 'Sneasel', 'Houndour'], counters: ['Machamp', 'Togekiss', 'Gardevoir'] },
+    { phraseCs: 'Ke-ke-ke-ke-ke-ke!', phraseEn: 'Ke...ke...ke...ke...ke...ke!', type: 'Ghost', difficulty: 'Medium', worthFighting: true, shadowPokemon: ['Gastly', 'Litwick', 'Golett'], counters: ['Hydreigon', 'Tyranitar', 'Darkrai'] },
+    { phraseCs: 'Proti mé železné vůli nemáš šanci!', phraseEn: 'You\'re no match for my iron will!', type: 'Steel', difficulty: 'Medium', worthFighting: true, shadowPokemon: ['Beldum', 'Aron', 'Ferroseed'], counters: ['Reshiram', 'Lucario', 'Groudon'] },
+    { phraseCs: 'Pojďme do toho na plné pecky!', phraseEn: 'Let\'s rock and roll!', type: 'Rock', difficulty: 'Easy', worthFighting: true, shadowPokemon: ['Larvitar', 'Cranidos', 'Tyrunt'], counters: ['Machamp', 'Kyogre', 'Metagross'] },
+    { phraseCs: 'Zmrzneš na kost!', phraseEn: 'You\'re gonna be frozen in your tracks.', type: 'Ice', difficulty: 'Medium', worthFighting: true, shadowPokemon: ['Swinub', 'Spheal', 'Snorunt'], counters: ['Metagross', 'Machamp', 'Reshiram'] },
+    { phraseCs: 'Dávej pozor, ať nedostaneš ránu proudem!', phraseEn: 'Get ready to be shocked!', type: 'Electric', difficulty: 'Easy', worthFighting: true, shadowPokemon: ['Magnemite', 'Electabuzz', 'Shinx'], counters: ['Groudon', 'Garchomp', 'Excadrill'] },
+    { phraseCs: 'Nezahrávej si s námi!', phraseEn: 'Don\'t tangle with us!', type: 'Grass', difficulty: 'Easy', worthFighting: true, shadowPokemon: ['Treecko', 'Turtwig', 'Bulbasaur'], counters: ['Reshiram', 'Charizard', 'Mamoswine'] },
+    { phraseCs: 'Bojíš se psychické síly?', phraseEn: 'Are you scared of psychics that use unseen power?', type: 'Psychic', difficulty: 'Medium', worthFighting: true, shadowPokemon: ['Ralts', 'Abra', 'Beldum'], counters: ['Tyranitar', 'Hydreigon', 'Chandelure'] },
+    { phraseCs: 'Podívej se na mého roztomilého Pokémona!', phraseEn: 'Check out my cute Pokémon!', type: 'Fairy', difficulty: 'Easy', worthFighting: true, shadowPokemon: ['Ralts', 'Snubbull', 'Mawile'], counters: ['Metagross', 'Nihilego', 'Roserade'] },
+    { phraseCs: 'Bojuj s mým létajícím typem!', phraseEn: 'Battle my Flying-type Pokémon!', type: 'Flying', difficulty: 'Easy', worthFighting: true, shadowPokemon: ['Starly', 'Zubat', 'Gligar'], counters: ['Mamoswine', 'Raikou', 'Rampardos'] },
+    { phraseCs: 'Jsem připraven tě otrávit!', phraseEn: 'Coiled and ready to strike!', type: 'Poison', difficulty: 'Easy', worthFighting: false, shadowPokemon: ['Nidoran', 'Zubat', 'Grimer'], counters: ['Mewtwo', 'Groudon', 'Excadrill'] },
+    { phraseCs: 'Do toho, moji hmyzí Pokémoni!', phraseEn: 'Go, my super bug Pokémon!', type: 'Bug', difficulty: 'Easy', worthFighting: false, shadowPokemon: ['Scyther', 'Venipede', 'Weedle'], counters: ['Rampardos', 'Reshiram', 'Charizard'] },
+    { phraseCs: 'Normální neznamená slabý!', phraseEn: 'Normal does not mean weak.', type: 'Normal', difficulty: 'Easy', worthFighting: false, shadowPokemon: ['Snorlax', 'Teddiursa', 'Porygon'], counters: ['Lucario', 'Machamp', 'Terrakion'] },
+  ],
+};
 
 type ModeType = 'leaders' | 'grunts';
 
@@ -190,12 +334,25 @@ const getGruntPhrase = (grunt: GruntData, lang: Language): string => {
   return lang === 'cs' ? grunt.phraseCs : grunt.phraseEn;
 };
 
-export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, onOpenGuide }) => {
-  const [mode, setMode] = useState<ModeType>('leaders');
-  const [selectedLeader, setSelectedLeader] = useState<string>('Giovanni');
+export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, initialRocketData, initialLeader, onOpenGuide }) => {
+  const normalizedLeader = (initialLeader || '').toLowerCase();
+  const initialMode: ModeType = normalizedLeader === 'grunts' ? 'grunts' : 'leaders';
+  const initialSelectedLeaderName =
+    normalizedLeader === 'cliff'
+      ? 'Cliff'
+      : normalizedLeader === 'sierra'
+      ? 'Sierra'
+      : normalizedLeader === 'arlo'
+      ? 'Arlo'
+      : 'Giovanni';
+
+  const [mode, setMode] = useState<ModeType>(initialMode);
+  const [selectedLeader, setSelectedLeader] = useState<string>(initialSelectedLeaderName);
   
-  const [rocketData, setRocketData] = useState<{ giovanni: RocketMember; leaders: RocketMember[]; grunts: GruntData[] } | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [rocketData, setRocketData] = useState<{ giovanni: RocketMember; leaders: RocketMember[]; grunts: GruntData[] } | null>(
+    initialRocketData && initialRocketData.giovanni ? initialRocketData : DEFAULT_ROCKET_DATA
+  );
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const t = translations[lang] || translations.cs;
@@ -265,16 +422,16 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, onOpenGuide }) =
 
   useEffect(() => {
     const fetchRocket = async () => {
-      setLoading(true);
       setError(null);
       try {
         const response = await apiFetch('/api/rocket?nocache=true');
         if (!response.ok) throw new Error('Failed to fetch rocket lineups');
         const data = await response.json();
-        setRocketData(data);
+        if (data && data.giovanni) {
+          setRocketData(data);
+        }
       } catch (err) {
         console.error('Failed to load rocket lineups from API:', err);
-        setError(lang === 'cs' ? 'Chyba při načítání Team GO Rocket rotací z API.' : 'Failed to load Team GO Rocket lineups from API.');
       } finally {
         setLoading(false);
       }
@@ -373,20 +530,22 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, onOpenGuide }) =
 
         {/* Mode Switcher */}
         <div className="mode-switcher">
-          <button 
+          <Link 
+            href={`/${lang}/rocket/giovanni`}
             className={`mode-btn ${mode === 'leaders' ? 'active' : ''}`}
-            onClick={() => setMode('leaders')}
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+            onClick={(e) => { e.preventDefault(); setMode('leaders'); }}
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
           >
             <Zap size={14} style={{ marginRight: '6px' }} /> {t.rocket_tab_leaders}
-          </button>
-          <button 
+          </Link>
+          <Link 
+            href={`/${lang}/rocket/grunts`}
             className={`mode-btn ${mode === 'grunts' ? 'active' : ''}`}
-            onClick={() => setMode('grunts')}
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+            onClick={(e) => { e.preventDefault(); setMode('grunts'); }}
+            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
           >
             <Users size={14} style={{ marginRight: '6px' }} /> {t.rocket_tab_grunts}
-          </button>
+          </Link>
         </div>
       </header>
 
@@ -394,22 +553,24 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, onOpenGuide }) =
         <>
           {/* Selector Tabs */}
           <div className="rocket-tabs">
-            <button
+            <Link
+               href={`/${lang}/rocket/giovanni`}
                className={`rocket-tab-btn giovanni-btn ${selectedLeader === 'Giovanni' ? 'active' : ''}`}
-               onClick={() => setSelectedLeader('Giovanni')}
-               style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+               onClick={(e) => { e.preventDefault(); setSelectedLeader('Giovanni'); }}
+               style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}
              >
                 <span className="emoji" style={{ display: 'inline-flex' }}>{getLeaderIcon('Giovanni', 14)}</span> {getPokemonName('Giovanni', lang)}
-              </button>
+              </Link>
             {rocketData.leaders.filter(leader => leader.name.toLowerCase() !== 'giovanni').map(leader => (
-              <button
+              <Link
                 key={leader.name}
+                href={`/${lang}/rocket/${leader.name.toLowerCase()}`}
                 className={`rocket-tab-btn leader-btn ${selectedLeader === leader.name ? 'active' : ''}`}
-                onClick={() => setSelectedLeader(leader.name)}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                onClick={(e) => { e.preventDefault(); setSelectedLeader(leader.name); }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}
               >
                 <span className="emoji" style={{ display: 'inline-flex' }}>{getLeaderIcon(leader.name, 14)}</span> {getPokemonName(leader.name, lang)}
-              </button>
+              </Link>
             ))}
           </div>
 

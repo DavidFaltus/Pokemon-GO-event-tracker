@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { FriendFinderView } from '@/components/FriendFinderView';
 import type { Language } from '@/data/translations';
+import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
 
 export const revalidate = 300;
 
@@ -41,15 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: titles[lang] || titles.en,
     description: descriptions[lang] || descriptions.en,
-    alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        'cs': `https://pogoevents.app/cs/friends`,
-        'en': `https://pogoevents.app/en/friends`,
-        'ja': `https://pogoevents.app/ja/friends`,
-        'ru': `https://pogoevents.app/ru/friends`,
-      },
-    },
+    alternates: buildAlternates(lang, '/friends'),
     openGraph: {
       title: titles[lang] || titles.en,
       description: descriptions[lang] || descriptions.en,
@@ -68,19 +61,30 @@ export default async function FriendsPage({ params }: PageProps) {
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: 'Pokémon GO Friend Codes & Matchmaker',
-    description: 'Find active Pokémon GO trainers worldwide for gift exchange, Vivillon patterns, and remote raids.',
-    url: canonicalUrl,
-    publisher: {
-      '@type': 'Organization',
-      name: 'Pokémon GO Event Tracker',
-      url: 'https://pogoevents.app',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://pogoevents.app/logo-1080.png',
+    '@graph': [
+      {
+        '@type': 'WebPage',
+        name: 'Pokémon GO Friend Codes & Matchmaker',
+        description: 'Find active Pokémon GO trainers worldwide for gift exchange, Vivillon patterns, and remote raids.',
+        url: canonicalUrl,
+        publisher: {
+          '@type': 'Organization',
+          name: 'Pokémon GO Event Tracker',
+          url: 'https://pogoevents.app',
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://pogoevents.app/logo-icon-1080.png',
+          },
+        },
       },
-    },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: getBreadcrumbLabel('home', lang), item: `https://pogoevents.app/${lang}` },
+          { '@type': 'ListItem', position: 2, name: getBreadcrumbLabel('friends', lang), item: canonicalUrl },
+        ],
+      },
+    ],
   };
 
   return (

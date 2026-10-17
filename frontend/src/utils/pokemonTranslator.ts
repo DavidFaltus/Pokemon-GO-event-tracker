@@ -174,7 +174,31 @@ const pokemonNameTranslations: Record<string, string> = {
   "Sneasler": "オオニューラ",
   "Toxicroak": "ドクロッグ",
   "Weavile": "マニューラ",
-  "Archeops": "アーケオス"
+  "Archeops": "アーケオス",
+
+  // Bonus Stardust Pokémon
+  "Audino": "タブンネ",
+  "Cloyster": "パルシェン",
+  "Shellder": "シェルダー",
+  "Chimecho": "チリーン",
+  "Persian": "ペルシアン",
+  "Alolan Persian": "ペルシアン（アローラ）",
+  "Vespiquen": "ビークイン",
+  "Garbodor": "ダストダス",
+  "Meowth": "ニャース",
+  "Alolan Meowth": "ニャース（アローラ）",
+  "Staryu": "ヒトデマン",
+  "Sableye": "ヤミラミ",
+  "Trubbish": "ヤブクロン",
+  "Parasect": "パラセクト",
+  "Breloom": "キノガッサ",
+  "Amoonguss": "モロバレル",
+  "Shiinotic": "マシェード",
+  "Paras": "パラス",
+  "Delibird": "デリバード",
+  "Shroomish": "キノココ",
+  "Foongus": "タマゲタケ",
+  "Morelull": "ネマシュ"
 };
 
 /**

@@ -1,49 +1,93 @@
-# Pokémon GO Event Tracker — Kompletní Znalostní Báze pro AI Modely (LLM Full Reference)
+# Pokémon GO Event Tracker — Complete Knowledge Reference for LLMs & AI Agents (`llms-full.txt`)
 
-Web: https://pogoevents.app
-Jazyky: cs (Čeština), en (English), ja (日本語), ru (Русский)
-Zdrojová data: ScrapedDuck CDN, Niantic Live Feeds, Pokémon GO Hub, Pokebattler simulace
+> Comprehensive technical & gameplay reference for Pokémon GO Event Tracker ([https://pogoevents.app](https://pogoevents.app)). Designed for AI Search Engines (ChatGPT Search, Perplexity, Claude Search, Google AI Overviews) and autonomous agents.
 
----
-
-## 1. Architektura a Datové Zdroje
-Projekt Pokémon GO Event Tracker agreguje, normalizuje a v reálném čase obohacuje data o všech herních aspektech:
-- **Kalendář událostí**: Automatický převod časových zón (UTC / Local Time), identifikace bonusů (2× Stardust, 2× Candy, 1/2 Hatch Distance, atd.).
-- **Raid Bossi**: Normalizované tiery (Tier 1, Tier 3, Tier 5 Legendární, Mega Raidy, Shadow Raidy), 100% IV CP kalkulace (Standard Lvl 20 vs Weather Boost Lvl 25) a doporučené týmy útočníků (Counters).
-- **Team GO Rocket**: Sestavy pro Boss Giovanniho (Shadow Legendárky), Lídrů (Cliff, Sierra, Arlo) a řadových Rakeťáků (Grunts) se slabinami a countery.
-- **Líhnutí z vajec**: 2 km, 5 km, 7 km, 10 km, 12 km Strange Eggs a Adventure Sync bonusová vejce.
-- **Polní výzkum (Field Research)**: Úkoly z Pokéstopů, kategorie úkolů a garantované odměny s indikací možnosti získat Shiny.
-- **Ditto převleky**: Seznam Pokémonů v divočině, kteří se po chycení mohou proměnit v Ditto.
+- **Canonical Domain**: `https://pogoevents.app`
+- **Supported Languages**: Czech (`cs`), English (`en`), Japanese (`ja`), Russian (`ru`)
+- **Primary Data Sources**: Niantic Official Live Feeds, ScrapedDuck CDN, DialgaDex (Effective Rating `ER`), GamePress PvE DPS/TDO simulations, Pokebattler.
 
 ---
 
-## 2. Doporučené Programatické Rozhraní pro Agenty (API Endpoints)
+## 1. Programmatic Markdown & JSON API Endpoints
 
-Všechny endpointy podporují přímé dotazy z libovolného agenta. Pro získání čistého Markdownu stačí zaslat hlavičku `Accept: text/markdown` nebo volat koncovku `.md`.
+Every endpoint below is publicly accessible without authentication. Send `Accept: text/markdown` or append `.md` / `?format=md&lang=en|cs` to receive token-efficient Markdown instead of JSON.
 
-| Účel | Endpoint (Markdown) | Endpoint (JSON) | Popis |
+| Domain Area | Markdown Endpoint | JSON Endpoint | Content Summary |
 |---|---|---|---|
-| Souhrn | `/api/agent/summary.md` | `/api/events` | Rychlý přehled všeho aktivního v 1 odpovědi |
-| Události | `/api/agent/events.md` | `/api/events` | Seznam aktivních a nadcházejících eventů |
-| Raidy | `/api/agent/raids.md` | `/api/raids` | Seznam bossů, IV rozsahy a doporučené countery |
-| Výzkum | `/api/agent/research.md` | `/api/research` | Polní úkoly a odměny z Pokéstopů |
-| Vejce | `/api/agent/eggs.md` | `/api/eggs` | Pooly vajíček roztříděné podle kilometrů |
-| RSS Feed | `/feed.xml` | - | Standardní RSS 2.0 XML pro agregátory |
+| **Executive Summary** | `https://pogoevents.app/api/agent/summary.md` | — | Single-request snapshot of active events, Tier 5/Mega raids, Giovanni's Shadow Legendary, and egg pools |
+| **Events & Bonuses** | `https://pogoevents.app/api/agent/events.md` | `https://pogoevents.app/api/events` | All active and upcoming Pokémon GO events with start/end ISO timestamps, bonuses, and wild spawns |
+| **Single Event Detail** | `https://pogoevents.app/api/agent/events/{slug}.md` | `https://pogoevents.app/api/events/{slug}` | Full breakdown of a specific event (bonuses, wild spawns, event eggs, event field research) |
+| **Raid Bosses & Counters** | `https://pogoevents.app/api/agent/raids.md` | `https://pogoevents.app/api/raids` | Active 1★, 3★, 5★, Mega, and Shadow Raid Bosses with 100% IV CP (Lv 20 & Lv 25) and top counters |
+| **Team GO Rocket** | `https://pogoevents.app/api/agent/rocket.md` | `https://pogoevents.app/api/rocket` | Boss Giovanni, Leaders Cliff/Sierra/Arlo, and Grunt taunts, lineups, and Shadow rewards |
+| **Egg Hatch Pools** | `https://pogoevents.app/api/agent/eggs.md` | `https://pogoevents.app/api/eggs` | Current 2km, 5km, 7km, 10km, and 12km Strange Egg hatch pools with CP ranges and shiny flags |
+| **Field Research** | `https://pogoevents.app/api/agent/research.md` | `https://pogoevents.app/api/research` | Current PokéStop Field Research tasks grouped by category with encounter rewards |
 
 ---
 
-## 3. Typové Slabiny a Raidové Countery (Cheat-Sheet)
+## 2. Pokémon That Give Extra Stardust on Catch (29 Species Cheat-Sheet)
 
-| Typ Bosse | Největší Slabiny (Super Effective 1.6× / 2.56×) | Nejlepší PvE Útočníci |
-|---|---|---|
-| Dragon | Ice (2.56× na Dragon/Flying), Fairy, Dragon | Mamoswine, Baxcalibur, Rayquaza, Gardevoir |
-| Flying | Rock, Electric, Ice | Rampardos, Rhyperior, Xurkitree, Mamoswine |
-| Steel | Fire, Fighting, Ground | Reshiram, Terrakion, Groudon, Lucario |
-| Water | Electric, Grass | Xurkitree, Kartana, Thundurus-T, Raikou |
-| Fire | Water, Ground, Rock | Kyogre, Groudon, Rhyperior, Swampert |
-| Ghost / Psychic | Dark, Ghost | Tyranitar, Hydreigon, Gengar, Chandelure |
+Standard wild Pokémon award **100 Stardust** per catch (**125** with Weather Boost). The following 29 species permanently grant bonus Stardust on catch (multiply by **1.5×** when a Star Piece is active):
+
+| Tier (Base Stardust) | Weather Boost | Star Piece (1.5×) | Star Piece + Weather | Pokémon Species |
+|---|---|---|---|---|
+| **2,100 Stardust** | 2,625 | 3,150 | 3,937 | **Audino** (#531, Normal — boosted in Partly Cloudy) |
+| **1,000 Stardust** | 1,250 | 1,500 | 1,875 | **Chimecho** (#358), **Parasect** (#47), **Persian** (#53), **Alolan Persian** (#53), **Amoonguss** (#591), **Garbodor** (#569), **Staryu / Starmie** (#121, 950 Dust), **Combee / Vespiquen** (#416, 950 Dust), **breloom** (#286, 700 Dust), **Sableye** (#302, 750 Dust), **Morelull / Shiinotic** (#756, 700 Dust) |
+| **750 Stardust** | 938 | 1,125 | 1,406 | **Alolan Meowth** (#52), **Galarian Meowth** (#52), **Combee** (#415), **Staryu** (#120), **Trubbish** (#568), **Sableye** (#302) |
+| **500 Stardust** | 625 | 750 | 938 | **Meowth** (#52), **Paras** (#46), **Shroomish** (#285), **Shellder** (#90), **Cloyster** (#91, 700 Dust), **Delibird** (#225), **Foongus** (#590), **Morelull** (#755), **Furfrou** (#676, 500 Dust) |
 
 ---
 
-## 4. Licence a Použití Dat
-Data jsou poskytována pod licencí MIT a principem Fair Use pro informační a komunitní účely. Pokémon a Pokémon character names jsou ochranné známky společnosti Nintendo, Creatures Inc. a GAME FREAK inc.
+## 3. Core Pokémon GO Mechanics & Formulas Reference
+
+1. **Type Effectiveness Multipliers in Pokémon GO**:
+   - **Double Weakness (2× Super Effective)**: `2.56×` damage (`1.6 × 1.6`).
+   - **Single Weakness (Super Effective)**: `1.6×` damage.
+   - **Neutral**: `1.0×` damage.
+   - **Single Resistance (Not Very Effective)**: `0.625×` damage.
+   - **Double Resistance / Immunity**: `0.390625×` damage (`0.625 × 0.625`).
+   - **STAB (Same-Type Attack Bonus)**: `1.2×` damage when move type matches one of the attacker's types.
+   - **Shadow Bonus**: `+20%` Attack (`1.2×` damage dealt) and `-16.7%` Defense (`1.2×` damage taken). A `0/0/0` Shadow Pokémon deals more DPS in raids than a `15/15/15` regular form of the same species.
+2. **100% IV (Hundo) Encounter Floors**:
+   - **Wild (Non-Boosted)**: `0/0/0` (1 in 4,096 Hundo odds, max Level 30).
+   - **Wild (Weather Boosted)**: `4/4/4` (1 in 1,728 Hundo odds, max Level 35).
+   - **Raids, Eggs & Field Research**: `10/10/10` (1 in 216 Hundo odds; Level 20 for Raids/Eggs, Level 25 for Weather-Boosted Raids, Level 15 for Research).
+   - **Shadow Raids**: `6/6/6` floor (1 in 1,000 Hundo odds; purifying adds `+2/+2/+2` to each IV stat).
+   - **Lucky Trades**: `12/12/12` floor (1 in 64 Hundo odds, `-50%` Stardust power-up cost).
+
+---
+
+## 4. Top PvE Raid Attackers by Type (2026 Meta Cheat-Sheet)
+
+| Attack Type | Top Mega / Primal | Top Shadow / Legendary | Top Non-Shadow / Accessible |
+|---|---|---|---|
+| **Dragon** | Mega Rayquaza | Origin Palkia, Origin Dialga, Shadow Salamence | Rayquaza, Garchomp, Baxcalibur |
+| **Fire** | Mega Blaziken, Mega Charizard Y | Shadow Heatran, Reshiram (Fusion Flare) | Volcarona, Chandelure, Darmanitan |
+| **Water** | Primal Kyogre, Mega Swampert | Kyogre (Origin Pulse), Shadow Kyogre | Kingler, Greninja (Hydro Cannon) |
+| **Grass** | Mega Sceptile | Kartana, Shaymin (Sky), Shadow Tangrowth | Roserade, Zarude, Chesnaught |
+| **Electric** | Mega Manectric | Xurkitree, Shadow Raikou, Zekrom | Thundurus (Therian), Electivire, Magnezone |
+| **Ice** | Mega Gardevoir / Mega Abomasnow | Kyurem (Black/White), Shadow Mamoswine | Baxcalibur, Mamoswine, Glaceon |
+| **Fighting** | Mega Lucario, Mega Heracross | Terrakion (Sacred Sword), Shadow Conkeldurr | Keldeo, Lucario (Force Palm), Machamp |
+| **Rock** | Mega Diancie, Mega Tyranitar | Shadow Rhyperior, Shadow Rampardos | Rhyperior (Rock Wrecker), Tyrantrum |
+| **Ground** | Primal Groudon, Mega Garchomp | Groudon (Precipice Blades), Shadow Excadrill | Landorus (Therian), Garchomp, Excadrill |
+| **Ghost / Dark** | Mega Tyranitar, Mega Gengar | Dawn Wings Necrozma, Shadow Tyranitar | Hydreigon (Brutal Swing), Giratina-Origin |
+| **Steel** | — | Dusk Mane Necrozma (Sunsteel Strike), Shadow Metagross | Metagross (Meteor Mash), Dialga-Origin |
+| **Fairy** | Mega Gardevoir | Shadow Gardevoir, Enamorus | Xerneas (Geomancy), Togekiss, Sylveon |
+| **Flying** | Mega Rayquaza (Dragon Ascent) | Rayquaza (Dragon Ascent), Shadow Moltres | Yveltal (Oblivion Wing), Staraptor |
+| **Psychic** | Mega Alakazam, Mega Gardevoir | Shadow Mewtwo (Psystrike), Mewtwo | Hoopa Unbound, Lunala |
+
+---
+
+## 5. Complete Index of URL Routes
+
+- **Localized Home / Events**: `https://pogoevents.app/{cs|en|ja|ru}`
+- **Event Detail Pages**: `https://pogoevents.app/{lang}/events/{event-slug}`
+- **Active Raid Bosses**: `https://pogoevents.app/{lang}/raids`
+- **Raid Boss Counter Guides**: `https://pogoevents.app/{lang}/raids/{boss-slug}-counters`
+- **Team GO Rocket Hub**: `https://pogoevents.app/{lang}/rocket`
+- **Rocket Leader Guides**: `https://pogoevents.app/{lang}/rocket/{giovanni|cliff|sierra|arlo|grunts}`
+- **PvE & PvP Rankings**: `https://pogoevents.app/{lang}/rankings` and `https://pogoevents.app/{lang}/rankings/{category}`
+- **National Pokédex (#1–#1025)**: `https://pogoevents.app/{lang}/pokemon/{1..1025}`
+- **Type Matchup Charts**: `https://pogoevents.app/{lang}/types/{normal|fire|water|grass|electric|ice|fighting|poison|ground|flying|psychic|bug|rock|ghost|dragon|steel|dark|fairy}`
+- **Strategy Guides**: `https://pogoevents.app/{lang}/guides` and `https://pogoevents.app/{lang}/guides/{guide-slug}`
+- **Trainer Friend Codes**: `https://pogoevents.app/{lang}/friends`
+- **Search String Generator**: `https://pogoevents.app/{lang}/filter`

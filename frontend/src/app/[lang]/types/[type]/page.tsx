@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { PokemonRankingsView } from '@/components/PokemonRankingsView';
 import type { Language } from '@/data/translations';
 import { TYPE_CHART, getCounterTypes } from '@/utils/pokemonCountersHelper';
+import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
 
 export const revalidate = 3600;
 
@@ -162,15 +163,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: info.title,
     description: info.desc,
-    alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        'cs': `https://pogoevents.app/cs/types/${typeSlug}`,
-        'en': `https://pogoevents.app/en/types/${typeSlug}`,
-        'ja': `https://pogoevents.app/ja/types/${typeSlug}`,
-        'ru': `https://pogoevents.app/ru/types/${typeSlug}`,
-      },
-    },
+    alternates: buildAlternates(lang, `/types/${typeSlug}`),
     openGraph: {
       title: info.title,
       description: info.desc,
@@ -193,8 +186,11 @@ export default async function PokemonTypePage({ params }: PageProps) {
 
   const capitalizedType = typeSlug.charAt(0).toUpperCase() + typeSlug.slice(1);
   const canonicalUrl = `https://pogoevents.app/${lang}/types/${typeSlug}`;
+  const weaknesses = getCounterTypes([capitalizedType]);
+  const resistances = Object.entries(TYPE_CHART)
+    .filter(([, defMap]) => (defMap[capitalizedType] ?? 1) < 1)
+    .map(([atkType]) => atkType);
 
-  // Schema.org WebPage & Breadcrumb
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -205,10 +201,23 @@ export default async function PokemonTypePage({ params }: PageProps) {
         url: canonicalUrl,
       },
       {
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: lang === 'cs' ? `Jaké má ${info.name} typ slabosti a odolnosti v Pokémon GO?` : `What are ${capitalizedType}-type weaknesses and resistances in Pokémon GO?`,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: `${capitalizedType}-type Pokémon are weak to ${weaknesses.join(', ')} attacks (1.6x damage in Pokémon GO) and resist ${resistances.length > 0 ? resistances.join(', ') : 'none'}.`,
+            },
+          },
+        ],
+      },
+      {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: `https://pogoevents.app/${lang}` },
-          { '@type': 'ListItem', position: 2, name: 'Type Charts', item: `https://pogoevents.app/${lang}/rankings` },
+          { '@type': 'ListItem', position: 1, name: getBreadcrumbLabel('home', lang), item: `https://pogoevents.app/${lang}` },
+          { '@type': 'ListItem', position: 2, name: getBreadcrumbLabel('types', lang), item: `https://pogoevents.app/${lang}/rankings` },
           { '@type': 'ListItem', position: 3, name: info.name, item: canonicalUrl }
         ]
       }
@@ -221,7 +230,24 @@ export default async function PokemonTypePage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <PokemonRankingsView lang={lang} initialSearchQuery={capitalizedType} />
+      <article
+        className="seo-entity-summary card"
+        style={{
+          marginBottom: '18px',
+          padding: '16px 20px',
+          borderRadius: '16px',
+          border: '1px solid var(--border-color)',
+          backgroundColor: 'var(--bg-card)',
+        }}
+      >
+        <h2 style={{ fontSize: '1.15rem', fontWeight: 800, margin: '0 0 6px 0' }}>{info.title}</h2>
+        <p style={{ margin: '0 0 8px 0', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>{info.desc}</p>
+        <p style={{ margin: 0, fontSize: '0.86rem', color: 'var(--text-muted)' }}>
+          <strong>{lang === 'cs' ? 'Slabosti (1.6× zranění):' : 'Weaknesses (1.6x DMG):'}</strong> {weaknesses.join(', ')} |{' '}
+          <strong>{lang === 'cs' ? 'Odolnosti (0.625× / 0.39×):' : 'Resistances:'}</strong> {resistances.length > 0 ? resistances.join(', ') : '—'}
+        </p>
+      </article>
+      <PokemonRankingsView lang={lang} initialSelectedType={capitalizedType} />
     </>
   );
 }

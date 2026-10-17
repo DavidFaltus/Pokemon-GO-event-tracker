@@ -31,13 +31,18 @@ import {
   loadFriendListings,
   addFriendListing,
   deleteFriendListing,
+  importFriendListings,
   FriendListing
 } from './storage';
+import { dataStore } from './dataStore';
 import { generateBotHtml, generate404Html, RouteTarget, Language } from './ssr';
 import {
   generateEventsMarkdown,
+  generateSingleEventMarkdown,
   generateRaidsMarkdown,
   generateResearchMarkdown,
+  generateEggsMarkdown,
+  generateRocketMarkdown,
   generateSummaryMarkdown,
   AgentLanguage
 } from './agent/markdownGenerator';
@@ -766,6 +771,11 @@ async function getFieldResearchList(forceNoCache: boolean = false): Promise<any[
   return data || [];
 }
 
+// Helper to look up cached event details for Markdown generation
+function getCachedEventDetailsSync(eventId: string) {
+  return getFromCache<any>(`details_${eventId}`, 24 * 60 * 60 * 1000) || getStaleCache<any>(`details_${eventId}`);
+}
+
 // Get Events (Merged Scraped + Custom)
 app.get('/api/events', async (req, res) => {
   try {
@@ -774,7 +784,7 @@ app.get('/api/events', async (req, res) => {
     if (req.headers.accept?.includes('text/markdown') || req.query.format === 'md') {
       const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
       res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
-      return res.send(generateEventsMarkdown(data, lang));
+      return res.send(generateEventsMarkdown(data, lang, getCachedEventDetailsSync));
     }
     res.json(data);
   } catch (error: any) {
@@ -790,6 +800,12 @@ app.get('/api/events/:id', async (req, res) => {
     const data = await getEnrichedEventsList(false);
     const event = data.find((e: any) => e.eventID === req.params.id);
     if (event) {
+      if (req.headers.accept?.includes('text/markdown') || req.query.format === 'md') {
+        const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+        const details = getCachedEventDetailsSync(event.eventID);
+        res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+        return res.send(generateSingleEventMarkdown(event, details, lang));
+      }
       return res.json(event);
     }
     return res.status(404).json({ error: 'Event not found' });
@@ -876,6 +892,11 @@ app.get('/api/rocket', async (req, res) => {
   try {
     const forceNoCache = req.query.nocache === 'true';
     const data = await getRocketLineupsList(forceNoCache);
+    if (req.headers.accept?.includes('text/markdown') || req.query.format === 'md') {
+      const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+      res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+      return res.send(generateRocketMarkdown(data, lang));
+    }
     res.json(data);
   } catch (error: any) {
     console.error('Error fetching rocket lineups:', error.message);
@@ -892,6 +913,11 @@ app.get('/api/eggs', async (req, res) => {
   try {
     const forceNoCache = req.query.nocache === 'true';
     const data = await getEggPoolList(forceNoCache);
+    if (req.headers.accept?.includes('text/markdown') || req.query.format === 'md') {
+      const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+      res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+      return res.send(generateEggsMarkdown(data, lang));
+    }
     res.json(data);
   } catch (error: any) {
     console.error('Error fetching egg pools:', error.message);
@@ -927,12 +953,33 @@ app.get('/api/agent/events.md', async (req, res) => {
   try {
     const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
     const events = await getEnrichedEventsList(false).catch(() => []);
-    const md = generateEventsMarkdown(events, lang);
+    const md = generateEventsMarkdown(events, lang, getCachedEventDetailsSync);
     res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=1800, stale-while-revalidate=86400');
     res.send(md);
   } catch (err: any) {
     res.status(500).send(`# Error generating events markdown: ${err.message}`);
+  }
+});
+
+// GET /api/agent/events/:id.md - Single Event Details in Markdown
+app.get('/api/agent/events/:id.md', async (req, res) => {
+  try {
+    const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+    const eventId = req.params.id;
+    const events = await getEnrichedEventsList(false).catch(() => []);
+    const event = events.find((e: any) => e.eventID === eventId);
+    if (!event) {
+      res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+      return res.status(404).send(`# Event Not Found: ${eventId}\n`);
+    }
+    const details = getCachedEventDetailsSync(eventId);
+    const md = generateSingleEventMarkdown(event, details, lang);
+    res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=1800, stale-while-revalidate=86400');
+    res.send(md);
+  } catch (err: any) {
+    res.status(500).send(`# Error generating event detail markdown: ${err.message}`);
   }
 });
 
@@ -964,6 +1011,34 @@ app.get('/api/agent/research.md', async (req, res) => {
   }
 });
 
+// GET /api/agent/eggs.md - Egg Hatch Pools in Markdown
+app.get('/api/agent/eggs.md', async (req, res) => {
+  try {
+    const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+    const eggs = await getEggPoolList(false).catch(() => []);
+    const md = generateEggsMarkdown(eggs, lang);
+    res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=1800, stale-while-revalidate=86400');
+    res.send(md);
+  } catch (err: any) {
+    res.status(500).send(`# Error generating eggs markdown: ${err.message}`);
+  }
+});
+
+// GET /api/agent/rocket.md - Team GO Rocket Lineups in Markdown
+app.get('/api/agent/rocket.md', async (req, res) => {
+  try {
+    const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+    const rocket = await getRocketLineupsList(false).catch(() => null);
+    const md = generateRocketMarkdown(rocket, lang);
+    res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    res.setHeader('Cache-Control', 'public, max-age=1800, stale-while-revalidate=86400');
+    res.send(md);
+  } catch (err: any) {
+    res.status(500).send(`# Error generating rocket markdown: ${err.message}`);
+  }
+});
+
 // GET /api/agent/summary.md - Full Executive Live Summary in Markdown
 app.get('/api/agent/summary.md', async (req, res) => {
   try {
@@ -991,8 +1066,10 @@ app.get('/api/agent/summary.md', async (req, res) => {
 // GET /api/friends - List and filter friend codes
 app.get('/api/friends', async (req, res) => {
   try {
-    const { pattern, purpose, team, search, limit } = req.query;
-    const allListings = await loadFriendListings();
+    const { pattern, purpose, team, search, limit, sync } = req.query;
+    const allListings = await loadFriendListings({
+      forceCloud: sync === 'true'
+    });
 
     let filtered = allListings;
 
@@ -1019,7 +1096,7 @@ app.get('/api/friends', async (req, res) => {
       );
     }
 
-    const maxCount = limit ? Math.min(parseInt(limit as string, 10) || 50, 150) : 100;
+    const maxCount = limit ? Math.min(parseInt(limit as string, 10) || 500, 1000) : 1000;
     res.json({
       success: true,
       total: filtered.length,
@@ -1031,10 +1108,10 @@ app.get('/api/friends', async (req, res) => {
   }
 });
 
-// POST /api/friends - Submit a new friend code
-app.post('/api/friends', rateLimit(10 * 60 * 1000, 5), express.json(), async (req, res) => {
+// POST /api/friends - Submit or update a friend code
+app.post('/api/friends', rateLimit(10 * 60 * 1000, 20), express.json(), async (req, res) => {
   try {
-    const { trainerCode, trainerName, vivillonPattern, team, purpose, country, note } = req.body;
+    const { trainerCode, trainerName, vivillonPattern, team, purpose, country, note, ownerToken } = req.body;
 
     if (!trainerCode || typeof trainerCode !== 'string') {
       return res.status(400).json({ success: false, error: 'Trainer code is required.' });
@@ -1052,22 +1129,28 @@ app.post('/api/friends', rateLimit(10 * 60 * 1000, 5), express.json(), async (re
       team: team || 'any',
       purpose: purpose || 'all',
       country: country || '',
-      note: note || ''
+      note: note || '',
+      ownerToken: typeof ownerToken === 'string' ? ownerToken : undefined
     });
 
     if (!newListing) {
       return res.status(400).json({ success: false, error: 'Failed to create friend listing. Invalid data.' });
     }
 
-    res.status(201).json({ success: true, listing: newListing });
+    const { ownerToken: resolvedOwnerToken, ...publicListing } = newListing;
+    res.status(201).json({
+      success: true,
+      listing: publicListing,
+      ownerToken: resolvedOwnerToken
+    });
   } catch (error: any) {
     console.error('Error in POST /api/friends:', error.message);
     res.status(500).json({ success: false, error: 'Internal server error submitting friend code' });
   }
 });
 
-// DELETE /api/friends/:code - Delete a friend code listing
-app.delete('/api/friends/:code', rateLimit(10 * 60 * 1000, 10), async (req, res) => {
+// DELETE /api/friends/:code - Delete a friend code listing (owner or admin)
+app.delete('/api/friends/:code', rateLimit(10 * 60 * 1000, 15), async (req, res) => {
   try {
     const { code } = req.params;
     if (!code) {
@@ -1079,9 +1162,24 @@ app.delete('/api/friends/:code', rateLimit(10 * 60 * 1000, 10), async (req, res)
       return res.status(400).json({ success: false, error: 'Invalid trainer code format.' });
     }
 
-    const deleted = await deleteFriendListing(clean);
+    const authHeader = req.headers.authorization;
+    const isAdmin = Boolean(
+      authHeader &&
+      authHeader.startsWith('Bearer ') &&
+      isValidAdminToken(authHeader.split(' ')[1])
+    );
+    const ownerToken =
+      (req.headers['x-owner-token'] as string) ||
+      (req.query.ownerToken as string) ||
+      (req.body && req.body.ownerToken) ||
+      undefined;
+
+    const deleted = await deleteFriendListing(clean, { ownerToken, isAdmin });
     if (!deleted) {
-      return res.status(404).json({ success: false, error: 'Trainer code not found.' });
+      return res.status(403).json({
+        success: false,
+        error: 'Trainer code not found or unauthorized to delete.'
+      });
     }
 
     res.json({ success: true, message: 'Trainer code deleted successfully.' });
@@ -1096,7 +1194,7 @@ app.delete('/api/friends/:code', rateLimit(10 * 60 * 1000, 10), async (req, res)
 // ==========================================
 
 // Cache Stats (admin only)
-app.get('/api/admin/cache-stats', requireAuth, (req, res) => {
+app.get('/api/admin/cache-stats', requireAuth, async (req, res) => {
   try {
     const meta = loadScraperMeta();
     const cacheFiles: string[] = [];
@@ -1106,17 +1204,82 @@ app.get('/api/admin/cache-stats', requireAuth, (req, res) => {
       const files = fs.readdirSync(CACHE_DIR);
       files.forEach(f => {
         const fp = path.join(CACHE_DIR, f);
-        const stat = fs.statSync(fp);
-        cacheFiles.push(f);
-        totalSizeBytes += stat.size;
+        try {
+          const stat = fs.statSync(fp);
+          if (stat.isFile()) {
+            cacheFiles.push(f);
+            totalSizeBytes += stat.size;
+          }
+        } catch {}
       });
     }
+
+    const friendsList = await loadFriendListings().catch(() => []);
+    const gcsStatus = dataStore.gcsStatus();
 
     res.json({
       scraperMeta: meta,
       isScraperRunning: scraperRunning,
       cacheFileCount: cacheFiles.length,
       cacheSizeKB: Math.round(totalSizeBytes / 1024),
+      gcsStatus,
+      friendsCount: friendsList.length
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get all friend listings for Admin moderation & backup (admin only)
+app.get('/api/admin/friends', requireAuth, async (req, res) => {
+  try {
+    const listings = await loadFriendListings({ forceCloud: true });
+    res.json({
+      success: true,
+      total: listings.length,
+      listings,
+      gcsStatus: dataStore.gcsStatus()
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Bulk import / restore friend listings from JSON backup (admin only)
+app.post('/api/admin/friends/import', requireAuth, async (req, res) => {
+  try {
+    const { listings, mode } = req.body;
+    if (!Array.isArray(listings)) {
+      return res.status(400).json({ error: 'Invalid listings array' });
+    }
+    const importMode = mode === 'replace' ? 'replace' : 'merge';
+    const result = await importFriendListings(listings, importMode);
+    const updatedListings = await loadFriendListings();
+    res.json({
+      success: true,
+      total: result.total,
+      added: result.added,
+      listings: updatedListings,
+      gcsStatus: dataStore.gcsStatus()
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete any friend listing as Admin (admin only)
+app.delete('/api/admin/friends/:code', requireAuth, async (req, res) => {
+  try {
+    const { code } = req.params;
+    const deleted = await deleteFriendListing(code, { isAdmin: true });
+    if (!deleted) {
+      return res.status(404).json({ error: 'Trainer code not found' });
+    }
+    const updatedListings = await loadFriendListings();
+    res.json({
+      success: true,
+      total: updatedListings.length,
+      listings: updatedListings
     });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -1491,6 +1654,7 @@ function isBot(userAgent: string | undefined): boolean {
     'mediapartners-google',
     'google-adwords',
     'adsbot-google',
+    'google-extended',
     'bingbot',
     'slurp',
     'duckduckbot',
@@ -1503,7 +1667,18 @@ function isBot(userAgent: string | undefined): boolean {
     'lighthouse',
     'twitterbot',
     'facebookexternalhit',
-    'discordapp'
+    'discordapp',
+    'gptbot',
+    'oai-searchbot',
+    'chatgpt-user',
+    'claudebot',
+    'claude-web',
+    'claude-searchbot',
+    'claude-user',
+    'perplexitybot',
+    'perplexity-user',
+    'applebot-extended',
+    'amazonbot'
   ];
   const ua = userAgent.toLowerCase();
   return botUserAgents.some(bot => ua.includes(bot));

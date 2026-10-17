@@ -123,19 +123,67 @@ export interface FriendListing {
   note?: string;
   createdAt: number;
   expiresAt: number;
+  ownerToken?: string;
 }
 
+import crypto from 'crypto';
 import { SEED_COMMUNITY_FRIENDS } from './data/seedFriends';
 
-export async function loadFriendListings(): Promise<FriendListing[]> {
-  let rawList = await dataStore.get<FriendListing[]>('friends_listings', { defaultValue: SEED_COMMUNITY_FRIENDS });
-  if (!rawList) {
-    rawList = SEED_COMMUNITY_FRIENDS;
+export function mergeFriendListings(...lists: (FriendListing[] | null | undefined)[]): FriendListing[] {
+  const map = new Map<string, FriendListing>();
+
+  for (const list of lists) {
+    if (!Array.isArray(list)) continue;
+    for (const item of list) {
+      if (!item || typeof item.trainerCode !== 'string') continue;
+      const digits = item.trainerCode.replace(/\D/g, '');
+      if (digits.length !== 12) continue;
+
+      const formattedCode = digits.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+      const existing = map.get(digits);
+      if (!existing || (item.createdAt || 0) >= (existing.createdAt || 0)) {
+        map.set(digits, {
+          ...existing,
+          ...item,
+          trainerCode: formattedCode,
+          ownerToken: item.ownerToken || existing?.ownerToken,
+          expiresAt: 0
+        });
+      } else if (!existing.ownerToken && item.ownerToken) {
+        existing.ownerToken = item.ownerToken;
+      }
+    }
   }
-  
-  // No expiry filtering — friend codes persist permanently.
-  // Capacity is managed by the 1000-entry cap in addFriendListing().
-  return rawList.sort((a, b) => b.createdAt - a.createdAt);
+
+  return Array.from(map.values())
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+    .slice(0, 1000);
+}
+
+export async function loadFriendListings(options?: {
+  forceCloud?: boolean;
+  includeOwnerTokens?: boolean;
+}): Promise<FriendListing[]> {
+  const localList = await dataStore.get<FriendListing[]>('friends_listings', {
+    defaultValue: SEED_COMMUNITY_FRIENDS
+  });
+
+  let merged: FriendListing[];
+  if (options?.forceCloud) {
+    const cloudList = await dataStore.get<FriendListing[]>('friends_listings', {
+      defaultValue: SEED_COMMUNITY_FRIENDS,
+      forceCloud: true
+    });
+    merged = mergeFriendListings(cloudList, localList, SEED_COMMUNITY_FRIENDS);
+  } else {
+    merged = mergeFriendListings(localList, SEED_COMMUNITY_FRIENDS);
+  }
+
+  if (options?.includeOwnerTokens) {
+    return merged;
+  }
+
+  return merged.map(({ ownerToken, ...publicListing }) => publicListing);
 }
 
 export async function saveFriendListings(listings: FriendListing[]): Promise<boolean> {
@@ -150,15 +198,25 @@ export async function addFriendListing(data: {
   purpose: 'all' | 'vivillon' | 'raids' | 'xp' | 'trades';
   country?: string;
   note?: string;
+  ownerToken?: string;
 }): Promise<FriendListing | null> {
   const now = Date.now();
-  const cleanCode = data.trainerCode.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ').trim();
-  if (cleanCode.replace(/\s/g, '').length !== 12) {
+  const cleanDigits = data.trainerCode.replace(/\D/g, '');
+  if (cleanDigits.length !== 12) {
     return null;
   }
+  const cleanCode = cleanDigits.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+
+  // Always read & merge with cloud before writing so cold-started instances never overwrite existing listings
+  const currentList = await loadFriendListings({ forceCloud: true, includeOwnerTokens: true });
+  const existing = currentList.find(item => item.trainerCode.replace(/\D/g, '') === cleanDigits);
+
+  const effectiveOwnerToken =
+    existing?.ownerToken ||
+    (data.ownerToken && data.ownerToken.trim().length >= 8 ? data.ownerToken.trim() : crypto.randomBytes(16).toString('hex'));
 
   const newListing: FriendListing = {
-    id: `trainer-${now}-${Math.random().toString(36).substring(2, 7)}`,
+    id: existing?.id || `trainer-${now}-${Math.random().toString(36).substring(2, 7)}`,
     trainerCode: cleanCode,
     trainerName: (data.trainerName || 'Trainer').trim().substring(0, 30),
     vivillonPattern: (data.vivillonPattern || 'continental').toLowerCase().trim(),
@@ -167,32 +225,59 @@ export async function addFriendListing(data: {
     country: (data.country || '').trim().substring(0, 50),
     note: (data.note || '').trim().substring(0, 150),
     createdAt: now,
-    expiresAt: 0 // Permanent — no automatic expiration
+    expiresAt: 0, // Permanent — no automatic expiration
+    ownerToken: effectiveOwnerToken
   };
 
-  const currentList = await loadFriendListings();
-  const filtered = currentList.filter(item => 
-    item.trainerCode.replace(/\s/g, '') !== cleanCode.replace(/\s/g, '')
-  );
-  filtered.unshift(newListing);
-
-  const trimmed = filtered.slice(0, 1000);
-  await saveFriendListings(trimmed);
+  const merged = mergeFriendListings([newListing], currentList);
+  await saveFriendListings(merged);
   return newListing;
 }
 
-export async function deleteFriendListing(trainerCode: string): Promise<boolean> {
-  const cleanCode = trainerCode.replace(/\D/g, '').replace(/(\d{4})(?=\d)/g, '$1 ').trim();
-  const currentList = await loadFriendListings();
-  const initialLength = currentList.length;
-  const filtered = currentList.filter(item => 
-    item.trainerCode.replace(/\s/g, '') !== cleanCode.replace(/\s/g, '')
-  );
-
-  if (filtered.length === initialLength) {
+export async function deleteFriendListing(
+  trainerCode: string,
+  options?: { ownerToken?: string; isAdmin?: boolean }
+): Promise<boolean> {
+  const cleanDigits = trainerCode.replace(/\D/g, '');
+  if (cleanDigits.length !== 12) {
     return false;
   }
 
+  const currentList = await loadFriendListings({ forceCloud: true, includeOwnerTokens: true });
+  const target = currentList.find(item => item.trainerCode.replace(/\D/g, '') === cleanDigits);
+  if (!target) {
+    return false;
+  }
+
+  // Enforce ownership check when options is passed and caller is not admin
+  if (options && !options.isAdmin) {
+    if (target.ownerToken && target.ownerToken !== options.ownerToken) {
+      return false;
+    }
+  }
+
+  const filtered = currentList.filter(
+    item => item.trainerCode.replace(/\D/g, '') !== cleanDigits
+  );
+
   await saveFriendListings(filtered);
   return true;
+}
+
+export async function importFriendListings(
+  incoming: FriendListing[],
+  mode: 'merge' | 'replace' = 'merge'
+): Promise<{ total: number; added: number }> {
+  const currentList = mode === 'replace'
+    ? []
+    : await loadFriendListings({ forceCloud: true, includeOwnerTokens: true });
+
+  const beforeCount = currentList.length;
+  const merged = mergeFriendListings(incoming, currentList);
+  await saveFriendListings(merged);
+
+  return {
+    total: merged.length,
+    added: Math.max(0, merged.length - beforeCount)
+  };
 }

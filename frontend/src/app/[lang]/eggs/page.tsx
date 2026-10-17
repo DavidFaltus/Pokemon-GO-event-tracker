@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { DittoEggsView } from '@/components/DittoEggsView';
+import { redirect } from 'next/navigation';
 import type { Language } from '@/data/translations';
 
 export const revalidate = 300;
@@ -20,24 +20,13 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const unwrappedParams = await params;
   const lang = unwrappedParams.lang || 'cs';
-  const isCzech = lang === 'cs';
-  const canonicalUrl = `https://pogoevents.app/${lang}/eggs`;
+  const canonicalUrl = `https://pogoevents.app/${lang}/guides/egg-hatching-guide`;
 
   return {
-    title: isCzech
-      ? 'Egg Hatch Distance Pool (2km, 5km, 7km, 10km, 12km) | Pokémon GO Event Tracker'
-      : 'Egg Hatch Distance Pool | Pokémon GO Event Tracker',
-    description: isCzech
-      ? 'Přehled všech Pokémonů, které lze aktuálně vylíhnout z 2km, 5km, 7km, 10km a 12km vajec.'
-      : 'Complete list of Pokémon currently hatching from 2km, 5km, 7km, 10km, and 12km eggs in Pokémon GO.',
+    title: 'Egg Hatching Guide | Pokémon GO Event Tracker',
+    description: 'Current 2km, 5km, 7km, 10km, and 12km egg pools and hatching guide.',
     alternates: {
       canonical: canonicalUrl,
-      languages: {
-        'cs': `https://pogoevents.app/cs/eggs`,
-        'en': `https://pogoevents.app/en/eggs`,
-        'ja': `https://pogoevents.app/ja/eggs`,
-        'ru': `https://pogoevents.app/ru/eggs`,
-      },
     },
   };
 }
@@ -45,6 +34,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function EggsPage({ params }: PageProps) {
   const unwrappedParams = await params;
   const lang = unwrappedParams.lang || 'cs';
-
-  return <DittoEggsView lang={lang} mode="eggs" />;
+  redirect(`/${lang}/guides/egg-hatching-guide`);
 }
+

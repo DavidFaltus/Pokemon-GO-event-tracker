@@ -4069,6 +4069,8 @@ body.light-mode .special-bg-pkm-chip {
 .lid-card-map-btn:hover {
   background: #38bdf8;
   color: #0f172a;
+}
+
 .lid-thumbnail-frame {
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -4557,6 +4559,1347 @@ body.light-mode .guide-inline-article-link {
 body.light-mode .guide-inline-article-link:hover {
   background: #aa3bff;
   color: #ffffff;
+}
+
+
+
+
+/* ==========================================================================
+   Master Trainer Levels 1–80 & Level-Up Tasks Progression Widget
+   ========================================================================== */
+
+.guide-trainer-levels-widget {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Hero Stats Banner */
+.trainer-levels-hero-banner {
+  background: linear-gradient(135deg, rgba(23, 25, 33, 0.95) 0%, rgba(30, 27, 44, 0.95) 100%);
+  border: 1px solid rgba(170, 59, 255, 0.35);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media (min-width: 900px) {
+  .trainer-levels-hero-banner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.trainer-hero-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.trainer-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 750;
+  color: #facc15;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.trainer-hero-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 850;
+  color: #f8fafc;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+.trainer-hero-desc {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+  max-width: 680px;
+}
+
+.trainer-hero-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  min-width: 320px;
+}
+
+.trainer-hero-stat-card {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.trainer-hero-stat-card .stat-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.trainer-hero-stat-card .stat-value {
+  font-size: 1.15rem;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+}
+
+.stat-value.gold-text {
+  color: #facc15;
+  text-shadow: 0 0 16px rgba(250, 204, 21, 0.25);
+}
+
+.stat-value.cyan-text {
+  color: #38bdf8;
+}
+
+.stat-value.green-text {
+  color: #4ade80;
+}
+
+.stat-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.trainer-reset-btn {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 0.7rem;
+  font-weight: 650;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.trainer-reset-btn:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #ffffff;
+}
+
+.stat-progress-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.trainer-progress-bar-bg {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.trainer-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #22c55e 0%, #4ade80 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* Platinum Medals Blueprint Card */
+.platinum-blueprint-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.platinum-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.platinum-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.platinum-icon-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.platinum-title {
+  margin: 0;
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: #f8fafc;
+}
+
+.platinum-subtitle {
+  margin: 2px 0 0 0;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.platinum-toggle-btn {
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #c084fc;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.platinum-toggle-btn:hover {
+  background: rgba(168, 85, 247, 0.25);
+  color: #ffffff;
+}
+
+.platinum-content-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+@media (min-width: 1024px) {
+  .platinum-content-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.platinum-tier-column {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.platinum-tier-column.tier-recommended {
+  border-color: rgba(34, 197, 94, 0.25);
+}
+
+.platinum-tier-column.tier-grind {
+  border-color: rgba(56, 189, 248, 0.25);
+}
+
+.platinum-tier-column.tier-avoid {
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.tier-column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tier-tag {
+  font-size: 0.75rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.tier-tag.tag-s {
+  color: #4ade80;
+}
+
+.tier-tag.tag-a {
+  color: #38bdf8;
+}
+
+.tier-tag.tag-avoid {
+  color: #f87171;
+}
+
+.tier-count {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.medal-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.medal-item-card {
+  background: rgba(22, 27, 44, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.medal-item-top {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.medal-name {
+  font-size: 0.84rem;
+  font-weight: 750;
+  color: #f8fafc;
+  line-height: 1.3;
+}
+
+.medal-speed-chip {
+  align-self: flex-start;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.medal-speed-chip.speed-fast {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.medal-speed-chip.speed-medium {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.medal-speed-chip.speed-avoid {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.medal-desc {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  line-height: 1.45;
+}
+
+/* Controls Bar */
+.trainer-levels-controls-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+@media (min-width: 768px) {
+  .trainer-levels-controls-bar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.trainer-tier-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.trainer-tier-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.trainer-tier-btn:hover {
+  border-color: rgba(168, 85, 247, 0.4);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.trainer-tier-btn.active {
+  background: var(--accent-gradient);
+  border-color: transparent;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(170, 59, 255, 0.35);
+}
+
+.tier-task-indicator {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+.trainer-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 280px;
+}
+
+.trainer-search-wrapper svg {
+  position: absolute;
+  left: 14px;
+  pointer-events: none;
+}
+
+.trainer-search-wrapper input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 9px 36px 9px 38px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.trainer-search-wrapper input:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.2);
+}
+
+.trainer-clear-search {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.trainer-results-summary {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-top: -4px;
+}
+
+/* Levels List */
+.trainer-levels-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Level Card */
+.trainer-level-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.trainer-level-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(168, 85, 247, 0.35);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.trainer-level-card.is-endgame-level {
+  border-left: 4px solid #aa3bff;
+}
+
+.trainer-level-card.is-milestone.milestone-40 {
+  border-color: rgba(56, 189, 248, 0.4);
+  background: linear-gradient(135deg, rgba(23, 25, 33, 0.95) 0%, rgba(20, 32, 50, 0.95) 100%);
+}
+
+.trainer-level-card.is-milestone.milestone-50 {
+  border-color: rgba(250, 204, 21, 0.4);
+  background: linear-gradient(135deg, rgba(23, 25, 33, 0.95) 0%, rgba(45, 35, 15, 0.95) 100%);
+}
+
+.trainer-level-card.is-milestone.milestone-70 {
+  border-color: rgba(249, 115, 22, 0.4);
+  background: linear-gradient(135deg, rgba(23, 25, 33, 0.95) 0%, rgba(45, 25, 15, 0.95) 100%);
+}
+
+.trainer-level-card.is-milestone.milestone-80 {
+  border-color: rgba(170, 59, 255, 0.6);
+  background: linear-gradient(135deg, rgba(28, 20, 48, 0.95) 0%, rgba(20, 24, 38, 0.95) 100%);
+  box-shadow: 0 0 24px rgba(170, 59, 255, 0.25);
+}
+
+/* Level Card Header */
+.level-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+@media (min-width: 640px) {
+  .level-card-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.level-badge-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.level-number-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 6px 14px;
+}
+
+.level-number-badge .lvl-prefix {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.level-number-badge .lvl-num {
+  font-size: 1.45rem;
+  font-weight: 850;
+  color: #f8fafc;
+  letter-spacing: -0.02em;
+}
+
+.milestone-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.milestone-tag.milestone-40 {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+}
+
+.milestone-tag.milestone-50 {
+  background: rgba(250, 204, 21, 0.15);
+  border: 1px solid rgba(250, 204, 21, 0.35);
+  color: #facc15;
+}
+
+.milestone-tag.milestone-70 {
+  background: rgba(249, 115, 22, 0.15);
+  border: 1px solid rgba(249, 115, 22, 0.35);
+  color: #fb923c;
+}
+
+.milestone-tag.milestone-80 {
+  background: rgba(170, 59, 255, 0.2);
+  border: 1px solid rgba(170, 59, 255, 0.5);
+  color: #c084fc;
+}
+
+.level-xp-metrics {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.xp-metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.xp-metric-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.xp-metric-val {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.xp-metric-total {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+/* Sections inside card */
+.level-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section-label-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.section-title-label {
+  font-size: 0.74rem;
+  font-weight: 750;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.section-title-label.highlight-tasks-title {
+  color: #f59e0b;
+}
+
+/* Unlocks */
+.unlocks-chips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 8px;
+}
+
+.unlock-feature-card {
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.unlock-feature-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.unlock-feature-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.unlock-feature-title {
+  font-size: 0.84rem;
+  font-weight: 750;
+  color: #f8fafc;
+}
+
+.unlock-feature-desc {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  line-height: 1.4;
+}
+
+/* Tasks Checklist */
+.tasks-checklist-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-item-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.task-item-card.is-completed {
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.task-interactive-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.task-checkbox-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: transform 0.15s ease;
+}
+
+.task-checkbox-icon:hover {
+  transform: scale(1.1);
+}
+
+.task-text-body {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #f8fafc;
+  line-height: 1.4;
+  transition: all 0.2s ease;
+}
+
+.task-text-body.done-text {
+  color: #86efac;
+  text-decoration: line-through;
+  opacity: 0.85;
+}
+
+.task-tip-box {
+  background: rgba(245, 158, 11, 0.1);
+  border-left: 3px solid #f59e0b;
+  border-radius: 4px;
+  padding: 6px 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-left: 28px;
+  font-size: 0.76rem;
+  color: #fde68a;
+  line-height: 1.4;
+}
+
+.task-tip-box svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Rewards Chips */
+.rewards-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.reward-chip-item {
+  background: rgba(23, 25, 33, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.reward-chip-item:hover {
+  border-color: rgba(170, 59, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.reward-chip-img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.reward-qty-badge {
+  font-size: 0.78rem;
+  font-weight: 850;
+  color: #aa3bff;
+  background: rgba(170, 59, 255, 0.12);
+  border-radius: 6px;
+  padding: 1px 5px;
+}
+
+.reward-item-name {
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: #e2e8f0;
+}
+
+/* Light Mode Overrides for Trainer Levels Widget */
+body.light-mode .trainer-levels-hero-banner {
+  background: #ffffff;
+  border-color: rgba(168, 85, 247, 0.35);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+body.light-mode .trainer-hero-title {
+  color: #0f172a;
+}
+
+body.light-mode .trainer-hero-desc {
+  color: #475569;
+}
+
+body.light-mode .trainer-hero-stat-card {
+  background: #f8fafc;
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-mode .platinum-blueprint-card {
+  background: #ffffff;
+  border-color: rgba(168, 85, 247, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+body.light-mode .platinum-title {
+  color: #0f172a;
+}
+
+body.light-mode .platinum-tier-column {
+  background: #f8fafc;
+  border-color: rgba(15, 23, 42, 0.1);
+}
+
+body.light-mode .medal-item-card {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.08);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+body.light-mode .medal-name {
+  color: #0f172a;
+}
+
+body.light-mode .medal-desc {
+  color: #475569;
+}
+
+body.light-mode .trainer-tier-btn {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.14);
+  color: #334155;
+}
+
+body.light-mode .trainer-tier-btn.active {
+  background: var(--accent-gradient);
+  color: #ffffff;
+}
+
+body.light-mode .trainer-search-wrapper input {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.14);
+  color: #0f172a;
+}
+
+body.light-mode .trainer-level-card {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.12);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode .level-number-badge {
+  background: #f1f5f9;
+  border-color: rgba(15, 23, 42, 0.1);
+}
+
+body.light-mode .level-number-badge .lvl-num {
+  color: #0f172a;
+}
+
+body.light-mode .unlock-feature-card {
+  background: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.25);
+}
+
+body.light-mode .unlock-feature-title {
+  color: #0f172a;
+}
+
+body.light-mode .unlock-feature-desc {
+  color: #334155;
+}
+
+body.light-mode .task-item-card {
+  background: #f8fafc;
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-mode .task-item-card.is-completed {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+body.light-mode .task-text-body {
+  color: #0f172a;
+}
+
+body.light-mode .task-text-body.done-text {
+  color: #15803d;
+}
+
+body.light-mode .task-tip-box {
+  background: rgba(245, 158, 11, 0.12);
+  color: #92400e;
+}
+
+body.light-mode .reward-chip-item {
+  background: #f8fafc;
+  border-color: rgba(15, 23, 42, 0.1);
+}
+
+body.light-mode .reward-item-name {
+  color: #1e293b;
+}
+
+/* ==========================================================================
+   EMBEDDED LIVE WIDGETS (Ditto, Eggs, Field Research)
+   ========================================================================== */
+
+.guide-embedded-view-widget {
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin-bottom: 2rem !important;
+}
+
+.guide-embedded-view-widget .guides-header > .guides-title-badge,
+.guide-embedded-view-widget .guides-header > h1,
+.guide-embedded-view-widget .guides-header > p {
+  display: none !important;
+}
+
+.guide-embedded-view-widget .guides-header {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 0 16px 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.guide-embedded-view-widget .ditto-eggs-view-container,
+.guide-embedded-view-widget .field-research-view-container {
+  padding: 0 !important;
+  max-width: 100% !important;
+}
+
+/* ==========================================================================
+   EXTRA STARDUST POKÉMON TIER OVERVIEW WIDGET
+   ========================================================================== */
+
+.stardust-tiers-widget {
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin-bottom: 28px !important;
+}
+
+.stardust-tiers-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.stardust-tier-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stardust-tier-card:hover {
+  border-color: rgba(168, 85, 247, 0.35);
+}
+
+.stardust-tier-card.tier-2100 {
+  border-color: rgba(250, 204, 21, 0.45);
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.08) 0%, rgba(23, 25, 33, 0.96) 100%);
+}
+
+.stardust-tier-card.tier-1200 {
+  border-color: rgba(168, 85, 247, 0.4);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(23, 25, 33, 0.96) 100%);
+}
+
+.stardust-tier-card.tier-1000 {
+  border-color: rgba(56, 189, 248, 0.38);
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.07) 0%, rgba(23, 25, 33, 0.96) 100%);
+}
+
+.stardust-tier-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.stardust-tier-title-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  background: var(--accent-gradient);
+  color: #ffffff;
+  font-weight: 850;
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+  box-shadow: 0 2px 10px rgba(170, 59, 255, 0.3);
+}
+
+.tier-2100 .stardust-tier-title-badge {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  box-shadow: 0 2px 12px rgba(245, 158, 11, 0.35);
+}
+
+.tier-1200 .stardust-tier-title-badge {
+  background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
+}
+
+.tier-1000 .stardust-tier-title-badge {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  box-shadow: 0 2px 10px rgba(14, 165, 233, 0.3);
+}
+
+.stardust-tier-summary-pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.stardust-stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 10px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+}
+
+.stardust-stat-pill.highlight-both {
+  border-color: rgba(250, 204, 21, 0.35);
+  background: rgba(250, 204, 21, 0.08);
+}
+
+.stardust-stat-pill .pill-label {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.stardust-stat-pill .pill-value {
+  color: var(--text-primary);
+  font-weight: 800;
+}
+
+.stardust-stat-pill .pill-value.cyan-val,
+.payout-val.cyan-val {
+  color: #38bdf8;
+}
+
+.stardust-stat-pill .pill-value.purple-val,
+.payout-val.purple-val {
+  color: #c084fc;
+}
+
+.stardust-pokemon-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .stardust-pokemon-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .stardust-tier-card {
+    padding: 14px 12px;
+  }
+}
+
+.stardust-pokemon-item-card {
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.stardust-pokemon-item-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(168, 85, 247, 0.35);
+}
+
+.stardust-pkm-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stardust-pkm-avatar-wrap {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stardust-pkm-avatar {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+}
+
+.stardust-pkm-identity {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.stardust-pkm-name {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.stardust-weather-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.stardust-weather-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  color: #e2e8f0;
+}
+
+.stardust-weather-chip.weather-sunny {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.32);
+}
+
+.stardust-weather-chip.weather-rainy {
+  background: rgba(56, 189, 248, 0.14);
+  border-color: rgba(56, 189, 248, 0.32);
+}
+
+.stardust-weather-chip.weather-cloudy,
+.stardust-weather-chip.weather-partly-cloudy {
+  background: rgba(148, 163, 184, 0.16);
+  border-color: rgba(148, 163, 184, 0.32);
+}
+
+.stardust-weather-chip.weather-fog {
+  background: rgba(168, 85, 247, 0.14);
+  border-color: rgba(168, 85, 247, 0.32);
+}
+
+.stardust-pkm-payout-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  align-items: start;
+}
+
+@media (max-width: 480px) {
+  .stardust-pkm-payout-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.payout-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: rgba(2, 6, 23, 0.45);
+  border-radius: 8px;
+  padding: 5px 4px;
+}
+
+.payout-cell.best-cell {
+  background: rgba(250, 204, 21, 0.08);
+  border: 1px solid rgba(250, 204, 21, 0.22);
+}
+
+.payout-label {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+  font-weight: 650;
+  line-height: 1.15;
+  margin-bottom: 2px;
+}
+
+.payout-val {
+  font-size: 0.82rem;
+  font-weight: 850;
+  color: var(--text-primary);
+}
+
+/* Light Mode Support for Extra Stardust Widget */
+body.light-mode .stardust-tier-card {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-mode .stardust-tier-header {
+  border-bottom-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+body.light-mode .stardust-stat-pill {
+  background: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+body.light-mode .stardust-stat-pill .pill-label,
+body.light-mode .payout-label {
+  color: #475569 !important;
+}
+
+body.light-mode .stardust-stat-pill .pill-value,
+body.light-mode .stardust-pkm-name,
+body.light-mode .payout-val {
+  color: #0f172a !important;
+}
+
+body.light-mode .stardust-stat-pill .pill-value.cyan-val,
+body.light-mode .payout-val.cyan-val {
+  color: #0284c7 !important;
+}
+
+body.light-mode .stardust-stat-pill .pill-value.purple-val,
+body.light-mode .payout-val.purple-val {
+  color: #7e22ce !important;
+}
+
+body.light-mode .stardust-pokemon-item-card {
+  background: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+body.light-mode .stardust-pkm-avatar-wrap {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+body.light-mode .stardust-weather-chip {
+  color: #1e293b !important;
+  background: #e2e8f0 !important;
+  border-color: rgba(15, 23, 42, 0.15) !important;
+}
+
+body.light-mode .stardust-pkm-payout-row {
+  border-top-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+body.light-mode .payout-cell {
+  background: #ffffff !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+}
+
+body.light-mode .payout-cell.best-cell {
+  background: rgba(245, 158, 11, 0.1) !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
 }
 
 

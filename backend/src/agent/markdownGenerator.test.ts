@@ -1,8 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import {
   generateEventsMarkdown,
+  generateSingleEventMarkdown,
   generateRaidsMarkdown,
   generateResearchMarkdown,
+  generateEggsMarkdown,
+  generateRocketMarkdown,
   generateSummaryMarkdown
 } from './markdownGenerator';
 import { EventData, ScrapedRaidBoss, EnrichedResearchTask, EnrichedEggGroup, SpecialEventDetails } from '../types';
@@ -39,6 +42,10 @@ describe('AI Agent Markdown Generator', () => {
     expect(mdEn).toContain('# Pokémon GO — Events Overview');
     expect(mdEn).toContain('Testovací Community Day');
     expect(mdEn).toContain('3× Catch Stardust');
+
+    const singleMd = generateSingleEventMarkdown(mockEvents[0], mockDetails['community-day-test'], 'en');
+    expect(singleMd).toContain('# Testovací Community Day — Pokémon GO Event');
+    expect(singleMd).toContain('3× Catch Stardust');
   });
 
   it('formats raid bosses and battle counters with tier groupings', () => {
@@ -92,6 +99,40 @@ describe('AI Agent Markdown Generator', () => {
     expect(md).toContain('Chytání Pokémonů');
     expect(md).toContain('Chyť 5 Pokémonů');
     expect(md).toContain('Bulbasaur ✨ (432-477 CP)');
+  });
+
+  it('formats egg pools and Team GO Rocket lineups into markdown', () => {
+    const mockEggs: EnrichedEggGroup[] = [
+      {
+        distance: '2 km',
+        title: { cs: '2 km Vejce', en: '2 km Eggs' },
+        eggs: [{ name: 'Pichu', image: '', canBeShiny: true, rarity: 1, minCp: 240, maxCp: 270 }]
+      }
+    ];
+
+    const eggsMd = generateEggsMarkdown(mockEggs, 'en');
+    expect(eggsMd).toContain('## 🥚 2 km');
+    expect(eggsMd).toContain('**Pichu** ✨ (CP: 240–270) [Tier 1]');
+
+    const mockRocket = {
+      giovanni: {
+        name: 'Giovanni',
+        title: 'Team GO Rocket Boss',
+        reward: { name: 'Shadow Heatran', canBeShiny: false },
+        lineup: {
+          slot1: [{ name: 'Persian', counters: ['Lucario'] }],
+          slot2: [{ name: 'Rhyperior' }],
+          slot3: [{ name: 'Heatran' }]
+        }
+      },
+      leaders: [],
+      grunts: [{ phraseEn: 'Coiled and ready to strike!', phraseCs: 'Připraven k útoku!', type: 'Poison', shadowPokemon: ['Zubat'] }]
+    };
+
+    const rocketMd = generateRocketMarkdown(mockRocket, 'en');
+    expect(rocketMd).toContain('## 👑 Boss Giovanni');
+    expect(rocketMd).toContain('Shadow Heatran');
+    expect(rocketMd).toContain('Coiled and ready to strike!');
   });
 
   it('generates a full live summary of the game state for LLMs', () => {

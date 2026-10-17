@@ -91,10 +91,10 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
       case 'friends': return `${prefix}/friends`;
       case 'raid': return `${prefix}/raids`;
       case 'rocket': return `${prefix}/rocket`;
-      case 'research': return `${prefix}/research`;
+      case 'research': return `${prefix}/guides/field-research-tasks-guide`;
       case 'ranking': return `${prefix}/rankings`;
-      case 'ditto': return `${prefix}/ditto`;
-      case 'eggs': return `${prefix}/eggs`;
+      case 'ditto': return `${prefix}/guides/ditto-disguises-guide`;
+      case 'eggs': return `${prefix}/guides/egg-hatching-guide`;
       case 'filter': return `${prefix}/filter`;
       case 'types': return `${prefix}/types`;
       case 'download': return `${prefix}/download`;
@@ -160,38 +160,14 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
       category: 'live',
       keywords: ['rocket', 'rakeťáci', 'giovanni', 'cliff', 'sierra', 'arlo', 'shadow', 'grunt', 'stín', 'ракета', 'ロケット団']
     },
-    {
-      tab: 'research',
-      icon: <ScrollText size={20} style={{ color: '#38bdf8' }} />,
-      title: t.tabs_research || 'Výzkum',
-      description: lang === 'cs' ? 'Polní úkoly z Pokéstopů' : (lang === 'ja' ? 'フィールドリサーチタスク' : (lang === 'ru' ? 'Полевые исследования и квесты' : 'Field Research & Rewards')),
-      category: 'live',
-      keywords: ['research', 'výzkum', 'úkoly', 'field', 'odměny', 'pokestop', 'quest', 'квесты', 'リサーチ']
-    },
     // Database & mechanics
-    {
-      tab: 'eggs',
-      icon: <Egg size={20} style={{ color: '#fbbf24' }} />,
-      title: t.tabs_eggs || 'Vejce',
-      description: lang === 'cs' ? 'Líhnutí 2km, 5km, 7km, 10km, 12km' : (lang === 'ja' ? 'タマゴ孵化一覧 (2-12km)' : (lang === 'ru' ? 'Вылупление яиц 2-12 км' : 'Egg Hatches 2km-12km')),
-      category: 'db',
-      keywords: ['eggs', 'vejce', 'líhnutí', 'hatch', '2km', '5km', '7km', '10km', '12km', 'яйца', 'タマゴ']
-    },
-    {
-      tab: 'ditto',
-      icon: <Sparkles size={20} style={{ color: '#ec4899' }} />,
-      title: t.tabs_ditto || 'Ditto',
-      description: lang === 'cs' ? 'Aktuální maskování v divočině' : (lang === 'ja' ? 'へんしん・変装リスト' : (lang === 'ru' ? 'Текущие маскировки в дикой природе' : 'Current wild disguises')),
-      category: 'db',
-      keywords: ['ditto', 'maskování', 'disguise', 'proměna', 'transform', 'метаморф', 'メタモン']
-    },
     {
       tab: 'guides',
       icon: <BookOpen size={20} style={{ color: '#a855f7' }} />,
       title: t.tabs_guides || 'Průvodce',
-      description: lang === 'cs' ? 'Infografiky a herní návody' : (lang === 'ja' ? 'インフォグラフィックと攻略' : (lang === 'ru' ? 'Инфографика и гайды' : 'Infographics & Guides')),
+      description: lang === 'cs' ? 'Návody, Ditto, Vejce & Polní výzkum' : (lang === 'ja' ? '攻略、メタモン、タマゴ、リサーチ' : (lang === 'ru' ? 'Гайды, Дитто, Яйца и Квесты' : 'Guides, Ditto, Eggs & Research')),
       category: 'db',
-      keywords: ['guides', 'průvodce', 'návody', 'infografiky', 'infographics', 'tips', 'гайды', 'ガイド']
+      keywords: ['guides', 'průvodce', 'návody', 'infografiky', 'infographics', 'tips', 'гайды', 'ガイド', 'ditto', 'maskování', 'disguise', 'eggs', 'vejce', 'líhnutí', 'research', 'výzkum', 'úkoly', 'field', 'quest']
     },
     // Tools & More
     {
@@ -235,7 +211,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
       <aside className="desktop-sidebar">
         <div className="sidebar-logo">
           <PokeballLogo size={28} />
-          <h1>PoGo Events</h1>
+          <span className="brand-title">PoGo Events</span>
         </div>
         <div className="sidebar-stats" style={{ minHeight: '44px' }}>
           {scraperStatus.lastScrapedAt && (
@@ -314,21 +290,6 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
           <Link href={getSectionPath(lang, 'rocket')} className={`sidebar-nav-item ${activeTab === 'rocket' ? 'active' : ''}`}>
             <Shield size={18} />
             <span>{t.tabs_rocket}</span>
-          </Link>
-
-          <Link href={getSectionPath(lang, 'research')} className={`sidebar-nav-item ${activeTab === 'research' ? 'active' : ''}`}>
-            <ScrollText size={18} />
-            <span>{t.tabs_research || 'Výzkum'}</span>
-          </Link>
-
-          <Link href={getSectionPath(lang, 'ditto')} className={`sidebar-nav-item ${activeTab === 'ditto' ? 'active' : ''}`}>
-            <Sparkles size={18} />
-            <span>{t.tabs_ditto}</span>
-          </Link>
-
-          <Link href={getSectionPath(lang, 'eggs')} className={`sidebar-nav-item ${activeTab === 'eggs' ? 'active' : ''}`}>
-            <Egg size={18} />
-            <span>{t.tabs_eggs}</span>
           </Link>
 
           <Link href={getSectionPath(lang, 'ranking')} className={`sidebar-nav-item ${activeTab === 'ranking' ? 'active' : ''}`}>
@@ -461,9 +422,9 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
         </header>
 
         {/* Page Content */}
-        <div className="app-page-content-wrapper">
+        <main className="app-page-content-wrapper">
           {children}
-        </div>
+        </main>
 
         {/* Footer */}
         <Footer lang={lang} onOpenTab={() => {}} onOpenLegalModal={(type) => setLegalModal(type)} />

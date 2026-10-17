@@ -296,6 +296,10 @@ export const SPECIAL_FORM_ARTWORK_MAP: Record<string, { pokeApiId: number; dbSlu
   "alolan sandslash": { pokeApiId: 10102, dbSlug: "sandslash-alola" },
   "alolan muk": { pokeApiId: 10113, dbSlug: "muk-alola" },
   "alolan golem": { pokeApiId: 10111, dbSlug: "golem-alola" },
+  "alolan meowth": { pokeApiId: 10107, dbSlug: "meowth-alola" },
+  "meowth (alolan)": { pokeApiId: 10107, dbSlug: "meowth-alola" },
+  "alolan persian": { pokeApiId: 10108, dbSlug: "persian-alola" },
+  "persian (alolan)": { pokeApiId: 10108, dbSlug: "persian-alola" },
 };
 
 export function getBasePokemonNames(): string[] {
@@ -412,6 +416,31 @@ export function getBasePokemonName(name: string): string {
   return baseName.trim();
 }
 
+const EXTRA_POKEDEX_IDS: Record<string, number> = {
+  "paras": 46,
+  "parasect": 47,
+  "meowth": 52,
+  "persian": 53,
+  "shellder": 90,
+  "cloyster": 91,
+  "staryu": 120,
+  "starmie": 121,
+  "delibird": 225,
+  "shroomish": 285,
+  "breloom": 286,
+  "sableye": 302,
+  "chimecho": 358,
+  "combee": 415,
+  "vespiquen": 416,
+  "audino": 531,
+  "trubbish": 568,
+  "garbodor": 569,
+  "foongus": 590,
+  "amoonguss": 591,
+  "morelull": 755,
+  "shiinotic": 756,
+};
+
 export function getPokedexIdByName(name: string): number | null {
   const cleanName = getBasePokemonName(name).toLowerCase();
   const directKey = name.toLowerCase().trim();
@@ -422,6 +451,13 @@ export function getPokedexIdByName(name: string): number | null {
   }
   if (SPECIAL_FORM_ARTWORK_MAP[directKey]) {
     return SPECIAL_FORM_ARTWORK_MAP[directKey].pokeApiId;
+  }
+
+  if (EXTRA_POKEDEX_IDS[directKey]) {
+    return EXTRA_POKEDEX_IDS[directKey];
+  }
+  if (EXTRA_POKEDEX_IDS[cleanName]) {
+    return EXTRA_POKEDEX_IDS[cleanName];
   }
 
   const rankings = getPokemonRankings();

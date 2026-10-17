@@ -7,7 +7,7 @@ import {
   EyeOff, Search, Edit, Database, Upload, RefreshCw, Server,
   Image, PackageOpen, ChevronDown, ChevronUp, X, FileJson, Zap,
   Star, Egg, Swords, Gift, Download, FileText, Sparkles, ExternalLink,
-  Share2, Send, Copy, Check, Filter, Calendar, RotateCcw
+  Share2, Send, Copy, Check, Filter, Calendar, RotateCcw, Users
 } from 'lucide-react';
 import { EventCard } from './EventCard';
 import type { EventData } from './EventCard';
@@ -511,7 +511,7 @@ const generateSocialCaption = (event: EventData, lang: Language): string => {
 // Main AdminPanelView component
 // ============================================================
 
-type AdminTab = 'events' | 'raids' | 'social' | 'icons' | 'scraper' | 'import' | 'cache';
+type AdminTab = 'events' | 'raids' | 'friends' | 'social' | 'icons' | 'scraper' | 'import' | 'cache';
 
 export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -528,6 +528,14 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   const [raidsLoading, setRaidsLoading] = useState<boolean>(false);
   const [raidsRefreshing, setRaidsRefreshing] = useState<boolean>(false);
   const [raidMsg, setRaidMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Friends management state
+  const [adminFriendsList, setAdminFriendsList] = useState<any[]>([]);
+  const [friendsLoading, setFriendsLoading] = useState<boolean>(false);
+  const [friendsSearchQuery, setFriendsSearchQuery] = useState<string>('');
+  const [friendsGcsStatus, setFriendsGcsStatus] = useState<any>(null);
+  const [friendsMsg, setFriendsMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const friendsFileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Add Custom Raid modal state
   const [showRaidModal, setShowRaidModal] = useState<boolean>(false);
@@ -738,21 +746,115 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     }
   }, [token]);
 
+  const fetchAdminFriends = useCallback(async () => {
+    if (!token) return;
+    setFriendsLoading(true);
+    try {
+      const res = await apiFetch('/api/admin/friends', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAdminFriendsList(data.listings || []);
+        if (data.gcsStatus) setFriendsGcsStatus(data.gcsStatus);
+      }
+    } catch (err: any) {
+      setFriendsMsg({ type: 'error', text: err.message });
+    } finally {
+      setFriendsLoading(false);
+    }
+  }, [token]);
+
+  const handleDeleteAdminFriend = async (trainerCode: string) => {
+    const clean = trainerCode.replace(/\D/g, '');
+    try {
+      const res = await apiFetch(`/api/admin/friends/${clean}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setAdminFriendsList(data.listings || []);
+        setFriendsMsg({
+          type: 'success',
+          text: lang === 'cs' ? `Kód ${trainerCode} byl smazán.` : `Trainer code ${trainerCode} deleted.`
+        });
+      } else {
+        setFriendsMsg({ type: 'error', text: data.error || 'Failed to delete friend code' });
+      }
+    } catch (err: any) {
+      setFriendsMsg({ type: 'error', text: err.message });
+    }
+  };
+
+  const handleExportFriendsJson = () => {
+    const dateStr = new Date().toISOString().split('T')[0];
+    const blob = new Blob([JSON.stringify({ exportedAt: new Date().toISOString(), total: adminFriendsList.length, listings: adminFriendsList }, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pogo-friends-backup-${dateStr}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportFriendsJson = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setFriendsMsg(null);
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const listingsToImport = Array.isArray(parsed) ? parsed : (Array.isArray(parsed?.listings) ? parsed.listings : null);
+      if (!listingsToImport) {
+        setFriendsMsg({ type: 'error', text: lang === 'cs' ? 'Neplatný JSON formát pro Friend kódy.' : 'Invalid JSON format for Friend codes.' });
+        return;
+      }
+      const res = await apiFetch('/api/admin/friends/import', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ listings: listingsToImport, mode: 'merge' })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setAdminFriendsList(data.listings || []);
+        if (data.gcsStatus) setFriendsGcsStatus(data.gcsStatus);
+        setFriendsMsg({
+          type: 'success',
+          text: lang === 'cs'
+            ? `Úspěšně nahráno! Přidáno ${data.added} nových kódů (celkem ${data.total} v cloudu).`
+            : `Imported successfully! Added ${data.added} new codes (${data.total} total in cloud).`
+        });
+      } else {
+        setFriendsMsg({ type: 'error', text: data.error || 'Import failed' });
+      }
+    } catch (err: any) {
+      setFriendsMsg({ type: 'error', text: err.message });
+    } finally {
+      if (friendsFileInputRef.current) friendsFileInputRef.current.value = '';
+    }
+  };
+
   useEffect(() => {
     if (isLoggedIn) {
       fetchScraperStatus();
       fetchCacheStats();
       fetchIconOverrides();
       fetchRaidData();
+      fetchAdminFriends();
     }
-  }, [isLoggedIn, fetchScraperStatus, fetchCacheStats, fetchIconOverrides, fetchRaidData]);
+  }, [isLoggedIn, fetchScraperStatus, fetchCacheStats, fetchIconOverrides, fetchRaidData, fetchAdminFriends]);
 
   useEffect(() => {
     if (adminTab === 'scraper' && isLoggedIn) fetchScraperStatus();
     if (adminTab === 'cache' && isLoggedIn) fetchCacheStats();
     if (adminTab === 'icons' && isLoggedIn) fetchIconOverrides();
     if (adminTab === 'raids' && isLoggedIn) fetchRaidData();
-  }, [adminTab, isLoggedIn, fetchScraperStatus, fetchCacheStats, fetchIconOverrides, fetchRaidData]);
+    if (adminTab === 'friends' && isLoggedIn) fetchAdminFriends();
+  }, [adminTab, isLoggedIn, fetchScraperStatus, fetchCacheStats, fetchIconOverrides, fetchRaidData, fetchAdminFriends]);
 
   const handleRefreshRaids = async () => {
     setRaidsRefreshing(true);
@@ -1538,6 +1640,9 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
         </button>
         <button className={`admin-nav-btn ${adminTab === 'raids' ? 'active' : ''}`} onClick={() => setAdminTab('raids')}>
           <Swords size={15} />{lang === 'cs' ? 'Správa Raidů' : 'Raid Bosses'}
+        </button>
+        <button className={`admin-nav-btn ${adminTab === 'friends' ? 'active' : ''}`} onClick={() => setAdminTab('friends')}>
+          <Users size={15} />{lang === 'cs' ? 'Friend Kódy' : 'Friend Codes'}
         </button>
         <button className={`admin-nav-btn ${adminTab === 'social' ? 'active' : ''}`} onClick={() => setAdminTab('social')}>
           <Share2 size={15} />{lang === 'cs' ? 'TikTok & IG Hub' : 'TikTok & IG Hub'}
@@ -3156,11 +3261,184 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
         </div>
       )}
 
+      {/* ===== TAB: FRIENDS ===== */}
+      {adminTab === 'friends' && (
+        <div className="admin-raids-layout" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.03)', padding: '16px 20px', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '1.2rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Users size={20} style={{ color: '#38bdf8' }} />
+                {lang === 'cs' ? 'Správa Friend Kódů & Trvalé GCS Úložiště' : 'Friend Codes & Persistent GCS Storage'}
+                <span style={{ fontSize: '0.78rem', background: 'rgba(56, 189, 248, 0.2)', color: '#38bdf8', padding: '2px 10px', borderRadius: '12px' }}>
+                  {adminFriendsList.length}
+                </span>
+              </h2>
+              <p style={{ margin: '4px 0 0 0', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                {lang === 'cs'
+                  ? 'Přehled všech trvale uložených Friend kódů v Google Cloud Storage, možnost mazání a JSON zálohování.'
+                  : 'Overview of all permanently stored Friend codes in Google Cloud Storage, moderation, and JSON backup/restore.'}
+              </p>
+              {friendsGcsStatus && (
+                <div style={{ marginTop: '8px', display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.78rem' }}>
+                  <span style={{
+                    padding: '3px 10px',
+                    borderRadius: '20px',
+                    fontWeight: 700,
+                    background: friendsGcsStatus.enabled ? 'rgba(34, 197, 94, 0.15)' : 'rgba(250, 204, 21, 0.15)',
+                    color: friendsGcsStatus.enabled ? '#4ade80' : '#facc15',
+                    border: `1px solid ${friendsGcsStatus.enabled ? 'rgba(34, 197, 94, 0.35)' : 'rgba(250, 204, 21, 0.35)'}`
+                  }}>
+                    {friendsGcsStatus.enabled
+                      ? (lang === 'cs' ? `☁️ GCS Aktivní (${friendsGcsStatus.bucketName || 'bucket'})` : `☁️ GCS Active (${friendsGcsStatus.bucketName || 'bucket'})`)
+                      : (lang === 'cs' ? '💾 Lokální diskový režim (Dev)' : '💾 Local Disk Mode (Dev)')}
+                  </span>
+                  {friendsGcsStatus.lastSyncAt && (
+                    <span style={{ color: 'var(--text-muted)' }}>
+                      Sync: {new Date(friendsGcsStatus.lastSyncAt).toLocaleTimeString()}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <input
+                ref={friendsFileInputRef}
+                type="file"
+                accept=".json"
+                style={{ display: 'none' }}
+                onChange={handleImportFriendsJson}
+              />
+              <button
+                className="admin-btn btn-secondary"
+                onClick={fetchAdminFriends}
+                disabled={friendsLoading}
+              >
+                <RefreshCw size={15} className={friendsLoading ? 'spin' : ''} />
+                {lang === 'cs' ? 'Obnovit z Cloudu' : 'Sync from Cloud'}
+              </button>
+              <button
+                className="admin-btn btn-secondary"
+                onClick={handleExportFriendsJson}
+                disabled={adminFriendsList.length === 0}
+              >
+                <Download size={15} />
+                {lang === 'cs' ? 'Export JSON Zálohy' : 'Export JSON Backup'}
+              </button>
+              <button
+                className="admin-btn btn-primary"
+                onClick={() => friendsFileInputRef.current?.click()}
+              >
+                <Upload size={15} />
+                {lang === 'cs' ? 'Import JSON Zálohy' : 'Import JSON Backup'}
+              </button>
+            </div>
+          </div>
+
+          {friendsMsg && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 16px',
+              borderRadius: '12px',
+              background: friendsMsg.type === 'success' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+              border: friendsMsg.type === 'success' ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)',
+              color: friendsMsg.type === 'success' ? '#4ade80' : '#f87171',
+              fontSize: '0.85rem'
+            }}>
+              {friendsMsg.type === 'success' ? <CheckCircle size={16} /> : <AlertTriangle size={16} />}
+              <span>{friendsMsg.text}</span>
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+            <input
+              type="text"
+              placeholder={lang === 'cs' ? 'Hledat podle jména trenéra, kódu, země nebo Vivillona...' : 'Search by trainer name, code, country, or Vivillon...'}
+              value={friendsSearchQuery}
+              onChange={(e) => setFriendsSearchQuery(e.target.value)}
+              className="admin-password-input"
+              style={{ maxWidth: '420px' }}
+            />
+          </div>
+
+          {friendsLoading ? (
+            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+              <RefreshCw size={24} className="spin" style={{ margin: '0 auto 12px auto' }} />
+              <p>{lang === 'cs' ? 'Načítám Friend kódy z cloudu...' : 'Loading friend codes from cloud...'}</p>
+            </div>
+          ) : adminFriendsList.length === 0 ? (
+            <div style={{ padding: '24px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', textAlign: 'center', color: 'var(--text-muted)' }}>
+              {lang === 'cs' ? 'V databázi zatím nejsou žádné Friend kódy.' : 'No friend codes in database yet.'}
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: '12px' }}>
+              {adminFriendsList
+                .filter((f: any) => {
+                  if (!friendsSearchQuery.trim()) return true;
+                  const q = friendsSearchQuery.toLowerCase();
+                  return (
+                    f.trainerName?.toLowerCase().includes(q) ||
+                    f.trainerCode?.toLowerCase().includes(q) ||
+                    f.country?.toLowerCase().includes(q) ||
+                    f.vivillonPattern?.toLowerCase().includes(q)
+                  );
+                })
+                .map((item: any) => (
+                  <div
+                    key={item.id || item.trainerCode}
+                    style={{
+                      background: 'rgba(20, 24, 36, 0.8)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '14px',
+                      padding: '14px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+                      <div>
+                        <div style={{ fontWeight: 800, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
+                          {item.trainerName}
+                        </div>
+                        <div style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: '#38bdf8', fontWeight: 700, marginTop: '2px' }}>
+                          {item.trainerCode}
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className="admin-btn btn-danger"
+                        onClick={() => handleDeleteAdminFriend(item.trainerCode)}
+                        style={{ padding: '5px 10px', fontSize: '0.75rem' }}
+                      >
+                        <Trash2 size={13} />
+                        {lang === 'cs' ? 'Smazat' : 'Delete'}
+                      </button>
+                    </div>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      <span>🦋 {item.vivillonPattern}</span>
+                      <span>• 🛡️ {item.team}</span>
+                      {item.country && <span>• 📍 {item.country}</span>}
+                    </div>
+                    {item.note && (
+                      <div style={{ fontSize: '0.76rem', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+                        “{item.note}”
+                      </div>
+                    )}
+                  </div>
+                ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* ===== TAB: CACHE ===== */}
       {adminTab === 'cache' && (
         <div className="admin-cache-panel">
           <div className="cache-stats-card">
-            <h3><Server size={18} />{lang === 'cs' ? 'Statistiky Cache' : 'Cache Statistics'}</h3>
+            <h3><Server size={18} />{lang === 'cs' ? 'Statistiky Cache & Cloud Storage' : 'Cache & Cloud Storage Statistics'}</h3>
             {cacheStats ? (
               <div className="cache-stats-grid">
                 <div className="cache-stat-item">
@@ -3170,6 +3448,18 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
                 <div className="cache-stat-item">
                   <span className="cache-stat-label">{lang === 'cs' ? 'Velikost cache' : 'Cache size'}</span>
                   <span className="cache-stat-val">{cacheStats.cacheSizeKB} KB</span>
+                </div>
+                <div className="cache-stat-item">
+                  <span className="cache-stat-label">{lang === 'cs' ? 'Google Cloud Storage' : 'Google Cloud Storage'}</span>
+                  <span className="cache-stat-val" style={{ color: cacheStats.gcsStatus?.enabled ? '#4ade80' : '#facc15' }}>
+                    {cacheStats.gcsStatus?.enabled
+                      ? `✅ ${cacheStats.gcsStatus.bucketName || 'GCS Active'}`
+                      : (lang === 'cs' ? 'Lokální disk' : 'Local disk')}
+                  </span>
+                </div>
+                <div className="cache-stat-item">
+                  <span className="cache-stat-label">{lang === 'cs' ? 'Uložené Friend kódy' : 'Stored Friend Codes'}</span>
+                  <span className="cache-stat-val">{cacheStats.friendsCount ?? adminFriendsList.length}</span>
                 </div>
                 <div className="cache-stat-item">
                   <span className="cache-stat-label">{lang === 'cs' ? 'Poslední scrape' : 'Last scraped'}</span>

@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import App from '@/App';
 import type { Language } from '@/data/translations';
 import { GUIDES_DATA } from '@/data/guidesData';
+import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
 
 export const revalidate = 3600;
 
@@ -21,6 +22,14 @@ export function generateStaticParams() {
 
 interface PageProps {
   params: Promise<{ lang: Language; guideId: string }>;
+}
+
+function getGuideMarkdownEndpoint(slug: string): string | undefined {
+  if (slug === 'egg-hatching-guide') return 'https://pogoevents.app/api/agent/eggs.md';
+  if (slug === 'field-research-tasks-guide') return 'https://pogoevents.app/api/agent/research.md';
+  if (slug === 'rocket-leaders-giovanni-guide') return 'https://pogoevents.app/api/agent/rocket.md';
+  if (slug === 'raid-battles-counter-guide') return 'https://pogoevents.app/api/agent/raids.md';
+  return undefined;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -42,18 +51,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const subtitle = guide.subtitle[lang] || guide.subtitle.en;
   const canonicalUrl = `https://pogoevents.app/${lang}/guides/${guide.slug}`;
 
+  const ogImageUrl = guide.imageUrl
+    ? (guide.imageUrl.startsWith('http') ? guide.imageUrl : `https://pogoevents.app${guide.imageUrl}`)
+    : 'https://pogoevents.app/logo-banner.jpg';
+
   return {
     title: `${title} | Pokémon GO Guide`,
     description: subtitle,
-    alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        'cs': `https://pogoevents.app/cs/guides/${guide.slug}`,
-        'en': `https://pogoevents.app/en/guides/${guide.slug}`,
-        'ja': `https://pogoevents.app/ja/guides/${guide.slug}`,
-        'ru': `https://pogoevents.app/ru/guides/${guide.slug}`,
-      },
-    },
+    alternates: buildAlternates(lang, `/guides/${guide.slug}`, getGuideMarkdownEndpoint(guide.slug)),
     openGraph: {
       title: `${title} | Pokémon GO Guide`,
       description: subtitle,
@@ -61,7 +66,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       type: 'article',
       images: [
         {
-          url: guide.imageUrl || 'https://pogoevents.app/logo-banner.jpg',
+          url: ogImageUrl,
           width: 1200,
           height: 630,
           alt: title,
@@ -95,6 +100,12 @@ export default async function IndividualGuidePage({ params }: PageProps) {
     }
   }));
 
+  const ogImageUrl = guide.imageUrl
+    ? (guide.imageUrl.startsWith('http') ? guide.imageUrl : `https://pogoevents.app${guide.imageUrl}`)
+    : 'https://pogoevents.app/logo-banner.jpg';
+
+  const isoDate = guide.updatedAt ? `${guide.updatedAt}T12:00:00Z` : '2026-04-01T12:00:00Z';
+
   const jsonLdGraph = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -102,9 +113,11 @@ export default async function IndividualGuidePage({ params }: PageProps) {
         '@type': 'Article',
         headline: title,
         description: guide.subtitle[lang] || guide.subtitle.en,
-        image: guide.imageUrl || 'https://pogoevents.app/logo-banner.jpg',
+        image: ogImageUrl,
         url: canonicalUrl,
-        dateModified: guide.updatedAt ? `${guide.updatedAt}T12:00:00Z` : undefined,
+        datePublished: isoDate,
+        dateModified: isoDate,
+        inLanguage: lang,
         author: {
           '@type': 'Organization',
           name: 'Pokémon GO Event Tracker',
@@ -115,7 +128,7 @@ export default async function IndividualGuidePage({ params }: PageProps) {
           name: 'Pokémon GO Event Tracker',
           logo: {
             '@type': 'ImageObject',
-            url: 'https://pogoevents.app/logo-1080.png'
+            url: 'https://pogoevents.app/logo-icon-1080.png'
           }
         },
         mainEntityOfPage: canonicalUrl,
@@ -130,13 +143,13 @@ export default async function IndividualGuidePage({ params }: PageProps) {
           {
             '@type': 'ListItem',
             position: 1,
-            name: 'Home',
+            name: getBreadcrumbLabel('home', lang),
             item: `https://pogoevents.app/${lang}`
           },
           {
             '@type': 'ListItem',
             position: 2,
-            name: 'Guides',
+            name: getBreadcrumbLabel('guides', lang),
             item: `https://pogoevents.app/${lang}/guides`
           },
           {

@@ -119,15 +119,55 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
     }
   }, [showPostModal, showQrModal]);
 
-  // Fetch live active friends from backend with automatic local cache backup & client hydration
+  // Helper to get or generate a persistent client owner token for managing own listing
+  const getOrCreateOwnerToken = (): string => {
+    try {
+      let token = localStorage.getItem('pogo_my_owner_token');
+      if (!token || token.length < 8) {
+        token = `owner-${Date.now()}-${Math.random().toString(36).substring(2, 12)}`;
+        localStorage.setItem('pogo_my_owner_token', token);
+      }
+      return token;
+    } catch {
+      return `owner-${Date.now()}`;
+    }
+  };
+
+  // Deduplicate and merge listings by 12-digit trainer code (preserving newest entry)
+  const mergeClientListings = (primary: FriendListing[], secondary: FriendListing[]): FriendListing[] => {
+    const map = new Map<string, FriendListing>();
+    for (const list of [primary, secondary]) {
+      if (!Array.isArray(list)) continue;
+      for (const item of list) {
+        if (!item || !item.trainerCode || item.id?.startsWith('seed-')) continue;
+        const digits = item.trainerCode.replace(/\D/g, '');
+        if (digits.length !== 12) continue;
+        const existing = map.get(digits);
+        if (!existing || (item.createdAt || 0) >= (existing.createdAt || 0)) {
+          map.set(digits, item);
+        }
+      }
+    }
+    return Array.from(map.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  };
+
+  // Fetch live active friends from backend with automatic local cache backup & self-healing sync
   useEffect(() => {
     setHasMounted(true);
 
-    // Read stored user's trainer code from localStorage post-mount
+    let storedMyCode: string | null = null;
+    let storedMyProfile: FriendListing | null = null;
+    let localCachedList: FriendListing[] = [];
+
+    // Read stored user's trainer code & profile from localStorage post-mount
     try {
-      const storedCode = localStorage.getItem('pogo_my_trainer_code');
-      if (storedCode) {
-        setMyTrainerCode(storedCode);
+      storedMyCode = localStorage.getItem('pogo_my_trainer_code');
+      if (storedCodeIsValid(storedMyCode)) {
+        setMyTrainerCode(storedMyCode);
+      }
+      const rawProfile = localStorage.getItem('pogo_my_trainer_profile');
+      if (rawProfile) {
+        storedMyProfile = JSON.parse(rawProfile);
       }
     } catch {}
 
@@ -137,11 +177,17 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
       if (cached) {
         const parsed = JSON.parse(cached);
         if (Array.isArray(parsed)) {
-          const realOnly = parsed.filter((l: any) => !l.id?.startsWith('seed-'));
-          setListings(realOnly);
+          localCachedList = parsed.filter((l: any) => !l.id?.startsWith('seed-'));
+          if (localCachedList.length > 0) {
+            setListings(localCachedList);
+          }
         }
       }
     } catch {}
+
+    function storedCodeIsValid(code: string | null): code is string {
+      return Boolean(code && code.replace(/\D/g, '').length === 12);
+    }
 
     let isMounted = true;
     const fetchFriends = async () => {
@@ -151,11 +197,61 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
         if (res.ok) {
           const data = await res.json();
           if (isMounted && data.listings && Array.isArray(data.listings)) {
-            const realOnly = data.listings.filter((l: any) => !l.id?.startsWith('seed-'));
-            setListings(realOnly);
+            const serverList: FriendListing[] = data.listings.filter((l: any) => !l.id?.startsWith('seed-'));
+            const serverCodes = new Set(serverList.map(l => l.trainerCode.replace(/\D/g, '')));
+
+            // Identify if user's own code or offline-submitted codes are missing on server and auto-sync them
+            const myCleanDigits = storedMyCode ? storedMyCode.replace(/\D/g, '') : '';
+            const myLocalListing =
+              storedMyProfile ||
+              (myCleanDigits ? localCachedList.find(l => l.trainerCode.replace(/\D/g, '') === myCleanDigits) || null : null);
+
+            const codesToRecover: FriendListing[] = [];
+            if (myLocalListing && !serverCodes.has(myLocalListing.trainerCode.replace(/\D/g, ''))) {
+              codesToRecover.push(myLocalListing);
+            }
+            for (const item of localCachedList) {
+              const digits = item.trainerCode.replace(/\D/g, '');
+              if (item.id?.startsWith('local-') && !serverCodes.has(digits) && !codesToRecover.some(c => c.trainerCode.replace(/\D/g, '') === digits)) {
+                codesToRecover.push(item);
+              }
+            }
+
+            // Protect non-empty local cache if server temporarily returned empty
+            const mergedList = mergeClientListings(serverList, codesToRecover.length > 0 ? codesToRecover : (serverList.length === 0 ? localCachedList : []));
+            setListings(mergedList);
             try {
-              localStorage.setItem('pogo_cached_friend_listings', JSON.stringify(realOnly));
+              localStorage.setItem('pogo_cached_friend_listings', JSON.stringify(mergedList));
             } catch {}
+
+            // Background auto-sync missing own/offline listings back to server so they persist in GCS
+            if (codesToRecover.length > 0) {
+              const ownerToken = getOrCreateOwnerToken();
+              for (const recoverItem of codesToRecover) {
+                try {
+                  const syncRes = await apiFetch('/api/friends', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      trainerCode: recoverItem.trainerCode,
+                      trainerName: recoverItem.trainerName,
+                      vivillonPattern: recoverItem.vivillonPattern,
+                      team: recoverItem.team,
+                      purpose: recoverItem.purpose,
+                      country: recoverItem.country || '',
+                      note: recoverItem.note || '',
+                      ownerToken
+                    })
+                  });
+                  if (syncRes.ok) {
+                    const syncJson = await syncRes.json();
+                    if (syncJson.ownerToken) {
+                      try { localStorage.setItem('pogo_my_owner_token', syncJson.ownerToken); } catch {}
+                    }
+                  }
+                } catch {}
+              }
+            }
           }
         }
       } catch (err) {
@@ -211,8 +307,12 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
       return;
     }
     const clean = codeToDelete.replace(/\D/g, '');
+    const ownerToken = getOrCreateOwnerToken();
     try {
-      await apiFetch(`/api/friends/${clean}`, { method: 'DELETE' });
+      await apiFetch(`/api/friends/${clean}?ownerToken=${encodeURIComponent(ownerToken)}`, {
+        method: 'DELETE',
+        headers: { 'x-owner-token': ownerToken }
+      });
     } catch (err) {
       console.warn('Failed to delete on server:', err);
     }
@@ -226,6 +326,7 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
     setMyTrainerCode(null);
     try {
       localStorage.removeItem('pogo_my_trainer_code');
+      localStorage.removeItem('pogo_my_trainer_profile');
     } catch {}
     setToastMessage(t.friends_delete_success || 'Váš kód byl úspěšně odstraněn.');
     setTimeout(() => setToastMessage(null), 3000);
@@ -245,7 +346,8 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
       return;
     }
 
-    const formattedCode = formCode.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+    const formattedCode = clean.replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+    const ownerToken = getOrCreateOwnerToken();
     setIsSubmitting(true);
     try {
       const res = await apiFetch('/api/friends', {
@@ -258,13 +360,19 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
           team: formTeam,
           purpose: formPurpose,
           country: formCountry,
-          note: formNote
+          note: formNote,
+          ownerToken
         })
       });
 
       const json = await res.json();
       if (res.ok && json.listing) {
         const newListing: FriendListing = json.listing;
+        if (json.ownerToken) {
+          try {
+            localStorage.setItem('pogo_my_owner_token', json.ownerToken);
+          } catch {}
+        }
         setListings(prev => {
           const filtered = prev.filter(f => f.trainerCode.replace(/\s/g, '') !== clean);
           const updated = [newListing, ...filtered];
@@ -274,10 +382,11 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
           return updated;
         });
 
-        // Remember own code
+        // Remember own code and full profile for self-healing sync
         setMyTrainerCode(newListing.trainerCode);
         try {
           localStorage.setItem('pogo_my_trainer_code', newListing.trainerCode);
+          localStorage.setItem('pogo_my_trainer_profile', JSON.stringify(newListing));
         } catch {}
 
         setShowPostModal(false);
@@ -311,6 +420,7 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
       setMyTrainerCode(localListing.trainerCode);
       try {
         localStorage.setItem('pogo_my_trainer_code', localListing.trainerCode);
+        localStorage.setItem('pogo_my_trainer_profile', JSON.stringify(localListing));
       } catch {}
 
       setShowPostModal(false);

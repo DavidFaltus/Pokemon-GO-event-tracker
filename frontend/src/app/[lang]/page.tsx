@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import App from '@/App';
 import type { Language } from '@/data/translations';
+import { buildAlternates } from '@/utils/seoHelper';
+import { API_BASE_URL } from '@/config';
 
 export const revalidate = 300;
 
@@ -41,15 +43,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: titles[lang] || titles.en,
     description: descriptions[lang] || descriptions.en,
-    alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        'cs': `https://pogoevents.app/cs`,
-        'en': `https://pogoevents.app/en`,
-        'ja': `https://pogoevents.app/ja`,
-        'ru': `https://pogoevents.app/ru`,
-      },
-    },
+    alternates: buildAlternates(lang, '', 'https://pogoevents.app/api/agent/events.md'),
     openGraph: {
       title: titles[lang] || titles.en,
       description: descriptions[lang] || descriptions.en,
@@ -58,8 +52,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   };
 }
-
-import { API_BASE_URL } from '@/config';
 
 async function getInitialEvents() {
   try {

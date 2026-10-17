@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import Link from 'next/link';
 import { createPortal } from 'react-dom';
 import './GuidesView.css';
 import { GUIDES_DATA } from '../data/guidesData';
@@ -27,7 +28,16 @@ import {
   MEGA_ICON_URL,
   handleMegaIconError
 } from '../utils/imageResolver';
+import { getPokemonName } from '../utils/pokemonTranslator';
+import { 
+  TRAINER_LEVELS_DATA, 
+  PLATINUM_MEDALS_GUIDE, 
+  type TrainerLevelItem, 
+  type PlatinumMedalStrategyItem 
+} from '../data/trainerLevelsData';
 import { VIVILLON_PATTERNS, getVivillonSpriteUrl } from './FriendFinderView';
+import { DittoEggsView } from './DittoEggsView';
+import { FieldResearchView } from './FieldResearchView';
 import { 
   BookOpen, 
   Search, 
@@ -56,7 +66,14 @@ import {
   RotateCw,
   MapPin,
   X,
-  ZoomIn
+  ZoomIn,
+  CheckSquare,
+  Square,
+  ListChecks,
+  ChevronDown,
+  ChevronUp,
+  RefreshCw,
+  Gift
 } from 'lucide-react';
 
 interface GuidesViewProps {
@@ -481,22 +498,94 @@ const EVOLUTION_QUEST_ITEMS = [
     badge: '15 km Baby Walk'
   },
   {
+    base: 'Bonsly',
+    evolved: 'Sudowoodo',
+    category: 'walk',
+    task: { 
+      cs: 'Ujít 15 km jako Buddy Pokémon (50 Candy)', 
+      en: 'Walk 15 km as Buddy Pokémon (50 Candy)', 
+      ja: '相棒にして15km歩く（アメ50個）', 
+      ru: 'Пройти 15 км с бадди (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Baby Pokémon z vajec – vyžaduje nachození 15 km jako aktivní Buddy před odemčením tlačítka Evolve.', 
+      en: 'Baby Pokémon hatched from eggs — requires 15 km of buddy walking to unlock evolution.',
+      ja: 'タマゴ孵化のベイビィポケモン。進化ボタン解放には相棒として15km歩く必要があります。',
+      ru: 'Малыш из яйца — требует пройти 15 км в качестве напарника для разблокировки эволюции.'
+    },
+    badge: '15 km Baby Walk'
+  },
+  {
+    base: 'Mime Jr.',
+    evolved: 'Mr. Mime',
+    category: 'walk',
+    task: { 
+      cs: 'Ujít 15 km jako Buddy Pokémon (50 Candy)', 
+      en: 'Walk 15 km as Buddy Pokémon (50 Candy)', 
+      ja: '相棒にして15km歩く（アメ50個）', 
+      ru: 'Пройти 15 км с бадди (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Evropský regionální baby Pokémon z 5km vajec – vyžaduje 15 km chůze s buddym před evolucí.', 
+      en: 'European regional baby Pokémon from 5km eggs — requires walking 15 km as buddy to evolve.',
+      ja: '欧州限定タマゴから生まれるベイビィポケモン。進化には相棒歩行15kmが必要です。',
+      ru: 'Европейский региональный малыш из 5км яиц — требует пройти 15 км с напарником.'
+    },
+    badge: '15 km Baby Walk'
+  },
+  {
+    base: 'Eevee',
+    evolved: 'Espeon',
+    category: 'walk',
+    task: { 
+      cs: 'Ujít 10 km jako Buddy + Vyvinout VE DNE ☀️ jako Buddy (25 Candy)', 
+      en: 'Walk 10 km as Buddy + Evolve during DAYTIME ☀️ while set as Buddy (25 Candy)', 
+      ja: '相棒にして10km歩く＋相棒のまま「昼」に進化（アメ25個）', 
+      ru: 'Пройти 10 км с бадди + эволюция ДНЕМ ☀️, оставаясь напарником (25 конфет)' 
+    },
+    tip: { 
+      cs: 'POZOR: Po 10 km nesundávejte Eevee z pozice Buddyho! Tlačítko musí ukazovat siluetu Espeona. Name trick: Sakura.', 
+      en: 'CRITICAL: Keep Eevee as active Buddy when evolving! Silhouette must show Espeon. Name trick: Sakura.',
+      ja: '注意：10km歩いた後、相棒を解除せずに進化させてください（シルエット確認必須）。裏技名：Sakura',
+      ru: 'ВАЖНО: Не снимайте Eevee с напарника! Кнопка должна показывать силуэт Espeon. Трюк с именем: Sakura.'
+    },
+    badge: '10 km + Day ☀️'
+  },
+  {
+    base: 'Eevee',
+    evolved: 'Umbreon',
+    category: 'walk',
+    task: { 
+      cs: 'Ujít 10 km jako Buddy + Vyvinout V NOCI 🌙 jako Buddy (25 Candy)', 
+      en: 'Walk 10 km as Buddy + Evolve during NIGHTTIME 🌙 while set as Buddy (25 Candy)', 
+      ja: '相棒にして10km歩く＋相棒のまま「夜」に進化（アメ25個）', 
+      ru: 'Пройти 10 км с бадди + эволюция НОЧЬЮ 🌙, оставаясь напарником (25 конфет)' 
+    },
+    tip: { 
+      cs: 'POZOR: Vyvíjejte v noci na herní mapě a nevyměňujte Buddyho. Tlačítko musí ukazovat siluetu Umbreona. Name trick: Tamao.', 
+      en: 'CRITICAL: Evolve at night in-game while still active Buddy. Silhouette must show Umbreon. Name trick: Tamao.',
+      ja: '注意：夜間のマップで相棒のまま進化させてください（シルエット確認必須）。裏技名：Tamao',
+      ru: 'ВАЖНО: Эволюционируйте ночью в игре, не снимая с напарника. Силуэт должен быть Umbreon. Трюк с именем: Tamao.'
+    },
+    badge: '10 km + Night 🌙'
+  },
+  {
     base: 'Eevee',
     evolved: 'Sylveon',
     category: 'buddy',
     task: { 
-      cs: 'Sylveon (70 srdcí), Espeon/Umbreon (10 km + Den/Noc), Leafeon/Glaceon (Lure Moduly)', 
-      en: 'Sylveon (70 hearts), Espeon/Umbreon (10 km + Day/Night), Leafeon/Glaceon (Lure Modules)', 
-      ja: 'ニンフィア（ハート70個）、エーフィ/ブラッキー（10km＋昼/夜）、リーフィア/グレイシア（ルアー）', 
-      ru: 'Sylveon (70 сердец), Espeon/Umbreon (10км + день/ночь), Leafeon/Glaceon (Lure)' 
+      cs: 'Získat 70 srdíček jako Buddy Pokémon (25 Candy)', 
+      en: 'Earn 70 Hearts as Buddy Pokémon (25 Candy)', 
+      ja: '相棒にしてハートを70個獲得（アメ25個）', 
+      ru: 'Заработать 70 сердец с напарником (25 конфет)' 
     },
     tip: { 
-      cs: 'Jednorázové triky se jmény: Kira ➔ Sylveon, Sakura ➔ Espeon, Tamao ➔ Umbreon, Linnea ➔ Leafeon, Rea ➔ Glaceon.', 
-      en: 'One-time name tricks: Kira (Sylveon), Sakura (Espeon), Tamao (Umbreon), Linnea (Leafeon), Rea (Glaceon).',
-      ja: '初回限定名前裏技：Kira（ニンフィア）、Sakura（エーフィ）、Tamao（ブラッキー）、Linnea（リーフィア）、Rea（グレイシア）',
-      ru: 'Одноразовые имена: Kira (Sylveon), Sakura (Espeon), Tamao (Umbreon), Linnea (Leafeon), Rea (Glaceon).'
+      cs: 'Použijte Poffin pro zisk až 26 srdcí za jeden den. Jednorázový Name Trick: přejmenujte Eevee na "Kira"!', 
+      en: 'Feed Poffins to earn up to 26 hearts per day. One-time Name Trick: rename Eevee to "Kira"!',
+      ja: 'ポフィンを使えば1日最大26個獲得可能。初回限定裏技名：「Kira」に改名！',
+      ru: 'Используйте Poffin для получения до 26 сердец в день. Имя раз в жизни: "Kira"!'
     },
-    badge: 'Eeveelutions'
+    badge: '70 Buddy Hearts'
   },
   {
     base: 'Inkay',
@@ -623,6 +712,132 @@ const EVOLUTION_QUEST_ITEMS = [
       ru: 'Подключите игру к Nintendo Switch для получения мешка с монетами и Golden Lure.'
     },
     badge: '999 Coins 🪙'
+  },
+  {
+    base: 'Eevee',
+    evolved: 'Vaporeon',
+    category: 'special',
+    task: { 
+      cs: 'Náhodná 33% evoluce na Vaporeona, Jolteona nebo Flareona (25 Candy)', 
+      en: 'Random 33% chance to evolve into Vaporeon, Jolteon, or Flareon (25 Candy)', 
+      ja: 'シャワーズ、サンダース、ブースターへ各33%のランダム進化（アメ25個）', 
+      ru: 'Случайный шанс 33% эволюции в Vaporeon, Jolteon или Flareon (25 конфет)' 
+    },
+    tip: { 
+      cs: 'Tlačítko Evolve ukazuje otazník (?). Jednorázové Name Triky: Rainer (Vaporeon), Sparky (Jolteon), Pyro (Flareon).', 
+      en: 'Evolve button displays a question mark (?). One-time Name Tricks: Rainer (Vaporeon), Sparky (Jolteon), Pyro (Flareon).', 
+      ja: '進化ボタンには「？」が表示されます。初回限定裏技名：Rainer（シャワーズ）、Sparky（サンダース）、Pyro（ブースター）', 
+      ru: 'Кнопка эволюции показывает знак вопроса (?). Одноразовые имена: Rainer (Vaporeon), Sparky (Jolteon), Pyro (Flareon).' 
+    },
+    badge: '33% Random Trio'
+  },
+  {
+    base: 'Tyrunt',
+    evolved: 'Tyrantrum',
+    category: 'special',
+    task: { 
+      cs: 'Vyvinout VE DNE ☀️ (50 Candy)', 
+      en: 'Evolve during DAYTIME ☀️ (50 Candy)', 
+      ja: '「昼」に進化（アメ50個）', 
+      ru: 'Эволюция ДНЕМ ☀️ (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Fosilní dinosaurus vyžaduje denní světlo na herní mapě. V noci je tlačítko evoluce uzamčené.', 
+      en: 'Fossil Pokémon requiring in-game daylight. Evolution button is locked at night.', 
+      ja: 'カセキポケモン。日中のゲーム内マップでのみ進化ボタンが押せます。', 
+      ru: 'Ископаемый покемон, требующий дневного света в игре. Ночью кнопка заблокирована.' 
+    },
+    badge: 'Daytime ☀️'
+  },
+  {
+    base: 'Amaura',
+    evolved: 'Aurorus',
+    category: 'special',
+    task: { 
+      cs: 'Vyvinout V NOCI 🌙 (50 Candy)', 
+      en: 'Evolve during NIGHTTIME 🌙 (50 Candy)', 
+      ja: '「夜」に進化（アメ50個）', 
+      ru: 'Эволюция НОЧЬЮ 🌙 (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Fosilní Pokémon polární záře vyžaduje noční oblohu ve hře. Ve dne je tlačítko evoluce neaktivní.', 
+      en: 'Aurora fossil Pokémon requiring in-game nighttime sky. Inactive during daylight.', 
+      ja: 'オーロラをまとうカセキポケモン。夜間のゲーム内マップでのみ進化可能です。', 
+      ru: 'Ископаемый покемон северного сияния — требует ночного неба в игре.' 
+    },
+    badge: 'Nighttime 🌙'
+  },
+  {
+    base: 'Yungoos',
+    evolved: 'Gumshoos',
+    category: 'special',
+    task: { 
+      cs: 'Vyvinout VE DNE ☀️ (50 Candy)', 
+      en: 'Evolve during DAYTIME ☀️ (50 Candy)', 
+      ja: '「昼」に進化（アメ50個）', 
+      ru: 'Эволюция ДНЕМ ☀️ (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Vyžaduje denní světlo na herní mapě. Klíčový Pokémon pro zkompletování Alola Pokédexu.', 
+      en: 'Requires in-game daylight. Essential for completing the Alola Pokédex.', 
+      ja: 'ゲーム内の昼間にのみ進化可能。アローラ図鑑のコンプリートに必須です。', 
+      ru: 'Требует дневного света в игре. Необходим для завершения Алола Покедекса.' 
+    },
+    badge: 'Daytime ☀️'
+  },
+  {
+    base: 'Fomantis',
+    evolved: 'Lurantis',
+    category: 'special',
+    task: { 
+      cs: 'Vyvinout VE DNE ☀️ (50 Candy)', 
+      en: 'Evolve during DAYTIME ☀️ (50 Candy)', 
+      ja: '「昼」に進化（アメ50個）', 
+      ru: 'Эволюция ДНЕМ ☀️ (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Solární travní Pokémon – evoluce se odemkne výhradně během denních hodin.', 
+      en: 'Solar Grass-type Pokémon — evolution unlocks exclusively during daylight hours.', 
+      ja: '太陽の光を好む草ポケモン。昼間の時間帯にのみ進化ボタンが有効になります。', 
+      ru: 'Солнечный травяной покемон — эволюция разблокируется только в дневное время.' 
+    },
+    badge: 'Daytime ☀️'
+  },
+  {
+    base: 'Wurmple',
+    evolved: 'Silcoon',
+    category: 'special',
+    task: { 
+      cs: 'Náhodná 50/50 evoluce na Silcoona (Beautifly) nebo Cascoona (Dustox) (12 Candy)', 
+      en: 'Random 50/50 evolution into Silcoon (Beautifly) or Cascoon (Dustox) (12 Candy)', 
+      ja: 'カラサリス（アゲハント）またはマユルド（ドクケイル）へ50/50のランダム進化（アメ12個）', 
+      ru: 'Случайная эволюция 50/50 в Silcoon (Beautifly) или Cascoon (Dustox) (12 конфет)' 
+    },
+    tip: { 
+      cs: 'Výsledek je určen skrytou hodnotou (personality value) a nelze jej ovlivnit pohlavím ani počasím. Tlačítko ukazuje otazník (?).', 
+      en: 'Outcome is completely determined by internal server value and cannot be influenced. Shows a question mark (?).', 
+      ja: '内部の性格値によって決まるため性別や天候で操作はできません。ボタンには「？」が表示されます。', 
+      ru: 'Результат определяется скрытым серверным параметром и не зависит от пола или погоды. Кнопка показывает (?).' 
+    },
+    badge: '50/50 Random'
+  },
+  {
+    base: 'Clamperl',
+    evolved: 'Huntail',
+    category: 'special',
+    task: { 
+      cs: 'Náhodná 50/50 evoluce na Huntaila nebo Gorebyss (50 Candy)', 
+      en: 'Random 50/50 evolution into Huntail or Gorebyss (50 Candy)', 
+      ja: 'ハンテールまたはサクラビスへ50/50のランダム進化（アメ50個）', 
+      ru: 'Случайная эволюция 50/50 в Huntail или Gorebyss (50 конфет)' 
+    },
+    tip: { 
+      cs: 'Stejně jako u Wurmple je výsledek 100% náhodný. Tlačítko Evolve zobrazuje otazník (?).', 
+      en: 'Like Wurmple, outcome is strictly 50/50 random. The Evolve button displays a question mark (?).', 
+      ja: 'ケムッソ同様に50%ずつの完全ランダム進化です。進化ボタンには「？」が表示されます。', 
+      ru: 'Как и у Wurmple, результат строго случаен 50/50. Кнопка эволюции показывает знак вопроса (?).' 
+    },
+    badge: '50/50 Random'
   },
   {
     base: 'Kadabra',
@@ -827,6 +1042,47 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
   const [specialBgFilter, setSpecialBgFilter] = useState<'all' | 'global' | 'go-tour' | 'go-fest' | 'city-safari' | 'heritage'>('all');
   const [specialBgSearch, setSpecialBgSearch] = useState('');
 
+  // Trainer Levels Widget State
+  const [trainerTierFilter, setTrainerTierFilter] = useState<'all' | 'tier1' | 'tier2' | 'tier3'>('all');
+  const [trainerSearch, setTrainerSearch] = useState('');
+  const [showPlatinumGuide, setShowPlatinumGuide] = useState(true);
+  const [checkedLevelTasks, setCheckedLevelTasks] = useState<Record<string, boolean>>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('pogo_level_tasks_checked');
+        if (saved) return JSON.parse(saved);
+      } catch (e) {
+        // ignore
+      }
+    }
+    return {};
+  });
+
+  const toggleLevelTask = (taskKey: string) => {
+    setCheckedLevelTasks(prev => {
+      const next = { ...prev, [taskKey]: !prev[taskKey] };
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('pogo_level_tasks_checked', JSON.stringify(next));
+        } catch (e) {
+          // ignore
+        }
+      }
+      return next;
+    });
+  };
+
+  const clearCheckedTasks = () => {
+    setCheckedLevelTasks({});
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('pogo_level_tasks_checked');
+      } catch (e) {
+        // ignore
+      }
+    }
+  };
+
   useEffect(() => {
     if (initialArticleSlug) {
       setSelectedArticleSlug(initialArticleSlug);
@@ -1006,6 +1262,9 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
       case 'Trophy': return <Trophy size={16} />;
       case 'Globe': return <Globe size={16} />;
       case 'MapPin': return <MapPin size={16} />;
+      case 'Clock': return <Clock size={16} />;
+      case 'Target': return <Target size={16} />;
+      case 'Award': return <Award size={16} />;
       default: return <BookOpen size={16} />;
     }
   };
@@ -1087,15 +1346,16 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
 
   const renderPokemonChip = (name: string, isShadow = false, isShiny = false) => {
     const iconUrl = getPokemonIconUrl(name, isShiny);
+    const displayName = getPokemonName(name, lang);
     return (
       <div key={name} className="guide-pokemon-chip">
         <img 
           src={iconUrl} 
-          alt={name} 
+          alt={displayName} 
           onError={(e) => handlePokemonImageError(e.currentTarget, name, isShiny)}
           loading="lazy"
         />
-        <span>{name}</span>
+        <span>{displayName}</span>
         {isShadow && (
           <img 
             src={SHADOW_ICON_URL} 
@@ -2193,64 +2453,16 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
         <div className="guide-pokelid-widget">
           {/* Header Banner */}
           <div className="pokelid-hero-banner">
-            <div className="pokelid-hero-badge">
-              <MapPin size={16} />
-              <span>{lang === 'cs' ? 'Japonská oficiální iniciativa Pokémon Local Acts' : lang === 'ja' ? 'ポケモンローカルActs・全国ポケふた' : lang === 'ru' ? 'Японская официальная инициатива Pokémon Local Acts' : 'Official Japanese Pokémon Local Acts'}</span>
-            </div>
             <h3>{lang === 'cs' ? 'Poké Lid Stamp Rally & Ambasadoři prefektur' : lang === 'ja' ? 'ポケふたスタンプラリー＆推しポケモン名鑑' : lang === 'ru' ? 'Poké Lid Stamp Rally и покемоны-амбассадоры' : 'Poké Lid Stamp Rally & Regional Ambassadors'}</h3>
             <p>
               {lang === 'cs' 
-                ? 'Navštivte skutečné litinové poklopy v Japonsku, sbírejte žlutá razítka v albu Scrapbook a za každé 2 razítka získejte garantovaného Pikachu s lokačním pozadím dané prefektury!' 
+                ? 'Navštivte skutečné litinové poklopy v Japonsku, sbírejte razítka v albu Scrapbook a za každé 2 razítka získejte garantovaného Pikachu s lokačním pozadím dané prefektury!' 
                 : lang === 'ja'
-                ? '実在する世界に1枚のポケふたを巡り、現地スピンで黄色いスタンプを収集。同一県内で2個集めるごとに、限定ロケーション背景付きピカチュウを確定ゲット！'
+                ? '実在する世界に1枚のポケふたを巡り、現地スピンでスタンプを収集。同一県内で2個集めるごとに、限定ロケーション背景付きピカチュウを確定ゲット！'
                 : lang === 'ru'
-                ? 'Посещайте чугунные люки в Японии, собирайте желтые штампы и за каждые 2 штампа получайте гарантированного Пикачу с фоном префектуры!'
-                : 'Explore authentic utility hole covers in Japan, collect Yellow Border stamps in your Scrapbook, and unlock guaranteed Pikachu encounters with exclusive prefectural Location Cards every 2 stamps!'}
+                ? 'Посещайте чугунные люки в Японии, собирайте штампы и за каждые 2 штампа получайте гарантированного Пикачу с фоном префектуры!'
+                : 'Explore authentic utility hole covers in Japan, collect stamps in your Scrapbook, and unlock guaranteed Pikachu encounters with exclusive prefectural Location Cards every 2 stamps!'}
             </p>
-          </div>
-
-          {/* Stamp Distinction Mechanics Box */}
-          <div className="pokelid-stamps-explainer">
-            <div className="stamp-card yellow-stamp-card">
-              <div className="stamp-badge yellow-badge">
-                <span className="stamp-dot yellow-dot" />
-                <strong>{lang === 'cs' ? 'ŽLUTÉ RAZÍTKO (Na místě)' : lang === 'ja' ? '黄色いスタンプ（現地スピン）' : lang === 'ru' ? 'ЖЕЛТЫЙ ШТАМП (Личный визит)' : 'YELLOW STAMP (In-Person)'}</strong>
-              </div>
-              <h4>{lang === 'cs' ? 'Fyzické zatočení v Japonsku' : lang === 'ja' ? '現地でポケストップを直接スピン' : lang === 'ru' ? 'Прокрутка покестопа в Японии' : 'Physical Spin On-Site'}</h4>
-              <p>
-                {lang === 'cs' 
-                  ? 'Získáno POUZE fyzickou přítomností u poklopu v dosahu GPS. POUZE tato razítka se počítají k odměně Pikachu!' 
-                  : lang === 'ja' 
-                  ? '現地のGPS範囲内でスピンした時のみ獲得。ピカチュウの報酬カウントが進むのはこのスタンプだけ！' 
-                  : lang === 'ru' 
-                  ? 'Выдается ТОЛЬКО при личном визите к люку. Только эти штампы продвигают награду Пикачу!' 
-                  : 'Awarded ONLY by physically spinning within GPS range. ONLY Yellow stamps progress Pikachu encounters!'}
-              </p>
-              <div className="stamp-status-pill yellow-pill">
-                <CheckCircle2 size={14} />
-                <span>{lang === 'cs' ? 'Započítává se do odměny (100% platné)' : lang === 'ja' ? 'リワード進行対象（有効）' : lang === 'ru' ? 'Засчитывается в награду' : 'Counts toward reward'}</span>
-              </div>
-            </div>
-
-            <div className="stamp-card blue-stamp-card">
-              <div className="stamp-badge blue-badge">
-                <span className="stamp-dot blue-dot" />
-                <strong>{lang === 'cs' ? 'MODRÉ RAZÍTKO (Dárek od přítele)' : lang === 'ja' ? '青いスタンプ（ギフト受取）' : lang === 'ru' ? 'СИНИЙ ШТАМП (Подарок от друга)' : 'BLUE STAMP (Friend Gift)'}</strong>
-              </div>
-              <h4>{lang === 'cs' ? 'Otevření dárku s pohlednicí' : lang === 'ja' ? 'フレンドから届いたポストカードを開封' : lang === 'ru' ? 'Открытие открытки из подарка' : 'Opening Gift Postcards'}</h4>
-              <p>
-                {lang === 'cs' 
-                  ? 'Získáno z pohlednice od přítele. Slouží jako suvenýr v albu. Počítadlo odměn je 0, ale při budoucí osobní návštěvě se upgraduje na žluté!' 
-                  : lang === 'ja' 
-                  ? 'フレンドのギフトから記録。コレクション用（カウント0）。後日現地へ行けば黄色に自動昇格！' 
-                  : lang === 'ru' 
-                  ? 'Заносится в альбом на память. Не дает прогресса (0), но при личном визите станет желтым!' 
-                  : 'Acquired from friend gifts. Souvenir only (0 progress). Automatically upgrades to Yellow upon future physical visits!'}
-              </p>
-              <div className="stamp-status-pill blue-pill">
-                <span>{lang === 'cs' ? 'Suvenýr (0 bodů do odměny)' : lang === 'ja' ? '記念用（進行カウント0）' : lang === 'ru' ? 'Сувенир (0 в награду)' : 'Souvenir (0 progress)'}</span>
-              </div>
-            </div>
           </div>
 
           {/* Reward Banner */}
@@ -2264,7 +2476,7 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
             </div>
             <div className="reward-callout-text">
               <span className="reward-tag">🎁 {lang === 'cs' ? 'Garantovaná Odměna' : lang === 'ja' ? '確定リワード遭遇' : lang === 'ru' ? 'Гарантированная награда' : 'Guaranteed Encounter'}</span>
-              <h4>{lang === 'cs' ? 'Každá 2 Žlutá Razítka = Pikachu s Lokačním Pozadím' : lang === 'ja' ? '黄色いスタンプ2個ごとに限定背景ピカチュウ確定！' : lang === 'ru' ? 'Каждые 2 желтых штампа = Пикачу с фоном локации' : 'Every 2 Yellow Stamps = Location Background Pikachu'}</h4>
+              <h4>{lang === 'cs' ? 'Každá 2 Razítka = Pikachu s Lokačním Pozadím' : lang === 'ja' ? 'スタンプ2個ごとに限定背景ピカチュウ確定！' : lang === 'ru' ? 'Каждые 2 штампа = Пикачу с фоном локации' : 'Every 2 Stamps = Location Background Pikachu'}</h4>
               <p>
                 {lang === 'cs' 
                   ? 'Střetnutí s Pikachu, který má na obrazovce shrnutí originální umělecké pozadí dané prefektury. Může být Shiny! Opakovatelné bez omezení.' 
@@ -2974,15 +3186,15 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
                 <MapPin size={14} />
                 <span>{lang === 'cs' ? 'Hledáte Poké Lids v Japonsku?' : lang === 'ja' ? '日本のポケふたをお探しの方へ' : lang === 'ru' ? 'Ищете Poké Lids в Японии?' : 'Looking for Poké Lids in Japan?'}</span>
               </div>
-              <h4>{lang === 'cs' ? 'Pokélid (Pokéfuta) Stamp Rally v Japonsku má samostatného průvodce!' : lang === 'ja' ? '全国41都道府県のポケふたスタンプラリーは専用ガイドで徹底解説！' : lang === 'ru' ? 'Для Poké Lid Stamp Rally в Японии есть отдельный гайд!' : 'Poké Lid Stamp Rally in Japan has its own dedicated master guide!'}</h4>
+              <h4>{lang === 'cs' ? 'Pokélid Stamp Rally v Japonsku má samostatného průvodce!' : lang === 'ja' ? '全国41都道府県のポケふたスタンプラリーは専用ガイドで徹底解説！' : lang === 'ru' ? 'Для Poké Lid Stamp Rally в Японии есть отдельный гайд!' : 'Poké Lid Stamp Rally in Japan has its own dedicated master guide!'}</h4>
               <p>
                 {lang === 'cs' 
-                  ? 'Všechny litinové manhole poklopy, žlutá a modrá razítka, 100% pokryté prefektury a postup zisku Pikachu s lokačním pozadím naleznete v samostatném článku.' 
+                  ? 'Všechny litinové manhole poklopy, razítka, 100% pokryté prefektury a postup zisku Pikachu s lokačním pozadím naleznete v samostatném článku.' 
                   : lang === 'ja' 
-                  ? '黄色・青スタンプの違い、全国の推しポケモン、各都道府県の限定背景ピカチュウ入手方法は専用ページをご覧ください。' 
+                  ? '全国の推しポケモン、各都道府県の限定背景ピカチュウ入手方法は専用ページをご覧ください。' 
                   : lang === 'ru' 
-                  ? 'Все о японских люках, желтых и синих штампах и получении Пикачу с фоном префектуры читайте в отдельном руководстве.' 
-                  : 'All cast-iron manhole covers, Yellow vs. Blue border stamps, and prefecture-specific Pikachu encounter mechanics are detailed in our specialized guide.'}
+                  ? 'Все о японских люках, штампах и получении Пикачу с фоном префектуры читайте в отдельном руководстве.' 
+                  : 'All cast-iron manhole covers, stamps, and prefecture-specific Pikachu encounter mechanics are detailed in our specialized guide.'}
               </p>
             </div>
             <div className="callout-action-col">
@@ -3139,6 +3351,652 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
                 <p>{lang === 'cs' ? 'Kdykoliv zdarma. Oba Pokémoni se vrátí do boxu se svými původními pozadími!' : 'Completely free. Both Pokémon return to storage with original backgrounds!'}</p>
               </div>
             </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (slug === 'trainer-level-rewards-tasks-guide') {
+      const tierTabs = [
+        { id: 'all', label: { cs: 'Všechny úrovně 1–80', en: 'All Levels 1–80', ja: '全レベル 1〜80', ru: 'Все уровни 1–80' } },
+        { id: 'tier1', label: { cs: 'Level 1–40', en: 'Level 1–40', ja: 'レベル 1〜40', ru: 'Уровни 1–40' } },
+        { id: 'tier2', label: { cs: 'Level 41–70', en: 'Level 41–70', ja: 'レベル 41〜70', ru: 'Уровни 41–70' } },
+        { id: 'tier3', label: { cs: 'Level 71–80', en: 'Level 71–80', ja: 'レベル 71〜80', ru: 'Уровни 71–80' } },
+      ];
+
+      // Filter levels
+      const filteredLevels = TRAINER_LEVELS_DATA.filter(lvl => {
+        if (trainerTierFilter !== 'all' && lvl.tier !== trainerTierFilter) {
+          return false;
+        }
+
+        if (trainerSearch.trim()) {
+          const q = trainerSearch.toLowerCase().trim();
+          const matchLvl = lvl.level.toString() === q || lvl.level.toString().includes(q);
+          const matchXp = lvl.xpRequired.toString().includes(q) || lvl.totalXp.toString().includes(q);
+          
+          const matchRewards = lvl.rewards.some(r => {
+            const nameCur = (r.name[lang] || r.name.en).toLowerCase();
+            return nameCur.includes(q) || r.type.toLowerCase().includes(q);
+          });
+
+          const matchUnlocks = lvl.unlocks?.some(u => {
+            const titleCur = (u.title[lang] || u.title.en).toLowerCase();
+            const descCur = (u.description[lang] || u.description.en).toLowerCase();
+            return titleCur.includes(q) || descCur.includes(q);
+          });
+
+          const matchTasks = lvl.tasks?.some(t => {
+            const textCur = (t.text[lang] || t.text.en).toLowerCase();
+            const tipCur = t.tip ? (t.tip[lang] || t.tip.en).toLowerCase() : '';
+            return textCur.includes(q) || tipCur.includes(q);
+          });
+
+          if (!matchLvl && !matchXp && !matchRewards && !matchUnlocks && !matchTasks) {
+            return false;
+          }
+        }
+
+        return true;
+      });
+
+      // Calculate task statistics
+      let totalTasksCount = 0;
+      let completedTasksCount = 0;
+      TRAINER_LEVELS_DATA.forEach(lvl => {
+        if (lvl.tasks) {
+          lvl.tasks.forEach((_, tIdx) => {
+            totalTasksCount++;
+            const tKey = `lvl_${lvl.level}_task_${tIdx}`;
+            if (checkedLevelTasks[tKey]) {
+              completedTasksCount++;
+            }
+          });
+        }
+      });
+
+      const getMilestoneBadge = (lvlNum: number) => {
+        if (lvlNum === 40) return { label: { cs: 'První vrchol', en: 'First Cap', ja: '第一の頂点', ru: 'Первый рубеж' }, color: 'milestone-40' };
+        if (lvlNum === 50) return { label: { cs: 'Dřívější maximum', en: 'Legacy Cap', ja: '旧カンスト', ru: 'Старый максимум' }, color: 'milestone-50' };
+        if (lvlNum === 70) return { label: { cs: 'Práh úkolů', en: 'Task Threshold', ja: 'タスク解禁', ru: 'Порог квестов' }, color: 'milestone-70' };
+        if (lvlNum === 80) return { label: { cs: 'Maximální level hry', en: 'Ultimate Master Cap', ja: '究極カンスト', ru: 'Абсолютный максимум' }, color: 'milestone-80' };
+        return null;
+      };
+
+      return (
+        <div className="guide-visual-widget guide-trainer-levels-widget">
+          {/* Top Hero Stats Banner */}
+          <div className="trainer-levels-hero-banner">
+            <div className="trainer-hero-left">
+              <div className="trainer-hero-badge">
+                <Trophy size={20} color="#facc15" />
+                <span>{lang === 'cs' ? 'Oficiální systém úrovní 1–80' : lang === 'ja' ? '公式トレーナーレベル1〜80データ' : lang === 'ru' ? 'Официальная система уровней 1–80' : 'Official Level 1–80 Progression'}</span>
+              </div>
+              <h3 className="trainer-hero-title">
+                {lang === 'cs' ? 'Kompletní přehled XP, odměn a Level-Up úkolů' : lang === 'ja' ? '必要XP・アンロック報酬・昇格タスク完全一覧' : lang === 'ru' ? 'Полный справочник XP, наград и заданий повышения' : 'Complete XP, Rewards & Level-Up Tasks Overview'}
+              </h3>
+              <p className="trainer-hero-desc">
+                {lang === 'cs' 
+                  ? 'Od levelu 1 do 70 postupujete čistě sběrem zkušeností. Závěrečných deset úrovní 71 až 80 vyžaduje kromě XP také splnění 4 náročných úkolů a celkem 50 platinových medailí.'
+                  : lang === 'ja'
+                  ? 'レベル1から70までは純粋な獲得XPのみで進行。最後の壁となるレベル71〜80ではXPに加え各4つの高難度タスクとプラチナメダル50個が必須となります。'
+                  : lang === 'ru'
+                  ? 'С 1 по 70 уровень прокачка идет чисто за счет опыта. Финальные уровни 71–80 требуют выполнения 4 испытаний на каждом шагу и 50 платиновых медалей.'
+                  : 'Levels 1 through 70 progress strictly via cumulative XP. The final ten tiers (71–80) demand 4 rigorous Level-Up tasks each and 50 Platinum medals.'}
+              </p>
+            </div>
+
+            <div className="trainer-hero-stats-grid">
+              <div className="trainer-hero-stat-card">
+                <span className="stat-label">{lang === 'cs' ? 'Celkem na Level 80' : lang === 'ja' ? 'Lv80到達累計XP' : lang === 'ru' ? 'Всего до 80 уровня' : 'Total XP to Level 80'}</span>
+                <span className="stat-value gold-text">203 353 000 XP</span>
+              </div>
+              <div className="trainer-hero-stat-card">
+                <span className="stat-label">{lang === 'cs' ? 'Level-Up úkoly' : lang === 'ja' ? '昇格タスク総数' : lang === 'ru' ? 'Квесты 71–80' : 'Endgame Tasks'}</span>
+                <span className="stat-value cyan-text">40 {lang === 'cs' ? 'úkolů' : lang === 'ja' ? '個' : lang === 'ru' ? 'заданий' : 'tasks'}</span>
+              </div>
+              <div className="trainer-hero-stat-card">
+                <div className="stat-label-row">
+                  <span className="stat-label">{lang === 'cs' ? 'Váš checklist' : lang === 'ja' ? '達成状況' : lang === 'ru' ? 'Ваш прогресс' : 'Checklist Progress'}</span>
+                  {completedTasksCount > 0 && (
+                    <button 
+                      type="button"
+                      className="trainer-reset-btn"
+                      onClick={clearCheckedTasks}
+                      title={lang === 'cs' ? 'Resetovat všechny odškrtnuté úkoly' : 'Reset checklist'}
+                    >
+                      <RefreshCw size={12} />
+                      <span>{lang === 'cs' ? 'Reset' : 'Reset'}</span>
+                    </button>
+                  )}
+                </div>
+                <div className="stat-progress-row">
+                  <span className="stat-value green-text">{completedTasksCount} / {totalTasksCount}</span>
+                  <div className="trainer-progress-bar-bg">
+                    <div 
+                      className="trainer-progress-bar-fill" 
+                      style={{ width: `${(completedTasksCount / (totalTasksCount || 1)) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Platinum Medals Strategy Card */}
+          <div className="platinum-blueprint-card">
+            <div className="platinum-card-header" onClick={() => setShowPlatinumGuide(!showPlatinumGuide)}>
+              <div className="platinum-header-left">
+                <div className="platinum-icon-badge">
+                  <Award size={22} color="#a855f7" />
+                </div>
+                <div>
+                  <h4 className="platinum-title">
+                    {lang === 'cs' ? 'Blueprint pro 50 Platinových medailí' : lang === 'ja' ? 'プラチナメダル50個最速攻略ブループリント' : lang === 'ru' ? 'План получения 50 платиновых медалей' : '50 Platinum Medals Master Blueprint'}
+                  </h4>
+                  <p className="platinum-subtitle">
+                    {lang === 'cs' ? 'Doporučené priority a strategie pro splnění nejtěžší podmínky pro Level 80' : lang === 'ja' ? 'レベル80到達タスクを満たすための最速メダル獲得優先度' : lang === 'ru' ? 'Рекомендуемые приоритеты и тактики для выполнения требования 80 уровня' : 'Recommended priorities and fastest badges for Level 80'}
+                  </p>
+                </div>
+              </div>
+
+              <button type="button" className="platinum-toggle-btn">
+                {showPlatinumGuide ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                <span>{showPlatinumGuide ? (lang === 'cs' ? 'Skrýt přehled' : 'Hide') : (lang === 'cs' ? 'Zobrazit přehled' : 'Expand')}</span>
+              </button>
+            </div>
+
+            {showPlatinumGuide && (
+              <div className="platinum-content-grid">
+                {/* Tier S: Doporučené */}
+                <div className="platinum-tier-column tier-recommended">
+                  <div className="tier-column-header">
+                    <span className="tier-tag tag-s">{lang === 'cs' ? '⚡ Doporučené a rychlé medaile' : lang === 'ja' ? '⚡ 最優先・最速達成メダル' : lang === 'ru' ? '⚡ Рекомендуемые быстрые медали' : '⚡ Recommended Fast Medals'}</span>
+                    <span className="tier-count">6 {lang === 'cs' ? 'kategorií' : 'categories'}</span>
+                  </div>
+                  <div className="medal-items-list">
+                    {PLATINUM_MEDALS_GUIDE.tierS.map((item, idx) => (
+                      <div key={idx} className="medal-item-card">
+                        <div className="medal-item-top">
+                          <strong className="medal-name">{item.name[lang] || item.name.en}</strong>
+                          <span className="medal-speed-chip speed-fast">{item.speed}</span>
+                        </div>
+                        <p className="medal-desc">{item.description[lang] || item.description.en}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tier A: Aktivní grinding */}
+                <div className="platinum-tier-column tier-grind">
+                  <div className="tier-column-header">
+                    <span className="tier-tag tag-a">{lang === 'cs' ? '⚖️ Aktivní grinding medaile' : lang === 'ja' ? '⚖️ 周回推奨アクティブメダル' : lang === 'ru' ? '⚖️ Медали для активного фарма' : '⚖️ Active Grinding Medals'}</span>
+                    <span className="tier-count">5 {lang === 'cs' ? 'kategorií' : 'categories'}</span>
+                  </div>
+                  <div className="medal-items-list">
+                    {PLATINUM_MEDALS_GUIDE.tierA.map((item, idx) => (
+                      <div key={idx} className="medal-item-card">
+                        <div className="medal-item-top">
+                          <strong className="medal-name">{item.name[lang] || item.name.en}</strong>
+                          <span className="medal-speed-chip speed-medium">{item.speed}</span>
+                        </div>
+                        <p className="medal-desc">{item.description[lang] || item.description.en}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Tier Avoid: Vyhnout se */}
+                <div className="platinum-tier-column tier-avoid">
+                  <div className="tier-column-header">
+                    <span className="tier-tag tag-avoid">{lang === 'cs' ? '⛔ Medaile, kterým se vyhnout' : lang === 'ja' ? '⛔ 目標除外推奨メダル' : lang === 'ru' ? '⛔ Медали, которых лучше избегать' : '⛔ Medals to Avoid as Goals'}</span>
+                    <span className="tier-count">5 {lang === 'cs' ? 'kategorií' : 'categories'}</span>
+                  </div>
+                  <div className="medal-items-list">
+                    {PLATINUM_MEDALS_GUIDE.tierAvoid.map((item, idx) => (
+                      <div key={idx} className="medal-item-card">
+                        <div className="medal-item-top">
+                          <strong className="medal-name">{item.name[lang] || item.name.en}</strong>
+                          <span className="medal-speed-chip speed-avoid">{item.speed}</span>
+                        </div>
+                        <p className="medal-desc">{item.description[lang] || item.description.en}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Controls Bar: Tier Tabs & Search */}
+          <div className="trainer-levels-controls-bar">
+            <div className="trainer-tier-tabs">
+              {tierTabs.map(tab => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  className={`trainer-tier-btn ${trainerTierFilter === tab.id ? 'active' : ''}`}
+                  onClick={() => setTrainerTierFilter(tab.id as any)}
+                >
+                  {tab.label[lang] || tab.label.en}
+                  {tab.id === 'tier3' && <span className="tier-task-indicator">{lang === 'cs' ? '40 úkolů' : '40 tasks'}</span>}
+                </button>
+              ))}
+            </div>
+
+            <div className="trainer-search-wrapper">
+              <Search size={15} color="#94a3b8" />
+              <input
+                type="text"
+                placeholder={lang === 'cs' ? 'Hledat úroveň, odměnu, Master Ball, úkol...' : lang === 'ja' ? 'レベル、報酬、マスターボール、タスクを検索...' : lang === 'ru' ? 'Поиск уровня, награды, Master Ball, квеста...' : 'Search level, reward, Master Ball, task...'}
+                value={trainerSearch}
+                onChange={e => setTrainerSearch(e.target.value)}
+              />
+              {trainerSearch && (
+                <button type="button" className="trainer-clear-search" onClick={() => setTrainerSearch('')}>
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Filter results info */}
+          <div className="trainer-results-summary">
+            <span>
+              {lang === 'cs' 
+                ? `Zobrazeno ${filteredLevels.length} z ${TRAINER_LEVELS_DATA.length} úrovní`
+                : lang === 'ja'
+                ? `全${TRAINER_LEVELS_DATA.length}レベル中 ${filteredLevels.length}レベルを表示中`
+                : lang === 'ru'
+                ? `Показано ${filteredLevels.length} из ${TRAINER_LEVELS_DATA.length} уровней`
+                : `Displaying ${filteredLevels.length} of ${TRAINER_LEVELS_DATA.length} levels`}
+            </span>
+          </div>
+
+          {/* Levels Grid List */}
+          <div className="trainer-levels-list">
+            {filteredLevels.map(lvl => {
+              const milestone = getMilestoneBadge(lvl.level);
+              const isEndgame = lvl.level >= 71;
+
+              return (
+                <div 
+                  key={lvl.level} 
+                  id={`trainer-level-${lvl.level}`} 
+                  className={`trainer-level-card ${milestone ? `is-milestone ${milestone.color}` : ''} ${isEndgame ? 'is-endgame-level' : ''}`}
+                >
+                  {/* Card Header */}
+                  <div className="level-card-header">
+                    <div className="level-badge-box">
+                      <span className="level-number-badge">
+                        <span className="lvl-prefix">Lv</span>
+                        <span className="lvl-num">{lvl.level}</span>
+                      </span>
+                      {milestone && (
+                        <span className={`milestone-tag ${milestone.color}`}>
+                          <Sparkles size={12} />
+                          {milestone.label[lang] || milestone.label.en}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="level-xp-metrics">
+                      <div className="xp-metric-item">
+                        <span className="xp-metric-label">{lang === 'cs' ? 'XP pro level' : lang === 'ja' ? '必要XP' : lang === 'ru' ? 'XP для уровня' : 'XP Required'}</span>
+                        <strong className="xp-metric-val">
+                          {lvl.xpRequired === 0 ? (lang === 'cs' ? 'Základní level' : 'Start') : `+${lvl.xpRequired.toLocaleString()} XP`}
+                        </strong>
+                      </div>
+                      <div className="xp-metric-item">
+                        <span className="xp-metric-label">{lang === 'cs' ? 'Celkové kumulativní XP' : lang === 'ja' ? '累計獲得XP' : lang === 'ru' ? 'Всего XP' : 'Total XP'}</span>
+                        <span className="xp-metric-total">{lvl.totalXp.toLocaleString()} XP</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Unlocked Features (if any) */}
+                  {lvl.unlocks && lvl.unlocks.length > 0 && (
+                    <div className="level-section level-unlocks-section">
+                      <div className="section-label-row">
+                        <Sparkles size={14} color="#38bdf8" />
+                        <span className="section-title-label">
+                          {lang === 'cs' ? 'Odemčené herní funkce a předměty' : lang === 'ja' ? '解放される機能・新アイテム' : lang === 'ru' ? 'Открываемые возможности и предметы' : 'Unlocked Features & Items'}
+                        </span>
+                      </div>
+                      <div className="unlocks-chips-grid">
+                        {lvl.unlocks.map((u, uIdx) => (
+                          <div key={uIdx} className="unlock-feature-card">
+                            {u.iconUrl && (
+                              <img src={u.iconUrl} alt={u.title[lang] || u.title.en} className="unlock-feature-icon" loading="lazy" />
+                            )}
+                            <div className="unlock-feature-text">
+                              <strong className="unlock-feature-title">{u.title[lang] || u.title.en}</strong>
+                              <p className="unlock-feature-desc">{u.description[lang] || u.description.en}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Level-Up Tasks (Levels 71–80) */}
+                  {lvl.tasks && lvl.tasks.length > 0 && (
+                    <div className="level-section level-tasks-section">
+                      <div className="section-label-row">
+                        <Target size={14} color="#f59e0b" />
+                        <span className="section-title-label highlight-tasks-title">
+                          {lang === 'cs' ? 'Level-Up úkoly pro postup (Interaktivní checklist)' : lang === 'ja' ? '昇格タスク（タップしてチェック可能）' : lang === 'ru' ? 'Квесты для повышения уровня (Чек-лист)' : 'Level-Up Tasks (Interactive Checklist)'}
+                        </span>
+                      </div>
+                      <div className="tasks-checklist-grid">
+                        {lvl.tasks.map((task, tIdx) => {
+                          const tKey = `lvl_${lvl.level}_task_${tIdx}`;
+                          const isDone = !!checkedLevelTasks[tKey];
+
+                          return (
+                            <div key={tIdx} className={`task-item-card ${isDone ? 'is-completed' : ''}`}>
+                              <div 
+                                className="task-interactive-row"
+                                onClick={() => toggleLevelTask(tKey)}
+                                role="button"
+                                tabIndex={0}
+                              >
+                                <span className={`task-checkbox-icon ${isDone ? 'checked' : ''}`}>
+                                  {isDone ? <CheckSquare size={18} color="#22c55e" /> : <Square size={18} color="#94a3b8" />}
+                                </span>
+                                <span className={`task-text-body ${isDone ? 'done-text' : ''}`}>
+                                  {task.text[lang] || task.text.en}
+                                </span>
+                              </div>
+
+                              {task.tip && (
+                                <div className="task-tip-box">
+                                  <Lightbulb size={13} color="#f59e0b" />
+                                  <span>{task.tip[lang] || task.tip.en}</span>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Level Rewards */}
+                  {lvl.rewards && lvl.rewards.length > 0 && (
+                    <div className="level-section level-rewards-section">
+                      <div className="section-label-row">
+                        <Gift size={14} color="#aa3bff" />
+                        <span className="section-title-label">
+                          {lang === 'cs' ? 'Odměny za dosažení úrovně' : lang === 'ja' ? 'レベル到達報酬' : lang === 'ru' ? 'Награды за уровень' : 'Level-Up Rewards'}
+                        </span>
+                      </div>
+                      <div className="rewards-chips-grid">
+                        {lvl.rewards.map((rw, rwIdx) => (
+                          <div key={rwIdx} className="reward-chip-item">
+                            {rw.iconUrl && (
+                              <img src={rw.iconUrl} alt={rw.name[lang] || rw.name.en} className="reward-chip-img" loading="lazy" />
+                            )}
+                            <span className="reward-qty-badge">×{rw.quantity}</span>
+                            <span className="reward-item-name">{rw.name[lang] || rw.name.en}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      );
+    }
+
+    // Ditto Disguises Live Tracker Widget
+    if (slug === 'ditto-disguises-guide') {
+      return (
+        <div className="guide-visual-widget guide-embedded-view-widget">
+          <DittoEggsView lang={lang} mode="ditto" />
+        </div>
+      );
+    }
+
+    // Egg Hatching Pools Live Tracker Widget
+    if (slug === 'egg-hatching-guide') {
+      return (
+        <div className="guide-visual-widget guide-embedded-view-widget">
+          <DittoEggsView lang={lang} mode="eggs" />
+        </div>
+      );
+    }
+
+    // Field Research Live Tasks & Rewards Matrix Widget
+    if (slug === 'field-research-tasks-guide') {
+      return (
+        <div className="guide-visual-widget guide-embedded-view-widget">
+          <FieldResearchView lang={lang} />
+        </div>
+      );
+    }
+
+    // Extra Stardust Pokémon Tier Overview Widget
+    if (slug === 'extra-stardust-pokemon-guide') {
+      type WeatherKey = 'partly-cloudy' | 'rainy' | 'snow' | 'windy' | 'fog' | 'cloudy' | 'sunny';
+
+      const weatherLabels: Record<WeatherKey, { icon: string; label: Record<Language, string> }> = {
+        'partly-cloudy': {
+          icon: '⛅',
+          label: { cs: 'Polojasno (Partly Cloudy)', en: 'Partly Cloudy', ja: 'ときどき曇り', ru: 'Переменная облачность' }
+        },
+        'rainy': {
+          icon: '🌧️',
+          label: { cs: 'Déšť (Rainy)', en: 'Rainy', ja: '雨', ru: 'Дождь' }
+        },
+        'snow': {
+          icon: '❄️',
+          label: { cs: 'Sníh (Snow)', en: 'Snow', ja: '雪', ru: 'Снег' }
+        },
+        'windy': {
+          icon: '🌬️',
+          label: { cs: 'Větrno (Windy)', en: 'Windy', ja: '強風', ru: 'Ветрено' }
+        },
+        'fog': {
+          icon: '🌫️',
+          label: { cs: 'Mlha (Fog)', en: 'Fog', ja: '霧', ru: 'Туман' }
+        },
+        'cloudy': {
+          icon: '☁️',
+          label: { cs: 'Zataženo (Cloudy)', en: 'Cloudy', ja: '曇り', ru: 'Облачно' }
+        },
+        'sunny': {
+          icon: '☀️',
+          label: { cs: 'Slunečno / Jasno (Sunny)', en: 'Sunny / Clear', ja: '晴天', ru: 'Солнечно / Ясно' }
+        }
+      };
+
+      const stardustTiers: Array<{
+        base: number;
+        weatherBoost: number;
+        starPiece: number;
+        both: number;
+        accentClass: string;
+        pokemon: Array<{ name: string; weather: WeatherKey[] }>;
+      }> = [
+        {
+          base: 2100,
+          weatherBoost: 2625,
+          starPiece: 3150,
+          both: 3938,
+          accentClass: 'tier-2100',
+          pokemon: [
+            { name: 'Audino', weather: ['partly-cloudy'] }
+          ]
+        },
+        {
+          base: 1200,
+          weatherBoost: 1500,
+          starPiece: 1800,
+          both: 2250,
+          accentClass: 'tier-1200',
+          pokemon: [
+            { name: 'Cloyster', weather: ['rainy', 'snow'] }
+          ]
+        },
+        {
+          base: 1000,
+          weatherBoost: 1250,
+          starPiece: 1500,
+          both: 1875,
+          accentClass: 'tier-1000',
+          pokemon: [
+            { name: 'Shellder', weather: ['rainy'] },
+            { name: 'Chimecho', weather: ['windy'] }
+          ]
+        },
+        {
+          base: 950,
+          weatherBoost: 1188,
+          starPiece: 1425,
+          both: 1781,
+          accentClass: 'tier-950',
+          pokemon: [
+            { name: 'Alolan Persian', weather: ['fog'] },
+            { name: 'Starmie', weather: ['rainy', 'windy'] },
+            { name: 'Vespiquen', weather: ['rainy', 'windy'] },
+            { name: 'Garbodor', weather: ['cloudy'] }
+          ]
+        },
+        {
+          base: 750,
+          weatherBoost: 938,
+          starPiece: 1125,
+          both: 1406,
+          accentClass: 'tier-750',
+          pokemon: [
+            { name: 'Alolan Meowth', weather: ['fog'] },
+            { name: 'Staryu', weather: ['rainy'] },
+            { name: 'Sableye', weather: ['fog'] },
+            { name: 'Combee', weather: ['rainy', 'windy'] },
+            { name: 'Trubbish', weather: ['cloudy'] }
+          ]
+        },
+        {
+          base: 700,
+          weatherBoost: 875,
+          starPiece: 1050,
+          both: 1312,
+          accentClass: 'tier-700',
+          pokemon: [
+            { name: 'Parasect', weather: ['sunny', 'rainy'] },
+            { name: 'Persian', weather: ['partly-cloudy'] },
+            { name: 'Breloom', weather: ['sunny', 'cloudy'] },
+            { name: 'Amoonguss', weather: ['sunny', 'cloudy'] },
+            { name: 'Shiinotic', weather: ['sunny', 'cloudy'] }
+          ]
+        },
+        {
+          base: 500,
+          weatherBoost: 625,
+          starPiece: 750,
+          both: 938,
+          accentClass: 'tier-500',
+          pokemon: [
+            { name: 'Paras', weather: ['sunny', 'rainy'] },
+            { name: 'Meowth', weather: ['partly-cloudy'] },
+            { name: 'Delibird', weather: ['snow', 'windy'] },
+            { name: 'Shroomish', weather: ['sunny'] },
+            { name: 'Foongus', weather: ['sunny', 'cloudy'] },
+            { name: 'Morelull', weather: ['sunny', 'cloudy'] }
+          ]
+        }
+      ];
+
+      const colLabels = {
+        base: { cs: 'Základ', en: 'Base', ja: '基本', ru: 'База' },
+        weather: { cs: 'Počasí (+25 %)', en: 'Weather (+25%)', ja: '天候 (+25%)', ru: 'Погода (+25%)' },
+        starPiece: { cs: 'Star Piece (+50 %)', en: 'Star Piece (+50%)', ja: 'かけら (+50%)', ru: 'Star Piece (+50%)' },
+        both: { cs: 'Počasí + Star Piece', en: 'Weather + Star Piece', ja: '天候＋かけら', ru: 'Погода + Star Piece' }
+      };
+
+      return (
+        <div className="guide-visual-widget stardust-tiers-widget">
+          <div className="stardust-tiers-stack">
+            {stardustTiers.map((tier) => (
+              <div key={tier.base} className={`stardust-tier-card ${tier.accentClass}`}>
+                <div className="stardust-tier-header">
+                  <div className="stardust-tier-title-badge">
+                    <Sparkles size={18} />
+                    <span>{tier.base.toLocaleString()} Stardust</span>
+                  </div>
+                  <div className="stardust-tier-summary-pills">
+                    <div className="stardust-stat-pill">
+                      <span className="pill-label">{colLabels.base[lang]}</span>
+                      <strong className="pill-value">{tier.base.toLocaleString()}</strong>
+                    </div>
+                    <div className="stardust-stat-pill">
+                      <span className="pill-label">{colLabels.weather[lang]}</span>
+                      <strong className="pill-value cyan-val">{tier.weatherBoost.toLocaleString()}</strong>
+                    </div>
+                    <div className="stardust-stat-pill">
+                      <span className="pill-label">{colLabels.starPiece[lang]}</span>
+                      <strong className="pill-value purple-val">{tier.starPiece.toLocaleString()}</strong>
+                    </div>
+                    <div className="stardust-stat-pill highlight-both">
+                      <span className="pill-label">{colLabels.both[lang]}</span>
+                      <strong className="pill-value gold-hundo-text">{tier.both.toLocaleString()}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="stardust-pokemon-grid">
+                  {tier.pokemon.map((pkm) => (
+                    <div key={pkm.name} className="stardust-pokemon-item-card">
+                      <div className="stardust-pkm-top">
+                        <div className="stardust-pkm-avatar-wrap">
+                          <img
+                            src={getPokemonIconUrl(pkm.name)}
+                            alt={getPokemonName(pkm.name, lang)}
+                            className="stardust-pkm-avatar"
+                            onError={(e) => handlePokemonImageError(e.currentTarget, pkm.name)}
+                            loading="lazy"
+                          />
+                        </div>
+                        <div className="stardust-pkm-identity">
+                          <strong className="stardust-pkm-name">{getPokemonName(pkm.name, lang)}</strong>
+                          <div className="stardust-weather-badges">
+                            {pkm.weather.map((wKey) => (
+                              <span key={wKey} className={`stardust-weather-chip weather-${wKey}`}>
+                                <span className="weather-emoji">{weatherLabels[wKey].icon}</span>
+                                <span>{weatherLabels[wKey].label[lang]}</span>
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="stardust-pkm-payout-row">
+                        <div className="payout-cell">
+                          <span className="payout-label">{colLabels.base[lang]}</span>
+                          <span className="payout-val">{tier.base.toLocaleString()}</span>
+                        </div>
+                        <div className="payout-cell">
+                          <span className="payout-label">{colLabels.weather[lang]}</span>
+                          <span className="payout-val cyan-val">{tier.weatherBoost.toLocaleString()}</span>
+                        </div>
+                        <div className="payout-cell">
+                          <span className="payout-label">{colLabels.starPiece[lang]}</span>
+                          <span className="payout-val purple-val">{tier.starPiece.toLocaleString()}</span>
+                        </div>
+                        <div className="payout-cell best-cell">
+                          <span className="payout-label">{colLabels.both[lang]}</span>
+                          <span className="payout-val gold-hundo-text">{tier.both.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       );
@@ -3530,7 +4388,15 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
                     {article.category[lang] || article.category.en}
                   </div>
 
-                  <h2>{article.title[lang] || article.title.en}</h2>
+                  <h2>
+                    <Link
+                      href={`/${lang}/guides/${article.slug}`}
+                      onClick={(e) => e.preventDefault()}
+                      style={{ color: 'inherit', textDecoration: 'none' }}
+                    >
+                      {article.title[lang] || article.title.en}
+                    </Link>
+                  </h2>
                   <p>{article.subtitle[lang] || article.subtitle.en}</p>
 
                   <div className="guide-card-meta">

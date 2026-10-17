@@ -167,8 +167,9 @@ export const Footer: React.FC<FooterProps> = ({ lang, onOpenTab, onOpenLegalModa
             <h4>{getTranslation('guides')}</h4>
             <ul>
               <li><Link href={`/${lang}/guides`}><BookOpen size={13} style={{ display: 'inline', marginRight: '4px' }} />{getTranslation('allGuides')}</Link></li>
-              <li><Link href={`/${lang}/guides/team-go-rocket-leaders-counters-guide`}>{getTranslation('guideRocket')}</Link></li>
-              <li><Link href={`/${lang}/guides/raid-boss-counters-and-hundo-iv-guide`}>{getTranslation('guideRaid')}</Link></li>
+              <li><Link href={`/${lang}/guides/rocket-leaders-giovanni-guide`}>{getTranslation('guideRocket')}</Link></li>
+              <li><Link href={`/${lang}/guides/raid-battles-counter-guide`}>{getTranslation('guideRaid')}</Link></li>
+              <li><Link href={`/${lang}/guides/extra-stardust-pokemon-guide`}>{lang === 'cs' ? 'Pokémoni s extra Stardustem' : lang === 'ja' ? 'ほしのすなボーナス一覧' : lang === 'ru' ? 'Покемоны с бонусом пыли' : 'Extra Stardust Pokémon'}</Link></li>
             </ul>
           </div>
 

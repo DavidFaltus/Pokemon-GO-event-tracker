@@ -18,21 +18,21 @@ import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy,
 import { Footer, InstagramLogo, TikTokLogo } from './components/Footer';
 import { LegalModals, type LegalModalType } from './components/LegalModals';
 
-// Lazy-loaded tabs - loaded only when user navigates to them (reduces initial bundle ~40%)
-const RaidView = lazy(() => import('./components/RaidView').then(m => ({ default: m.RaidView })));
-const RocketGuide = lazy(() => import('./components/RocketGuide').then(m => ({ default: m.RocketGuide })));
-const TimelineView = lazy(() => import('./components/TimelineView').then(m => ({ default: m.TimelineView })));
-const DittoEggsView = lazy(() => import('./components/DittoEggsView').then(m => ({ default: m.DittoEggsView })));
-const PokemonRankingsView = lazy(() => import('./components/PokemonRankingsView').then(m => ({ default: m.PokemonRankingsView })));
-const FilterGeneratorView = lazy(() => import('./components/FilterGeneratorView').then(m => ({ default: m.FilterGeneratorView })));
-const AdminPanelView = lazy(() => import('./components/AdminPanelView').then(m => ({ default: m.AdminPanelView })));
+// Direct imports for public SEO views so Next.js SSG renders full semantic HTML without hidden Suspense boundaries
+import { RaidView } from './components/RaidView';
+import { RocketGuide } from './components/RocketGuide';
+import { TimelineView } from './components/TimelineView';
+import { DittoEggsView } from './components/DittoEggsView';
+import { PokemonRankingsView } from './components/PokemonRankingsView';
+import { FilterGeneratorView } from './components/FilterGeneratorView';
 import { PokeballLogo } from './components/PokeballLogo';
+import { GuidesView } from './components/GuidesView';
+import { FriendFinderView } from './components/FriendFinderView';
+import { FieldResearchView } from './components/FieldResearchView';
+import { DownloadAppView } from './components/DownloadAppView';
+import { NotFoundView } from './components/NotFoundView';
 
-const GuidesView = lazy(() => import('./components/GuidesView').then(m => ({ default: m.GuidesView })));
-const FriendFinderView = lazy(() => import('./components/FriendFinderView').then(m => ({ default: m.FriendFinderView })));
-const FieldResearchView = lazy(() => import('./components/FieldResearchView').then(m => ({ default: m.FieldResearchView })));
-const DownloadAppView = lazy(() => import('./components/DownloadAppView').then(m => ({ default: m.DownloadAppView })));
-const NotFoundView = lazy(() => import('./components/NotFoundView').then(m => ({ default: m.NotFoundView })));
+const AdminPanelView = lazy(() => import('./components/AdminPanelView').then(m => ({ default: m.AdminPanelView })));
 
 type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin' | 'download' | 'research' | '404';
 
@@ -299,12 +299,12 @@ const getUrlPathForTab = (tab: TabType, l: Language, eventID?: string | null, po
   switch (tab) {
     case 'guides': return `${prefix}/guides`;
     case 'friends': return `${prefix}/friends`;
-    case 'research': return `${prefix}/research`;
+    case 'research': return `${prefix}/guides/field-research-tasks-guide`;
     case 'raid': return `${prefix}/raids`;
     case 'rocket': return `${prefix}/rocket`;
     case 'ranking': return `${prefix}/rankings`;
-    case 'ditto': return `${prefix}/ditto`;
-    case 'eggs': return `${prefix}/eggs`;
+    case 'ditto': return `${prefix}/guides/ditto-disguises-guide`;
+    case 'eggs': return `${prefix}/guides/egg-hatching-guide`;
     case 'filter': return `${prefix}/filter`;
     case 'download': return `${prefix}/download`;
     case 'settings': return `${prefix}/settings`;
@@ -353,8 +353,44 @@ const updateHeadMeta = (tab: TabType, lang: string, eventId?: string | null): vo
   link.href = canonicalUrl;
 };
 
-function App({ initialLang, initialTab, initialArticleSlug, initialEventId, initialPokemonSearch, initialEvents }: { initialLang?: Language; initialTab?: TabType; initialArticleSlug?: string; initialEventId?: string; initialPokemonSearch?: string; initialEvents?: EventData[] } = {}) {
-  const [activeTab, setActiveTab] = useState<TabType>(initialTab || 'events');
+function App({
+  initialLang,
+  initialTab,
+  initialArticleSlug,
+  initialEventId,
+  initialPokemonSearch,
+  initialEvents,
+  initialBosses,
+  initialExpandedBoss,
+  initialRocketData,
+  initialRocketLeader,
+  initialRankingCategory,
+  initialRankingType,
+}: {
+  initialLang?: Language;
+  initialTab?: TabType;
+  initialArticleSlug?: string;
+  initialEventId?: string;
+  initialPokemonSearch?: string;
+  initialEvents?: EventData[];
+  initialBosses?: any[];
+  initialExpandedBoss?: string;
+  initialRocketData?: any;
+  initialRocketLeader?: string;
+  initialRankingCategory?: string;
+  initialRankingType?: string;
+} = {}) {
+  const isConvertedGuide = initialTab === 'ditto' || initialTab === 'eggs' || initialTab === 'research';
+  const convertedSlug = initialTab === 'ditto' 
+    ? 'ditto-disguises-guide' 
+    : initialTab === 'eggs' 
+      ? 'egg-hatching-guide' 
+      : initialTab === 'research' 
+        ? 'field-research-tasks-guide' 
+        : initialArticleSlug;
+
+  const [activeTab, setActiveTab] = useState<TabType>(isConvertedGuide ? 'guides' : (initialTab || 'events'));
+  const [guideSlug, setGuideSlug] = useState<string | undefined>(convertedSlug);
   const [expandedEventId, setExpandedEventId] = useState<string | null>(initialEventId || null);
   const [pokemonSearch, setPokemonSearch] = useState<string | null>(initialPokemonSearch || null);
   const [lang, setLang] = useState<Language>(initialLang || 'en');
@@ -371,8 +407,16 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
     return sanitizeEvents(MOCK_EVENTS);
   });
   const [filterType, setFilterType] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<'active' | 'upcoming'>('active');
-  const [viewMode, setViewMode] = useState<'list' | 'timeline'>('timeline');
+  const [statusFilter, setStatusFilter] = useState<'active' | 'upcoming'>(() => {
+    if (initialEventId) {
+      const target = events.find(e => e.eventID === initialEventId);
+      if (target && new Date() < new Date(target.start)) {
+        return 'upcoming';
+      }
+    }
+    return 'active';
+  });
+  const [viewMode, setViewMode] = useState<'list' | 'timeline'>(() => (initialEventId ? 'list' : 'timeline'));
   const [loading, setLoading] = useState<boolean>(false);
 
   const [_apiStatus, setApiStatus] = useState<'success' | 'fallback'>('fallback');
@@ -425,7 +469,16 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
   }, [viewMode]);
 
   useEffect(() => {
-    if (initialTab) {
+    if (initialTab === 'ditto') {
+      setActiveTab('guides');
+      setGuideSlug('ditto-disguises-guide');
+    } else if (initialTab === 'eggs') {
+      setActiveTab('guides');
+      setGuideSlug('egg-hatching-guide');
+    } else if (initialTab === 'research') {
+      setActiveTab('guides');
+      setGuideSlug('field-research-tasks-guide');
+    } else if (initialTab) {
       setActiveTab(initialTab);
     }
   }, [initialTab]);
@@ -449,7 +502,18 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
 
     const urlTab = getTabFromUrlPath(path);
     if (urlTab) {
-      setActiveTab(urlTab);
+      if (urlTab === 'ditto') {
+        setActiveTab('guides');
+        setGuideSlug('ditto-disguises-guide');
+      } else if (urlTab === 'eggs') {
+        setActiveTab('guides');
+        setGuideSlug('egg-hatching-guide');
+      } else if (urlTab === 'research') {
+        setActiveTab('guides');
+        setGuideSlug('field-research-tasks-guide');
+      } else {
+        setActiveTab(urlTab);
+      }
     }
 
     const urlEventId = getEventIdFromUrlPath(path) || initialEventId;
@@ -1003,14 +1067,13 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
 
   return (
     <div className="content-layout-wrapper">
-      <main className="app-main">
+      <div className="app-main">
         {loading ? (
           <div className="loading-container">
             <div className="spinner"></div>
             <p>{t.loading_text}</p>
           </div>
         ) : (
-          <Suspense fallback={<div className="loading-container"><div className="spinner"></div></div>}>
             <>
               {activeTab === 'events' && (
                 <div className="tab-content events-tab">
@@ -1119,7 +1182,7 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
 
               {activeTab === 'guides' && (
                 <div className="tab-content guides-tab">
-                  <GuidesView lang={lang} initialArticleSlug={initialArticleSlug} />
+                  <GuidesView lang={lang} initialArticleSlug={guideSlug || initialArticleSlug} />
                 </div>
               )}
 
@@ -1137,13 +1200,25 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
 
               {activeTab === 'raid' && (
                 <div className="tab-content raid-tab">
-                  <RaidView events={getAdjustedEvents()} lang={lang} onOpenFilterGenerator={handleOpenFilterGenerator} onOpenGuide={() => changeTab('guides')} />
+                  <RaidView
+                    events={getAdjustedEvents()}
+                    lang={lang}
+                    initialBosses={initialBosses}
+                    initialExpandedBoss={initialExpandedBoss || initialPokemonSearch}
+                    onOpenFilterGenerator={handleOpenFilterGenerator}
+                    onOpenGuide={() => changeTab('guides')}
+                  />
                 </div>
               )}
 
               {activeTab === 'rocket' && (
                 <div className="tab-content rocket-tab">
-                  <RocketGuide lang={lang} onOpenGuide={() => changeTab('guides')} />
+                  <RocketGuide
+                    lang={lang}
+                    initialRocketData={initialRocketData}
+                    initialLeader={initialRocketLeader}
+                    onOpenGuide={() => changeTab('guides')}
+                  />
                 </div>
               )}
 
@@ -1164,6 +1239,8 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
                   <PokemonRankingsView 
                     lang={lang} 
                     initialSearchQuery={pokemonSearch || initialPokemonSearch || ''}
+                    initialCategory={initialRankingCategory}
+                    initialSelectedType={initialRankingType}
                     onSearchChange={(query) => {
                       const newSearch = query.trim() || null;
                       setPokemonSearch(newSearch);
@@ -1213,7 +1290,9 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
 
               {activeTab === 'admin' && (
                 <div className="tab-content admin-tab">
-                  <AdminPanelView lang={lang} onBack={() => setActiveTab('events')} />
+                  <Suspense fallback={<div className="loading-container"><div className="spinner"></div></div>}>
+                    <AdminPanelView lang={lang} onBack={() => setActiveTab('events')} />
+                  </Suspense>
                 </div>
               )}
 
@@ -1223,9 +1302,8 @@ function App({ initialLang, initialTab, initialArticleSlug, initialEventId, init
                 </div>
               )}
             </>
-          </Suspense>
         )}
-      </main>
+      </div>
 
       {/* Desktop Right Sidebar (Rendered only when ads are enabled) */}
       {showAds && (

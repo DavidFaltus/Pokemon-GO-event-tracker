@@ -24,6 +24,8 @@ RUN mkdir -p /app/.cache /app/dist && chown -R appuser:appgroup /app
 # Switch to non-root user
 USER appuser
 
+ENV NODE_ENV=production
+ENV USE_GCS=true
 ENV PORT=8080
 EXPOSE 8080
 

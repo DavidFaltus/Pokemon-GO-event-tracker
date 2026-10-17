@@ -56,7 +56,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "weekly-hidden-mini-events-guide",
     slug: "weekly-hidden-mini-events-guide",
     iconName: "Calendar",
-    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png",
+    imageUrl: "https://cdn.leekduck.com/assets/img/icons/weekly_challenge_icon.png",
     featured: true,
     author: "PoGo Events Team",
     readTime: "9 min",
@@ -286,7 +286,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "rocket-leaders-giovanni-guide",
     slug: "rocket-leaders-giovanni-guide",
     iconName: "Shield",
-    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png",
+    imageUrl: "https://cdn.leekduck.com/assets/img/items/Rocket%20Radar.png",
     featured: false,
     author: "PoGo Events Team",
     readTime: "8 min",
@@ -397,7 +397,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "raid-battles-counter-guide",
     slug: "raid-battles-counter-guide",
     iconName: "Swords",
-    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/384.png",
+    imageUrl: "https://cdn.leekduck.com/assets/img/items/Premium%20Battle%20Pass.png",
     featured: false,
     author: "PoGo Events Team",
     readTime: "8 min",
@@ -475,7 +475,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "spotlight-community-day-guide",
     slug: "spotlight-community-day-guide",
     iconName: "Calendar",
-    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png",
+    imageUrl: "https://cdn.leekduck.com/assets/img/items/Lure%20Module.png",
     featured: false,
     author: "PoGo Events Team",
     readTime: "7 min",
@@ -535,7 +535,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "pokemon-iv-cp-appraise-guide",
     slug: "pokemon-iv-cp-appraise-guide",
     iconName: "Sparkles",
-    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/149.png",
+    imageUrl: "https://cdn.leekduck.com/assets/img/items/Master%20Ball.png",
     featured: false,
     author: "PoGo Events Team",
     readTime: "6 min",
@@ -595,7 +595,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "mega-dynamax-mechanics-guide",
     slug: "mega-dynamax-mechanics-guide",
     iconName: "Trophy",
-    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10036.png",
+    imageUrl: "https://cdn.leekduck.com/assets/img/items/Max%20Mushroom.png",
     featured: false,
     author: "PoGo Events Team",
     readTime: "8 min",
@@ -655,7 +655,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "pokemon-evolution-quests-guide",
     slug: "pokemon-evolution-quests-guide",
     iconName: "Sparkles",
-    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/865.png",
+    imageUrl: "https://cdn.leekduck.com/assets/img/items/Sinnoh%20Stone.png",
     author: "PoGo Events Team",
     readTime: "12 min",
     updatedAt: "2026-08-23",
@@ -915,7 +915,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "regional-pokemon-world-guide",
     slug: "regional-pokemon-world-guide",
     iconName: "Globe",
-    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/439.png",
+    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/122.png",
     author: "PoGo Events Team",
     readTime: "15 min",
     updatedAt: "2026-08-24",
@@ -1074,7 +1074,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "adventure-effects-master-guide",
     slug: "adventure-effects-master-guide",
     iconName: "Sparkles",
-    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10245.png",
+    imageUrl: "https://cdn.leekduck.com/assets/img/items/Rare%20Candy%20XL.png",
     featured: true,
     author: "PoGo Events Team",
     readTime: "11 min",
@@ -1308,7 +1308,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "pokelid-stamp-rally-japan-guide",
     slug: "pokelid-stamp-rally-japan-guide",
     iconName: "MapPin",
-    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png",
+    imageUrl: "https://local.pokemon.jp/img/p/manhole/dd60987af1dda49a37486a2cbcb4d407_l.png",
     featured: false,
     author: "PoGo Events Team",
     readTime: "10 min",
@@ -1320,59 +1320,25 @@ export const GUIDES_DATA: GuideArticle[] = [
       ru: "События в Японии и Pokélids"
     },
     title: {
-      cs: "Pokélid (Pokéfuta) Stamp Rally v Japonsku: Kompletní průvodce a Lokační karty",
-      en: "Pokélid (Pokéfuta) Stamp Rally in Japan: Complete Guide & Location Cards",
+      cs: "Pokélid Stamp Rally v Japonsku: Kompletní průvodce a Lokační karty",
+      en: "Pokélid Stamp Rally in Japan: Complete Guide & Location Cards",
       ja: "ポケふたスタンプラリー完全攻略：全国アンバサダーとロケーション背景ピカチュウ",
-      ru: "Pokélid (Pokéfuta) Stamp Rally в Японии: Полный гайд и карточки локаций"
+      ru: "Pokélid Stamp Rally в Японии: Полный гайд и карточки локаций"
     },
     subtitle: {
-      cs: "Jak funguje celostátní razítková rallye Pokémon poklopů v Japonsku, žlutá vs modrá razítka a garantovaný zisk Pikachu s unikátním pozadím každé prefektury.",
-      en: "How the nationwide utility hole cover stamp rally works across Japan: Yellow vs. Blue border stamps, prefectural ambassadors, and guaranteed Location Background Pikachu encounters.",
-      ja: "全国41都道府県に広がる「ポケふた」スタンプラリーの仕組み、黄色と青のスタンプの違い、2個収集ごとのご当地背景ピカチュウ入手方法を徹底解説。",
-      ru: "Как работает общенациональное ралли люков Pokélid в Японии: желтые и синие штампы, амбассадоры префектур и гарантированный Пикачу с фоном префектуры."
+      cs: "Jak funguje celostátní razítková rallye Pokémon poklopů v Japonsku, oficiální ambasadoři prefektur a garantovaný zisk Pikachu s unikátním pozadím každé provincie.",
+      en: "How the nationwide utility hole cover stamp rally works across Japan: prefectural ambassadors, cultural wordplay, and guaranteed Location Background Pikachu encounters.",
+      ja: "全国41都道府県に広がる「ポケふた」スタンプラリーの仕組み、全国推しポケモン（アンバサダー）とご当地背景ピカチュウ入手方法を徹底解説。",
+      ru: "Как работает общенациональное ралли люков Pokélid в Японии: амбассадоры префектур и гарантированный Пикачу с фоном соответствующей провинции."
     },
     sections: [
       {
-        id: "what-are-pokelids",
-        heading: {
-          cs: "1. Co jsou to Poké Lids (Pokéfuta) a Pokémon Local Acts",
-          en: "1. What are Poké Lids (Pokéfuta) & Pokémon Local Acts",
-          ja: "1. ポケふた（Poké Lids）と「ポケモンローカルActs」とは",
-          ru: "1. Что такое Poké Lids (Pokéfuta) и Pokémon Local Acts"
-        },
-        content: {
-          cs: "Poké Lids (japonsky Pokéfuta / ポケふた) jsou unikátní umělecké poklopy kanalizací instalované po celém Japonsku v rámci iniciativy Pokémon Local Acts (ポケモンローカルActs).\n\nTento projekt, spravovaný The Pokémon Company ve spolupráci s jednotlivými prefekturami a městy, podporuje lokální turismus a regionální ekonomiku. Každý poklop je ručně odlitý originál z litiny a epoxidové pryskyřice zobrazující Pokémony v typických lokálních scenériích.\n\n• Ve hře Pokémon GO slouží každý z více než 400 poklopů jako stálý PokéStop s autentickým vysokým rozlišením foto disku.\n• Zatočení tohoto PokéStopu dává sběratelské Postcards (pohlednice) do vašeho Postcard Booku a postup pro Vivillona.\n• Čtyři prefektury — Mijagi (Miyagi), Tottori, Kagawa a Mijazaki (Miyazaki) — dosáhly 100% municipálního pokrytí, což znamená, že Poké Lid naleznete v naprosto každém městě a vesnici daného regionu!",
-          en: "Poké Lids (Pokéfuta / ポケふた) are bespoke, artistic utility hole covers installed across Japan under the Pokémon Local Acts initiative.\n\nManaged by The Pokémon Company alongside prefectural and municipal governments, this initiative revitalizes regional tourism and local heritage. Every single Poké Lid is a permanent cast-iron and resin installation featuring custom Pokémon illustrations honoring regional landmarks.\n\n• In Pokémon GO, every single one of the 400+ Poké Lids serves as a permanent in-game PokéStop with exclusive high-resolution Photo Disc artwork.\n• Spinning these discs rewards collectible Postcards for your Postcard Book and Vivillon progression.\n• Four prefectures — Miyagi, Tottori, Kagawa, and Miyazaki — boast 100% municipal coverage, meaning every single town, city, and village features an active Poké Lid PokéStop!",
-          ja: "「ポケふた（Poké Lids）」は、日本各地の魅力を発信・地域活性化を目的とした「ポケモンローカルActs」の一環として全国に設置されている、世界に1枚だけの特別なマンホールの蓋です。\n\n株式会社ポケモンと各自治体が共同で設置を進めており、鋳鉄と高耐久エポキシ樹脂で作られた高品質なマンホールには、各地の名産や観光地とともにポケモンたちが生き生きと描かれています。\n\n• 『Pokémon GO』内では、全国400枚以上のポケふたが恒久的な「公式ポケストップ」として登場し、高解像度の特製フォトディスクが登録されています。\n• ポケストップを回すと限定ポストカードが入手でき、ポストカードブックの収集やビビヨン（コフキムシ）の進化に活用できます。\n• 宮城県・鳥取県・香川県・宮崎県の4県は「県内全市区町村への完全配備（カバー率100%）」を達成しており、すべての市町村でポケふたに出会うことができます！",
-          ru: "Poké Lids (Pokéfuta / ポケふた) — это уникальные художественные чугунные крышки канализационных люков, установленные по всей Японии в рамках инициативы Pokémon Local Acts.\n\nПроект The Pokémon Company и муниципалитетов развивает региональный туризм. Каждый люк — уникальное произведение с изображением покемонов на фоне достопримечательностей.\n\n• В Pokémon GO каждый из 400+ люков является постоянным покестопом с эксклюзивным фотодиском.\n• Прокрутка покестопа дает коллекционные открытки для Postcard Book и прогресса Вивиллона.\n• Четыре префектуры — Мияги, Тоттори, Кагава и Миядзаки — имеют 100% покрытие, люки есть в каждом городе и деревне!"
-        },
-        tips: {
-          cs: [
-            "Fotografie poklopů na PokéStopech jsou originální ilustrace — uložte si je do Postcard Booku jako suvenýr z cest.",
-            "Všechny lokace reálných poklopů najdete na oficiálním webu local.pokemon.jp/manhole."
-          ],
-          en: [
-            "PokéStop disc photos feature one-of-a-kind art — save them to your Postcard Book as permanent travel souvenirs.",
-            "Inspect exact GPS coordinates of every physical cover at the official portal local.pokemon.jp/manhole."
-          ],
-          ja: [
-            "ポケふたのフォトディスクは世界でここだけの限定アートです。ポストカードブックにピン留めして旅の思い出に残しましょう。",
-            "全国の設置場所とGPS座標は公式ポータル（local.pokemon.jp/manhole）で確認できます。"
-          ],
-          ru: [
-            "Фотодиски люков содержат уникальные рисунки — закрепляйте их в Postcard Book как сувениры.",
-            "Точные координаты всех люков доступны на официальном сайте local.pokemon.jp/manhole."
-          ]
-        },
-        pokemon: ["Pikachu", "Lapras", "Slowpoke", "Vulpix-Alolan", "Sandshrew"]
-      },
-      {
         id: "prefectural-ambassadors",
         heading: {
-          cs: "2. Oficiální Ambasadoři prefektur a kulturní hříčky",
-          en: "2. Prefectural Ambassadors & Cultural Wordplay",
-          ja: "2. 都道府県の「推しポケモン（アンバサダー）」と任命理由",
-          ru: "2. Официальные амбассадоры префектур и культурные каламбуры"
+          cs: "1. Oficiální Ambasadoři prefektur a kulturní hříčky",
+          en: "1. Prefectural Ambassadors & Cultural Wordplay",
+          ja: "1. 都道府県の「推しポケモン（アンバサダー）」と任命理由",
+          ru: "1. Официальные амбассадоры префектур и культурные каламбуры"
         },
         content: {
           cs: "Každá zapojená prefektura má oficiálně jmenovaného 'Podpůrného Pokémona' (Support Pokémon / Ambasadora), jehož jméno, vzhled nebo mytologie souvisí s lokální kulturou:\n\n• Hokkaidó (北海道) ➔ Alolan Vulpix & Vulpix: Ambasadoři sněžných plání; symbolizují subarktické klima a proslulý prašan v lyžařských střediscích.\n• Mijagi (宮城県) ➔ Lapras: Jmenován na podporu obnovy pobřeží po ničivém tsunami v roce 2011; reprezentuje malebný záliv Macušima a mořskou pohostinnost.\n• Kagawa (香川県) ➔ Slowpoke (Yadon): Fenomenální slovní hříčka! Japonské jméno Yadon zní téměř totožně jako Sanuki Udon — slavné nudle z Kagawy. Prefektura se dokonce oficiálně přejmenovala v kampani na 'Slowpoke-ken' (Prefektura Slowpoke)!\n• Iwate (岩手県) ➔ Geodude (Ishitsubute): Slovní a vizuální hříčka: Iwa (岩 = Skála) + Te (手 = Ruka) ➔ Geodude je doslova 'Kámen s rukama'!\n• Tottori (鳥取県) ➔ Sandshrew & Alolan Sandshrew: Obyvatelé písečných dun oslavující obří písečné duny Tottori Sakyū.\n• Fukui (福井県) ➔ Dragonite (Kairyū): Fukui je paleontologické hlavní město Japonska s největším muzeem dinosaurů; slabika Ryū (竜) znamená drak i dinosaurus.\n• Mie (三重県) ➔ Oshawott (Mijumaru): Fonetická podoba: znaky pro Mie se dají číst jako Mijū, což přímo zrcadlí jméno Mijumaru.\n• Mijazaki (宮崎県) ➔ Exeggutor & Alolan Exeggutor: 'Slunečná prefektura' plná tropického slunce a palem Phoenix, které Alolan Exeggutor dokonale ztělesňuje.\n• Okinawa (沖縄県) ➔ Growlithe (Gādī): Ztělesnění mýtických ochranných lvů Shīshā z tradičních střech Okinawy.\n• Nagasaki (長崎県) ➔ Ampharos (Denryū): Symbol historických přístavních majáků a místní lidové písně 'Denderaryuba'.\n• Kóči (高知県) ➔ Quagsire (Nuō): Oslavuje křišťálově čisté řeky Šimanto a Nijodo.\n• Kagošima (指宿市 / Ibusuki) ➔ Eevee: Městská hříčka: název města Ibusuki zní v japonštině jako 'I love Suki' ➔ foneticky Ībui (Eevee)!",
@@ -1401,52 +1367,18 @@ export const GUIDES_DATA: GuideArticle[] = [
         pokemon: ["Vulpix-Alolan", "Lapras", "Slowpoke", "Geodude", "Sandshrew-Alolan", "Dragonite", "Oshawott", "Exeggutor-Alolan", "Growlithe", "Ampharos", "Quagsire", "Eevee"]
       },
       {
-        id: "stamp-rally-mechanics-yellow-blue",
-        heading: {
-          cs: "3. Pravidla Stamp Rally: Žlutá vs. Modrá razítka",
-          en: "3. Stamp Rally Rules: Yellow vs. Blue Border Stamps",
-          ja: "3. スタンプラリーのルール：黄色と青のスタンプの決定的な違い",
-          ru: "3. Правила Stamp Rally: Желтые против Синих штампов"
-        },
-        content: {
-          cs: "V lednu 2026 spustil Niantic oficiální celostátní mechaniku Poké Lid Stamp Rally (GOスタンプラリー).\n\nJak se do Rally zapojit:\n1. Požadavek: Minimálně Trainer Level 5.\n2. HUD Indikátor: Když se přiblížíte k zóně s Poké Lidem, v pravém horním rohu herní mapy se rozsvítí ikona razítka.\n3. Otevření alba: Album razítek najdete ve svém Profilu trenéra ➔ Scrapbook (スクラップブック).\n\n🟡 ŽLUTÉ RAZÍTKO (Yellow Border Stamp) — Fyzická návštěva na místě:\n• Získáte ho POUZE a VÝHRADNĚ tak, že fyzicky stojíte u skutečného poklopu v Japonsku a zatočíte jeho PokéStop disc v dosahu GPS.\n• Pouze žlutá razítka se počítají do postupu pro odměny!\n\n🔵 MODRÉ RAZÍTKO (Blue Border Stamp) — Pohlednice jako dárek od přítele:\n• Získáte ho, když otevřete Gift (dárek) s pohlednicí daného Poké Lidu, kterou vám poslal kamarád.\n• Modré razítko se zapíše do vašeho Scrapbooku pro vizuální kompletaci, ale má 0 bodů do postupu k odměnám!\n• Retroaktivní upgrade: Pokud máte v albu modré razítko a v budoucnu daný Poké Lid navštívíte osobně v Japonsku a zatočíte ho, modrý rámeček se automaticky a trvale promění na ŽLUTÝ a započítá se do odměn!",
-          en: "In January 2026, Niantic officially expanded the Poké Lid Stamp Rally nationwide across all 41+ participating prefectures.\n\nHow to Participate:\n1. Prerequisite: Trainer Level 5 or higher.\n2. HUD Radar: When entering proximity of a Poké Lid, a dedicated Stamp icon illuminates on the upper-right corner of the overworld map.\n3. Scrapbook: Accessible via Trainer Profile ➔ Scrapbook (スクラップブック).\n\n🟡 YELLOW BORDER STAMP — In-Person Physical Exploration:\n• Awarded EXCLUSIVELY when you physically navigate to the real-world Poké Lid in Japan and spin its Photo Disc within GPS interaction range.\n• ONLY Yellow Border stamps count toward the reward encounter progress!\n\n🔵 BLUE BORDER STAMP — Gift Souvenir from Friends:\n• Awarded when opening a Postcard Gift sent by a friend who visited that Poké Lid.\n• Blue stamps register in your Scrapbook for visual completion, but grant ZERO progression toward encounter rewards.\n• Retroactive Upgrade: If you hold a Blue Stamp and later visit that exact Poké Lid in person to spin the disc, the border permanently upgrades to YELLOW and immediately awards progression credit!",
-          ja: "2026年1月28日より、日本全国41以上の都道府県を対象に「ポケふたスタンプラリー（GO Stamp Rally）」が本格展開されました。\n\n参加手順と基本仕様：\n1. 参加条件：トレーナーレベル5以上。\n2. マップHUD通知：ポケふたの近くに移動すると、フィールド画面右上にスタンプアイコンが自動点灯します。\n3. スクラップブック：トレーナープロフィール画面の「スクラップブック」から、各都道府県ごとのスタンプ台紙を閲覧できます。\n\n🟡 黄色いスタンプ（現地スピン限定・進行対象）：\n• 実際に現地のポケふたへ足を運び、GPSの届く範囲内でポケストップを回した時のみ獲得できます。\n• ピカチュウの報酬タスクが進むのは「黄色いスタンプのみ」です！\n\n🔵 青いスタンプ（ギフト受取・コレクション用）：\n• フレンドから贈られたポケふたのギフト（ポストカード）を開封した際に台紙へ捺印されます。\n• スクラップブックを埋めることはできますが、報酬ピカチュウの進行カウントは一切増えません（0カウント）。\n• 現地訪問による昇格：青いスタンプが捺印されているポケふたを後から現地で実際にスピンすると、即座に「黄色いスタンプ」へ上書き昇格し、進行ポイントが加算されます！",
-          ru: "В январе 2026 года Niantic запустила Poké Lid Stamp Rally по всей Японии в 41+ префектурах.\n\nКак участвовать:\n1. Условие: Уровень тренера 5 и выше.\n2. Индикатор на карте: При приближении к люку в правом верхнем углу загорается значок штампа.\n3. Альбом: Доступен в профиле тренера ➔ Scrapbook (スクラップブック).\n\n🟡 ЖЕЛТЫЙ ШТАМП — Личное физическое присутствие:\n• Выдается ТОЛЬКО при личном визите к реальному люку в Японии и прокрутке покестопа в радиусе GPS.\n• Только желтые штампы идут в зачет наградных встреч!\n\n🔵 СИНИЙ ШТАМП — Подарок от друга:\n• Выдается при открытии подарка с открыткой люка от друга.\n• Заносится в альбом для коллекции, но дает 0 прогресса для получения покемона.\n• Улучшение: Если позже лично посетить этот люк и прокрутить его, синий штамп навсегда станет ЖЕЛТЫМ!"
-        },
-        tips: {
-          cs: [
-            "Prodloužení dosahu: Aktivujte Spacial Rend (Origin Palkia) — zdvojnásobí rádius interakce na 80 metrů, což usnadní zatočení poklopů na nepřístupných místech.",
-            "Žlutá razítka z různých prefektur se nesčítají dohromady — každá prefektura má vlastní nezávislé počítadlo!"
-          ],
-          en: [
-            "Radius Boost: Activate Origin Forme Palkia's Spacial Rend to extend your interaction distance to 80m, reaching tricky lids effortlessly.",
-            "Yellow stamps do NOT pool across regions — each prefecture maintains its own independent progression counter!"
-          ],
-          ja: [
-            "範囲拡大：オリジンパルキアの「あくうせつだん」を発動すると、ポケストップのアクセス半径が80mに倍増し、少し離れたポケふたも簡単にスピンできます。",
-            "スタンプのカウントは都道府県ごとに独立しています（宮城のスタンプと鳥取のスタンプを合算することはできません）。"
-          ],
-          ru: [
-            "Увеличение радиуса: Активируйте Spacial Rend у Origin Palkia для радиуса 80 метров.",
-            "Штампы разных префектур не суммируются — у каждого региона свой независимый счетчик!"
-          ]
-        },
-        pokemon: ["Pikachu", "Palkia-Origin"]
-      },
-      {
         id: "reward-pikachu-and-location-background",
         heading: {
-          cs: "4. Odměna: Pikachu s Lokačním pozadím dané prefektury",
-          en: "4. Rewards: Pikachu with Prefectural Location Backgrounds",
-          ja: "4. 報酬：都道府県ごとの限定ロケーション背景付きピカチュウ",
-          ru: "4. Награда: Пикачу с фоном локации соответствующей префектуры"
+          cs: "2. Odměna: Pikachu s Lokačním pozadím dané prefektury",
+          en: "2. Rewards: Pikachu with Prefectural Location Backgrounds",
+          ja: "2. 報酬：都道府県ごとの限定ロケーション背景付きピカチュウ",
+          ru: "2. Награда: Пикачу с фоном локации соответствующей префектуры"
         },
         content: {
-          cs: "Zlatým hřebem celé mechaniky je exkluzivní odměna v podobě divokého Pikachu:\n\n• Pravidlo 2 razítek: Za každé DVĚ (2) žlutá razítka nasbíraná v rámci TÉŽE prefektury se vám okamžitě odemkne úkol s garantovaným střetnutím s Pikachu!\n• Lokační pozadí prefektury: Tento Pikachu má na obrazovce shrnutí unikátní Lokační kartu (Location Background) vyobrazující specifické přírodní scenérie a kulturu dané provincie:\n  - Hokkaidó: Zasněžené horské štíty pohoří Tokači a sněhové vločky.\n  - Mijagi: Záliv Macušima s ostrůvky borovic a vlnkami Laprase.\n  - Kagawa: Misky vyhlášeného Sanuki Udonu a siluety Slowpoka.\n  - Tottori: Vlnité písečné duny Tottori Sakyū.\n  - Mijazaki: Pobřežní palmy Phoenix a tropické slunce.\n  - Okinawa: Tradiční červené střešní tašky a tyrkysový oceán.\n• Neomezená opakovatelnost: Pokud v prefektuře Mijagi zatočíte 10 různých poklopů, obdržíte celkem 5 samostatných Pikachu s pozadím Mijagi!\n• Možnost Shiny: Pikachu z této odměny může být Shiny (zlatý) — lesk a třpytky fungují v harmonii s lokačním pozadím!\n• Trvalá mechanika: Nejedná se o časově omezenou akci. Stamp Rally je trvalou součástí hry bez data expirace.",
-          en: "The ultimate prize of the Stamp Rally is the exclusive commemorative Pikachu encounter:\n\n• The 2-Stamp Threshold: Every two (2) Yellow Border stamps gathered within the SAME prefecture instantly unlocks a claimable research encounter with Pikachu!\n• Prefectural Location Background: This Pikachu displays a custom Location Card on its summary screen illustrating the geography and culture of that prefecture:\n  - Hokkaido: Snow-covered alpine peaks and falling ice crystals.\n  - Miyagi: Pine-crested islets of Matsushima Bay and ocean currents.\n  - Kagawa: Steaming bowls of Sanuki Udon noodles and Slowpoke silhouettes.\n  - Tottori: Wind-swept coastal dunes of Tottori Sakyu.\n  - Miyazaki: Tropical Phoenix palms and radiant sunshine.\n  - Okinawa: Traditional red Ryukyuan roof tiles and turquoise seas.\n• Uncapped Farming: Collecting 10 yellow stamps across Miyagi awards 5 separate Pikachu encounters, each carrying the Miyagi background!\n• Shiny Potential: Pikachu can be encountered as a Shiny — the sparkles alternate gracefully with the commemorative card!\n• Permanent Core Feature: Unlike short-lived seasonal events, the Stamp Rally is a permanent core game engine feature with no expiration.",
-          ja: "スタンプラリー最大の魅力は、都道府県ごとの限定アートを宿したピカチュウとの遭遇です。\n\n• 2個ごとの確定リワード：同一都道府県内で「黄色いスタンプを2個」集めるごとに、限定リワードが出現しピカチュウと確定遭遇できます！\n• 都道府県限定ロケーション背景：捕獲したピカチュウの詳細画面には、その県ならではの名所や文化を描いた「ロケーション背景（Location Background）」が美しく描かれます：\n  - 北海道：十勝岳連峰の雪景色と舞い散るパウダースノー。\n  - 宮城県：日本三景・松島の島々とラプラスの波紋。\n  - 香川県：名物讃岐うどんのどんぶりとヤドンのシルエット。\n  - 鳥取県：風紋が美しい鳥取砂丘の広大な砂地。\n  - 宮崎県：日南海岸のフェニックス並木と降り注ぐ太陽光。\n  - 沖縄県：伝統的な赤瓦の屋根とエメラルドグリーンの美ら海。\n• 上限なしで周回可能：例えば宮城県で10個のポケふたを巡れば、5匹の「宮城背景付きピカチュウ」を受け取ることができます！\n• 色違い（Shiny）出現あり：色違いのピカチュウも出現判定があり、キラキラのエフェクトと限定背景が同時に楽しめます。\n• 恒久機能：期間限定イベントではなく、いつでも挑戦できる常設コンテンツです。",
-          ru: "Главная награда Stamp Rally — эксклюзивный Пикачу с фоном локации:\n\n• Правило 2 штампов: Каждые 2 желтых штампа в ОДНОЙ префектуре дают встречу с Пикачу!\n• Фон префектуры: Пойманный Пикачу имеет на экране уникальный фон локации (Location Background):\n  - Хоккайдо: Заснеженные вершины гор Токати и снежинки.\n  - Мияги: Сосновые островки залива Мацусима и волны Лапраса.\n  - Кагава: Чаши с лапшой Сануки Удон и силуэты Слоупока.\n  - Тоттори: Песчаные дюны Тоттори Сакю.\n  - Миядзаки: Пальмы Феникс и тропическое солнце.\n  - Окинава: Традиционные красные крыши и лазурное море.\n• Безлимитный сбор: 10 желтых штампов в Мияги принесут вам 5 Пикачу с фоном Мияги!\n• Шанс на Шайни: Пикачу может быть Shiny!\n• Постоянная функция: Это постоянная механика игры без ограничения по времени."
+          cs: "Zlatým hřebem celé mechaniky je exkluzivní odměna v podobě divokého Pikachu:\n\n• Pravidlo 2 razítek: Za každé DVĚ (2) razítka nasbíraná v rámci TÉŽE prefektury se vám okamžitě odemkne úkol s garantovaným střetnutím s Pikachu!\n• Lokační pozadí prefektury: Tento Pikachu má na obrazovce shrnutí unikátní Lokační kartu (Location Background) vyobrazující specifické přírodní scenérie a kulturu dané provincie:\n  - Hokkaidó: Zasněžené horské štíty pohoří Tokači a sněhové vločky.\n  - Mijagi: Záliv Macušima s ostrůvky borovic a vlnkami Laprase.\n  - Kagawa: Misky vyhlášeného Sanuki Udonu a siluety Slowpoka.\n  - Tottori: Vlnité písečné duny Tottori Sakyū.\n  - Mijazaki: Pobřežní palmy Phoenix a tropické slunce.\n  - Okinawa: Tradiční červené střešní tašky a tyrkysový oceán.\n• Neomezená opakovatelnost: Pokud v prefektuře Mijagi navštívíte a zatočíte 10 různých poklopů, obdržíte celkem 5 samostatných Pikachu s pozadím Mijagi!\n• Možnost Shiny: Pikachu z této odměny může být Shiny (zlatý) — lesk a třpytky fungují v harmonii s lokačním pozadím!\n• Trvalá mechanika: Nejedná se o časově omezenou akci. Stamp Rally je trvalou součástí hry bez data expirace.",
+          en: "The ultimate prize of the Stamp Rally is the exclusive commemorative Pikachu encounter:\n\n• The 2-Stamp Threshold: Every two (2) stamps gathered within the SAME prefecture instantly unlocks a claimable research encounter with Pikachu!\n• Prefectural Location Background: This Pikachu displays a custom Location Card on its summary screen illustrating the geography and culture of that prefecture:\n  - Hokkaido: Snow-covered alpine peaks and falling ice crystals.\n  - Miyagi: Pine-crested islets of Matsushima Bay and ocean currents.\n  - Kagawa: Steaming bowls of Sanuki Udon noodles and Slowpoke silhouettes.\n  - Tottori: Wind-swept coastal dunes of Tottori Sakyu.\n  - Miyazaki: Tropical Phoenix palms and radiant sunshine.\n  - Okinawa: Traditional red Ryukyuan roof tiles and turquoise seas.\n• Uncapped Farming: Collecting 10 stamps across Miyagi awards 5 separate Pikachu encounters, each carrying the Miyagi background!\n• Shiny Potential: Pikachu can be encountered as a Shiny — the sparkles alternate gracefully with the commemorative card!\n• Permanent Core Feature: Unlike short-lived seasonal events, the Stamp Rally is a permanent core game engine feature with no expiration.",
+          ja: "スタンプラリー最大の魅力は、都道府県ごとの限定アートを宿したピカチュウとの遭遇です。\n\n• 2個ごとの確定リワード：同一都道府県内で「スタンプを2個」集めるごとに、限定リワードが出現しピカチュウと確定遭遇できます！\n• 都道府県限定ロケーション背景：捕獲したピカチュウの詳細画面には、その県ならではの名所や文化を描いた「ロケーション背景（Location Background）」が美しく描かれます：\n  - 北海道：十勝岳連峰の雪景色と舞い散るパウダースノー。\n  - 宮城県：日本三景・松島の島々とラプラスの波紋。\n  - 香川県：名物讃岐うどんのどんぶりとヤドンのシルエット。\n  - 鳥取県：風紋が美しい鳥取砂丘の広大な砂地。\n  - 宮崎県：日南海岸のフェニックス並木と降り注ぐ太陽光。\n  - 沖縄県：伝統的な赤瓦の屋根とエメラルドグリーンの美ら海。\n• 上限なしで周回可能：例えば宮城県で10個のポケふたを巡れば、5匹の「宮城背景付きピカチュウ」を受け取ることができます！\n• 色違い（Shiny）出現あり：色違いのピカチュウも出現判定があり、キラキラのエフェクトと限定背景が同時に楽しめます。\n• 恒久機能：期間限定イベントではなく、いつでも挑戦できる常設コンテンツです。",
+          ru: "Главная награда Stamp Rally — эксклюзивный Пикачу с фоном локации:\n\n• Правило 2 штампов: Каждые 2 штампа в ОДНОЙ префектуре дают встречу с Пикачу!\n• Фон префектуры: Пойманный Пикачу имеет на экране уникальный фон локации (Location Background):\n  - Хоккайдо: Заснеженные вершины гор Токати и снежинки.\n  - Мияги: Сосновые островки залива Мацусима и волны Лапраса.\n  - Кагава: Чаши с лапшой Сануки Удон и силуэты Слоупока.\n  - Тоттори: Песчаные дюны Тоттори Сакю.\n  - Миядзаки: Пальмы Феникс и тропическое солнце.\n  - Окинава: Традиционные красные крыши и лазурное море.\n• Безлимитный сбор: 10 штампов в Мияги принесут вам 5 Пикачу с фоном Мияги!\n• Шанс на Шайни: Пикачу может быть Shiny!\n• Постоянная функция: Это постоянная механика игры без ограничения по времени."
         },
         tips: {
           cs: [
@@ -1471,10 +1403,10 @@ export const GUIDES_DATA: GuideArticle[] = [
       {
         id: "cross-link-to-special-backgrounds",
         heading: {
-          cs: "5. Související průvodce: Globální a Městská Speciální pozadí",
-          en: "5. Related Guide: Global & In-Person Special Backgrounds",
-          ja: "5. 関連ガイド：世界各地のスペシャル背景＆ロケーションカード",
-          ru: "5. Связанное руководство: Глобальные и Городские специальные фоны"
+          cs: "3. Související průvodce: Globální a Městská Speciální pozadí",
+          en: "3. Related Guide: Global & In-Person Special Backgrounds",
+          ja: "3. 関連ガイド：世界各地のスペシャル背景＆ロケーションカード",
+          ru: "3. Связанное руководство: Глобальные и Городские специальные фоны"
         },
         content: {
           cs: "Kromě poklopů Poké Lids v Japonsku existuje v Pokémon GO rozsáhlý svět lokačních karet z celosvětových mega-akcí (Pokémon GO Fest, City Safari, GO Tour) a kosmických Speciálních pozadí (Ultra Space Wormhole, fúze Necrozmy a Kyuremu).\n\nChcete vědět, jak fungují pravidla výměny Speciálních pozadí, jaké karty mají města jako Madrid, Sendai, New York nebo Barcelona, a proč se pozadí smaže při převodu do Pokémon HOME?\n\n👉 Prozkoumejte náš kompletní katalog: [Speciální Pozadí a Lokační Karty v Pokémon GO](/guides/special-backgrounds-location-cards-guide).",
@@ -1508,7 +1440,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "special-backgrounds-location-cards-guide",
     slug: "special-backgrounds-location-cards-guide",
     iconName: "Sparkles",
-    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/800.png",
+    imageUrl: "https://pogoevents.app/backgrounds/ultra-space-wormhole.png",
     featured: true,
     author: "PoGo Events Team",
     readTime: "12 min",
@@ -1541,10 +1473,10 @@ export const GUIDES_DATA: GuideArticle[] = [
           ru: "1. Архитектура фонов и ссылка на ралли люков Pokélid в Японии"
         },
         content: {
-          cs: "Pamětní karty v Pokémon GO jsou prestižní vizuální modifikace, které se zobrazují na pozadí detailu Pokémona za jeho 3D modelem. Celý systém se dělí do dvou hlavních pilířů:\n\n1. Lokační karty (Location Cards): Vázané na konkrétní fyzické geografické místo na světě (města hostící Pokémon GO Fest, GO Tour, City Safari nebo historické památky National Trust).\n2. Speciální pozadí (Special Backgrounds): Vázaná na globální události, kosmické dimenze, lore fenomény (Ultra Space Wormhole, fúze Necrozmy a Kyuremu, lídři Valor/Instinct/Mystic) a dostupná všem trenérům na světě bez nutnosti cestovat.\n\n🇯🇵 DŮLEŽITÉ UPOZORNĚNÍ PRO JAPONSKÉ POKÉ LIDS:\nHledáte oficiální poklopy kanalizací (Pokéfuta) v Japonsku, žlutá vs modrá razítka a Pikachu s pozadím prefektur?\nJaponská razítková rallye má vlastní specializovaný článek!\n👉 Přejděte na: [Pokélid (Pokéfuta) Stamp Rally v Japonsku: Kompletní průvodce](/guides/pokelid-stamp-rally-japan-guide).",
-          en: "Commemorative cards in Pokémon GO are prestigious cosmetic modifications displayed behind a Pokémon on its summary screen. The engine divides into two distinct pillars:\n\n1. Location Cards: Bound to physical geographic destinations around the globe (host cities of Pokémon GO Fest, GO Tour, City Safari, or heritage landmarks like UK National Trust).\n2. Special Backgrounds: Bound to global lore, dimensions, and factional milestones (Ultra Space Wormholes, Necrozma & Kyurem fusions, Team Leaders), accessible worldwide without travel.\n\n🇯🇵 IMPORTANT NOTICE REGARDING JAPANESE POKÉ LIDS:\nLooking for the Japanese utility hole covers (Pokéfuta), Yellow vs. Blue border stamps, and prefecture-specific Pikachu cards?\nThe Japanese Stamp Rally has its own dedicated master guide!\n👉 Visit: [Pokélid (Pokéfuta) Stamp Rally in Japan: Complete Guide](/guides/pokelid-stamp-rally-japan-guide).",
-          ja: "『Pokémon GO』の記念背景システムは、ポケモンの詳細画面の背面に表示される最高峰のコレクターズ要素です。システムは大きく2つの柱に分かれています：\n\n1. ロケーションカード（Location Cards）：実在する特定の都市や会場に紐づいた地理的背景（GO Fest、GO Tour、City Safari開催都市、ナショナル・トラスト史跡など）。\n2. スペシャル背景（Special Backgrounds）：世界規模のイベント、異次元、勢力マイルストーンに紐づいたテーマ背景（ウルトラホール、合体ネクロズマ／キュレム、チームリーダー記念など）。現地に行かなくても世界中で入手可能。\n\n🇯🇵 日本の「ポケふたスタンプラリー」をお探しの方へ：\n日本全国41都道府県のマンホール蓋（ポケふた）、黄色と青のスタンプの違い、ご当地背景ピカチュウについては、専用の単独ガイドで詳しく解説しています！\n👉 ガイドを見る：[ポケふたスタンプラリー完全攻略：全国アンバサダーとロケーション背景ピカチュウ](/guides/pokelid-stamp-rally-japan-guide)。",
-          ru: "Памятные фоны в Pokémon GO — это престижные косметические модификации на экране покемона. Система делится на две категории:\n\n1. Карточки локаций (Location Cards): Привязаны к реальным географическим городам проведения живых событий (GO Fest, GO Tour, City Safari, объекты National Trust).\n2. Специальные фоны (Special Backgrounds): Привязаны к глобальным темам и лору (Ultra Space Wormhole, слияния Некрозмы и Кюрема, Лидеры Команд) и доступны тренерам по всему миру без путешествий.\n\n🇯🇵 ВАЖНОЕ ПРИМЕЧАНИЕ О ЯПОНСКИХ POKÉ LIDS:\nИщете руководство по японским люкам (Pokéfuta), желтым/синим штампам и Пикачу с фонами префектур?\nУ нас есть отдельный специализированный гайд!\n👉 Перейдите к: [Pokélid (Pokéfuta) Stamp Rally в Японии: Полный гайд](/guides/pokelid-stamp-rally-japan-guide)."
+          cs: "Pamětní karty v Pokémon GO jsou prestižní vizuální modifikace, které se zobrazují na pozadí detailu Pokémona za jeho 3D modelem. Celý systém se dělí do dvou hlavních pilířů:\n\n1. Lokační karty (Location Cards): Vázané na konkrétní fyzické geografické místo na světě (města hostící Pokémon GO Fest, GO Tour, City Safari nebo historické památky National Trust).\n2. Speciální pozadí (Special Backgrounds): Vázaná na globální události, kosmické dimenze, lore fenomény (Ultra Space Wormhole, fúze Necrozmy a Kyuremu, lídři Valor/Instinct/Mystic) a dostupná všem trenérům na světě bez nutnosti cestovat.\n\n🇯🇵 DŮLEŽITÉ UPOZORNĚNÍ PRO JAPONSKÉ POKÉ LIDS:\nHledáte oficiální poklopy Poké Lids v Japonsku a Pikachu s pozadím prefektur?\nJaponská razítková rallye má vlastní specializovaný článek!\n👉 Přejděte na: [Pokélid Stamp Rally v Japonsku: Kompletní průvodce](/guides/pokelid-stamp-rally-japan-guide).",
+          en: "Commemorative cards in Pokémon GO are prestigious cosmetic modifications displayed behind a Pokémon on its summary screen. The engine divides into two distinct pillars:\n\n1. Location Cards: Bound to physical geographic destinations around the globe (host cities of Pokémon GO Fest, GO Tour, City Safari, or heritage landmarks like UK National Trust).\n2. Special Backgrounds: Bound to global lore, dimensions, and factional milestones (Ultra Space Wormholes, Necrozma & Kyurem fusions, Team Leaders), accessible worldwide without travel.\n\n🇯🇵 IMPORTANT NOTICE REGARDING JAPANESE POKÉ LIDS:\nLooking for the Japanese Poké Lids covers and prefecture-specific Pikachu cards?\nThe Japanese Stamp Rally has its own dedicated master guide!\n👉 Visit: [Pokélid Stamp Rally in Japan: Complete Guide](/guides/pokelid-stamp-rally-japan-guide).",
+          ja: "『Pokémon GO』の記念背景システムは、ポケモンの詳細画面の背面に表示される最高峰のコレクターズ要素です。システムは大きく2つの柱に分かれています：\n\n1. ロケーションカード（Location Cards）：実在する特定の都市や会場に紐づいた地理的背景（GO Fest、GO Tour、City Safari開催都市、ナショナル・トラスト史跡など）。\n2. スペシャル背景（Special Backgrounds）：世界規模のイベント、異次元、勢力マイルストーンに紐づいたテーマ背景（ウルトラホール、合体ネクロズマ／キュレム、チームリーダー記念など）。現地に行かなくても世界中で入手可能。\n\n🇯🇵 日本の「ポケふたスタンプラリー」をお探しの方へ：\n日本全国41都道府県のマンホール蓋（ポケふた）、ご当地背景ピカチュウについては、専用の単独ガイドで詳しく解説しています！\n👉 ガイドを見る：[ポケふたスタンプラリー完全攻略：全国アンバサダーとロケーション背景ピカチュウ](/guides/pokelid-stamp-rally-japan-guide)。",
+          ru: "Памятные фоны в Pokémon GO — это престижные косметические модификации на экране покемона. Система делится на две категории:\n\n1. Карточки локаций (Location Cards): Привязаны к реальным географическим городам проведения живых событий (GO Fest, GO Tour, City Safari, объекты National Trust).\n2. Специальные фоны (Special Backgrounds): Привязаны к глобальным темам и лору (Ultra Space Wormhole, слияния Некрозмы и Кюрема, Лидеры Команд) и доступны тренерам по всему миру без путешествий.\n\n🇯🇵 ВАЖНОЕ ПРИМЕЧАНИЕ О ЯПОНСКИХ POKÉ LIDS:\nИщете руководство по японским люкам Poké Lids и Пикачу с фонами префектур?\nУ нас есть отдельный специализированный гайд!\n👉 Перейдите к: [Pokélid Stamp Rally в Японии: Полный гайд](/guides/pokelid-stamp-rally-japan-guide)."
         },
         tips: {
           cs: [
@@ -1777,7 +1709,502 @@ export const GUIDES_DATA: GuideArticle[] = [
         pokemon: ["Necrozma-Dusk-Mane", "Necrozma-Dawn-Wings", "Kyurem", "Zekrom", "Reshiram"]
       }
     ]
+  },
+  {
+    "id": "trainer-level-rewards-tasks-guide",
+    "slug": "trainer-level-rewards-tasks-guide",
+    "iconName": "Award",
+    "imageUrl": "/icons/trainer-xp-badge.svg",
+    "featured": true,
+    "author": "PoGo Events Team",
+    "readTime": "16 min",
+    "updatedAt": "2026-10-17",
+    "category": {
+      "cs": "Levely & XP",
+      "en": "Levels & XP",
+      "ja": "レベル＆XP",
+      "ru": "Уровни и XP"
+    },
+    "title": {
+      "cs": "Pokémon GO Úrovně Trenéra 1–80: Kompletní přehled odměn, XP a úkolů",
+      "en": "Pokémon GO Trainer Levels 1–80: Complete Rewards, XP & Tasks Guide",
+      "ja": "Pokémon GO トレーナーレベル1〜80：報酬・必要XP・レベルアップタスク完全攻略",
+      "ru": "Уровни тренера в Pokémon GO 1–80: Полный гайд по наградам, XP и квестам"
+    },
+    "subtitle": {
+      "cs": "Vše o novém systému úrovní 1 až 80, interaktivní checklist úkolů pro levely 71 až 80, blueprint pro 50 platinových medailí a nejlepší způsoby farmení XP.",
+      "en": "Complete breakdown of all 80 trainer levels, interactive task checklist for levels 71 to 80, 50 Platinum medals master blueprint, and fastest XP farming methods.",
+      "ja": "全80レベルの必要XPとアンロック報酬、レベル71〜80の過酷なタスク攻略法、最速でプラチナメダル50個を獲得するロードマップを徹底解説。",
+      "ru": "Полный разбор всех 80 уровней, квестов 71–80 уровней, интерактивный чек-лист, стратегия получения 50 платиновых медалей и лучшие способы фарма XP."
+    },
+    "sections": [
+      {
+        "id": "trainer-levels-overview-system",
+        "heading": {
+          "cs": "1. Přehled systému úrovní 1 až 80 a moderní pravidla postupu",
+          "en": "1. Overview of Trainer Levels 1–80 & Modern Progression Rules",
+          "ja": "1. トレーナーレベル1〜80の新システムと進行ルール概要",
+          "ru": "1. Обзор системы уровней 1–80 и современные правила прокачки"
+        },
+        "content": {
+          "cs": "V říjnu 2025 prošel Pokémon GO zásadní reformou úrovní trenéra. Maximální hranice byla navýšena z původního levelu 50 až na velkolepý Level 80. Tato změna přinesla nejen masivní navýšení potřebných zkušeností, ale také klíčové zjednodušení dřívějšího systému.\n\nZatímco ve starém systému museli trenéři plnit speciální úkoly již od levelu 41, v moderním systému od levelu 1 až do levelu 70 postupujete čistě sběrem zkušeností XP. Teprve po dosažení levelu 70 se aktivuje finální výzva v podobě deseti nejvyšších úrovní (Level 71 až 80), kde každý jednotlivý level vyžaduje kromě milionů XP také splnění 4 náročných úkolů.\n\nPro přehlednost dělíme celý systém do tří přirozených bloků:\n• Level 1–40: Klasická základní cesta, během které odemykáte základní herní funkce jako líhnutí vajec, tělocvičny, raidové bitvy, Mega evoluce a systém Candy XL pro posilování pokémonů. Celkem vyžaduje 20 milionů XP.\n• Level 41–70: Pokročilá fáze trenérského růstu založená čistě na soustavném sběru XP. Zde získáváte luxusní odměny v podobě bezplatných inkubátorů, prémiových battle passů a rozšíření inventáře i kapacity pokémonů.\n• Level 71–80: Vrcholový obsah hry. Zde musíte splnit celkem 40 unikátních Level-Up úkolů, nasbírat 50 platinových medailí a nashromáždit celkem přes 203 milionů XP. Za odměnu získáte prestižní oblečení avatara, Master Bally a finální bundu Level 80 Circuit Master.",
+          "en": "In October 2025, Pokémon GO underwent a massive trainer progression overhaul, expanding the level cap from level 50 up to the grand Level 80. This redesign streamlined early advancement while establishing a colossal endgame challenge.\n\nUnlike the previous framework where tasks began at level 41, levels 1 through 70 now advance strictly through cumulative XP. Once you reach level 70, the ultimate trials unlock: levels 71 through 80 each demand massive XP along with completing 4 demanding Level-Up Tasks per tier (40 tasks total).\n\nProgression is structured into three clean blocks:\n• Level 1–40: Foundational journey unlocking essential mechanics: egg hatching, Gyms, Raids, Mega Evolution, and the Candy XL system. Requires 20,000,000 XP in total.\n• Level 41–70: Intermediate mastery focused entirely on steady XP grinding without mandatory chore bottlenecks. Grants rich supplies of incubators, raid passes, and permanent item and Pokémon storage expansions.\n• Level 71–80: The ultimate endgame. Requires conquering 40 rigorous Level-Up tasks, securing 50 Platinum medals, and amassing over 203,353,000 XP. Rewards include prestigious avatar apparel, Master Balls, and the legendary Level 80 Circuit Master jacket.",
+          "ja": "2025年10月、Pokémon GOのトレーナーレベルシステムが刷新され、上限が従来のLv50から前代未聞の【レベル80】へと拡張されました。\n\n以前はレベル41から課されていた「レベルアップタスク」が撤廃され、レベル1からレベル70までは純粋な【獲得XPのみ】でスムーズに昇格できるようになりました。そしてレベル70に到達した真のベテランにのみ、最後の壁となるレベル71〜80の過酷なタスク（各4個、計40個）が立ちはだかります。\n\nレベル進行は分かりやすく3つの区分に分かれています：\n• Level 1–40：ジム、レイドバトル、メガシンカ、アメXLなどの全基本システムが順次解禁される育成期。累計2,000万XP。\n• Level 41–70：タスク縛りがなく、純粋なXP稼ぎに専念できる充実期。ふかそうちやプレミアムパス、バッグ・ボックス枠の無料拡張が多数配布されます。\n• Level 71–80：最高峰のエンドコンテンツ。計40個の高難度タスクとプラチナメダル50個、累計2億335万XPが必要。限定アバター衣装やマスターボール、Lv80限定ジャケットが授与されます。",
+          "ru": "В октябре 2025 года система уровней в Pokémon GO получила масштабное обновление: потолок прокачки вырос с 50 до грандиозного 80 уровня.\n\nКвесты больше не требуются на уровнях 41–70: теперь прокачка с 1 по 70 уровень идет исключительно за счет накопления опыта XP. Лишь по достижении 70 уровня открывается эндгейм: уровни с 71 по 80 требуют не только миллионы XP, но и выполнение 4 сложнейших заданий на каждом уровне (всего 40 заданий).\n\nСистема делится на три понятных блока:\n• Уровни 1–40: Базовый этап, открывающий гимы, рейды, мега-эволюции и механику Candy XL. Требует 20 000 000 XP.\n• Уровни 41–70: Продвинутый этап чистого набора XP без принудительных квестов. Дает ценные награды: инкубаторы, рейдовые пасы и расширения инвентаря.\n• Уровни 71–80: Главный вызов игры. Требует 40 испытаний, 50 платиновых медалей и свыше 203 миллионов XP. Награды включают элитные вещи аватара, Master Ball и куртку 80 уровня."
+        },
+        "tips": {
+          "cs": [
+            "XP se v Pokémon GO nikdy neztrácí: veškeré přebytečné zkušenosti se neustále střádají na vašem profilu i před splněním úkolů.",
+            "Úkoly pro levely 71 až 80 se začínají započítávat až ve chvíli, kdy na daný level vstoupíte. Jedinou výjimkou jsou platinové medaile, které hra započítává retrospektivně.",
+            "Využijte náš interaktivní filtr níže pro okamžité vyhledání odměn a požadavků pro kterýkoliv konkrétní level."
+          ],
+          "en": [
+            "XP in Pokémon GO is never wasted: surplus experience continues accumulating seamlessly on your trainer profile even if tasks are incomplete.",
+            "Level 71–80 tasks begin tracking progress only upon reaching that specific level tier, with the sole exception of Platinum medals which track cumulatively.",
+            "Use the interactive level browser below to filter levels, view rewards, and inspect unlocks instantly."
+          ],
+          "ja": [
+            "獲得したXPは決して無駄になりません。タスク未達成でも超過したXPは裏でそのまま蓄積され続けます。",
+            "レベル71〜80の各タスクは、そのレベルに到達した瞬間にカウントが始まります（プラチナメダルのみ過去の獲得数が自動で反映されます）。",
+            "下記のインタラクティブ一覧を使って、気になるレベルの必要XPや解禁アイテムを検索してみてください。"
+          ],
+          "ru": [
+            "Опыт XP никогда не теряется: излишки накапливаются в профиле даже если квесты уровня еще не закрыты.",
+            "Задания уровней 71–80 начинают считаться только при вступлении на этот уровень (кроме платиновых медалей, которые учитываются за все время).",
+            "Используйте интерактивный виджет ниже для быстрого просмотра наград любого уровня."
+          ]
+        }
+      },
+      {
+        "id": "trainer-levels-tasks-breakdown-71-80",
+        "heading": {
+          "cs": "2. Rozbor Level-Up úkolů pro úrovně 71 až 80 a tipy na splnění",
+          "en": "2. In-Depth Breakdown of Level 71–80 Tasks & Completion Strategies",
+          "ja": "2. レベル71〜80のレベルアップタスク詳細解説と最速達成テクニック",
+          "ru": "2. Разбор квестов 71–80 уровней и секреты быстрого прохождения"
+        },
+        "content": {
+          "cs": "Deset závěrečných úrovní přináší 40 pečlivě navržených výzev, které prověří všechny aspekty vašeho hraní: od házení přes bojovou připravenost až po chůzi v reálném světě.\n\nKlíčové skupiny úkolů a jak je zvládnout nejrychleji:\n• Počty chycených pokémonů v jednom dni (Level 71 vyžaduje 100 pokémonů, Level 76 vyžaduje 200 pokémonů):\nNejlepší příležitostí je měsíční Community Day trvající tři hodiny, úterní Spotlight Hour nebo procházka s aktivním Daily Incense a přenosným auto-catcherem. Použitím triku s rychlým chytáním (Fast Catch trick) chytíte 100 pokémonů za necelých 25 minut.\n\n• Úkoly na házení míčků (999 Nice na Lvl 71, 999 Great na Lvl 75, 999 Excellent na Lvl 80):\nZatímco Nice a Great hody splníte běžným každodenním chytáním, 999 Excellent hodů na levelu 80 vyžaduje správnou taktiku. Zaměřte se na legendární raid bossy s velkým cílovým kruhem jako Groudon, Kyogre nebo Necrozma. Pokud jim hodíte Nanab Berry, boss se přestane pohybovat a každý zakřivený míček s jistotou trefí střed.\n\n• Buddy srdíčka (400 srdcí na Level 78):\nNemusíte čekat měsíce ani nachodit stovky kilometrů. Hra umožňuje vyměnit až 20 buddies za den. U každého z nich stačí provést 3 rychlé akce: nakrmit 3 bobulemi, pohladit a vyfotit. Tím získáte 3 srdíčka na jednoho pokémona. S 20 výměnami denně tak nasbíráte 60 srdcí za pouhých 10 minut bez jediného kroku!\n\n• Očišťování stínových pokémonů (100 kousků na Level 73):\nUšetřete si Stardust. Očišťujte výhradně pokémony s nejnižším nákladem 1 000 Stardustu jako Zubat, Rattata, Pidgey, Magikarp, Weedle a Foongus. Nikdy neočišťujte pokémony s cenou 3 000 nebo 5 000 Stardustu, pokud je nepotřebujete pro boj.\n\n• Posilování pokémonů na maximální Level 50 (Level 73 vyžaduje 3 pokémony, Level 77 vyžaduje 7 pokémonů):\nK posílení na Level 50 potřebujete 296 Candy XL na každého pokémona. Zcela zdarma můžete získat neomezené množství Candy XL pro Melmetala díky otevírání Mystery Boxu každé 3 dny. Další skvělou volbou jsou pokémoni z minulých Community Days, kde jste během tří hodin nasbírali stovky XL bonbónů.",
+          "en": "The final ten tiers present 40 meticulously designed trials testing every dimension of your gameplay: throwing accuracy, battle acumen, social cooperation, and physical exploration.\n\nKey Task Categories & Optimization Playbooks:\n• Single-Day Catch Marathons (Catch 100 on Lvl 71, Catch 200 on Lvl 76):\nSchedule these during the 3-hour monthly Community Day or Tuesday Spotlight Hour. Utilizing the Fast Catch technique allows catching 100 Pokémon in under 25 minutes.\n\n• Precision Throwing Trials (999 Nice on Lvl 71, 999 Great on Lvl 75, 999 Excellent on Lvl 80):\nWhile Nice and Great throws complete naturally, 999 Excellent throws at Level 80 demands targeted play. Target 5★ Legendary raid bosses with expansive catch circles like Groudon, Kyogre, and Necrozma. Calming bosses with Nanab Berries guarantees reliable Excellent precision.\n\n• Buddy Hearts Accumulation (400 Hearts on Level 78):\nZero walking is required. Pokémon GO allows rotating up to 20 buddy Pokémon every single day. For each buddy, execute 3 instant actions: feed 3 berries, pet, and snapshot. This yields 3 quick hearts per buddy × 20 swaps = 60 hearts daily in just 10 minutes of sofa play.\n\n• Shadow Purifications (Purify 100 on Level 73):\nProtect your Stardust reserves. Strictly filter and purify low-cost 1,000 Stardust species like Zubat, Rattata, Pidgey, Magikarp, Weedle, and Foongus. Never waste 3,000 or 5,000 Stardust on batch purifications.\n\n• Max CP Level 50 Power-ups (3 Pokémon on Level 73, 7 Pokémon on Level 77):\nReaching Level 50 requires 296 Candy XL per species. Melmetal is practically free via the Mystery Box opening every 3 days. Community Day featured species also yield abundant Candy XL reserves.",
+          "ja": "レベル71〜80の10段階には、投球技術、バトル力、フレンド交流、現実世界の移動力を試す40の試練が用意されています。\n\n主要タスクの攻略ポイントと裏技：\n• 1日捕獲タスク（Lv71で100匹、Lv76で200匹）：\n月1回のコミュニティ・デイ（14:00〜17:00）または火曜スポットライトアワーで挑みましょう。捕獲画面スキップ（ファストキャッチ）を駆使すれば、100匹なら約25分で終わります。\n\n• スロー回数タスク（Lv71でナイス999回、Lv75でグレート999回、Lv80でエクセレント999回）：\nLv80のエクセレント999回は、カイオーガやグラードンなどサークルが巨大な伝説レイドボスにナナのみを投げて稼ぐのが最も確実です。\n\n• 相棒ハート400個（Lv78）：\n歩く必要はありません！相棒は1日20回まで交代可能です。交代ごとに「おやつ」「撫でる」「写真」を行えば各3個、20匹で1日60個のハートをわずか10分で量産できます。\n\n• シャドウリトレーン100匹（Lv73）：\n必ずすな消費1,000の軽量シャドウ（ズバット、コラッタ、ポッポ、コイキング等）に絞って実行し、大切なほしのすなを温存しましょう。\n\n• Lv50フル強化（Lv73で3匹、Lv77で7匹）：\n「ふしぎなはこ」から無限にアメXLが手に入るメルメタルや、コミュニティ・デイでアメXLが大量にあるポケモンを優先してLv50に引き上げましょう。",
+          "ru": "Финал игры предлагает 40 заданий, проверяющих точность бросков, боевой опыт и активность на прогулках.\n\nКлючевые категории квестов и лайфхаки:\n• Улов за один день (100 на 71 уровне, 200 на 76 уровне):\nВыполняйте во время 3-часового Community Day или часового Spotlight Hour. С трюком Fast Catch 100 покемонов ловятся быстрее чем за 25 минут.\n\n• Точные броски (999 Nice на 71 уровне, 999 Great на 75 уровне, 999 Excellent на 80 уровне):\nДля 999 Excellent бросков на 80 уровне бросайте в легендарных боссов рейдов (Groudon, Kyogre, Necrozma) с огромным кольцом, предварительно дав им Nanab Berry.\n\n• 400 сердец с напарником (78 уровень):\nХодить не нужно! Меняйте до 20 бадди в день. Покормите, погладьте и сфотографируйте каждого (3 сердца × 20 = 60 сердец в день за 10 минут).\n\n• Очистка 100 Shadow покемонов (73 уровень):\nОчищайте только дешевых покемонов за 1 000 пыли (Zubat, Rattata, Pidgey, Magikarp, Weedle, Foongus).\n\n• Прокачка до Level 50 (3 покемона на 73 уровне, 7 на 77 уровне):\nИспользуйте Melmetal из Mystery Box (бесплатные конфеты XL каждые 3 дня) и покемонов с прошедших Community Day."
+        },
+        "tips": {
+          "cs": [
+            "Níže v článku naleznete interaktivní checklist všech 40 úkolů, kde si můžete odškrtávat svůj postup s automatickým uložením v prohlížeči.",
+            "Úkol na 10 výměn na vzdálenost přes 300 km splníte líhnutím 7km vajec z dárků od zahraničních přátel a jejich následnou výměnou s místním trenérem.",
+            "Zápasy v GO Battle League pro level 80 plňte na začátku sezóny nebo během GO Battle víkendů, kdy jsou souboje nejrychlejší."
+          ],
+          "en": [
+            "Check out our interactive 40-task checklist below with automatic browser persistence to monitor your endgame progress.",
+            "For the 10 distance trades over 300 km task, hatch 7km eggs received in gifts from overseas friends and trade them locally.",
+            "Complete the 80 GBL wins for level 80 during GO Battle Weekends or at the season start when matchmaking is rapid."
+          ],
+          "ja": [
+            "本記事の下部にあるインタラクティブチェックリストをご活用ください。ブラウザに自動保存されます。",
+            "300km以上のトレードタスクは、海外フレンドのギフトから出た7kmタマゴを孵化させて近所のフレンドと交換すればすぐ終わります。",
+            "Lv80のGBL80勝は、GOバトルウィークエンドなどのイベント期間中にランク1〜15の帯で一気に稼ぎましょう。"
+          ],
+          "ru": [
+            "Используйте наш интерактивный чек-лист из 40 заданий ниже: ваш прогресс автоматически сохраняется в браузере.",
+            "Для обмена покемонами на 300+ км высиживайте 7км яйца из зарубежных подарков и меняйтесь ими с локальным другом.",
+            "Победы в GBL для 80 уровня проще всего фармить на GO Battle Weekend или в начале сезона на низких рангах."
+          ]
+        }
+      },
+      {
+        "id": "trainer-levels-platinum-medals-blueprint",
+        "heading": {
+          "cs": "3. Doporučené platinové medaile a blueprint pro 50 medailí",
+          "en": "3. Recommended Platinum Medals Blueprint for Level 80",
+          "ja": "3. プラチナメダル50個最速達成ブループリント＆優先度ガイド",
+          "ru": "3. Топ платиновых медалей: пошаговый план к 50 медалям для 80 уровня"
+        },
+        "content": {
+          "cs": "Získat 50 platinových medailí představuje největší dlouhodobou zkoušku pro každého trenéra směřujícího na Level 80. Ve hře existuje přes 70 různých medailí, ale jejich časová a herní náročnost se dramaticky liší. Některé zvládnete za pár týdnů, zatímco jiné vyžadují roky každodenního hraní nebo velké štěstí.\n\nNáš blueprint dělí medaile do tří přehledných skupin podle rychlosti a efektivity:\n\n1. Doporučené a rychlé medaile (Základ pro 25 až 30 medailí):\n• 18 typových medailí za 2 500 úlovků: Normal, Flying, Water, Grass, Poison, Bug a další. Každý odchyt se počítá a medaile navíc zvyšuje šanci na chytání.\n• Kanto a Johto Pokédex: Kompletní registrace 151 pokémonů z Kanto a 100 pokémonů z Johto.\n• Scientist za 2 000 evolucí: Masivní vyvíjení běžných pokémonů za 12 Candy během bonusových akcí.\n• Cameraman za 400 photobombů: Jedna fotka buddyho denně plus eventové dny s až pěti fotobomby.\n• Idol za 20 Best Friends: Přirozený výsledek posílání dárků s přáteli po dobu 90 dní.\n• Collector za 50 000 úlovků a Backpacker za 50 000 otočení PokéStopů: Tyto dvě medaile splníte přirozeně na cestě k vysokým milionům XP.\n\n2. Skvělé medaile pro aktivní grinding (Doplnění do 50 medailí):\n• Ace Trainer za 2 000 tréninků s lídry: Využijte trik s lídryní Blanche v Master League. Se silným elektrickým pokémonem ukončíte boj za 15 sekund.\n• Purifier za 1 000 očištěných pokémonů: Čistěte výhradně levné pokémony za 1 000 Stardustu a spojte to s lovem Rakeťáků.\n• Hero za 2 000 poražených poskoků Team GO Rocket: Využijte víkendy Rocket Takeover.\n• Battle Girl za 4 000 výher v tělocvičnách: Shazujte gymy rychlým bojovým týmem.\n• Champion za 1 000 raidů a Battle Legend za 1 000 legendárních raidů: Pravidelná účast na bezplatných denních raidech.\n\n3. Medaile, kterým se raději vyhněte a nepočítejte s nimi:\n• Triathlete za 100 sedmidenních sérií: Vyžaduje minimálně 700 dní bez jediného vynechaného dne. Nelze ji nijak urychlit.\n• Fisherman za 1 000 obřích Magikarpů a Youngster za 1 000 drobných krys Rattata: Pouze 12 až 15 procent ulovených kusů splňuje kritéria velikosti, což znamená chytit přes sedm tisíc pokémonů od každého druhu.\n• Unown za 28 písmen: V divočině se téměř nevyskytuje a vyžaduje účast na placených festivalech.\n• Best Buddy za 100 nejlepších parťáků: Extrémně časově náročný proces vyžadující 30 000 srdíček celkem.",
+          "en": "Securing 50 Platinum medals is universally recognized as the premier milestone for Level 80. While Pokémon GO features over 70 distinct badges, their difficulty curves diverge drastically.\n\nOur strategic blueprint categorizes badges into three clear speed and efficiency tiers:\n\n1. Recommended Fast Medals (Core foundation of 25–30 medals):\n• 18 Type Catch Badges (2,500 catches each): Normal, Flying, Water, Grass, Bug, and Poison accumulate naturally and grant permanent catch rate boosts.\n• Kanto & Johto Dex Completion: 151 and 100 registrations respectively.\n• Scientist (2,000 Evolutions): Hoarding 12-candy species for mass evolution sessions.\n• Cameraman (400 Photobombs): Daily buddy snapshots plus event boosts.\n• Idol (20 Best Friends): 90 days of daily gift coordination.\n• Collector (50k Catches) & Backpacker (50k Spins): Fully guaranteed byproducts of your massive XP grind.\n\n2. Active Grinding Medals (Pushing your tally to 50):\n• Ace Trainer (2,000 Leader Trainings): Fast-farm Blanche in Master League in 15 seconds per bout.\n• Purifier (1,000 Shadows): Strictly purge 1,000 Stardust specimens.\n• Hero (2,000 Rocket Grunts): Heavy engagement during Rocket Takeovers.\n• Battle Girl (4,000 Gym Victories): Sweeping local gyms with high-DPS Fighting counters.\n• Champion & Battle Legend (1,000 regular & legendary raid clears).\n\n3. Badges to Avoid as Milestones:\n• Triathlete (100× 7-day streaks): Mathematically locked behind 700 uninterrupted days minimum.\n• Fisherman & Youngster: Extreme size bracket RNG requiring 7,000–8,000 catches each.\n• Unown (28 alphabet letters): Dependent on paid ticketed in-person festivals.\n• Best Buddy (100 Best Buddies): Demands 30,000 buddy hearts total.",
+          "ja": "プラチナメダル50個の獲得は、レベル80到達における最大の登竜門です。ゲーム内には70種類以上のメダルが存在しますが、達成難易度は天と地ほどの差があります。\n\n効率的に50個を集めるための3段階戦略：\n\n1. 最優先・最速メダル（ベースとなる25〜30個）：\n• タイプ別捕獲メダル18種（各2,500匹）：ノーマル、ひこう、みず、くさ、どく等は日々の捕獲で最速達成可能。\n• カントー＆ジョウト図鑑（151匹・100匹）：イベント復刻や交換でコンプリート。\n• けんきゅういん（進化2,000回）：アメ12個のポッポやケムッソを進化XP2倍時に一括進化。\n• カメラマン（400回）：毎日の相棒撮影で確定カウント。\n• アイドル（大親友20人）：毎日ギフトを送り合って90日で達成。\n• コレクター（5万匹）＆バックパッカー（5万回）：累計XPを稼ぐ過程で自然に達成。\n\n2. 周回で稼げるアクティブメダル（50個への到達枠）：\n• エリートトレーナー（特訓2,000回）：マスターリーグのブランシェを速攻で倒して1戦15秒周回。\n• リトレーナー（1,000匹）：1,000すなの軽量シャドウのみに絞って達成。\n• ヒーロー（したっぱ2,000人）：ロケット団イベントで集中周回。\n• バトルガール（ジム4,000勝）：かくとうパーティでジムを素早く制圧。\n• チャンピオン＆バトルレジェンド（レイド各1,000勝）。\n\n3. 優先すべきでない長期メダル：\n• トライアスリート：最低でも連続700日（約2年）が必要で短縮不可。\n• つりびと＆たんぱんこぞう：判定率12〜15%の超低確率で各7,000〜8,000匹の捕獲が必要。\n• アンノーン：リアルイベント遠征なしでは不可能な文字収集。\n• 最高の相棒100匹：計3万個のハートが必要な過酷作業。",
+          "ru": "Получение 50 платиновых медалей — главное испытание на пути к 80 уровню. Из более чем 70 медалей в игре сложность кардинально различается.\n\nПошаговый план к 50 медалям:\n\n1. Рекомендуемые быстрые медали (Базовые 25–30 медалей):\n• 18 медалей типов (по 2 500 покемонов): Normal, Flying, Water, Grass, Bug и Poison закрываются быстрее всего.\n• Покедексы Канто и Джото (151 и 100 покемонов).\n• Scientist (2 000 эволюций): массовая эволюция покемонов за 12 конфет.\n• Cameraman (400 фотобомб): ежедневное фото напарника.\n• Idol (20 Best Friends): 90 дней подарков.\n• Collector (50k поимок) и Backpacker (50k спинов): придут сами в процессе набора XP.\n\n2. Медали для активного фарма (Добейте до 50 штук):\n• Ace Trainer (2 000 тренировок): бой с лидером Blanche в Master League за 15 секунд.\n• Purifier (1 000 очищений): строго покемоны за 1 000 пыли.\n• Hero (2 000 пешек Ракеты).\n• Battle Girl (4 000 побед в гимах).\n• Champion и Battle Legend (по 1 000 рейдов).\n\n3. Медали, которых лучше избегать:\n• Triathlete: требует минимум 700 дней без пропусков (около 2 лет).\n• Fisherman и Youngster: нужный размер выпадает лишь в 12-15% случаев.\n• Unown: 28 букв требуют платных поездок на GO Fest.\n• Best Buddy (100 лучших бадди): 30 000 сердец суммарно."
+        },
+        "tips": {
+          "cs": [
+            "Medaile začněte budovat od prvního dne hraní: typové medaile vám navíc trvale přidávají bonus +4 k šanci na chycení pokémona daného typu.",
+            "Využijte náš interaktivní přehled medailí v článku pro rychlou kontrolu strategií u každé jednotlivé medaile.",
+            "Neztrácejte čas lovem obřích Magikarpů nebo sháněním chybějících Unownů, pokud ještě nemáte hotové základní medaile jako Scientist, Cameraman nebo Ace Trainer."
+          ],
+          "en": [
+            "Start working on badges early: type medals grant a permanent +4 multiplier boost to your catch rate.",
+            "Use our interactive badge strategy component below to check requirements and time estimates.",
+            "Do not waste energy hunting XL Magikarps or rare Unowns when easy badges like Scientist, Cameraman, and Ace Trainer are incomplete."
+          ],
+          "ja": [
+            "タイプ別メダルはポケモンの捕獲率を最大+4まで底上げしてくれるため、最優先でプラチナを目指しましょう。",
+            "本記事内のメダル戦略リストで、各メダルの所要時間と攻略テクニックを確認してください。",
+            "けんきゅういん、カメラマン、特訓などの簡単枠が残っているうちは、コイキング厳選やアンノーン集めに時間を割くのは避けましょう。"
+          ],
+          "ru": [
+            "Качайте медали с самого начала: медали типов дают постоянный бонус +4 к шансу поимки.",
+            "Используйте наш виджет со стратегиями медалей ниже для оценки времени выполнения.",
+            "Не тратьте силы на XL Magikarp или Unown, пока не закрыты простые медали вроде Scientist, Cameraman и Ace Trainer."
+          ]
+        }
+      },
+      {
+        "id": "trainer-levels-fastest-xp-farming-methods",
+        "heading": {
+          "cs": "4. Nejrychlejší způsoby získávání XP v moderním Pokémon GO",
+          "en": "4. Fastest XP Farming Methods in Modern Pokémon GO",
+          "ja": "4. 現代のPokémon GOにおける最速XP獲得テクニック",
+          "ru": "4. Самые быстрые способы фарма XP в современном Pokémon GO"
+        },
+        "content": {
+          "cs": "Dosažení levelu 80 vyžaduje celkem přes 203 milionů XP. Získat takové množství zkušeností se může zdát jako nedosažitelný cíl, ale díky moderním herním mechanikám a správnému načasování Lucky Eggu můžete tempo sběru XP zdesetinásobit.\n\nNejvýnosnější metody získávání XP:\n\n1. Přátelství a synchronizace Lucky Eggu (Nejvyšší výnos ve hře):\nDosáhnout statusu Ultra Friends přináší 50 000 XP (100 000 XP s Lucky Eggem) a Best Friends dokonce 100 000 XP (200 000 XP s Lucky Eggem). Synchronizujte otevírání dárků s přáteli na jeden konkrétní čas, například na začátek Community Day, a otevřete desítky dárků pod jedním šťastným vejcem. Pět Best Friends naráz vám přinese 1 000 000 XP za 5 minut!\n\n2. Trénink Excellent hodů (Až 2 340 XP za jediného běžného pokémona):\nKaždý Excellent hod dává základních 1 000 XP plus bonus za chycení prvním hodem a Curveball, což dává přes 1 170 XP na odchyt. Pokud aktivujete Lucky Egg při eventu s dvojnásobkem Catch XP, získáte až 4 680 XP za jediného chyceného pokémona. Při rychlém chytání 150 pokémonů za hodinu to znamená přes 700 000 XP za jediné odpoledne.\n\n3. Spotlight Hour s bonusem 2× Evolution XP:\nJednou za měsíc probíhá úterní Spotlight Hour s bonusem na dvojnásobek zkušeností za evoluci. S aktivním Lucky Eggem dostanete 4 000 XP za každou jednotlivou evoluci. Pokud si předem připravíte zásobu pokémonů za 12 Candy (Pidgey, Caterpie, Wurmple, Pidove) a použijete vyhledávací filtr \"evolve & !shiny\", můžete za hodinu nepřetržitého vyvíjení získat přes 600 000 až 750 000 XP.\n\n4. Víkendové Raid Days a Raid Hours:\nVyhraný 5★ legendární raid dává 10 000 XP (20 000 XP s Lucky Eggem). Během speciálních Raid Days navíc Niantic často navyšuje odměnu až na 50 000 XP za raid s aktivním vajíčkem. Při rychlé rotaci s místní komunitou můžete během 3 hodin odehrát 15 až 20 raidů a získat téměř 1 000 000 XP.\n\n5. Denní a týdenní série (Streaks):\nNikdy nevynechávejte sedmidenní sérii prvního chyceného pokémona a otočeného PokéStopu v týdnu. Spolu s týdenní odměnou z Adventure Sync vám tyto pravidelné návyky zajistí stabilní pasivní přísun statisíců XP každý měsíc.",
+          "en": "Reaching Level 80 requires over 203,353,000 XP. While daunting, contemporary game mechanics paired with strategic Lucky Egg deployment can accelerate your XP velocity by more than tenfold.\n\nTop XP Farming Methods Ranked by Hourly Yield:\n1. Friendship Tier Syncing (Highest yield in Pokémon GO):\nHitting Ultra Friends grants 50k XP (100k XP with Lucky Egg) and Best Friends awards 100k XP (200k XP with Lucky Egg). Coordinate gift openings in bulk at predetermined times (e.g. Community Day kickoff). Syncing 5 Best Friends simultaneously nets 1,000,000 XP in under 5 minutes.\n\n2. Excellent Throw Mastery (Up to 2,340 XP per catch):\nEvery Excellent throw delivers 1,000 base XP plus first-throw and curveball multipliers (~1,170 XP). During 2× or 3× Catch XP events stacked with a Lucky Egg, a single catch yields up to 4,680 XP. Catching 150 spawns per hour via Fast Catch produces over 700,000 XP in a single session.\n\n3. Mass Evolution during 2× Evolution XP Spotlight Hours:\nOnce a month, a Tuesday Spotlight Hour offers double Evolution XP. Stacking a Lucky Egg boosts this to 4,000 XP per evolution. Prepare tags of 12-candy species (Pidgey, Wurmple, Caterpie, Pidove) to execute 150+ evolutions for 600,000 to 750,000 XP per hour.\n\n4. Raid Days & Wednesday Raid Hours:\n5★ Legendary raids award 10k XP (20k XP with Lucky Egg). Dedicated Raid Days often feature boosted XP up to 50k XP per win with an egg. Running 15–20 raids with a local raid train yields nearly 1,000,000 XP across an afternoon.\n\n5. 7-Day Catch and Spin Streaks:\nNever drop 7-day milestones for daily catches and PokéStop spins. Combined with Monday Adventure Sync rewards, passive routines provide a consistent baseline of hundreds of thousands of XP every month.",
+          "ja": "レベル80到達には累計で2億335万XPという天文学的な数値が求められます。しかし、しあわせタマゴの適切なタイミングと最新の獲得手法を組み合わせれば、育成スピードを10倍以上に加速させることができます。\n\n最速XP獲得テクニック一覧：\n1. フレンド進行の一括開封（ゲーム内最高効率）：\n親友で5万XP（タマゴ使用時10万XP）、大親友で10万XP（タマゴ使用時20万XP）。コミュデイ開始時などにフレンドと合図を合わせ、5人の大親友を一気に達成すればわずか5分で100万XPを獲得可能です。\n\n2. エクセレントスローの徹底（1匹最大2,340XP）：\nエクセレントスローは基本1,000XP。捕獲XP倍増イベント時にしあわせタマゴを重ねると、1匹捕獲するだけで最大4,680XPが得られます。\n\n3. 進化XP2倍スポットライトアワーでの一括進化：\n月1回の進化XP2倍時にタマゴを使えば、1回の進化で4,000XP。アメ12個のポケモンを事前に集めておけば、1時間で60万〜75万XPを量産できます。\n\n4. 伝説レイドアワー＆レイドデイ周回：\n伝説レイド1戦で1万XP（タマゴで2万XP）。週末レイドデイではXPボーナスが付き、1戦で最大5万XP入ることもあります。\n\n5. 7日連続ボーナスといつでも冒険モード：\n7日目の初捕獲＆初スピン、そして月曜朝9時のいつでも冒険モード報酬を欠かさず受け取りましょう。",
+          "ru": "Для достижения 80 уровня требуется свыше 203 миллионов XP. С грамотным использованием Lucky Egg этот процесс можно ускорить в разы.\n\nЛучшие способы фарма опыта:\n1. Синхронизация дружбы (Максимальный доход в игре):\nUltra Friends дает 50k XP (100k с Lucky Egg), а Best Friends дает 100k XP (200k с Lucky Egg). Открывайте подарки пачками: 5 Best Friends за один раз принесут 1 000 000 XP за 5 минут.\n\n2. Мастерство Excellent бросков (До 2 340 XP за поимку):\nКаждый бросок Excellent приносит более 1 170 XP. Во время ивентов с умножением XP под Lucky Egg один покемон может давать до 4 680 XP.\n\n3. Массовая эволюция на Spotlight Hour с 2× Evolution XP:\nРаз в месяц во вторник проходит Spotlight Hour с удвоенным опытом за эволюцию (4 000 XP за покемона с яйцом). За час можно набрать 600k–750k XP.\n\n4. Рейдовые дни и Raid Hours:\nЛегендарные рейды 5★ дают 10 000 XP (20 000 XP с яйцом), а во время рейдовых дней награды могут вырастать до 50 000 XP за победу.\n\n5. 7-дневные серии:\nНе пропускайте 7-дневные серии ловли и вращения покестопов."
+        },
+        "tips": {
+          "cs": [
+            "Mějte vždy v batohu připravenou zásobu Lucky Eggů pro nečekané události s násobkem XP.",
+            "Zapněte si v nastavení hry Adventure Sync, abyste každé pondělí ráno v 9:00 automaticky inkasovali desítky tisíc XP z nachozených kilometrů.",
+            "Používejte vyhledávací řetězce v batohu pokémonů jako 'evolve & !shiny', které vám ušetří desítky minut při hromadném vyvíjení."
+          ],
+          "en": [
+            "Always keep a reserve of Lucky Eggs ready for surprise XP multiplier events.",
+            "Ensure Adventure Sync is active to automatically claim high weekly walking XP every Monday at 9:00 AM.",
+            "Use quick storage search strings like 'evolve & !shiny' to streamline mass-evolution sessions."
+          ],
+          "ja": [
+            "XP倍増イベントに備えて、常にバッグにしあわせタマゴの予備を確保しておきましょう。",
+            "いつでも冒険モードを有効にして、毎週月曜朝9時の週間リワードXPを確実に回収しましょう。",
+            "「進化 & !色違い」などの検索文字列を活用すれば、一括進化の作業時間を大幅に短縮できます。"
+          ],
+          "ru": [
+            "Всегда держите запас Lucky Egg на случай внезапных ивентов с бонусами XP.",
+            "Включите Adventure Sync, чтобы каждый понедельник в 9:00 забирать опыт за прогулки.",
+            "Используйте фильтры поиска вроде 'evolve & !shiny' для быстрой массовой эволюции."
+          ]
+        }
+      }
+    ]
+  },
+  {
+  "id": "ditto-disguises-guide",
+  "slug": "ditto-disguises-guide",
+  "iconName": "Sparkles",
+  "imageUrl": "https://cdn.leekduck.com/assets/img/pokemon_icons/pokemon_icon_132_00.png",
+  "featured": false,
+  "author": "PoGo Events Team",
+  "readTime": "8 min",
+  "updatedAt": "2026-10-17",
+  "category": {
+    "cs": "Divočina & Maskování",
+    "en": "Wild & Disguises",
+    "ja": "野生と変身",
+    "ru": "Дикая природа и маскировка"
+  },
+  "title": {
+    "cs": "Ditto v Pokémon GO: Aktuální přehled přestrojení a jak ho najít",
+    "en": "Ditto in Pokémon GO: Current Disguises & How to Catch It",
+    "ja": "ポケモンGO メタモンへんしんポケモン一覧：見分け方と捕獲攻略",
+    "ru": "Дитто в Pokémon GO: Текущие маскировки и способы поимки"
+  },
+  "subtitle": {
+    "cs": "Kompletní živá databáze všech divokých Pokémonů, za které se Ditto v aktuální sezóně maskuje, pravidla pro Shiny formu a tipy na efektivní lov.",
+    "en": "Live roster of all wild Pokémon species Ditto is currently disguised as, Shiny mechanics, weather boost rules, and pro catching tips.",
+    "ja": "今シーズン野生でメタモンが擬態している全対象ポケモン、色違い仕様、効率的な捕獲ルートを徹底解説。",
+    "ru": "Актуальный список покемонов, за которых маскируется Дитто, механика шайни и советы по быстрой поимке."
+  },
+  "sections": [
+    {
+      "id": "ditto-mechanics",
+      "heading": {
+        "cs": "1. Jak funguje mechanika přestrojení Ditta v divočině",
+        "en": "1. How Ditto's Wild Disguise Mechanics Work",
+        "ja": "1. 野生メタモンの擬態システムと基本ルール",
+        "ru": "1. Как работает маскировка Дитто в дикой природе"
+      },
+      "content": {
+        "cs": "Ditto se na herní mapě nikdy nezobrazuje ve své skutečné podobě. Místo toho se maskuje za vybranou skupinu běžných divokých Pokémonů. Teprve po úspěšném hodu a chycení se objeví animace 'Oh?' a pokémon se promění ve svou skutečnou fialovou (nebo modrou shiny) podobu Ditta.\n\nSeznam maskování se v Pokémon GO pravidelně obměňuje s příchodem nových herních sezón nebo tematických eventů. Níže naleznete náš živý interaktivní seznam všech aktuálních přestrojení s automatickým načítáním z herních serverů.",
+        "en": "Ditto never reveals its true form on the wild overworld map. Instead, it masquerades as specific common wild Pokémon. Only upon a successful throw and catch does the iconic 'Oh?' transformation sequence trigger, unveiling the purple (or brilliant blue Shiny) Ditto.\n\nDisguise pools rotate seasonally and during special events. Below you will find our live interactive tracker automatically synced with current server spawns.",
+        "ja": "メタモンはマップ上で直接その姿を現すことはありません。常に特定の一般ポケモンの姿に化けて野生に出現します。ボールを投げて捕獲に成功した瞬間に「おや？」という演出が発生し、本来のメタモンの姿へと変身します。\n\n変身対象ポケモンはシーズンやイベントごとに定期的に入れ替わります。下記に最新の擬態対象をリアルタイムで掲載しています。",
+        "ru": "Дитто никогда не отображается на карте в своем истинном облике. Он маскируется под определенных обычных покемонов. Только после поимки появляется надпись 'Oh?' и покемон превращается в Дитто.\n\nСписок маскировок регулярно обновляется с началом новых сезонов. Ниже представлен актуальный интерактивный список всех текущих маскировок."
+      },
+      "tips": {
+        "cs": [
+          "Pokud vidíte pokémona z aktuálního seznamu přestrojení, který je nezvykle těžký na chycení (červený kruh u běžného pokémona), s vysokou pravděpodobností jde o Ditta!",
+          "Používejte Razz Berry a Ultra Bally na podezřele se bránící běžné pokémony, aby vám Ditto neutekl."
+        ],
+        "en": [
+          "If a common species from the disguise pool has an unusually dark or red catch circle, it is very likely a Ditto!",
+          "Deploy Razz Berries and Ultra Balls if a normally easy catch resists your throws."
+        ],
+        "ja": [
+          "普段なら簡単に捕まるはずのポケモンが異様に捕まりにくい（サークルが赤い）場合、メタモンの可能性が極めて高いです！",
+          "逃走を防ぐため、怪しい個体にはズリのみとハイパーボールを惜しみなく使いましょう。"
+        ],
+        "ru": [
+          "Если обычный покемон из списка подозрительно тяжело ловится (красный круг), скорее всего это Дитто!",
+          "Используйте Razz Berry и Ultra Ball, чтобы Дитто не сбежал."
+        ]
+      }
+    },
+    {
+      "id": "shiny-ditto-rules",
+      "heading": {
+        "cs": "2. Pravidla pro Shiny Ditta a třpytivé formy",
+        "en": "2. Shiny Ditto Rules & Mechanics",
+        "ja": "2. 色違いメタモンの出現仕様と重要ルール",
+        "ru": "2. Правила появления Шайни Дитто"
+      },
+      "content": {
+        "cs": "U Shiny Ditta platí jedno zásadní a neměnné pravidlo:\n\n• Pokud divoký pokémon, na kterého kliknete, září jako Shiny ve svém běžném druhu (například Shiny Oddish nebo Shiny Koffing), NIKDY se z něj po chycení nestane Ditto!\n• Ditto se může proměnit v zářivě modrého Shiny Ditta POUZE z běžného, netřpytivého pokémona na mapě.\n• Když chytíte normálního pokémona z Ditto seznamu, má stálou šanci stát se Shiny Dittem po dokončení proměny.",
+        "en": "Shiny Ditto operates on one critical rule:\n\n• If a wild encounter naturally appears Shiny as the base species (e.g. a Shiny Oddish), it can NEVER transform into Ditto upon catch!\n• Ditto can only transform into its brilliant blue Shiny form from a NON-shiny wild spawn.\n• Once a non-shiny disguise is captured, the game rolls a chance for the underlying Ditto to be Shiny upon transformation.",
+        "ja": "色違いメタモンには絶対に覚えておくべき鉄則があります：\n\n• 遭遇した擬態ポケモン自体が色違い（例：色違いのナゾノクサ）だった場合、捕獲しても絶対にメタモンには変身しません！\n• メタモンは【通常色の擬態ポケモン】からのみ変身し、変身後に青い色違いメタモンになる抽選が行われます。",
+        "ru": "Для шайни Дитто действует главное правило:\n\n• Если дикий покемон уже блестит как шайни (например, шайни Oddish), он НИКОГДА не превратится в Дитто!\n• Дитто превращается в ярко-синего шайни ТОЛЬКО из обычного покемона на карте."
+      },
+      "tips": {
+        "cs": [
+          "Pokud vám kamarád hlásí, že z určitého spawnu chytil Ditta, pospěšte si na místo: Ditto je stejný pro všechny hráče nad level 30!",
+          "Chytejte pomocí PokéStop scannerů v komunitních skupinách, kde hráči okamžitě hlásí přesné souřadnice."
+        ],
+        "en": [
+          "Ditto spawns are identical for all trainers above Level 30. If a friend catches one, head there immediately!",
+          "Keep in touch with local Discord/Campfire groups for instant Ditto spawn callouts."
+        ],
+        "ja": [
+          "トレーナーレベル30以上のプレイヤーには、全く同じ個体がメタモンとして出現します。フレンドが発見したら急いで向かいましょう！",
+          "地元のCampfireやコミュニティのメタモン目撃情報をチェックするのが最も確実です。"
+        ],
+        "ru": [
+          "Спавн Дитто одинаков для всех игроков выше 30 уровня. Если друг поймал Дитто, он будет там же и для вас!"
+        ]
+      }
+    }
+  ]
+},
+  {
+  "id": "egg-hatching-guide",
+  "slug": "egg-hatching-guide",
+  "iconName": "Clock",
+  "imageUrl": "https://cdn.leekduck.com/assets/img/items/Super%20Incubator.png",
+  "featured": false,
+  "author": "PoGo Events Team",
+  "readTime": "9 min",
+  "updatedAt": "2026-10-17",
+  "category": {
+    "cs": "Líhnutí & Inkubátory",
+    "en": "Hatching & Incubators",
+    "ja": "タマゴ孵化",
+    "ru": "Высиживание яиц"
+  },
+  "title": {
+    "cs": "Líhnutí vajec v Pokémon GO: Aktuální obsah 2km až 12km vajec a inkubátory",
+    "en": "Egg Hatching in Pokémon GO: Current 2km to 12km Egg Pools & Incubators",
+    "ja": "ポケモンGO タマゴ孵化一覧：2km〜12km最新孵化ポケモンと確率攻略",
+    "ru": "Высиживание яиц в Pokémon GO: Список покемонов из яиц 2-12 км и инкубаторы"
+  },
+  "subtitle": {
+    "cs": "Přehled všech dostupných Pokémonů z 2km, 5km, 7km, 10km, 12km vajec a Adventure Sync odměn, šance na Shiny a průvodce inkubátory.",
+    "en": "Complete live database of Pokémon hatching from 2km, 5km, 7km, 10km, 12km, and Adventure Sync eggs, Shiny odds, and incubator efficiency.",
+    "ja": "2km、5km、7km、10km、12km、いつでも冒険モード週間タマゴの全中身、色違い確率、効率的な孵化手順を網羅。",
+    "ru": "Полная база покемонов из всех категорий яиц, включая награды Adventure Sync, шансы шайни и советы по инкубации."
+  },
+  "sections": [
+    {
+      "id": "egg-pools-breakdown",
+      "heading": {
+        "cs": "1. Přehled kategorií vajec a jejich získávání",
+        "en": "1. Egg Categories & How to Obtain Them",
+        "ja": "1. タマゴの種類と入手方法一覧",
+        "ru": "1. Категории яиц и способы их получения"
+      },
+      "content": {
+        "cs": "Líhnutí vajec je jedním z nejlepších zdrojů vzácných Pokémonů s garantovaným vysokým IV (minimálně 10/10/10) a velkým množstvím Candy i Stardustu.\n\nKategorie vajec v Pokémon GO:\n• 2km Vejce (Zelené): Běžní pokémoni a startéři, ideální pro rychlé líhnutí bez plýtvání prémiovými inkubátory.\n• 5km Vejce (Žluté): Středně vzácní pokémoni a regionální druhy z PokéStopů.\n• 7km Vejce (Růžovo-žluté): Získávají se výhradně z dárků od přátel. Obsahují Alolan a Galarian formy nebo speciální eventové Pokémony.\n• 10km Vejce (Fialové): Velmi vzácní pseudolegendární a dračí pokémoni (Larvitar, Bagon, Deino, Goomy, Jangmo-o, Frigibax).\n• 12km Vejce (Červené / Strange Eggs): Získávají se poražením lídrů Team GO Rocket (Cliff, Sierra, Arlo). Obsahují vzácné temné pokémony jako Pawniard, Vullaby, Sandile, Salandit a Varoom.\n• Adventure Sync Vejce (5km & 10km): Pondělní ranní odměna za nachození 25 km nebo 50 km za uplynulý týden.",
+        "en": "Egg hatching serves as a primary pipeline for high-IV Pokémon (10/10/10 IV floor) alongside generous Candy and Stardust bounties.\n\nEgg Classifications:\n• 2km Eggs (Green): Accessible starters and common companions.\n• 5km Eggs (Yellow): Mid-tier spawns and regional entries from PokéStops.\n• 7km Eggs (Pink & Yellow): Exclusively gifted by friends. House regional forms (Alolan/Galarian) and baby Pokémon.\n• 10km Eggs (Purple): Rare pseudo-legendaries and apex dragons.\n• 12km Strange Eggs (Red): Sourced exclusively from Team GO Rocket Leaders (Cliff, Sierra, Arlo). Feature exclusive Dark/Poison species including Salandit, Sandile, and Varoom.\n• Adventure Sync Eggs (5km & 10km): Rewarded every Monday at 9:00 AM for clearing 25km or 50km weekly milestones.",
+        "ja": "タマゴ孵化は高個体値（最低個体値10/10/10保証）のレアポケモン、そして大量のアメとほしのすなを手に入れる絶好の手段です。\n\nタマゴの分類：\n• 2kmタマゴ（緑）：御三家や基礎的なポケモン。\n• 5kmタマゴ（黄）：中級レアや地域限定ポケモン。\n• 7kmタマゴ（ピンク/黄）：フレンドのギフト限定。アローラ・ガラルの姿やベイビィポケモンが出現。\n• 10kmタマゴ（紫）：600族やドラゴン系（セビエ、ジャラコ、ヌメラ等）の最高峰レア。\n• 12kmタマゴ（赤/12km）：ロケット団リーダー（クリフ/シエラ/アルロ）撃破時のみ獲得。ヤトウモリやブロロンなど超限定ポケモンが狙えます。\n• いつでも冒険モードタマゴ：月曜朝9時に週間歩行距離25km/50km達成で付与。",
+        "ru": "Высиживание яиц обеспечивает минимальное IV 10/10/10 и дает солидное количество конфет и пыли.\n\nКатегории яиц:\n• 2 км (зеленые): стартовики и базовые виды.\n• 5 км (желтые): средние виды с покестопов.\n• 7 км (розовые): только из подарков друзей (Галар, Алола, бэби).\n• 10 км (фиолетовые): редкие драконы и 600-ники.\n• 12 км Strange (красные): с лидеров Ракеты (Salandit, Sandile, Varoom).\n• Adventure Sync: награда за 25/50 км в понедельник утром."
+      },
+      "tips": {
+        "cs": [
+          "Před soubojem s lídrem Team GO Rocket si zkontrolujte, zda máte volný slot na vejce (nebo v bonusovém úložišti 3 slotů dole), jinak 12km červené vejce vůbec nedostanete!",
+          "Nekonečný bezplatný inkubátor (oranžový) používejte výhradně na krátká 2km vejce. Prémiové Super Inkubátory šetřete na 10km a 12km vejce."
+        ],
+        "en": [
+          "Before battling a Team GO Rocket Leader, always ensure you have an open egg slot (or space in the extra 3-slot storage), otherwise the 12km Strange Egg is permanently lost!",
+          "Dedicate your infinite orange incubator strictly to 2km eggs. Reserve Super Incubators for 10km and 12km eggs."
+        ],
+        "ja": [
+          "ロケット団リーダーと戦う前に、必ずタマゴ枠（または下部のボーナス枠3枠）に空きがあることを確認しましょう。満杯だと12kmタマゴはもらえません！",
+          "無限ふかそうちは2kmタマゴ専用にし、スーパーふかそうちは10km・12kmタマゴに温存しましょう。"
+        ],
+        "ru": [
+          "Перед боем с лидером Ракеты убедитесь, что есть место в инвентаре яиц, иначе 12км яйцо пропадет!",
+          "Бесконечный инкубатор используйте для 2км яиц, а супер-инкубаторы — для 10км и 12км."
+        ]
+      }
+    }
+  ]
+},
+  {
+  "id": "field-research-tasks-guide",
+  "slug": "field-research-tasks-guide",
+  "iconName": "Target",
+  "imageUrl": "https://cdn.leekduck.com/assets/img/icons/research.png",
+  "featured": false,
+  "author": "PoGo Events Team",
+  "readTime": "9 min",
+  "updatedAt": "2026-10-17",
+  "category": {
+    "cs": "Výzkumy & Úkoly",
+    "en": "Field Research & Quests",
+    "ja": "フィールドリサーチ",
+    "ru": "Полевые исследования"
+  },
+  "title": {
+    "cs": "Polní výzkum Pokémon GO: Aktuální úkoly z PokéStopů a odměny",
+    "en": "Field Research in Pokémon GO: Current PokéStop Tasks & Rewards",
+    "ja": "フィールドリサーチ完全攻略：最新タスクとリワードポケモン一覧",
+    "ru": "Полевые исследования в Pokémon GO: Текущие квесты с покестопов и награды"
+  },
+  "subtitle": {
+    "cs": "Kompletní živý seznam všech aktuálních polních úkolů z PokéStopů, garantovaná setkání s Pokémony, Spinda formy a Research Breakthrough.",
+    "en": "Live registry of all current PokéStop Field Research tasks, encounter rewards, Spinda patterns, and monthly Research Breakthrough.",
+    "ja": "現在ポケストップから入手できる全フィールドリサーチタスク、リワードポケモン、パッチール模様、大発見報酬を完全収録。",
+    "ru": "Полный актуальный список квестов с покестопов, награды за выполнение, формы Спинды и коробка за 7 дней."
+  },
+  "sections": [
+    {
+      "id": "field-research-overview",
+      "heading": {
+        "cs": "1. Jak funguje systém polních úkolů a razítek",
+        "en": "1. Field Research Mechanics & Daily Stamps",
+        "ja": "1. フィールドリサーチの仕組みとスタンプ収集",
+        "ru": "1. Механика полевых заданий и ежедневные печати"
+      },
+      "content": {
+        "cs": "Otočením fotodisku na libovolném PokéStopu získáte jeden náhodný polní úkol (Field Research). Každý PokéStop dává všem hráčům v daný kalendářní den stejný úkol.\n\nZa první splněný úkol v každém kalendářním dni obdržíte jedno razítko. Po nasbírání 7 razítek se odemkne Research Breakthrough (Průlom ve výzkumu), který přináší balíček odměn (XP, Stardust, vzácné předměty jako Remote Raid Pass nebo Sinnoh/Unova Stone) a setkání s vybraným měsíčním Pokémonem.\n\nNíže naleznete živou databázi všech aktuálně platných úkolů rozdělených podle kategorií.",
+        "en": "Spinning any PokéStop Photo Disc dispenses one randomized Field Research objective. Every PokéStop gives the exact same task to all trainers on any given calendar day.\n\nCompleting at least one task per day earns a Research Stamp. Collecting 7 stamps unlocks the Research Breakthrough containing generous XP, Stardust, rare evolutionary items, and an encounter with the featured monthly species.\n\nExplore our live category-filtered task matrix below.",
+        "ja": "ポケストップのフォトディスクを回すと、1つのフィールドリサーチタスクが手に入ります。同じポケストップからは、その日一日全プレイヤー共通のタスクが出現します。\n\n毎日1つタスクをクリアするごとにスタンプが1つ押され、7個集めると「大発見」報酬（大量のXPやすな、ふしぎなアメ、限定ポケモン）がアンロックされます。\n\n以下にカテゴリ別の最新リサーチタスク一覧をリアルタイム表示しています。",
+        "ru": "Вращение покестопа дает одно полевое задание. Каждый покестоп выдает одинаковый квест всем игрокам в течение суток.\n\nПервое выполненное задание в день дает печать. Собрав 7 печатей, вы открываете недельную коробку Research Breakthrough с ценными наградами и покемоном.\n\nНиже представлена актуальная интерактивная база квестов."
+      },
+      "tips": {
+        "cs": [
+          "Odložené odměny za chytání: Pokud splníte úkol se setkáním s pokémonem, můžete z obrazovky chytání utéct! Pokémon se uloží do vaší fronty (až 100 pokémonů), kde si ho můžete schovat na Spotlight Hour s bonusem 2×/3× Catch Stardust!",
+          "Těžké nebo zdlouhavé úkoly (např. 'Vyhraj 5 raidů') můžete kdykoliv beztrestně smazat ikonkou koše a otočit jiný PokéStop pro snazší úkol."
+        ],
+        "en": [
+          "The Encounter Stacking Trick: You can flee from completed task catch screens to bank up to 100 encounters in a reserve queue. Catch them all during 2× or 3× Catch Stardust events!",
+          "Do not hesitate to trash arduous tasks via the trash can icon to free up slots for quick throw and spin objectives."
+        ],
+        "ja": [
+          "リワードストック裏技：タスク達成後の遭遇画面から「逃げる」と、最大100匹まで捕獲枠をストックできます。ほしのすな倍増イベント時に一括捕獲しましょう！",
+          "時間がかかるタスクはゴミ箱アイコンで気兼ねなく破棄し、回転率を高めましょう。"
+        ],
+        "ru": [
+          "Трюк со стаком: можно убегать с экрана поимки квестового покемона и копить до 100 штук в очереди для ловли во время 2×/3× пыли!",
+          "Удаляйте долгие квесты и ищите быстрые на броски или ягоды."
+        ]
+      }
+    }
+  ]
+},
+  {
+    "id": "extra-stardust-pokemon-guide",
+    "slug": "extra-stardust-pokemon-guide",
+    "iconName": "Sparkles",
+    "imageUrl": "https://cdn.leekduck.com/assets/img/items/Star%20Piece.png",
+    "featured": false,
+    "author": "PoGo Events Team",
+    "readTime": "5 min",
+    "updatedAt": "2026-10-17",
+    "category": {
+      "cs": "Stardust & Bonusy",
+      "en": "Stardust & Bonuses",
+      "ja": "ほしのすな＆ボーナス",
+      "ru": "Пыль и Бонусы"
+    },
+    "title": {
+      "cs": "Pokémoni s extra Stardustem za chycení: Kompletní přehled a hodnoty",
+      "en": "Pokémon That Give Extra Stardust on Catch: Complete Payout Guide",
+      "ja": "捕獲時にほしのすなが多くもらえるポケモン一覧：天候ブースト＆ほしのかけら早見表",
+      "ru": "Покемоны с бонусной пылью (Stardust) за поимку: Полный список и таблицы"
+    },
+    "subtitle": {
+      "cs": "Přehled všech 24 Pokémonů, kteří při chycení dávají 500 až 2 100 základního Stardustu, včetně hodnot při Weather Boostu a aktivním Star Piece.",
+      "en": "Complete tier list of all 24 Pokémon rewarding 500 to 2,100 base Stardust upon capture, including Weather Boost and Star Piece multipliers.",
+      "ja": "捕まえるだけで通常の5倍〜21倍（基本500〜2,100）のほしのすなを獲得できる全24種のポケモンとボーナス計算一覧。",
+      "ru": "Все 24 покемона, дающих от 500 до 2 100 базовой пыли при поимке, с расчетом погодного буста и Star Piece."
+    },
+    "sections": [
+      {
+        "id": "stardust-multipliers-and-shadows",
+        "pokemon": ["Audino", "Cloyster", "Shellder", "Chimecho", "Alolan Meowth", "Trubbish"],
+        "heading": {
+          "cs": "1. Jak funguje násobení Stardustu (Weather Boost & Star Piece) a pozor na Shadow",
+          "en": "1. How Stardust Multipliers Work (Weather Boost & Star Piece) & Shadow Warning",
+          "ja": "1. ほしのすな倍率の仕組み（天候ブースト＆ほしのかけら）とシャドウの注意点",
+          "ru": "1. Как работают множители пыли (Weather Boost и Star Piece) и исключение Shadow"
+        },
+        "content": {
+          "cs": "Zatímco drtivá většina Pokémonů v Pokémon GO dává při chycení standardních 100 Stardustu (300 u druhého a 500 u třetího vývojového stádia), vybraná skupina 24 Pokémonů odměňuje trenéry masivním bonusem od 500 až do 2 100 základního Stardustu za jediný odchyt.\n\nVšechny tyto zvýšené základní hodnoty se navíc násobí s dalšími herními bonusy:\n• Weather Boost (+25 %): Pokud daného Pokémona chytíte v počasí, které posiluje jeho typ, získáte o čtvrtinu více Stardustu.\n• Star Piece (+50 %): Aktivace předmětu Star Piece na 30 minut zvýší veškerý získaný Stardust o polovinu.\n• Kombinace obojího (+87,5 %): Při současném Weather Boostu a zapnutém Star Piece se oba násobiče násobí navzájem (1,25 × 1,5 = 1,875×), takže například jediný chycený Audino vynese neuvěřitelných 3 938 Stardustu!\n\n⚠️ Důležité upozornění na Shadow Pokémony:\nStínové (Shadow) varianty těchto Pokémonů zachráněné od Team GO Rocket tento bonus NEMAJÍ a při chycení dávají pouze standardní nenavýšené množství Stardustu.",
+          "en": "While the vast majority of species in Pokémon GO reward the standard 100 Stardust upon capture (300 for stage 1 and 500 for stage 2 evolutions), an exclusive group of 24 Pokémon awards between 500 and 2,100 base Stardust per catch.\n\nThese base payouts stack multiplicatively with active bonuses:\n• Weather Boost (+25%): Catching a species during its boosted weather condition increases the base Stardust payout by 25%.\n• Star Piece (+50%): Activating a Star Piece boosts all Stardust gains by 50% for 30 minutes.\n• Weather Boost + Star Piece (+87.5%): Combining both multipliers yields 1.875× base Stardust — turning a single weather-boosted Audino catch into a massive 3,938 Stardust payout!\n\n⚠️ Important Note on Shadow Pokémon:\nShadow variations of these Pokémon rescued from Team GO Rocket Grunts or Leaders do NOT grant bonus Stardust and only reward the standard base amount.",
+          "ja": "ポケモンの大半は捕獲時に基本100の「ほしのすな」しか獲得できませんが、特定の24種類のポケモンは1匹捕まえるだけで基本500〜最大2,100ものほしのすなをドロップします。\n\nさらに、これらの基本値はゲーム内のボーナスと乗算で重複します：\n• 天候ブースト（+25%）：対象タイプがブーストされる天候時に捕獲すると獲得量が1.25倍に増加。\n• ほしのかけら（+50%）：30分間すべてのほしのすな獲得量が1.5倍に増加。\n• 天候＋ほしのかけら（+87.5%）：両方重なると約1.875倍となり、タブンネ1匹でなんと3,938ものほしのすなを獲得できます！\n\n⚠️ シャドウポケモンの注意点：\nGOロケット団から救出する「シャドウ」の姿のポケモンにはこのボーナスが適用されず、通常の基本獲得量となります。",
+          "ru": "В то время как большинство покемонов в Pokémon GO дают стандартные 100 пыли при поимке, особая группа из 24 покемонов приносит от 500 до 2 100 базовой пыли за каждого пойманного покемона.\n\nЭти базовые значения перемножаются с активными бонусами:\n• Погодный буст (+25%): Поимка покемона в подходящую погоду увеличивает базовую награду на четверть.\n• Star Piece (+50%): Активация предмета Star Piece увеличивает всю получаемую пыль в 1,5 раза на 30 минут.\n• Погода + Star Piece (+87,5%): Оба бонуса перемножаются (1,25 × 1,5), благодаря чему один Audino под погодным бустом и Star Piece приносит сразу 3 938 пыли!\n\n⚠️ Важное примечание о Shadow покемонах:\nТеневые (Shadow) версии этих покемонов от Team GO Rocket НЕ дают бонусной пыли и приносят только стандартное базовое количество."
+        },
+        "tips": {
+          "cs": [
+            "Pozor také na regionální výjimky: zatímco Kanto Meowth (500) a Alolan Meowth (750) bonus dávají, Galarian Meowth dává pouze běžných 100 Stardustu.",
+            "Houboví Pokémoni (Paras, Shroomish, Foongus, Morelull) jsou v přírodě nejčastější a za slunečného (Sunny) či zataženého (Cloudy) počasí představují nejlepší každodenní zdroj Stardustu."
+          ],
+          "en": [
+            "Watch out for regional exceptions: while Kanto Meowth (500) and Alolan Meowth (750) grant bonus Stardust, Galarian Meowth only rewards the standard 100 Stardust.",
+            "Mushroom species (Paras, Shroomish, Foongus, Morelull) spawn frequently in the wild and are the most reliable daily Stardust farm during Sunny or Cloudy weather."
+          ],
+          "ja": [
+            "リージョンフォームの例外に注意：通常のニャース（500）とアローラニャース（750）はボーナス対象ですが、ガラルニャースは通常の100すなしか獲得できません。",
+            "キノコ系ポケモン（パラス、キノココ、タマゲタケ、ネマシュ）は野生で出現しやすく、晴天や曇りの日に最も稼ぎやすいターゲットです。"
+          ],
+          "ru": [
+            "Обратите внимание на региональное исключение: обычный Meowth (500) и Alolan Meowth (750) дают бонус, а вот Galarian Meowth приносит только стандартные 100 пыли.",
+            "Грибные покемоны (Paras, Shroomish, Foongus, Morelull) чаще всего встречаются в дикой природе и отлично подходят для ежедневного фарма в солнечную или облачную погоду."
+          ]
+        }
+      },
+      {
+        "id": "stardust-events-strategy",
+        "pokemon": ["Paras", "Meowth", "Foongus", "Morelull", "Combee", "Staryu"],
+        "heading": {
+          "cs": "2. Tipy na eventy: Spotlight Hour, Community Day a stackování úkolů",
+          "en": "2. Event Grinding Tips: Spotlight Hour, Community Day & Task Stacking",
+          "ja": "2. イベント活用術：スポットライトアワー、コミュニティ・デイ、タスクストック",
+          "ru": "2. Советы для ивентов: Spotlight Hour, Community Day и накопление квестов"
+        },
+        "content": {
+          "cs": "Skutečný potenciál těchto Pokémonů se naplno projeví během eventů s násobičem Stardustu za chycení (2× Catch Stardust během vybraných úterních Spotlight Hours nebo 3× Catch Stardust během Community Days):\n\n• Spotlight Hour s bonusovým Pokémonem: Když se v úterý od 18:00 do 19:00 objeví v Spotlight Hour Pokémon jako Shellder, Trubbish, Foongus, Morelull nebo Paras (často navíc s bonusem 2× Catch Stardust), zapněte dva Star Piece po sobě. Za jedinou hodinu aktivního chytání získáte 300 000 až 500 000+ Stardustu!\n• Stackování odměn z Field Research: Pokud z PokéStop úkolu získáte setkání s bonusovým Pokémonem (např. Combee, Staryu, Shellder, Paras, Trubbish nebo Audino), nemusíte ho chytat hned. Klikněte vlevo nahoře na ikonu útěku — Pokémon se bezpečně uloží do vaší fronty odměn (lze takto nastackovat až 100 Pokémonů). Celou frontu pak vychytejte naráz pod jedním Star Piece během 3× Stardust Community Day!",
+          "en": "The true power of bonus Stardust species shines during events featuring Catch Stardust multipliers (2× Catch Stardust during Tuesday Spotlight Hours or 3× Catch Stardust during Community Days):\n\n• Bonus Species Spotlight Hours: Whenever a Tuesday Spotlight Hour (6:00–7:00 PM) features Shellder, Trubbish, Foongus, Morelull, or Paras — especially paired with a 2× Catch Stardust bonus — running two Star Pieces allows you to farm 300,000 to 500,000+ Stardust in a single hour!\n• Field Research Encounter Stacking: When you complete a Field Research task that rewards a bonus Stardust Pokémon (such as Combee, Staryu, Shellder, Paras, Trubbish, or Audino), tap the top-left Run button instead of catching it immediately. You can bank up to 100 encounters in your research queue and catch them all under a single Star Piece during a 3× Catch Stardust Community Day!",
+          "ja": "これらのポケモンが真価を発揮するのは、捕獲時ほしのすな倍増イベント（2倍スポットライトアワーや3倍コミュニティ・デイ）の期間中です：\n\n• スポットライトアワーの大量獲得：火曜18:00〜19:00にシェルダー、ヤブクロン、タマゲタケ、ネマシュ、パラスなどが対象になった際は、ほしのかけらを2個連続で使いましょう。1時間で30万〜50万以上のほしのすなを一気に稼げます！\n• フィールドリサーチの裏技ストック：タスク報酬でミツハニーやシェルダー、タブンネなどが出たら、捕まえずに左上の「逃げる」をタップして最大100匹までストックしておきましょう。捕獲すな3倍のコミュニティ・デイ中にほしのかけらを使ってまとめて捕獲するのが最高効率です！",
+          "ru": "Максимальную выгоду эти покемоны приносят во время ивентов с множителями пыли за поимку (2× Catch Stardust на вторничных Spotlight Hour или 3× Catch Stardust на Community Day):\n\n• Spotlight Hour с бонусным покемоном: Когда во вторник с 18:00 до 19:00 героем часа становится Shellder, Trubbish, Foongus, Morelull или Paras (особенно с бонусом 2× пыли), включите два Star Piece подряд. За один час можно легко нафармить от 300 000 до 500 000+ пыли!\n• Накопление квестов (Research Stacking): Получив за полевой квест встречу с бонусным покемоном (Combee, Staryu, Shellder, Paras, Trubbish или Audino), сбегите с экрана поимки. В очереди можно накопить до 100 покемонов и поймать их всех под одним Star Piece во время 3× пыли на Community Day!"
+        },
+        "tips": {
+          "cs": [
+            "Někteří z těchto Pokémonů (Audino, Chimecho, Sableye, Combee) mají nižší základní šanci na chycení — mějte v zásobě Ultra Bally a Golden Razz / Razz Berries, abyste při zapnutém Star Piece neztráceli drahocenné vteřiny.",
+            "Naučte se techniku rychlého chytání (Fast Catch trick), která přeskočí animaci chycení míčku a ztrojnásobí počet chycených Pokémonů za půlhodinu běhu Star Piece."
+          ],
+          "en": [
+            "Several high-tier Stardust species (Audino, Chimecho, Sableye, Combee) have tough base catch rates — stock up on Ultra Balls and Razz/Golden Razz Berries so you don't waste precious Star Piece time.",
+            "Use the Fast Catch technique to skip the Poké Ball shake animation and triple your catches per 30-minute Star Piece."
+          ],
+          "ja": [
+            "タブンネ、チリーン、ヤミラミ、ミツハニーは基本捕獲率が低めです。ほしのかけら使用中に時間をロスしないよう、ハイパーボールとズリのみ／きんのズリのみを準備しておきましょう。",
+            "捕獲演出をスキップする「ファストキャッチ」を使えば、ほしのかけら30分間の捕獲数を3倍に増やせます。"
+          ],
+          "ru": [
+            "У некоторых покемонов из верхних тиров (Audino, Chimecho, Sableye, Combee) низкий базовый шанс поимки — запаситесь Ultra Ball и ягодами Razz/Golden Razz, чтобы не терять время действия Star Piece.",
+            "Используйте технику быстрой ловли (Fast Catch), чтобы пропускать анимацию покебола и ловить в 3 раза больше покемонов."
+          ]
+        }
+      }
+    ]
   }
-
 ];
-

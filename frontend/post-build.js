@@ -26,9 +26,44 @@ function copyDirSync(src, dest) {
   }
 }
 
+function localizeHtmlLangFile(filePath, lang) {
+  if (!fs.existsSync(filePath) || !filePath.endsWith('.html')) return 0;
+  const content = fs.readFileSync(filePath, 'utf8');
+  if (content.includes('<html lang="en"')) {
+    const updated = content.replace('<html lang="en"', `<html lang="${lang}"`);
+    fs.writeFileSync(filePath, updated, 'utf8');
+    return 1;
+  }
+  return 0;
+}
+
+function localizeHtmlLangInDir(dirPath, lang) {
+  if (!fs.existsSync(dirPath)) return 0;
+  let count = 0;
+  const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+  for (const entry of entries) {
+    const fullPath = path.join(dirPath, entry.name);
+    if (entry.isDirectory()) {
+      count += localizeHtmlLangInDir(fullPath, lang);
+    } else if (entry.name.endsWith('.html')) {
+      count += localizeHtmlLangFile(fullPath, lang);
+    }
+  }
+  return count;
+}
+
 if (fs.existsSync(outDir)) {
   console.log('Copying Next.js out/ build to dist/...');
   copyDirSync(outDir, distDir);
+}
+
+// Localize <html lang="..."> across cs, ja, and ru static HTML pages
+for (const lang of ['cs', 'ja', 'ru']) {
+  const rootLangHtml = path.join(distDir, `${lang}.html`);
+  const langDir = path.join(distDir, lang);
+  let patched = localizeHtmlLangFile(rootLangHtml, lang);
+  patched += localizeHtmlLangInDir(langDir, lang);
+  console.log(`Localized <html lang="${lang}"> in ${patched} HTML files.`);
 }
 
 const indexHtml = path.join(distDir, 'index.html');

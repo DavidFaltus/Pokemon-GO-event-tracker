@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import Link from 'next/link';
 import './PokemonRankingsView.css';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
@@ -65,6 +66,8 @@ const MoveTypeBadgeWithIcon: React.FC<{ type: string }> = ({ type }) => {
 interface PokemonRankingsViewProps {
   lang: Language;
   initialSearchQuery?: string;
+  initialCategory?: string;
+  initialSelectedType?: string;
   onSearchChange?: (query: string) => void;
 }
 
@@ -74,10 +77,17 @@ const ALL_TYPES = [
   "Rock", "Ghost", "Dragon", "Dark", "Steel", "Fairy"
 ];
 
-export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, initialSearchQuery, onSearchChange }) => {
+export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
+  lang,
+  initialSearchQuery,
+  initialCategory,
+  initialSelectedType,
+  onSearchChange
+}) => {
   const t = translations[lang] || translations.cs;
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
-  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState<string | null>(initialSelectedType || null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory || null);
   const [expandedPokes, setExpandedPokes] = useState<Set<string>>(new Set());
   const [rankingMode, setRankingMode] = useState<'er' | 'basic'>('er');
   const [onlyReleased, setOnlyReleased] = useState<boolean>(true);
@@ -97,6 +107,18 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
       setSearchQuery(initialSearchQuery);
     }
   }, [initialSearchQuery]);
+
+  useEffect(() => {
+    if (initialSelectedType !== undefined) {
+      setSelectedType(initialSelectedType || null);
+    }
+  }, [initialSelectedType]);
+
+  useEffect(() => {
+    if (initialCategory !== undefined) {
+      setSelectedCategory(initialCategory || null);
+    }
+  }, [initialCategory]);
 
   const handleSearchChange = (val: string) => {
     setSearchQuery(val);
@@ -227,6 +249,25 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
       result = result.filter(isPokemonReleasedInGo);
     }
 
+    // Filter by category when active
+    if (selectedCategory) {
+      if (selectedCategory === 'best-mega') {
+        result = result.filter(poke => poke.isMega || poke.isPrimal);
+      } else if (selectedCategory === 'best-shadow') {
+        result = result.filter(poke => poke.isShadow);
+      } else if (selectedCategory === 'best-gym-defenders') {
+        result = result.filter(poke => !poke.isMega && !poke.isPrimal && !poke.isShadow && poke.maxCp <= 4200);
+      } else if (selectedCategory === 'great-league') {
+        result = result.filter(poke => !poke.isMega && !poke.isPrimal && poke.maxCp >= 1350 && poke.maxCp <= 3200);
+      } else if (selectedCategory === 'ultra-league') {
+        result = result.filter(poke => !poke.isMega && !poke.isPrimal && poke.maxCp >= 2200 && poke.maxCp <= 4000);
+      } else if (selectedCategory === 'master-league') {
+        result = result.filter(poke => !poke.isMega && !poke.isPrimal && poke.maxCp >= 3500);
+      } else if (selectedCategory === 'little-cup') {
+        result = result.filter(poke => !poke.isMega && !poke.isPrimal && poke.maxCp <= 1800);
+      }
+    }
+
     // Filter by type (matches if Pokemon has the type OR its best charged move is of that type)
     if (selectedType) {
       result = result.filter(poke => poke.types.includes(selectedType) || poke.bestChargedMove?.type === selectedType);
@@ -236,7 +277,11 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       const numQuery = q.replace(/^#/, '');
+      const isExactDexQuery = q.startsWith('#') && /^\d+$/.test(numQuery);
       result = result.filter(poke => {
+        if (isExactDexQuery) {
+          return poke.pokedexId.toString() === numQuery;
+        }
         const engName = poke.name.toLowerCase();
         const transName = getPokemonName(poke.name, lang).toLowerCase();
         return (
@@ -251,8 +296,15 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
       });
     }
 
+    if (selectedCategory === 'max-cp' || selectedCategory === 'master-league') {
+      return result.sort((a, b) => b.maxCp - a.maxCp || dynamicSortFn(a, b));
+    }
+    if (selectedCategory === 'best-gym-defenders' || selectedCategory === 'great-league' || selectedCategory === 'ultra-league' || selectedCategory === 'little-cup') {
+      return result.sort((a, b) => (b.defense * b.stamina) - (a.defense * a.stamina) || dynamicSortFn(a, b));
+    }
+
     return result.sort(dynamicSortFn);
-  }, [onlyReleased, searchQuery, selectedType, dynamicSortFn, lang]);
+  }, [onlyReleased, selectedCategory, searchQuery, selectedType, dynamicSortFn, lang]);
 
   // Auto-expand matching Pokemon when search query is active
   useEffect(() => {
@@ -322,25 +374,37 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
             className="ranking-search-input"
             placeholder={t.ranking_search_placeholder}
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
           />
         </div>
 
         <div className="types-filter-container">
-          <button 
-            className={`type-filter-btn ${selectedType === null ? 'active' : ''}`}
-            onClick={() => setSelectedType(null)}
+          <Link
+            href={`/${lang}/rankings`}
+            className={`type-filter-btn ${selectedType === null && !selectedCategory ? 'active' : ''}`}
+            onClick={(e) => {
+              e.preventDefault();
+              setSelectedType(null);
+              setSelectedCategory(null);
+            }}
+            style={{ textDecoration: 'none' }}
           >
             <Trophy size={14} style={{ marginRight: '6px' }} />
             {t.ranking_type_all}
-          </button>
+          </Link>
           {ALL_TYPES.map(type => {
             const typeClass = type.toLowerCase();
             return (
-              <button
+              <Link
                 key={type}
+                href={`/${lang}/rankings/attackers-${typeClass}`}
                 className={`type-filter-btn type-${typeClass} ${selectedType === type ? 'active' : ''}`}
-                onClick={() => setSelectedType(type)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelectedType(type);
+                  setSelectedCategory(null);
+                }}
+                style={{ textDecoration: 'none' }}
               >
                 <img
                   src={`https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${typeClass}.svg`}
@@ -348,7 +412,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
                   className="filter-type-icon"
                 />
                 {type}
-              </button>
+              </Link>
             );
           })}
         </div>
@@ -365,7 +429,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
             const overallRank = overallRankMap.get(pokeKey) ?? 1;
             const primaryType = selectedType || poke.bestChargedMove?.type || poke.types[0];
             const typeRank = selectedType ? indexInFiltered + 1 : (typeRankMap.get(pokeKey) ?? 1);
-            const isExpanded = expandedPokes.has(pokeKey);
+            const isExpanded = expandedPokes.has(pokeKey) || (searchQuery.trim() !== '' && indexInFiltered === 0);
 
             const isFastLegacy = isLegacyMove(poke.bestFastMove.name);
             const isChargedLegacy = isLegacyMove(poke.bestChargedMove.name);
@@ -455,9 +519,14 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({ lang, 
 
                   <div className="ranking-poke-main-info">
                     <div className="poke-title-flex">
-                      <span className="poke-name">
+                      <Link
+                        href={`/${lang}/pokemon/${poke.pokedexId}`}
+                        className="poke-name"
+                        onClick={(e) => e.stopPropagation()}
+                        style={{ color: 'inherit', textDecoration: 'none' }}
+                      >
                         {getPokemonName(poke.name, lang)}
-                      </span>
+                      </Link>
                       <span className="poke-dex-id">#{poke.pokedexId}</span>
                     </div>
                     <div className="poke-badges-flex">

@@ -46,6 +46,8 @@ export default function RootLayout({
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="describedby" href="/llms.txt" type="text/plain" title="LLM Context & Agent API" />
+        <link rel="alternate" type="text/markdown" href="https://pogoevents.app/api/agent/events.md" title="Pokémon GO Live Events (Markdown)" />
         {/* Preconnect & DNS prefetch for image CDNs to accelerate LCP & asset downloads */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://raw.githubusercontent.com" crossOrigin="anonymous" />

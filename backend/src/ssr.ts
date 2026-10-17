@@ -549,6 +549,9 @@ export async function generateBotHtml(
   <link rel="alternate" hreflang="en" href="https://pogoevents.app/en${pathSuffix}">
   <link rel="alternate" hreflang="ja" href="https://pogoevents.app/ja${pathSuffix}">
   <link rel="alternate" hreflang="ru" href="https://pogoevents.app/ru${pathSuffix}">
+  <link rel="alternate" hreflang="x-default" href="https://pogoevents.app/en${pathSuffix}">
+  <link rel="describedby" href="/llms.txt" type="text/plain">
+  <link rel="alternate" type="text/markdown" href="https://pogoevents.app/api/agent/events.md">
   <meta property="og:type" content="website">
   <meta property="og:title" content="${pageTitle}">
   <meta property="og:description" content="${pageDesc}">
@@ -708,14 +711,14 @@ export async function generateBotHtml(
       <a href="/ru${pathSuffix}">RU</a>
     </div>
     <nav class="site-nav">
-      <a href="/${lang}/events" class="${type === 'events' || type === 'event-detail' ? 'active' : ''}">${t.events}</a>
+      <a href="/${lang}" class="${type === 'events' || type === 'event-detail' ? 'active' : ''}">${t.events}</a>
       <a href="/${lang}/raids" class="${type === 'raids' || type === 'raid-counters' ? 'active' : ''}">${t.raids}</a>
       <a href="/${lang}/rankings" class="${type === 'rankings' || type === 'ranking-category' || type === 'pokemon-detail' ? 'active' : ''}">${t.rankings}</a>
       <a href="/${lang}/rocket" class="${type === 'rocket' || type === 'rocket-leader' ? 'active' : ''}">${t.rocket}</a>
       <a href="/${lang}/guides" class="${type === 'guides' || type === 'guide-detail' ? 'active' : ''}">Guides</a>
       <a href="/${lang}/friends" class="${type === 'friends' ? 'active' : ''}">${lang === 'cs' ? 'Přátelé & Kódy' : 'Friend Codes'}</a>
-      <a href="/${lang}/ditto" class="${type === 'ditto' ? 'active' : ''}">${t.ditto}</a>
-      <a href="/${lang}/eggs" class="${type === 'eggs' ? 'active' : ''}">${t.eggs}</a>
+      <a href="/${lang}/guides/ditto-disguises-guide" class="${type === 'ditto' ? 'active' : ''}">${t.ditto}</a>
+      <a href="/${lang}/guides/egg-hatching-guide" class="${type === 'eggs' ? 'active' : ''}">${t.eggs}</a>
       <a href="/${lang}/filter" class="${type === 'filter' ? 'active' : ''}">${t.filter}</a>
     </nav>
   </header>
@@ -746,7 +749,7 @@ export async function generateBotHtml(
 
   <footer>
     <p>&copy; ${new Date().getFullYear()} Pokémon GO Event Tracker. ${t.rightsReserved}</p>
-    <p><a href="/privacy-policy.html">${t.privacyPolicy}</a></p>
+    <p><a href="/${lang}/privacy">${t.privacyPolicy}</a></p>
   </footer>
 </body>
 </html>`;

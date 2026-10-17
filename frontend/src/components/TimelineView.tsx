@@ -352,7 +352,14 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
                         {getEventIcon(event) && (
                           <img src={getEventIcon(event)!} className="short-event-icon" style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }} alt="" />
                         )}
-                        <span className="bar-text">{event.name}</span>
+                        <a
+                          href={`/${lang}/events/${event.eventID}`}
+                          className="bar-text"
+                          onClick={(ev) => ev.preventDefault()}
+                          style={{ color: 'inherit', textDecoration: 'none' }}
+                        >
+                          {event.name}
+                        </a>
                       </div>
                     );
                   })}
@@ -391,7 +398,14 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ events, lang, timezo
                                 <img src={getEventIcon(e)!} className="short-event-icon" alt="" />
                               )}
                               <span className="short-event-time">{formatEventTime(e.start)}</span>
-                              <span className="short-event-name">{e.name}</span>
+                              <a
+                                href={`/${lang}/events/${e.eventID}`}
+                                className="short-event-name"
+                                onClick={(ev) => ev.preventDefault()}
+                                style={{ color: 'inherit', textDecoration: 'none' }}
+                              >
+                                {e.name}
+                              </a>
                             </div>
                           );
                         })}

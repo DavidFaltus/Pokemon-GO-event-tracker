@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import './RaidView.css';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
@@ -11,7 +12,7 @@ import { apiFetch } from '../config';
 import { Sparkles, Trophy, BookOpen, ChevronRight, Swords } from 'lucide-react';
 import { CounterItem, WeatherIcon } from './CounterItem';
 import { getPokemonHubRating, getEvolutionInfo } from '../data/hubRatings';
-import { findRaidCounters } from '../data/raidCounters';
+import { findRaidCounters, raidCountersDb } from '../data/raidCounters';
 import { resolveImage, handlePokemonImageError, SHADOW_ICON_URL, MEGA_ICON_URL, PRIMAL_ICON_URL, handleShadowIconError, handleMegaIconError, handlePrimalIconError } from '../utils/imageResolver';
 import { DirectRaidFilterBox } from './DirectRaidFilterBox';
 import { RaidDifficultyBox } from './RaidDifficultyBox';
@@ -107,11 +108,13 @@ const HubRatingBadge: React.FC<{ rating: string; lang: Language }> = ({ rating, 
 interface RaidViewProps {
   events?: EventData[]; // Left for compatibility
   lang: Language;
+  initialBosses?: RaidBoss[];
+  initialExpandedBoss?: string;
   onOpenFilterGenerator?: (bossName?: string) => void;
   onOpenGuide?: (slug: string) => void;
 }
 
-interface RaidBoss {
+export interface RaidBoss {
   name: string;
   tier: '1' | '3' | '5' | 'mega' | 'shadow-1' | 'shadow-3' | 'shadow-5';
   image: string;
@@ -132,6 +135,53 @@ interface RaidBoss {
     maxBoostedCp: number;
     weatherBoosts: string[];
   } | null;
+}
+
+const DEFAULT_FALLBACK_BOSS_SPECS: Array<{ key: string; name: string; tier: RaidBoss['tier'] }> = [
+  { key: 'zekrom', name: 'Zekrom', tier: '5' },
+  { key: 'reshiram', name: 'Reshiram', tier: '5' },
+  { key: 'necrozma', name: 'Necrozma', tier: '5' },
+  { key: 'rayquaza', name: 'Rayquaza', tier: '5' },
+  { key: 'mewtwo', name: 'Mewtwo', tier: '5' },
+  { key: 'kyurem', name: 'Kyurem', tier: '5' },
+  { key: 'groudon', name: 'Groudon', tier: '5' },
+  { key: 'kyogre', name: 'Kyogre', tier: '5' },
+  { key: 'dialga', name: 'Dialga', tier: '5' },
+  { key: 'palkia', name: 'Palkia', tier: '5' },
+  { key: 'giratina', name: 'Giratina', tier: '5' },
+  { key: 'zacian', name: 'Zacian', tier: '5' },
+  { key: 'zamazenta', name: 'Zamazenta', tier: '5' },
+  { key: 'mega rayquaza', name: 'Mega Rayquaza', tier: 'mega' },
+  { key: 'mega lucario', name: 'Mega Lucario', tier: 'mega' },
+  { key: 'mega tyranitar', name: 'Mega Tyranitar', tier: 'mega' },
+  { key: 'mega garchomp', name: 'Mega Garchomp', tier: 'mega' },
+  { key: 'mega gardevoir', name: 'Mega Gardevoir', tier: 'mega' },
+  { key: 'mega charizard y', name: 'Mega Charizard Y', tier: 'mega' },
+  { key: 'shadow mewtwo', name: 'Shadow Mewtwo', tier: 'shadow-5' },
+  { key: 'shadow raikou', name: 'Shadow Raikou', tier: 'shadow-5' },
+  { key: 'turtonator', name: 'Turtonator', tier: '3' },
+  { key: 'drampa', name: 'Drampa', tier: '3' },
+  { key: 'rockruff', name: 'Rockruff', tier: '1' },
+  { key: 'frigibax', name: 'Frigibax', tier: '1' },
+  { key: 'jangmo-o', name: 'Jangmo-o', tier: '1' },
+  { key: 'shinx', name: 'Shinx', tier: '1' },
+  { key: 'timburr', name: 'Timburr', tier: '1' },
+];
+
+export function buildFallbackRaidBosses(): RaidBoss[] {
+  return DEFAULT_FALLBACK_BOSS_SPECS.map((spec) => {
+    const counters = raidCountersDb[spec.key] || findRaidCounters(spec.name);
+    return {
+      name: spec.name,
+      tier: spec.tier,
+      image: resolveImage(undefined, 'raid', spec.name),
+      canBeShiny: true,
+      cpRange: counters ? `${counters.minCp} - ${counters.maxCp}` : undefined,
+      boostedCpRange: counters ? `${counters.minBoostedCp} - ${counters.maxBoostedCp}` : undefined,
+      weatherBoosts: counters?.weatherBoosts,
+      counters,
+    };
+  });
 }
 
 export interface RegionalInfo {
@@ -171,10 +221,49 @@ export const REGIONAL_POKEMON: Record<string, RegionalInfo> = {
 type FilterTier = 'all' | '5' | 'mega' | '3' | '1';
 type RegionFilter = 'all' | 'EMEA' | 'Asia' | 'Americas';
 
-export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator, onOpenGuide }) => {
+export const RaidView: React.FC<RaidViewProps> = ({ lang, initialBosses, initialExpandedBoss, onOpenFilterGenerator, onOpenGuide }) => {
+  const initialResolvedBosses = React.useMemo(() => {
+    const base = (initialBosses && initialBosses.length > 0) ? initialBosses : buildFallbackRaidBosses();
+    if (initialExpandedBoss) {
+      const cleanTarget = initialExpandedBoss.toLowerCase().trim();
+      const exists = base.some(b => b.name.toLowerCase() === cleanTarget || b.name.toLowerCase().includes(cleanTarget));
+      if (!exists) {
+        const counters = findRaidCounters(initialExpandedBoss);
+        const tier: RaidBoss['tier'] = cleanTarget.includes('mega') || cleanTarget.includes('primal')
+          ? 'mega'
+          : cleanTarget.includes('shadow')
+          ? 'shadow-5'
+          : '5';
+        return [
+          {
+            name: initialExpandedBoss,
+            tier,
+            image: resolveImage(undefined, 'raid', initialExpandedBoss),
+            canBeShiny: true,
+            cpRange: counters ? `${counters.minCp} - ${counters.maxCp}` : undefined,
+            boostedCpRange: counters ? `${counters.minBoostedCp} - ${counters.maxBoostedCp}` : undefined,
+            weatherBoosts: counters?.weatherBoosts,
+            counters,
+          },
+          ...base,
+        ];
+      }
+    }
+    return base;
+  }, [initialBosses, initialExpandedBoss]);
+
+  const initialMatchedBossName = React.useMemo(() => {
+    if (!initialExpandedBoss) return null;
+    const cleanTarget = initialExpandedBoss.toLowerCase().trim();
+    const match = initialResolvedBosses.find(
+      b => b.name.toLowerCase() === cleanTarget || b.name.toLowerCase().includes(cleanTarget)
+    );
+    return match ? match.name : initialExpandedBoss;
+  }, [initialExpandedBoss, initialResolvedBosses]);
+
   const [activeFilter, setActiveFilter] = useState<FilterTier>('all');
-  const [expandedBoss, setExpandedBoss] = useState<string | null>(null);
-  const [inlineBossName, setInlineBossName] = useState<string | null>(null);
+  const [expandedBoss, setExpandedBoss] = useState<string | null>(initialMatchedBossName);
+  const [inlineBossName, setInlineBossName] = useState<string | null>(initialMatchedBossName);
   const [shinyBosses, setShinyBosses] = useState<Set<string>>(new Set());
 
   const toggleShinyBoss = (bossName: string, e?: React.MouseEvent) => {
@@ -189,8 +278,8 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator,
       return next;
     });
   };
-  const [bosses, setBosses] = useState<RaidBoss[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [bosses, setBosses] = useState<RaidBoss[]>(initialResolvedBosses);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const t = translations[lang] || translations.cs;
@@ -199,21 +288,28 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator,
     let isMounted = true;
 
     const fetchRaids = async (forceNoCache: boolean = false) => {
-      setLoading(true);
       setError(null);
       try {
         const url = `/api/raids${forceNoCache ? '?nocache=true' : ''}`;
         const response = await apiFetch(url, { cache: 'no-store' });
         if (!response.ok) throw new Error('Failed to fetch raids');
         const data = await response.json();
-        if (isMounted && Array.isArray(data)) {
+        if (isMounted && Array.isArray(data) && data.length > 0) {
+          if (initialExpandedBoss) {
+            const cleanTarget = initialExpandedBoss.toLowerCase().trim();
+            const exists = data.some((b: RaidBoss) => b.name.toLowerCase() === cleanTarget || b.name.toLowerCase().includes(cleanTarget));
+            if (!exists) {
+              const targetEntry = initialResolvedBosses.find(b => b.name.toLowerCase().includes(cleanTarget));
+              if (targetEntry) {
+                setBosses([targetEntry, ...data]);
+                return;
+              }
+            }
+          }
           setBosses(data);
         }
       } catch (err) {
         console.error('Failed to load raids from backend:', err);
-        if (isMounted) {
-          setError(lang === 'ja' ? 'APIからレイド情報を読み込めませんでした。' : lang === 'cs' ? 'Chyba při načítání raidů z API.' : 'Failed to load raids from API.');
-        }
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -235,7 +331,7 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator,
       window.removeEventListener('focus', handleFocus);
       clearInterval(interval);
     };
-  }, [lang]);
+  }, [lang, initialExpandedBoss, initialResolvedBosses]);
 
   const getTierLabel = (tier: string) => {
     switch (tier) {
@@ -577,7 +673,13 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, onOpenFilterGenerator,
                          {getTierLabel(boss.tier)}
                        </span>
                        <h3 className="boss-title-name" style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
-                         <span>{getPokemonName(boss.name, lang)}</span>
+                         <Link
+                           href={`/${lang}/raids/${boss.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}-counters`}
+                           onClick={(e) => e.preventDefault()}
+                           style={{ color: 'inherit', textDecoration: 'none' }}
+                         >
+                           {getPokemonName(boss.name, lang)}
+                         </Link>
                          {/* PoGO Hub Rating & Evolution Info */}
                          {(() => {
                            const rating = getPokemonHubRating(boss.name);

@@ -1,29 +1,51 @@
 # Pokémon GO Event Tracker (pogoevents.app)
 
-> Kompletní databáze a živé sledování událostí, raid bossů, čítačů slabin, sestav Team GO Rocket (Giovanni, Leaders, Grunts), líhnutí z vajec a polních výzkumů pro hru Pokémon GO v reálném čase.
+> Real-time Pokémon GO database and companion app tracking active & upcoming events, Tier 1/3/5/Mega/Shadow Raid Bosses and counters, Team GO Rocket lineups (Giovanni, Cliff, Sierra, Arlo, Grunts), 2km–12km Egg hatch pools, PokéStop Field Research tasks, Ditto disguises, PvP/PvE Pokémon rankings (DialgaDex ER & GamePress DPS), and 18 comprehensive strategy guides in Czech (`cs`), English (`en`), Japanese (`ja`), and Russian (`ru`).
 
-## Core Feeds for AI Agents & Crawlers
-- [Full LLM Knowledge Database](/llms-full.txt): Kompletní textová znalostní báze všech herních dat a parametrů.
-- [Live Events Feed (Markdown)](/api/agent/events.md): Aktuální a nadcházející události, časy začátku a konce, herní bonusy.
-- [Live Raids Feed (Markdown)](/api/agent/raids.md): Přehled 1★, 3★, 5★, Mega a Shadow raid bossů, doporučené týmy a countery.
-- [Live Research Tasks Feed (Markdown)](/api/agent/research.md): Polní úkoly z Pokéstopů, kategorie a encounter odměny.
-- [Live Summary Feed (Markdown)](/api/agent/summary.md): Rychlý souhrn všech aktuálně aktivních prvků v jednom tokenově úsporném markdownu.
-- [RSS Event Feed](/feed.xml): Standardní RSS 2.0 feed událostí pro RSS čtečky a webhook agenty.
+All `/api/agent/*.md` endpoints return clean, token-efficient Markdown (`text/markdown; charset=utf-8`). Standard JSON endpoints (`/api/events`, `/api/raids`, `/api/rocket`, `/api/eggs`, `/api/research`) also support `Accept: text/markdown` or `?format=md&lang=en|cs`.
 
-## Available Web Sections (HTML)
-- [/cs/events](/cs/events): Kalendář a odpočty všech událostí (Community Days, Spotlight Hours, Raid Days)
-- [/cs/raids](/cs/raids): Průvodce raidovými souboji, CP rozsahy 100% IV, slabiny a nejlepší útočníci
-- [/cs/rocket](/cs/rocket): Tým GO Rocket – Giovanni, lídři (Arlo, Cliff, Sierra) a Shadow Pokémoni
-- [/cs/research](/cs/research): Polní výzkumy z Pokéstopů, kategorie a encounter odměny
-- [/cs/eggs](/cs/eggs): Seznam líhnutí z vajec pro aktuální sezónu (2km, 5km, 7km, 10km, 12km)
-- [/cs/friends](/cs/friends): Mezinárodní Trainer Codes katalog pro Vivillon dárky a XP grind
-- [/cs/ditto](/cs/ditto): Aktuální seznam Pokémonů, za které se maskuje Ditto v divočině
-- [/cs/rankings](/cs/rankings): PvE a PvP žebříčky útočníků podle simulací a eDPS
-- [/cs/filter](/cs/filter): Pokročilý generátor vyhledávacích řetězců (hundo, pvp iv, trade)
+## Core Live Feeds (Markdown)
 
-## REST API Endpoints (JSON)
-- `GET /api/events`: Seznam všech událostí s detaily a bonusy
-- `GET /api/raids`: Aktuální raid bossi se statistikami a countery
-- `GET /api/rocket`: Sestavy Team GO Rocket včetně Giovanniho
-- `GET /api/eggs`: Rozdělení vajíček podle vzdálenosti a tierů vzácnosti
-- `GET /api/research`: Databáze úkolů polního výzkumu a odměn
+- [Executive Live Summary](https://pogoevents.app/api/agent/summary.md): Complete real-time overview of active events, top raid bosses, Giovanni's Shadow Legendary, and egg pools in one response.
+- [Live Events & Bonuses Feed](https://pogoevents.app/api/agent/events.md): Active and upcoming Pokémon GO events, start/end timestamps, active bonuses, and featured wild spawns.
+- [Live Raid Bosses & Counters Feed](https://pogoevents.app/api/agent/raids.md): Active Tier 1, Tier 3, Tier 5, Mega, and Shadow Raid Bosses with 100% IV CP ranges (Lv 20 & Lv 25 Weather Boost) and top counters.
+- [Team GO Rocket Lineups Feed](https://pogoevents.app/api/agent/rocket.md): Current lineups, weaknesses, and counters for Boss Giovanni, Leaders Cliff, Sierra, Arlo, and Rocket Grunts.
+- [Egg Hatch Pools Feed](https://pogoevents.app/api/agent/eggs.md): Current 2km, 5km, 7km, 10km, and 12km Strange Egg hatch pools with CP ranges and shiny availability.
+- [Field Research Tasks Feed](https://pogoevents.app/api/agent/research.md): Current PokéStop Field Research tasks grouped by category with encounter and item rewards.
+- [Full LLM Knowledge Reference](https://pogoevents.app/llms-full.txt): Extended reference manual with game mechanics, Stardust bonus Pokémon tables, type effectiveness cheat sheets, and API documentation.
+
+## Main Web Sections
+
+- [Live Events Calendar & Timers](https://pogoevents.app/en): Interactive timeline and countdowns for Community Days, Raid Hours, Spotlight Hours, and GO Fest events.
+- [Raid Bosses & Counters Guide](https://pogoevents.app/en/raids): Active Raid Bosses, 100% IV Hundo CP charts, weaknesses, and optimal Mega/Shadow counters.
+- [Team GO Rocket Guide](https://pogoevents.app/en/rocket): Boss Giovanni, Cliff, Sierra, Arlo, and Grunt taunts/lineups.
+- [PvE & PvP Pokémon Rankings](https://pogoevents.app/en/rankings): DialgaDex ER and GamePress PvE rankings, Max CP chart, and Great/Ultra/Master League tier lists.
+- [In-Game Search String Generator](https://pogoevents.app/en/filter): Custom Pokémon GO search string builder for 4* Hundos, PvP IVs, and fast storage cleanup.
+- [Trainer Friend Codes & Vivillon Matchmaker](https://pogoevents.app/en/friends): Global trainer codes directory filtered by all 18 Vivillon patterns and Remote Raid invites.
+
+## Strategy Guides (18 In-Depth Articles)
+
+- [Team GO Rocket Leaders & Giovanni Counter Guide](https://pogoevents.app/en/guides/rocket-leaders-giovanni-guide): Stun-lock mechanics, shield burning, and lineups for Cliff, Sierra, Arlo, and Giovanni.
+- [Raid Battles & Optimal Counter Guide](https://pogoevents.app/en/guides/raid-battles-counter-guide): Weather boosts, Mega bonuses, Party Power, and top counters by type.
+- [Field Research Tasks & Rewards Guide](https://pogoevents.app/en/guides/field-research-tasks-guide): Live PokéStop tasks, 100% IV encounter floor (10/10/10), and research stack mechanics.
+- [Egg Hatching & Distance Pools Guide](https://pogoevents.app/en/guides/egg-hatching-guide): Live 2km, 5km, 7km, 10km, 12km, and Adventure Sync egg pools.
+- [Current Ditto Disguises & Shiny Hunting Guide](https://pogoevents.app/en/guides/ditto-disguises-guide): All current wild Pokémon that can transform into Ditto and shiny mechanics.
+- [Pokémon That Give Extra Stardust on Catch](https://pogoevents.app/en/guides/extra-stardust-pokemon-guide): Complete table of 29 Pokémon granting 500 to 2,100 base Stardust per catch (Audino, Meowth, Foongus, Trubbish) and Star Piece math.
+- [IVs, Hundos & PvP Stat Product Guide](https://pogoevents.app/en/guides/iv-appraisal-hundo-pvp-guide): Understanding 15/15/15 Hundos vs. low-Attack PvP IVs for Great and Ultra League.
+- [Mega Evolutions & Primal Reversion Guide](https://pogoevents.app/en/guides/mega-evolutions-bonus-guide): Mega Levels 1–3, XL Candy bonuses, and same-type/all-type raid damage multipliers.
+- [Community Day & Spotlight Hour Prep Guide](https://pogoevents.app/en/guides/community-day-event-prep-guide): Fast Catch technique, custom search strings, and maximizing XP/Stardust bonuses.
+- [Routes, Zygarde Cells & Mateo Guide](https://pogoevents.app/en/guides/routes-zygarde-cells-guide): How to farm Zygarde Cells (up to 3/day), transform Zygarde 10% to Complete Forme, and trade with Mateo.
+- [Daily Adventure Incense & Galarian Birds Guide](https://pogoevents.app/en/guides/daily-adventure-incense-galarian-birds): Spawning and catching Galarian Articuno, Zapdos, and Moltres (0.3% base catch rate).
+- [Lucky Pokémon, Lucky Friends & Lucky Trinket Guide](https://pogoevents.app/en/guides/lucky-pokemon-trading-guide): Guaranteed Lucky trades (2016–2020 Pokémon, max 35), 12/12/12 IV floor, and 50% Stardust discount.
+- [Vivillon Collector & Postcard Regions Map](https://pogoevents.app/en/guides/vivillon-patterns-regions-map-guide): All 18 Vivillon wing patterns mapped to real-world countries and postcard pinning rules.
+- [Fast Leveling & XP Grind Guide (Level 1 to 50)](https://pogoevents.app/en/guides/xp-leveling-fast-grind-guide): Friendship XP stacking with Lucky Eggs, Excellent throw mastery, and Level 41–50 requirements.
+- [Best Buddy & Excited Mood Without a Poffin](https://pogoevents.app/en/guides/buddy-system-excited-poffin-guide): How to reach 32 Emotion Points in 90 minutes for half candy distance and CP Boost (+1 Level).
+- [Dynamax, Gigantamax & Power Spots Guide](https://pogoevents.app/en/guides/dynamax-gigantamax-max-battles-guide): Max Particles (MP) daily cap, Max Moves (Attack, Spirit, Guard), and Gigantamax raids.
+- [Adventure Effects Guide (Roar of Time, Spacial Rend, Sunsteel Strike, Moongeist Beam, Freeze Shock, Ice Burn)](https://pogoevents.app/en/guides/adventure-effects-dialga-palkia-necrozma-guide): Out-of-battle field effects, Stardust/Candy costs, and timer extensions.
+- [Shadow vs. Purified Pokémon & Frustration Guide](https://pogoevents.app/en/guides/shadow-vs-purified-pokemon-frustration-guide): Why a 0% IV Shadow out-damages a 100% IV non-Shadow (+20% Attack bonus) and how to remove Frustration.
+
+## Optional
+
+- [RSS 2.0 Event Feed](https://pogoevents.app/feed.xml): XML feed of active and upcoming Pokémon GO events.
+- [XML Sitemap](https://pogoevents.app/sitemap.xml): Complete index of 4,900+ localized pages (`/cs`, `/en`, `/ja`, `/ru`).
+- [Czech Homepage](https://pogoevents.app/cs): Primary Czech localization of Pokémon GO Event Tracker.

@@ -25,7 +25,7 @@ export function generateEventsMarkdown(
   });
 
   let md = `# ${isCs ? 'Pokémon GO — Přehled Událostí' : 'Pokémon GO — Events Overview'}\n\n`;
-  md += `> ${isCs ? 'Zdroj dat' : 'Data source'}: [pogoevents.app](https://pogoevents.app/${lang}/events) | ${isCs ? 'Aktualizováno' : 'Updated'}: ${now.toISOString()}\n\n`;
+  md += `> ${isCs ? 'Zdroj dat' : 'Data source'}: [pogoevents.app](https://pogoevents.app/${lang}) | ${isCs ? 'Aktualizováno' : 'Updated'}: ${now.toISOString()}\n\n`;
 
   // Active Events
   md += `## 🟢 ${isCs ? 'Právě aktivní události' : 'Active Events Now'} (${active.length})\n\n`;
@@ -43,9 +43,12 @@ export function generateEventsMarkdown(
       if (details?.bonuses && details.bonuses.length > 0) {
         md += `- **${isCs ? 'Bonusy' : 'Bonuses'}**:\n`;
         for (const b of details.bonuses) {
-          const bText = isCs ? (b.text.cs || b.text.en) : b.text.en;
+          const bText = typeof b.text === 'string' ? b.text : (isCs ? (b.text.cs || b.text.en) : b.text.en);
           md += `  - ${bText}\n`;
         }
+      }
+      if (details?.spawns && details.spawns.length > 0) {
+        md += `- **${isCs ? 'Výskyty (Spawns)' : 'Wild Spawns'}**: ${details.spawns.map(s => `${s.name}${s.isShinyAvailable ? ' ✨' : ''}`).join(', ')}\n`;
       }
       md += `- **URL**: https://pogoevents.app/${lang}/events/${ev.eventID}\n\n`;
     }
@@ -57,14 +60,75 @@ export function generateEventsMarkdown(
     md += `_${isCs ? 'Žádné ohlášené nadcházející události.' : 'No upcoming events announced.'}_\n\n`;
   } else {
     for (const ev of upcoming.slice(0, 15)) {
+      const details = getDetails ? getDetails(ev.eventID) : null;
       md += `### ${ev.name}\n`;
       md += `- **${isCs ? 'Začátek' : 'Starts'}**: ${ev.start} | **${isCs ? 'Konec' : 'Ends'}**: ${ev.end}\n`;
       md += `- **${isCs ? 'Typ' : 'Type'}**: ${ev.eventType || 'Event'}\n`;
       if (ev.heading) {
         md += `- **${isCs ? 'Popis' : 'Summary'}**: ${ev.heading}\n`;
       }
+      if (details?.bonuses && details.bonuses.length > 0) {
+        md += `- **${isCs ? 'Bonusy' : 'Bonuses'}**:\n`;
+        for (const b of details.bonuses) {
+          const bText = typeof b.text === 'string' ? b.text : (isCs ? (b.text.cs || b.text.en) : b.text.en);
+          md += `  - ${bText}\n`;
+        }
+      }
       md += `- **URL**: https://pogoevents.app/${lang}/events/${ev.eventID}\n\n`;
     }
+  }
+
+  return md;
+}
+
+/**
+ * Format a single event into detailed Markdown for /api/agent/events/:id.md
+ */
+export function generateSingleEventMarkdown(
+  ev: EventData,
+  details: SpecialEventDetails | null,
+  lang: AgentLanguage = 'cs'
+): string {
+  const isCs = lang === 'cs';
+  let md = `# ${ev.name} — Pokémon GO Event\n\n`;
+  md += `> ${isCs ? 'Zdroj' : 'Source'}: [pogoevents.app](https://pogoevents.app/${lang}/events/${ev.eventID})\n\n`;
+  md += `- **${isCs ? 'Začátek' : 'Start'}**: ${ev.start}\n`;
+  md += `- **${isCs ? 'Konec' : 'End'}**: ${ev.end}\n`;
+  md += `- **${isCs ? 'Typ události' : 'Event Type'}**: ${ev.eventType || 'Event'}\n`;
+  if (ev.heading) {
+    md += `- **${isCs ? 'Shrnutí' : 'Heading'}**: ${ev.heading}\n`;
+  }
+  md += `\n`;
+
+  if (details?.bonuses && details.bonuses.length > 0) {
+    md += `## ${isCs ? 'Aktivní Bonusy' : 'Event Bonuses'}\n\n`;
+    for (const b of details.bonuses) {
+      const bText = typeof b.text === 'string' ? b.text : (isCs ? (b.text.cs || b.text.en) : b.text.en);
+      md += `- ${bText}\n`;
+    }
+    md += `\n`;
+  }
+
+  if (details?.spawns && details.spawns.length > 0) {
+    md += `## ${isCs ? 'Výskyty v divočině (Wild Spawns)' : 'Wild Spawns'}\n\n`;
+    md += details.spawns.map(s => `- **${s.name}**${s.isShinyAvailable ? ' ✨ (Shiny available)' : ''}`).join('\n') + `\n\n`;
+  }
+
+  if (details?.eggs && details.eggs.length > 0) {
+    md += `## ${isCs ? 'Líhnutí z vajec' : 'Event Egg Hatches'}\n\n`;
+    for (const eg of details.eggs) {
+      md += `- **${eg.distance}**: ${(eg.contents || []).map(c => `${c.name}${c.isShinyAvailable ? ' ✨' : ''}`).join(', ')}\n`;
+    }
+    md += `\n`;
+  }
+
+  if (details?.research && details.research.length > 0) {
+    md += `## ${isCs ? 'Polní výzkum (Field Research)' : 'Event Field Research'}\n\n`;
+    for (const r of details.research) {
+      const taskText = typeof r.task === 'string' ? r.task : (isCs ? (r.task.cs || r.task.en) : r.task.en);
+      md += `- **${taskText}** ➔ ${r.reward}${r.isShinyAvailable ? ' ✨' : ''}\n`;
+    }
+    md += `\n`;
   }
 
   return md;
@@ -137,7 +201,7 @@ export function generateRaidsMarkdown(raids: ScrapedRaidBoss[], lang: AgentLangu
 export function generateResearchMarkdown(tasks: EnrichedResearchTask[], lang: AgentLanguage = 'cs'): string {
   const isCs = lang === 'cs';
   let md = `# ${isCs ? 'Pokémon GO — Polní Výzkumy & Odměny' : 'Pokémon GO — Field Research Tasks & Rewards'}\n\n`;
-  md += `> ${isCs ? 'Zdroj' : 'Source'}: [pogoevents.app](https://pogoevents.app/${lang}/research) | ${new Date().toISOString()}\n\n`;
+  md += `> ${isCs ? 'Zdroj' : 'Source'}: [pogoevents.app](https://pogoevents.app/${lang}/guides/field-research-tasks-guide) | ${new Date().toISOString()}\n\n`;
 
   const categories = ['catch', 'throw', 'raid', 'buddy', 'power_up', 'spin', 'misc'] as const;
   const categoryLabels: Record<string, string> = {
@@ -165,6 +229,88 @@ export function generateResearchMarkdown(tasks: EnrichedResearchTask[], lang: Ag
       }).join(', ');
 
       md += `- **${taskText}** ➔ ${rewardsStr || 'Item/Encounter'}\n`;
+    }
+    md += `\n`;
+  }
+
+  return md;
+}
+
+/**
+ * Format egg hatch pools into clean Markdown for /api/agent/eggs.md
+ */
+export function generateEggsMarkdown(eggs: EnrichedEggGroup[], lang: AgentLanguage = 'cs'): string {
+  const isCs = lang === 'cs';
+  let md = `# ${isCs ? 'Pokémon GO — Líhnutí z vajec (Egg Hatch Pools)' : 'Pokémon GO — Egg Hatch Pools (2km, 5km, 7km, 10km, 12km)'}\n\n`;
+  md += `> ${isCs ? 'Zdroj' : 'Source'}: [pogoevents.app](https://pogoevents.app/${lang}/guides/egg-hatching-guide) | ${new Date().toISOString()}\n\n`;
+
+  if (!eggs || eggs.length === 0) {
+    md += `_${isCs ? 'Data o vejcích nejsou momentálně k dispozici.' : 'Egg pool data is currently unavailable.'}_\n`;
+    return md;
+  }
+
+  for (const group of eggs) {
+    md += `## 🥚 ${group.distance}\n\n`;
+    for (const poke of group.eggs || []) {
+      const shiny = poke.canBeShiny ? ' ✨' : '';
+      const cp = (poke.minCp && poke.maxCp) ? ` (CP: ${poke.minCp}–${poke.maxCp})` : '';
+      const rarity = poke.rarity ? ` [Tier ${poke.rarity}]` : '';
+      md += `- **${poke.name}**${shiny}${cp}${rarity}\n`;
+    }
+    md += `\n`;
+  }
+
+  return md;
+}
+
+/**
+ * Format Team GO Rocket lineups (Giovanni, Cliff, Sierra, Arlo, Grunts) into clean Markdown for /api/agent/rocket.md
+ */
+export function generateRocketMarkdown(rocket: any, lang: AgentLanguage = 'cs'): string {
+  const isCs = lang === 'cs';
+  let md = `# ${isCs ? 'Pokémon GO — Team GO Rocket Sestavy & Counters' : 'Pokémon GO — Team GO Rocket Lineups & Counters'}\n\n`;
+  md += `> ${isCs ? 'Zdroj' : 'Source'}: [pogoevents.app](https://pogoevents.app/${lang}/rocket) | ${new Date().toISOString()}\n\n`;
+
+  if (!rocket) {
+    md += `_${isCs ? 'Data o Team GO Rocket nejsou k dispozici.' : 'Team GO Rocket data is currently unavailable.'}_\n`;
+    return md;
+  }
+
+  const formatMember = (m: any) => {
+    let block = `### ${m.name} (${m.title || 'Leader'})\n`;
+    if (m.reward?.name) {
+      block += `- **${isCs ? 'Shadow Odměna' : 'Shadow Reward'}**: ${m.reward.name}${m.reward.canBeShiny ? ' ✨' : ''}\n`;
+    }
+    if (m.lineup) {
+      const s1 = (m.lineup.slot1 || []).map((p: any) => `${p.name} (Counters: ${(p.counters || []).join(', ') || 'Fighting/Fast'})`).join(' / ');
+      const s2 = (m.lineup.slot2 || []).map((p: any) => p.name).join(' / ');
+      const s3 = (m.lineup.slot3 || []).map((p: any) => p.name).join(' / ');
+      block += `- **Slot 1**: ${s1}\n`;
+      block += `- **Slot 2**: ${s2}\n`;
+      block += `- **Slot 3**: ${s3}\n`;
+    }
+    block += `\n`;
+    return block;
+  };
+
+  if (rocket.giovanni) {
+    md += `## 👑 Boss Giovanni\n\n`;
+    md += formatMember(rocket.giovanni);
+  }
+
+  if (Array.isArray(rocket.leaders) && rocket.leaders.length > 0) {
+    md += `## 🛡️ Team GO Rocket Leaders\n\n`;
+    for (const leader of rocket.leaders) {
+      md += formatMember(leader);
+    }
+  }
+
+  if (Array.isArray(rocket.grunts) && rocket.grunts.length > 0) {
+    md += `## 👥 Team GO Rocket Grunts\n\n`;
+    for (const g of rocket.grunts) {
+      const phrase = isCs ? (g.phraseCs || g.phraseEn) : g.phraseEn;
+      const tier1 = g.lineup?.slot1 || g.shadowPokemon || [];
+      md += `- **"${phrase}"** (${g.type}): ${tier1.join(', ')}\n`;
     }
     md += `\n`;
   }

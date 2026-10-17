@@ -111,18 +111,33 @@ describe('Storage & Disk Cache Persistence', () => {
       team: 'valor',
       purpose: 'raids',
       country: 'Pallet Town',
-      note: 'Gotta catch em all'
+      note: 'Gotta catch em all',
+      ownerToken: 'secret-ash-token-123'
     });
 
     expect(added).not.toBeNull();
     expect(added?.trainerCode).toBe('9999 8888 7777');
     expect(added?.expiresAt).toBe(0);
+    expect(added?.ownerToken).toBe('secret-ash-token-123');
 
     const list = await loadFriendListings();
     expect(list[0].trainerCode).toBe('9999 8888 7777');
+    // Public loadFriendListings must not expose ownerToken
+    expect((list[0] as any).ownerToken).toBeUndefined();
 
-    const deleted = await deleteFriendListing(testCode);
-    expect(deleted).toBe(true);
+    // Unauthorized delete with wrong ownerToken should fail
+    const unauthorizedDelete = await deleteFriendListing(testCode, {
+      ownerToken: 'wrong-token',
+      isAdmin: false
+    });
+    expect(unauthorizedDelete).toBe(false);
+
+    // Authorized delete with matching ownerToken should succeed
+    const authorizedDelete = await deleteFriendListing(testCode, {
+      ownerToken: 'secret-ash-token-123',
+      isAdmin: false
+    });
+    expect(authorizedDelete).toBe(true);
 
     const listAfterDelete = await loadFriendListings();
     expect(listAfterDelete.some(f => f.trainerCode === testCode)).toBe(false);

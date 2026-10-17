@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { FieldResearchView } from '@/components/FieldResearchView';
+import { redirect } from 'next/navigation';
 import type { Language } from '@/data/translations';
 
 export const revalidate = 300;
@@ -20,24 +20,13 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const unwrappedParams = await params;
   const lang = unwrappedParams.lang || 'cs';
-  const isCzech = lang === 'cs';
-  const canonicalUrl = `https://pogoevents.app/${lang}/research`;
+  const canonicalUrl = `https://pogoevents.app/${lang}/guides/field-research-tasks-guide`;
 
   return {
-    title: isCzech
-      ? 'Aktuální Polní Výzkum & Odměny (Field Research) | Pokémon GO Event Tracker'
-      : 'Current Field Research Tasks & Rewards | Pokémon GO Event Tracker',
-    description: isCzech
-      ? 'Přehled všech aktuálních úkolů polního výzkumu z Pokéstopů, odměn a encounterů s možností Shiny v Pokémon GO.'
-      : 'Complete list of all active Pokémon GO field research tasks, PokéStop quests, and encounter rewards with shiny chances.',
+    title: 'Field Research Tasks Guide | Pokémon GO Event Tracker',
+    description: 'Current PokéStop field research tasks, encounters, and rewards.',
     alternates: {
       canonical: canonicalUrl,
-      languages: {
-        'cs': `https://pogoevents.app/cs/research`,
-        'en': `https://pogoevents.app/en/research`,
-        'ja': `https://pogoevents.app/ja/research`,
-        'ru': `https://pogoevents.app/ru/research`,
-      },
     },
   };
 }
@@ -45,6 +34,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ResearchPage({ params }: PageProps) {
   const unwrappedParams = await params;
   const lang = unwrappedParams.lang || 'cs';
-
-  return <FieldResearchView lang={lang} />;
+  redirect(`/${lang}/guides/field-research-tasks-guide`);
 }
+

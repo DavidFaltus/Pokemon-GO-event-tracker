@@ -3,6 +3,9 @@ import { notFound } from 'next/navigation';
 import { PokemonRankingsView } from '@/components/PokemonRankingsView';
 import type { Language } from '@/data/translations';
 import { pokemonRankings } from '@/data/pokemonRankings';
+import { getPokemonName } from '@/utils/pokemonTranslator';
+import { isPokemonReleasedInGo } from '@/utils/pokemonReleaseHelper';
+import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
 
 export const revalidate = 3600;
 
@@ -233,15 +236,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: info.title,
     description: info.desc,
-    alternates: {
-      canonical: canonicalUrl,
-      languages: {
-        'cs': `https://pogoevents.app/cs/rankings/${category}`,
-        'en': `https://pogoevents.app/en/rankings/${category}`,
-        'ja': `https://pogoevents.app/ja/rankings/${category}`,
-        'ru': `https://pogoevents.app/ru/rankings/${category}`,
-      },
-    },
+    alternates: buildAlternates(lang, `/rankings/${category}`),
     openGraph: {
       title: info.title,
       description: info.desc,
@@ -249,6 +244,37 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       images: [{ url: 'https://pogoevents.app/logo-banner.jpg', width: 1200, height: 630, alt: info.title }]
     }
   };
+}
+
+function getCategoryTopPokemon(category: RankingCategory, filterType?: string) {
+  let list = pokemonRankings.filter(isPokemonReleasedInGo);
+  if (filterType) {
+    list = list.filter((p) => p.types.includes(filterType) || p.bestChargedMove?.type === filterType);
+  } else if (category === 'best-mega') {
+    list = list.filter((p) => p.isMega || p.isPrimal);
+  } else if (category === 'best-shadow') {
+    list = list.filter((p) => p.isShadow);
+  } else if (category === 'best-gym-defenders') {
+    list = list.filter((p) => !p.isMega && !p.isPrimal && !p.isShadow && p.maxCp <= 4200);
+  } else if (category === 'great-league') {
+    list = list.filter((p) => !p.isMega && !p.isPrimal && p.maxCp >= 1350 && p.maxCp <= 3200);
+  } else if (category === 'ultra-league') {
+    list = list.filter((p) => !p.isMega && !p.isPrimal && p.maxCp >= 2200 && p.maxCp <= 4000);
+  } else if (category === 'master-league') {
+    list = list.filter((p) => !p.isMega && !p.isPrimal && p.maxCp >= 3500);
+  } else if (category === 'little-cup') {
+    list = list.filter((p) => !p.isMega && !p.isPrimal && p.maxCp <= 1800);
+  }
+
+  if (category === 'max-cp' || category === 'master-league') {
+    list = [...list].sort((a, b) => b.maxCp - a.maxCp || b.pveScore - a.pveScore);
+  } else if (category === 'best-gym-defenders' || category === 'great-league' || category === 'ultra-league' || category === 'little-cup') {
+    list = [...list].sort((a, b) => (b.defense * b.stamina) - (a.defense * a.stamina) || b.pveScore - a.pveScore);
+  } else {
+    list = [...list].sort((a, b) => (b.pveScore * 10 + b.dps * 0.5) - (a.pveScore * 10 + a.dps * 0.5));
+  }
+
+  return list.slice(0, 10);
 }
 
 export default async function CategoryRankingsPage({ params }: PageProps) {
@@ -264,8 +290,8 @@ export default async function CategoryRankingsPage({ params }: PageProps) {
 
   const canonicalUrl = `https://pogoevents.app/${lang}/rankings/${category}`;
   const filterType = CATEGORY_NAMES[category]?.en?.filterType;
+  const topPokemon = getCategoryTopPokemon(category, filterType);
 
-  // Schema.org ItemList
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -274,13 +300,19 @@ export default async function CategoryRankingsPage({ params }: PageProps) {
         name: info.title,
         description: info.desc,
         url: canonicalUrl,
-        numberOfItems: 20,
+        numberOfItems: topPokemon.length,
+        itemListElement: topPokemon.map((poke, idx) => ({
+          '@type': 'ListItem',
+          position: idx + 1,
+          name: `${getPokemonName(poke.name, lang)} (${poke.bestFastMove.name} + ${poke.bestChargedMove.name})`,
+          url: `https://pogoevents.app/${lang}/pokemon/${poke.pokedexId}`,
+        })),
       },
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: `https://pogoevents.app/${lang}` },
-          { '@type': 'ListItem', position: 2, name: 'Rankings', item: `https://pogoevents.app/${lang}/rankings` },
+          { '@type': 'ListItem', position: 1, name: getBreadcrumbLabel('home', lang), item: `https://pogoevents.app/${lang}` },
+          { '@type': 'ListItem', position: 2, name: getBreadcrumbLabel('rankings', lang), item: `https://pogoevents.app/${lang}/rankings` },
           { '@type': 'ListItem', position: 3, name: info.title, item: canonicalUrl }
         ]
       }
@@ -293,7 +325,33 @@ export default async function CategoryRankingsPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <PokemonRankingsView lang={lang} initialSearchQuery={filterType || ''} />
+      <article
+        className="seo-entity-summary card"
+        style={{
+          marginBottom: '18px',
+          padding: '16px 20px',
+          borderRadius: '16px',
+          border: '1px solid var(--border-color)',
+          backgroundColor: 'var(--bg-card)',
+        }}
+      >
+        <h2 style={{ fontSize: '1.15rem', fontWeight: 800, margin: '0 0 6px 0' }}>{info.title}</h2>
+        <p style={{ margin: '0 0 10px 0', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>{info.desc}</p>
+        {topPokemon.length > 0 && (
+          <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+            <strong>TOP 5:</strong>{' '}
+            {topPokemon
+              .slice(0, 5)
+              .map((p, i) => `#${i + 1} ${getPokemonName(p.name, lang)} (${p.maxCp} CP, ${p.bestFastMove.name} + ${p.bestChargedMove.name})`)
+              .join(' • ')}
+          </p>
+        )}
+      </article>
+      <PokemonRankingsView
+        lang={lang}
+        initialCategory={filterType ? undefined : category}
+        initialSelectedType={filterType}
+      />
     </>
   );
 }
