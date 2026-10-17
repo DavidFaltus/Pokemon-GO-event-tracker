@@ -143,3 +143,25 @@
     justify-content: center;
   }
 }
+
+/* ── LIGHT MODE OVERRIDES FOR 404 NOT FOUND VIEW ── */
+body.light-mode .not-found-subtitle {
+  color: #b45309 !important;
+}
+
+body.light-mode .not-found-icon-wrapper {
+  background: rgba(170, 59, 255, 0.1) !important;
+  color: #7e22ce !important;
+  border-color: rgba(170, 59, 255, 0.25) !important;
+}
+
+body.light-mode .not-found-btn-secondary {
+  background: #f1f5f9 !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  color: #1e293b !important;
+}
+
+body.light-mode .not-found-btn-secondary:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}

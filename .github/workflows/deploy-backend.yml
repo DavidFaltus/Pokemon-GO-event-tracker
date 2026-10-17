@@ -30,4 +30,4 @@ jobs:
           region: europe-west3
           source: ./backend
           project_id: ${{ secrets.GCP_PROJECT_ID || 'pokego-event-tracker-2026' }}
-          flags: '--port=8080 --allow-unauthenticated --set-env-vars=NODE_ENV=production,USE_GCS=true'
+          flags: '--port=8080 --allow-unauthenticated --update-env-vars=NODE_ENV=production,USE_GCS=true'

@@ -2,6 +2,7 @@ import React from 'react';
 import Script from 'next/script';
 import { Outfit } from 'next/font/google';
 import { NavigatorProvider } from '@/hooks/useAppNavigate';
+import { ThemeProvider } from '@/context/ThemeContext';
 import '../index.css';
 import '../App.css';
 import './globals.css';
@@ -42,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-theme="dark" className={outfit.variable}>
+    <html lang="en" data-theme="dark" className={outfit.variable} suppressHydrationWarning>
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
@@ -54,8 +55,24 @@ export default function RootLayout({
         <link rel="preconnect" href="https://img.pokemondb.net" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fastly.jsdelivr.net" />
         <link rel="dns-prefetch" href="https://cdn.leekduck.com" />
+        <script
+          id="theme-init"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var saved = localStorage.getItem('pogo_tracker_theme');
+                  if (saved === 'light') {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    document.documentElement.classList.add('light-mode');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
       </head>
-      <body className={outfit.className}>
+      <body className={outfit.className} suppressHydrationWarning>
         {/* Google Tag (gtag.js) - lazyOnload loads analytics without competing for initial render */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-17PT93VMXQ"
@@ -76,7 +93,9 @@ export default function RootLayout({
 
         <div id="root">
           <NavigatorProvider>
-            {children}
+            <ThemeProvider>
+              {children}
+            </ThemeProvider>
           </NavigatorProvider>
         </div>
       </body>

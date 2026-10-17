@@ -17,6 +17,7 @@ import { useAppNavigate } from './hooks/useAppNavigate';
 import { Calendar, Swords, Shield, Settings, Play, Clock, Egg, Sparkles, Trophy, Filter, LayoutList, BookOpen } from 'lucide-react';
 import { Footer, InstagramLogo, TikTokLogo } from './components/Footer';
 import { LegalModals, type LegalModalType } from './components/LegalModals';
+import { useTheme } from './context/ThemeContext';
 
 // Direct imports for public SEO views so Next.js SSG renders full semantic HTML without hidden Suspense boundaries
 import { RaidView } from './components/RaidView';
@@ -610,21 +611,7 @@ function App({
     return () => window.removeEventListener('popstate', handlePopState);
   }, [lang]);
   
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
-
-  useEffect(() => {
-    const saved = safeLocalStorage.getItem('pogo_tracker_theme');
-    if (saved === 'light' || saved === 'dark') {
-      setTheme(saved);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      document.documentElement.setAttribute('data-theme', theme);
-      safeLocalStorage.setItem('pogo_tracker_theme', theme);
-    }
-  }, [theme]);
+  const { theme, setTheme } = useTheme();
 
   const [timezone, setTimezone] = useState<string>('Europe/Prague');
 

@@ -14,6 +14,7 @@ import {
 } from './storage';
 import { dataStore } from './dataStore';
 import { EnrichedEggGroup, EnrichedResearchTask, ScrapedRaidBoss } from './types';
+import { SEED_COMMUNITY_FRIENDS } from './data/seedFriends';
 
 describe('Storage & Disk Cache Persistence', () => {
   const CACHE_DIR = path.join(__dirname, '..', '.cache');

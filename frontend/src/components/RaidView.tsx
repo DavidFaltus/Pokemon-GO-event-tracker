@@ -221,19 +221,91 @@ export const REGIONAL_POKEMON: Record<string, RegionalInfo> = {
 type FilterTier = 'all' | '5' | 'mega' | '3' | '1';
 type RegionFilter = 'all' | 'EMEA' | 'Asia' | 'Americas';
 
+export function normalizeRaidTier(rawTier: any, bossName: string = ''): RaidBoss['tier'] {
+  const lowerName = bossName.toLowerCase();
+  const isShadow = lowerName.includes('shadow');
+
+  if (!rawTier) {
+    if (lowerName.includes('mega') || lowerName.includes('primal')) return 'mega';
+    if (isShadow) return 'shadow-5';
+    return '5';
+  }
+
+  const lower = String(rawTier).toLowerCase().trim();
+  const hasShadowInTier = lower.includes('shadow') || isShadow;
+
+  if (lower.includes('mega') || lower.includes('primal')) return 'mega';
+
+  if (lower === '5' || lower.includes('5-star') || lower.includes('tier 5') || lower.includes('legendary') || lower.includes('5')) {
+    return hasShadowInTier ? 'shadow-5' : '5';
+  }
+  if (lower === '3' || lower.includes('3-star') || lower.includes('tier 3') || lower.includes('3')) {
+    return hasShadowInTier ? 'shadow-3' : '3';
+  }
+  if (lower === '1' || lower.includes('1-star') || lower.includes('tier 1') || lower.includes('1')) {
+    return hasShadowInTier ? 'shadow-1' : '1';
+  }
+  return '1';
+}
+
+export function normalizeRaidBoss(raw: any): RaidBoss {
+  const name = typeof raw.name === 'string' ? raw.name.trim() : '';
+  const tier = normalizeRaidTier(raw.tier, name);
+
+  // CP Range extraction
+  let cpRange: string | undefined = raw.cpRange;
+  if (!cpRange && raw.combatPower?.normal) {
+    const { min, max } = raw.combatPower.normal;
+    cpRange = min === max ? `${min}` : `${min} - ${max}`;
+  }
+
+  // Boosted CP Range extraction
+  let boostedCpRange: string | undefined = raw.boostedCpRange;
+  if (!boostedCpRange && raw.combatPower?.boosted) {
+    const { min, max } = raw.combatPower.boosted;
+    boostedCpRange = min === max ? `${min}` : `${min} - ${max}`;
+  }
+
+  // Weather boosts
+  let weatherBoosts: string[] | undefined = Array.isArray(raw.weatherBoosts) ? raw.weatherBoosts : undefined;
+  if (!weatherBoosts && Array.isArray(raw.boostedWeather)) {
+    weatherBoosts = raw.boostedWeather.map((w: any) => typeof w === 'string' ? w : w?.name).filter(Boolean);
+  }
+
+  // Types
+  let types: string[] | undefined = Array.isArray(raw.types)
+    ? raw.types.map((t: any) => typeof t === 'string' ? t : t?.name).filter(Boolean)
+    : undefined;
+
+  // Counters
+  const counters = raw.counters || findRaidCounters(name);
+
+  // Image
+  const image = raw.image || resolveImage(undefined, 'raid', name);
+
+  return {
+    name,
+    tier,
+    image,
+    canBeShiny: Boolean(raw.canBeShiny),
+    cpRange,
+    boostedCpRange,
+    weatherBoosts: weatherBoosts && weatherBoosts.length > 0 ? weatherBoosts : undefined,
+    types: types && types.length > 0 ? types : undefined,
+    counters,
+  };
+}
+
 export const RaidView: React.FC<RaidViewProps> = ({ lang, initialBosses, initialExpandedBoss, onOpenFilterGenerator, onOpenGuide }) => {
   const initialResolvedBosses = React.useMemo(() => {
-    const base = (initialBosses && initialBosses.length > 0) ? initialBosses : buildFallbackRaidBosses();
+    const baseRaw = (initialBosses && initialBosses.length > 0) ? initialBosses : buildFallbackRaidBosses();
+    const base = baseRaw.map(normalizeRaidBoss);
     if (initialExpandedBoss) {
       const cleanTarget = initialExpandedBoss.toLowerCase().trim();
       const exists = base.some(b => b.name.toLowerCase() === cleanTarget || b.name.toLowerCase().includes(cleanTarget));
       if (!exists) {
         const counters = findRaidCounters(initialExpandedBoss);
-        const tier: RaidBoss['tier'] = cleanTarget.includes('mega') || cleanTarget.includes('primal')
-          ? 'mega'
-          : cleanTarget.includes('shadow')
-          ? 'shadow-5'
-          : '5';
+        const tier = normalizeRaidTier(undefined, initialExpandedBoss);
         return [
           {
             name: initialExpandedBoss,
@@ -295,18 +367,19 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, initialBosses, initial
         if (!response.ok) throw new Error('Failed to fetch raids');
         const data = await response.json();
         if (isMounted && Array.isArray(data) && data.length > 0) {
+          const normalizedData = data.map(normalizeRaidBoss);
           if (initialExpandedBoss) {
             const cleanTarget = initialExpandedBoss.toLowerCase().trim();
-            const exists = data.some((b: RaidBoss) => b.name.toLowerCase() === cleanTarget || b.name.toLowerCase().includes(cleanTarget));
+            const exists = normalizedData.some((b: RaidBoss) => b.name.toLowerCase() === cleanTarget || b.name.toLowerCase().includes(cleanTarget));
             if (!exists) {
               const targetEntry = initialResolvedBosses.find(b => b.name.toLowerCase().includes(cleanTarget));
               if (targetEntry) {
-                setBosses([targetEntry, ...data]);
+                setBosses([targetEntry, ...normalizedData]);
                 return;
               }
             }
           }
-          setBosses(data);
+          setBosses(normalizedData);
         }
       } catch (err) {
         console.error('Failed to load raids from backend:', err);
@@ -354,12 +427,14 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, initialBosses, initial
     const seen = new Set<string>();
 
     for (const b of bosses) {
-      const subNames = b.name.split(/,|\sand\s|&/i).map(s => s.trim()).filter(Boolean);
+      const normalizedB = normalizeRaidBoss(b);
+      const subNames = normalizedB.name.split(/,|\sand\s|&/i).map(s => s.trim()).filter(Boolean);
       for (const name of subNames) {
-        const key = `${name.toLowerCase()}-${b.tier}`;
+        const normTier = normalizeRaidTier(normalizedB.tier, name);
+        const key = `${name.toLowerCase()}-${normTier}`;
         if (!seen.has(key)) {
           seen.add(key);
-          list.push({ ...b, name });
+          list.push({ ...normalizedB, name, tier: normTier });
         }
       }
     }
@@ -368,11 +443,13 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, initialBosses, initial
 
   const filteredBosses = processedBosses.filter(boss => {
     // 1. Tier filter
+    const normTier = normalizeRaidTier(boss.tier, boss.name);
     let tierMatch = true;
-    if (activeFilter === '5') tierMatch = boss.tier === '5' || boss.tier === 'shadow-5';
-    else if (activeFilter === '3') tierMatch = boss.tier === '3' || boss.tier === 'shadow-3';
-    else if (activeFilter === '1') tierMatch = boss.tier === '1' || boss.tier === 'shadow-1';
-    else if (activeFilter !== 'all') tierMatch = boss.tier === activeFilter;
+    if (activeFilter === '5') tierMatch = normTier === '5' || normTier === 'shadow-5';
+    else if (activeFilter === 'mega') tierMatch = normTier === 'mega';
+    else if (activeFilter === '3') tierMatch = normTier === '3' || normTier === 'shadow-3';
+    else if (activeFilter === '1') tierMatch = normTier === '1' || normTier === 'shadow-1';
+    else if (activeFilter !== 'all') tierMatch = normTier === activeFilter;
 
     if (!tierMatch) return false;
 

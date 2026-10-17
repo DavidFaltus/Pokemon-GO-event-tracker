@@ -170,6 +170,145 @@ export interface CounterPokemonInfo {
   effectiveType: string;
   defensiveRating: 'resistant' | 'neutral' | 'vulnerable';
   defensiveLabel: string;
+  weatherBoosted?: boolean;
+  isBudget?: boolean;
+  dualEffective?: boolean;
+}
+
+export interface FilteredCountersOptions {
+  tierMode?: 'universal' | 'budget' | 'weather';
+  filterStrategy?: 'resistant' | 'max_dps';
+  dualMoves?: boolean;
+  excludeFrustration?: boolean;
+  ivFilter?: 'all' | '3*,4*' | '4*';
+  limit?: number;
+}
+
+export function getFilteredCountersForBoss(
+  bossName: string,
+  options: FilteredCountersOptions = {}
+): CounterPokemonInfo[] {
+  const {
+    tierMode = 'universal',
+    filterStrategy = 'resistant',
+    dualMoves = true,
+    excludeFrustration = true,
+    limit = 12
+  } = options;
+
+  const clean = bossName.toLowerCase().replace(/^(shadow|mega|primal)\s+/, '').trim();
+  const baseClean = clean.replace(/\s*\([^)]+\)/g, '').trim();
+  const resolvedTypes = getPokemonTypesByName(bossName);
+
+  const targetPoke = pokemonRankings.find(p => p.name.toLowerCase() === bossName.toLowerCase())
+    || pokemonRankings.find(p => p.name.toLowerCase().includes(clean))
+    || pokemonRankings.find(p => p.name.toLowerCase().includes(baseClean))
+    || {
+      name: bossName,
+      pokedexId: 9999,
+      types: resolvedTypes,
+      attack: 250,
+      defense: 200,
+      stamina: 200,
+      maxCp: 3800,
+      pveScore: 90,
+      dps: 25,
+      bestFastMove: { name: 'Tackle', type: resolvedTypes[0] || 'Normal' },
+      bestChargedMove: { name: 'Body Slam', type: resolvedTypes[0] || 'Normal' }
+    };
+
+  const counterTypes = getCounterTypes(targetPoke.types);
+  const primaryCounterTypeNames = new Set(counterTypes.map(c => c.type));
+
+  const candidatePool = pokemonRankings.filter(p => {
+    if (p.pokedexId === targetPoke.pokedexId && p.name === targetPoke.name) return false;
+
+    // 1. Budget Mode: Filter out all Megas, Primals, and ultra-expensive legendaries
+    if (tierMode === 'budget') {
+      if (p.isMega || p.isPrimal) return false;
+      const isLegendaryOrMythical = [
+        144, 145, 146, 150, 151, 243, 244, 245, 249, 250, 251, 377, 378, 379, 380, 381, 382, 383, 384, 385, 386,
+        480, 481, 482, 483, 484, 485, 486, 487, 488, 491, 492, 493, 494, 638, 639, 640, 641, 642, 643, 644, 645, 646,
+        647, 648, 649, 716, 717, 718, 772, 773, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800
+      ].includes(p.pokedexId);
+      if (isLegendaryOrMythical) return false;
+      if (p.isShadow && isLegendaryOrMythical) return false;
+    }
+
+    // Must have an effective charged move
+    const hasEffectiveCharged = primaryCounterTypeNames.has(p.bestChargedMove.type);
+    if (!hasEffectiveCharged) return false;
+
+    // 2. Dual Moves Check: If enabled, fast move should also be super effective or share STAB
+    if (dualMoves) {
+      const hasEffectiveFast = primaryCounterTypeNames.has(p.bestFastMove.type);
+      const hasStabMatch = p.types.includes(p.bestChargedMove.type);
+      if (!hasEffectiveFast && !hasStabMatch) return false;
+    }
+
+    return true;
+  });
+
+  const scored: CounterPokemonInfo[] = candidatePool.map(poke => {
+    const counterInfo = counterTypes.find(c => c.type === poke.bestChargedMove.type);
+    const offensiveMult = counterInfo ? counterInfo.multiplier : 1.6;
+    const defMatchup = calculateDefensiveMatchup(poke.types, targetPoke.types);
+
+    const isWeatherBoosted = tierMode === 'weather' && primaryCounterTypeNames.has(poke.bestChargedMove.type);
+    const weatherMult = isWeatherBoosted ? 1.20 : 1.0;
+
+    const baseRating = filterStrategy === 'resistant'
+      ? Math.round(poke.pveScore * (offensiveMult / 1.6) * defMatchup.defensiveMultiplier * weatherMult)
+      : Math.round(poke.pveScore * (offensiveMult / 1.6) * weatherMult);
+
+    const isDualEffective = primaryCounterTypeNames.has(poke.bestFastMove.type) && primaryCounterTypeNames.has(poke.bestChargedMove.type);
+
+    return {
+      pokemon: poke,
+      counterRating: baseRating,
+      effectiveType: poke.bestChargedMove.type,
+      defensiveRating: defMatchup.defensiveRating,
+      defensiveLabel: defMatchup.defensiveLabel,
+      weatherBoosted: isWeatherBoosted,
+      isBudget: tierMode === 'budget',
+      dualEffective: isDualEffective
+    };
+  });
+
+  scored.sort((a, b) => b.counterRating - a.counterRating);
+
+  let candidatesToUse = scored;
+  if (filterStrategy === 'resistant') {
+    const nonGlass = scored.filter(c => c.defensiveRating !== 'vulnerable');
+    if (nonGlass.length >= Math.min(limit, 6)) {
+      candidatesToUse = nonGlass;
+    }
+  }
+
+  const topList: CounterPokemonInfo[] = [];
+  const usedSpecies = new Set<string>();
+
+  for (const item of candidatesToUse) {
+    const cleanSpecies = item.pokemon.name.replace(/^(shadow|mega|primal)\s+/i, '').trim().toLowerCase();
+    if (tierMode === 'budget' && (item.pokemon.isMega || item.pokemon.isPrimal)) continue;
+
+    if (!usedSpecies.has(cleanSpecies)) {
+      usedSpecies.add(cleanSpecies);
+      topList.push(item);
+      if (topList.length >= limit) break;
+    }
+  }
+
+  if (topList.length < limit) {
+    for (const item of candidatesToUse) {
+      if (!topList.some(existing => existing.pokemon.name === item.pokemon.name)) {
+        topList.push(item);
+        if (topList.length >= limit) break;
+      }
+    }
+  }
+
+  return topList;
 }
 
 export function getTopCountersForPokemonDetailed(

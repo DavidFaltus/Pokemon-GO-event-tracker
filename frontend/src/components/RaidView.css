@@ -446,3 +446,43 @@ body.light-mode .raid-boss-cp {
   gap: 4px;
   vertical-align: middle;
 }
+
+body.light-mode .counters-cp-info {
+  background-color: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+body.light-mode .cp-row {
+  border-bottom-color: rgba(15, 23, 42, 0.08) !important;
+}
+
+body.light-mode .cp-header-label {
+  color: #64748b !important;
+}
+
+body.light-mode .cp-span {
+  color: #0f172a !important;
+}
+
+body.light-mode .hundo-label {
+  color: #b45309 !important;
+}
+
+body.light-mode .hundo-label-boost {
+  color: #c2410c !important;
+}
+
+body.light-mode .highlight-shiny {
+  color: #b45309 !important;
+  text-shadow: none !important;
+}
+
+body.light-mode .shiny-info {
+  border-top-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+body.light-mode .raid-difficulty-box {
+  background: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  color: #0f172a !important;
+}

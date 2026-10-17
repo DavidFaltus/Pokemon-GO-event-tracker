@@ -133,22 +133,35 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
     }
   };
 
-  // Deduplicate and merge listings by 12-digit trainer code (preserving newest entry)
-  const mergeClientListings = (primary: FriendListing[], secondary: FriendListing[]): FriendListing[] => {
+  // Deduplicate and merge listings by 12-digit trainer code (user submissions override seeds, newest entry wins)
+  const mergeClientListings = (...lists: (FriendListing[] | undefined)[]): FriendListing[] => {
     const map = new Map<string, FriendListing>();
-    for (const list of [primary, secondary]) {
+    for (const list of lists) {
       if (!Array.isArray(list)) continue;
       for (const item of list) {
-        if (!item || !item.trainerCode || item.id?.startsWith('seed-')) continue;
+        if (!item || !item.trainerCode) continue;
         const digits = item.trainerCode.replace(/\D/g, '');
         if (digits.length !== 12) continue;
         const existing = map.get(digits);
-        if (!existing || (item.createdAt || 0) >= (existing.createdAt || 0)) {
+        if (!existing) {
           map.set(digits, item);
+        } else {
+          const itemIsSeed = Boolean(item.id?.startsWith('seed-'));
+          const existingIsSeed = Boolean(existing.id?.startsWith('seed-'));
+          if (existingIsSeed && !itemIsSeed) {
+            map.set(digits, item);
+          } else if (!existingIsSeed && !itemIsSeed && (item.createdAt || 0) >= (existing.createdAt || 0)) {
+            map.set(digits, item);
+          }
         }
       }
     }
-    return Array.from(map.values()).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    return Array.from(map.values()).sort((a, b) => {
+      const aIsSeed = a.id?.startsWith('seed-') ? 1 : 0;
+      const bIsSeed = b.id?.startsWith('seed-') ? 1 : 0;
+      if (aIsSeed !== bIsSeed) return aIsSeed - bIsSeed;
+      return (b.createdAt || 0) - (a.createdAt || 0);
+    });
   };
 
   // Fetch live active friends from backend with automatic local cache backup & self-healing sync
@@ -176,11 +189,10 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
       const cached = localStorage.getItem('pogo_cached_friend_listings');
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed)) {
-          localCachedList = parsed.filter((l: any) => !l.id?.startsWith('seed-'));
-          if (localCachedList.length > 0) {
-            setListings(localCachedList);
-          }
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          localCachedList = parsed;
+          const mergedInitial = mergeClientListings(parsed, SEED_COMMUNITY_FRIENDS);
+          setListings(mergedInitial);
         }
       }
     } catch {}
@@ -197,7 +209,7 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
         if (res.ok) {
           const data = await res.json();
           if (isMounted && data.listings && Array.isArray(data.listings)) {
-            const serverList: FriendListing[] = data.listings.filter((l: any) => !l.id?.startsWith('seed-'));
+            const serverList: FriendListing[] = data.listings;
             const serverCodes = new Set(serverList.map(l => l.trainerCode.replace(/\D/g, '')));
 
             // Identify if user's own code or offline-submitted codes are missing on server and auto-sync them
@@ -217,8 +229,8 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
               }
             }
 
-            // Protect non-empty local cache if server temporarily returned empty
-            const mergedList = mergeClientListings(serverList, codesToRecover.length > 0 ? codesToRecover : (serverList.length === 0 ? localCachedList : []));
+            // Merge server list with recovered local codes and fallback community seeds
+            const mergedList = mergeClientListings(codesToRecover, serverList, localCachedList, SEED_COMMUNITY_FRIENDS);
             setListings(mergedList);
             try {
               localStorage.setItem('pogo_cached_friend_listings', JSON.stringify(mergedList));
@@ -256,6 +268,8 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
         }
       } catch (err) {
         console.warn('Could not load friends from API, using fallback:', err);
+        const fallbackList = mergeClientListings(localCachedList, SEED_COMMUNITY_FRIENDS);
+        setListings(fallbackList);
       } finally {
         if (isMounted) setLoading(false);
       }

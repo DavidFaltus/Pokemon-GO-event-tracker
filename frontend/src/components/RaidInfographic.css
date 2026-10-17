@@ -929,3 +929,28 @@
   color: #38bdf8;
   white-space: nowrap;
 }
+
+/* Light Mode Overrides for Infographic Toolbar */
+body.light-mode .boss-switcher-tabs,
+body.light-mode .slide-tabs.flex-row {
+  background: #f1f5f9 !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+body.light-mode .boss-tab-btn,
+body.light-mode .slide-tab-btn {
+  color: #475569 !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+body.light-mode .boss-tab-btn:hover,
+body.light-mode .slide-tab-btn:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .slide-tab-btn.active,
+body.light-mode .boss-tab-btn.active {
+  background: var(--accent-gradient, linear-gradient(135deg, #aa3bff 0%, #7e22ce 100%)) !important;
+  color: #ffffff !important;
+}

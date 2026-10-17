@@ -120,3 +120,35 @@
   color: #c084fc;
   word-break: break-all;
 }
+
+/* ── LIGHT MODE OVERRIDES FOR DIRECT RAID FILTER BOX ── */
+body.light-mode .direct-raid-filter-container {
+  background: #f8fafc !important;
+  border: 1px solid rgba(168, 85, 247, 0.35) !important;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05) !important;
+}
+
+body.light-mode .direct-raid-filter-title {
+  color: #7e22ce !important;
+}
+
+body.light-mode .direct-customize-btn {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  color: #475569 !important;
+}
+
+body.light-mode .direct-customize-btn:hover {
+  background: #f1f5f9 !important;
+  color: #7e22ce !important;
+}
+
+body.light-mode .direct-filter-code-box {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+}
+
+body.light-mode .direct-filter-code-box code {
+  color: #6b21a8 !important;
+  font-weight: 600 !important;
+}

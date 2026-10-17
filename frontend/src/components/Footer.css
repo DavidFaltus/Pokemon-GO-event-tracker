@@ -151,3 +151,45 @@
     margin-top: auto;
   }
 }
+
+/* ── LIGHT MODE OVERRIDES FOR FOOTER ── */
+body.light-mode .site-footer {
+  background: #ffffff !important;
+  border-top: 1px solid rgba(15, 23, 42, 0.12) !important;
+  color: #475569 !important;
+}
+
+body.light-mode .footer-logo {
+  color: #0f172a !important;
+}
+
+body.light-mode .footer-brand p {
+  color: #475569 !important;
+}
+
+body.light-mode .footer-column h4 {
+  color: #0f172a !important;
+}
+
+body.light-mode .footer-column button,
+body.light-mode .footer-column a {
+  color: #475569 !important;
+}
+
+body.light-mode .footer-column button:hover,
+body.light-mode .footer-column a:hover {
+  color: #0284c7 !important;
+}
+
+body.light-mode .social-tab-link {
+  color: #475569 !important;
+}
+
+body.light-mode .social-tab-link:hover {
+  color: #0284c7 !important;
+}
+
+body.light-mode .footer-bottom {
+  border-top: 1px solid rgba(15, 23, 42, 0.1) !important;
+  color: #64748b !important;
+}

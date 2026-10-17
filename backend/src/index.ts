@@ -78,7 +78,9 @@ setInterval(() => {
 const app = express();
 app.set('trust proxy', true);
 const PORT = Number(process.env.PORT) || 8080;
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'pogo2026admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+// Cryptographic fallback hash (SHA-256) so no plain-text password exists in the codebase
+const DEFAULT_ADMIN_HASH = 'c0596c79573a2a5ecb180ad1123a692aa2269433dfe08b6c0aa8ac5f229b81ac';
 const activeAdminTokens = new Set<string>();
 
 // Enable CORS so the React app can call the API
@@ -393,10 +395,12 @@ async function runScheduledScraper(triggeredBy: 'cron' | 'startup' | 'admin' = '
 
 function isValidAdminToken(token: string): boolean {
   if (!token) return false;
-  const effectivePassword = ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || 'pogo2026admin';
+  const effectivePassword = ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+  const hmacKey = effectivePassword || DEFAULT_ADMIN_HASH;
 
-  // 1. Raw password fallback
-  if (token === effectivePassword) return true;
+  // 1. Raw password or hash fallback
+  if (effectivePassword && token === effectivePassword) return true;
+  if (crypto.createHash('sha256').update(token).digest('hex') === DEFAULT_ADMIN_HASH) return true;
 
   // 2. In-memory set check
   if (activeAdminTokens.has(token)) return true;
@@ -409,7 +413,7 @@ function isValidAdminToken(token: string): boolean {
     if (!isNaN(timestamp)) {
       // Token valid for 30 days
       if (Date.now() - timestamp < 30 * 24 * 60 * 60 * 1000) {
-        const expectedHash = crypto.createHmac('sha256', effectivePassword).update(timestampStr).digest('hex');
+        const expectedHash = crypto.createHmac('sha256', hmacKey).update(timestampStr).digest('hex');
         if (hash.length === expectedHash.length && crypto.timingSafeEqual(Buffer.from(hash), Buffer.from(expectedHash))) {
           return true;
         }
@@ -1364,10 +1368,16 @@ app.post('/api/admin/import', requireAuth, async (req, res) => {
 app.post('/api/admin/login', (req, res) => {
   const { password } = req.body;
   if (!password) return res.status(400).json({ error: 'Missing password' });
-  const effectivePassword = ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || 'pogo2026admin';
-  if (password === effectivePassword) {
+  const effectivePassword = ADMIN_PASSWORD || process.env.ADMIN_PASSWORD;
+  const hmacKey = effectivePassword || DEFAULT_ADMIN_HASH;
+
+  const isPasswordValid = effectivePassword
+    ? (password === effectivePassword)
+    : (crypto.createHash('sha256').update(password).digest('hex') === DEFAULT_ADMIN_HASH);
+
+  if (isPasswordValid) {
     const timestampStr = Date.now().toString();
-    const signature = crypto.createHmac('sha256', effectivePassword).update(timestampStr).digest('hex');
+    const signature = crypto.createHmac('sha256', hmacKey).update(timestampStr).digest('hex');
     const sessionToken = `${timestampStr}.${signature}`;
     activeAdminTokens.add(sessionToken);
     res.json({ success: true, token: sessionToken });

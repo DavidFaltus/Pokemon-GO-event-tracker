@@ -7,8 +7,9 @@ import { translations, type Language } from '../data/translations';
 import { PokeballLogo } from './PokeballLogo';
 import { Footer } from './Footer';
 import { LegalModals, type LegalModalType } from './LegalModals';
-import { Calendar, Swords, Shield, Clock, Egg, Sparkles, Trophy, Filter, Settings, BookOpen, Download, Users, ScrollText, Zap, X, Search, ChevronRight } from 'lucide-react';
+import { Calendar, Swords, Shield, Clock, Egg, Sparkles, Trophy, Filter, Settings, BookOpen, Download, Users, ScrollText, Zap, X, Search, ChevronRight, Sun, Moon } from 'lucide-react';
 import { apiFetch } from '../config';
+import { useTheme } from '../context/ThemeContext';
 
 export type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'research' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin' | 'download' | 'types' | '404';
 
@@ -34,6 +35,7 @@ interface AppShellProps {
 export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
   const pathname = usePathname() || `/${lang}`;
   const t = translations[lang] || translations.en;
+  const { theme, toggleTheme } = useTheme();
   const [legalModal, setLegalModal] = useState<LegalModalType>(null);
   const [scraperStatus, setScraperStatus] = useState<{
     lastScrapedAt: string | null;
@@ -261,8 +263,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
             </span>
           )}
 
-          {/* Language Switcher Links */}
-          <div className="sidebar-lang-switcher" style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
+          {/* Language Switcher Links & Quick Theme Toggle */}
+          <div className="sidebar-lang-switcher" style={{ display: 'flex', gap: '4px', marginTop: '6px', alignItems: 'center' }}>
             {(['cs', 'en', 'ja', 'ru'] as Language[]).map(l => (
               <Link
                 key={l}
@@ -274,8 +276,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
                   fontWeight: 'bold',
                   borderRadius: '5px',
                   border: '1px solid var(--border-color)',
-                  background: lang === l ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)',
-                  color: lang === l ? '#000' : 'var(--text-muted)',
+                  background: lang === l ? 'var(--accent-color)' : (theme === 'light' ? 'rgba(15,23,42,0.06)' : 'rgba(255,255,255,0.05)'),
+                  color: lang === l ? '#ffffff' : 'var(--text-muted)',
                   textTransform: 'uppercase',
                   transition: 'all 0.2s ease'
                 }}
@@ -283,6 +285,27 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
                 {l}
               </Link>
             ))}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              title={theme === 'light' ? (lang === 'cs' ? 'Přepnout na tmavý režim' : 'Switch to Dark Mode') : (lang === 'cs' ? 'Přepnout na světlý režim' : 'Switch to Light Mode')}
+              aria-label="Toggle theme mode"
+              style={{
+                padding: '2px 6px',
+                marginLeft: 'auto',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: theme === 'light' ? 'rgba(15,23,42,0.06)' : 'rgba(255,255,255,0.06)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '5px',
+                color: theme === 'light' ? '#d97706' : '#38bdf8',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {theme === 'light' ? <Sun size={12} /> : <Moon size={12} />}
+            </button>
           </div>
         </div>
 
@@ -375,11 +398,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
               target="_blank" 
               rel="noopener noreferrer"
               title="Instagram @pogoevents"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#cbd5e1', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: theme === 'light' ? '#475569' : '#cbd5e1', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s' }}
               onMouseOver={(e) => (e.currentTarget.style.color = '#38bdf8')}
-              onMouseOut={(e) => (e.currentTarget.style.color = '#cbd5e1')}
+              onMouseOut={(e) => (e.currentTarget.style.color = theme === 'light' ? '#475569' : '#cbd5e1')}
             >
-              <InstagramLogo size={13} color="#ffffff" />
+              <InstagramLogo size={13} color={theme === 'light' ? '#475569' : '#ffffff'} />
               <span>Instagram</span>
             </a>
             <span style={{ color: 'var(--border-color)', fontSize: '10px' }}>•</span>
@@ -388,11 +411,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
               target="_blank" 
               rel="noopener noreferrer"
               title="TikTok @pogoevents2"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#cbd5e1', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s' }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: theme === 'light' ? '#475569' : '#cbd5e1', textDecoration: 'none', fontWeight: 600, transition: 'color 0.2s' }}
               onMouseOver={(e) => (e.currentTarget.style.color = '#38bdf8')}
-              onMouseOut={(e) => (e.currentTarget.style.color = '#cbd5e1')}
+              onMouseOut={(e) => (e.currentTarget.style.color = theme === 'light' ? '#475569' : '#cbd5e1')}
             >
-              <TikTokLogo size={13} color="#ffffff" />
+              <TikTokLogo size={13} color={theme === 'light' ? '#475569' : '#ffffff'} />
               <span>TikTok</span>
             </a>
           </div>
@@ -407,7 +430,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
             <span className="brand-title">PoGo Events</span>
           </div>
 
-          <div className="header-actions">
+          <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
             <div className="header-lang-switcher" style={{ display: 'flex', gap: '4px' }}>
               {(['cs', 'en', 'ja', 'ru'] as Language[]).map(l => (
                 <Link
@@ -420,8 +443,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
                     fontWeight: 'bold',
                     borderRadius: '6px',
                     border: '1px solid var(--border-color)',
-                    background: lang === l ? 'var(--accent-color)' : 'rgba(255,255,255,0.05)',
-                    color: lang === l ? '#000' : 'var(--text-muted)',
+                    background: lang === l ? 'var(--accent-color)' : (theme === 'light' ? 'rgba(15,23,42,0.06)' : 'rgba(255,255,255,0.05)'),
+                    color: lang === l ? '#ffffff' : 'var(--text-muted)',
                     textTransform: 'uppercase'
                   }}
                 >
@@ -429,6 +452,26 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
                 </Link>
               ))}
             </div>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              title={theme === 'light' ? (lang === 'cs' ? 'Přepnout na tmavý režim' : 'Switch to Dark Mode') : (lang === 'cs' ? 'Přepnout na světlý režim' : 'Switch to Light Mode')}
+              aria-label="Toggle theme mode"
+              style={{
+                padding: '4px 7px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: theme === 'light' ? 'rgba(15,23,42,0.06)' : 'rgba(255,255,255,0.06)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '6px',
+                color: theme === 'light' ? '#d97706' : '#38bdf8',
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {theme === 'light' ? <Sun size={14} /> : <Moon size={14} />}
+            </button>
           </div>
         </header>
 

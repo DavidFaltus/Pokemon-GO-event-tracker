@@ -16,6 +16,7 @@ html {
   --bg-dark: #0f1015;
   --bg-card: #171921;
   --bg-card-hover: #1e212b;
+  --bg-input: rgba(15, 23, 42, 0.7);
   --border-color: #242836;
   --text-primary: #f8fafc;
   --text-secondary: #e2e8f0;
@@ -78,10 +79,11 @@ html {
   --bg-dark: #ffffff;
   --bg-card: #ffffff;
   --bg-card-hover: #f8fafc;
+  --bg-input: #ffffff;
   --border-color: rgba(15, 23, 42, 0.15);
   --text-primary: #0f172a;   /* Ultra-dark slate for 100% readability */
   --text-secondary: #1e293b; /* Dark slate */
-  --text-muted: #334155;     /* Dark slate */
+  --text-muted: #475569;     /* Accessible slate */
   --bg-body: #f8fafc;
   --bg-nav: rgba(255, 255, 255, 0.95);
 }
@@ -1607,22 +1609,57 @@ body.light-mode .mode-toggle-btn {
   border: 1px solid rgba(15, 23, 42, 0.12) !important;
 }
 
-/* Force high contrast dark text on white backgrounds */
-body.light-mode p,
-body.light-mode span,
-body.light-mode div,
+/* High contrast dark text in Light Mode while preserving button, badge and gradient contrast */
 body.light-mode h1,
 body.light-mode h2,
 body.light-mode h3,
 body.light-mode h4,
 body.light-mode h5,
-body.light-mode h6,
+body.light-mode h6 {
+  color: #0f172a;
+}
+
+body.light-mode p,
 body.light-mode label,
-body.light-mode strong,
-body.light-mode small,
 body.light-mode td,
 body.light-mode th {
-  color: #0f172a;
+  color: #1e293b;
+}
+
+/* Explicit text contrast protection for buttons, pills, active tabs, and badges */
+body.light-mode .sidebar-nav-item.active,
+body.light-mode .sidebar-nav-item.active span,
+body.light-mode .sidebar-download-pill-btn.active,
+body.light-mode .sidebar-download-pill-btn.active span,
+body.light-mode .btn-primary,
+body.light-mode .filter-copy-action-btn,
+body.light-mode .filter-copy-action-btn span,
+body.light-mode .btn-save,
+body.light-mode .btn-share-code,
+body.light-mode .pogo-filter-tab-btn.active,
+body.light-mode .filter-tier-pill-btn.active,
+body.light-mode .filter-iv-pill.active,
+body.light-mode .timespan-btn.active,
+body.light-mode .filter-pill.active {
+  color: #ffffff !important;
+}
+
+/* Gold 100% IV and Hundo text protection in light mode */
+body.light-mode .gold-hundo-text,
+body.light-mode .hundo-label,
+body.light-mode .hundo-label-boost {
+  color: #d97706 !important;
+  background: linear-gradient(135deg, #b45309 0%, #d97706 60%, #92400e 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  filter: drop-shadow(0 0 2px rgba(217, 119, 6, 0.4)) !important;
+}
+
+body.light-mode .gold-hundo-badge {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.25) 100%) !important;
+  border: 1px solid rgba(217, 119, 6, 0.6) !important;
+  color: #92400e !important;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.2) !important;
 }
 
 /* SEO Description Box in Light Mode */

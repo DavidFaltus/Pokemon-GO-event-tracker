@@ -258,6 +258,48 @@
   }
 }
 
+/* ── LIGHT MODE OVERRIDES FOR TIMELINE VIEW ── */
+body.light-mode .timeline-view-wrapper {
+  background-color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05) !important;
+}
+
+body.light-mode .timeline-row.header-row,
+body.light-mode .timeline-row.header-row .timeline-label-col {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .timeline-label-col {
+  background-color: #ffffff !important;
+  box-shadow: 2px 0 5px rgba(15, 23, 42, 0.05) !important;
+}
+
+body.light-mode .timeline-event-name {
+  color: #0f172a !important;
+}
+
+body.light-mode .day-header-cell {
+  border-right: 1px solid rgba(15, 23, 42, 0.06) !important;
+  color: #475569 !important;
+}
+
+body.light-mode .day-header-cell.today {
+  background-color: rgba(168, 85, 247, 0.1) !important;
+  color: #7e22ce !important;
+  font-weight: 800 !important;
+}
+
+body.light-mode .timeline-bar-text {
+  color: #ffffff !important;
+}
+
+body.light-mode .timeline-expanded-card-wrapper {
+  background-color: #f8fafc !important;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.1) !important;
+}
+
 
 
 

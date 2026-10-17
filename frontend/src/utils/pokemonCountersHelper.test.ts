@@ -4,7 +4,8 @@ import {
   isLegacyMove, 
   generateRaidSearchString, 
   getTieredCountersForBoss,
-  getTopCountersFilterString
+  getTopCountersFilterString,
+  getFilteredCountersForBoss
 } from './pokemonCountersHelper';
 import { pokemonRankings } from '../data/pokemonRankings';
 
@@ -203,5 +204,26 @@ describe('getPokemonRankingInfo & Metas', () => {
     expect(tiered.tierA.length).toBeGreaterThanOrEqual(1);
     expect(tiered.tierB.length).toBeGreaterThanOrEqual(1);
     expect(tiered.tierC.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('filters recommended counters dynamically based on tierMode (Universal vs Budget)', () => {
+    // In universal mode, top counters against Dialga include Megas / Primals / High Tier
+    const universalCounters = getFilteredCountersForBoss('Dialga', { tierMode: 'universal', limit: 10 });
+    expect(universalCounters.length).toBeGreaterThan(0);
+    const hasMegaOrPrimal = universalCounters.some(c => c.pokemon.isMega || c.pokemon.isPrimal);
+    expect(hasMegaOrPrimal).toBe(true);
+
+    // In budget mode, NO Megas or Primals should be present, only accessible budget counters
+    const budgetCounters = getFilteredCountersForBoss('Dialga', { tierMode: 'budget', limit: 10 });
+    expect(budgetCounters.length).toBeGreaterThan(0);
+    expect(budgetCounters.every(c => !c.pokemon.isMega && !c.pokemon.isPrimal)).toBe(true);
+    expect(budgetCounters.every(c => c.isBudget === true)).toBe(true);
+  });
+
+  it('marks weather boosted counters with weatherBoosted flag in weather mode', () => {
+    const weatherCounters = getFilteredCountersForBoss('Dialga', { tierMode: 'weather', limit: 10 });
+    expect(weatherCounters.length).toBeGreaterThan(0);
+    const hasWeatherBoosted = weatherCounters.some(c => c.weatherBoosted === true);
+    expect(hasWeatherBoosted).toBe(true);
   });
 });

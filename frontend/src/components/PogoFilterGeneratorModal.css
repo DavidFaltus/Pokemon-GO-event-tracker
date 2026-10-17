@@ -421,3 +421,164 @@
   from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
 }
+
+/* ── LIGHT MODE OVERRIDES FOR POGO FILTER GENERATOR MODAL ── */
+body.light-mode .pogo-filter-modal-overlay {
+  background: rgba(15, 23, 42, 0.45);
+}
+
+body.light-mode .pogo-filter-modal-content {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12), 0 0 30px rgba(56, 189, 248, 0.1) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .pogo-filter-modal-title h3 {
+  color: #0f172a !important;
+}
+
+body.light-mode .pogo-filter-modal-title p {
+  color: #475569 !important;
+}
+
+body.light-mode .pogo-modal-close-btn {
+  background: #f1f5f9 !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  color: #475569 !important;
+}
+
+body.light-mode .pogo-modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #ef4444 !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+
+body.light-mode .pogo-filter-tabs {
+  background: #f1f5f9 !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+body.light-mode .pogo-filter-tab-btn {
+  color: #475569 !important;
+}
+
+body.light-mode .pogo-filter-tab-btn:hover {
+  color: #0f172a !important;
+  background: rgba(15, 23, 42, 0.05) !important;
+}
+
+body.light-mode .pogo-filter-tab-btn.active {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  color: #ffffff !important;
+}
+
+body.light-mode .pogo-boss-select-group label {
+  color: #1e293b !important;
+}
+
+body.light-mode .pogo-boss-search-input {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.18) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .pogo-boss-search-input:focus {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 10px rgba(2, 132, 199, 0.2) !important;
+}
+
+body.light-mode .pogo-boss-chip {
+  background: #f1f5f9 !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  color: #334155 !important;
+}
+
+body.light-mode .pogo-boss-chip:hover {
+  background: rgba(56, 189, 248, 0.12) !important;
+  border-color: #0284c7 !important;
+  color: #0284c7 !important;
+}
+
+body.light-mode .pogo-boss-chip.selected {
+  background: linear-gradient(135deg, #0284c7, #0369a1) !important;
+  color: #ffffff !important;
+  border-color: #0369a1 !important;
+}
+
+body.light-mode .pogo-counters-preview {
+  background: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+}
+
+body.light-mode .pogo-preview-label {
+  color: #475569 !important;
+}
+
+body.light-mode .pogo-counter-mini-badge {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  color: #1e293b !important;
+}
+
+body.light-mode .pogo-checkbox-label {
+  color: #1e293b !important;
+}
+
+body.light-mode .pogo-string-output-card {
+  background: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+body.light-mode .pogo-string-output-card.primary {
+  background: linear-gradient(145deg, #f0f9ff, #ffffff) !important;
+  border-color: rgba(2, 132, 199, 0.35) !important;
+}
+
+body.light-mode .pogo-output-title {
+  color: #0369a1 !important;
+}
+
+body.light-mode .pogo-output-badge {
+  background: rgba(2, 132, 199, 0.12) !important;
+  color: #0284c7 !important;
+  border-color: rgba(2, 132, 199, 0.3) !important;
+}
+
+body.light-mode .pogo-code-box {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+}
+
+body.light-mode .pogo-code-box code {
+  color: #0284c7 !important;
+  font-weight: 600 !important;
+}
+
+body.light-mode .pogo-event-select-group label {
+  color: #1e293b !important;
+}
+
+body.light-mode .pogo-event-select {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.18) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .pogo-recommended-megas-section h4 {
+  color: #1e293b !important;
+}
+
+body.light-mode .pogo-mega-card {
+  background: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+body.light-mode .pogo-mega-name {
+  color: #0f172a !important;
+}
+
+body.light-mode .pogo-mini-type {
+  background: rgba(15, 23, 42, 0.08) !important;
+  color: #334155 !important;
+}

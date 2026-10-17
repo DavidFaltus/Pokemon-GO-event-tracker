@@ -633,6 +633,9 @@ subtle-glow {
 /* ── Expanded Details Panel (Top 5 Movesets & Counters) ── */
 .poke-expanded-details-panel {
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
   margin-top: 4px;
   animation: fadeIn 0.25s ease-out;
 }
@@ -645,8 +648,12 @@ subtle-glow {
 
 .expanded-sections-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
   gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .movesets-top5-card, .counters-section-card {
@@ -657,6 +664,10 @@ subtle-glow {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .expanded-card-title {
@@ -667,12 +678,18 @@ subtle-glow {
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .movesets-table {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 100%;
+  min-width: 0;
 }
 
 .moveset-row-item {
@@ -685,6 +702,9 @@ subtle-glow {
   padding: 6px 10px;
   font-size: 0.76rem;
   gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .moveset-row-item.best-moveset {
@@ -692,10 +712,19 @@ subtle-glow {
   border-color: rgba(168, 85, 247, 0.3);
 }
 
+.moveset-main-col {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .moveset-rank-index {
   font-weight: 800;
   color: var(--text-muted);
   font-size: 0.72rem;
+  flex-shrink: 0;
 }
 
 .moveset-moves-pair {
@@ -703,18 +732,29 @@ subtle-glow {
   align-items: center;
   gap: 4px;
   flex-wrap: wrap;
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .moveset-move {
   display: inline-flex;
   align-items: center;
   color: var(--text-primary);
+  min-width: 0;
+  max-width: 100%;
+}
+
+.moveset-move > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .moveset-plus {
   color: var(--text-muted);
   font-size: 0.65rem;
+  flex-shrink: 0;
 }
 
 .moveset-stats-badge {
@@ -722,6 +762,8 @@ subtle-glow {
   flex-direction: column;
   align-items: flex-end;
   font-size: 0.7rem;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .moveset-dps-val {
@@ -744,6 +786,8 @@ subtle-glow {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 100%;
+  min-width: 0;
 }
 
 .counter-box-lbl {
@@ -756,6 +800,8 @@ subtle-glow {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  width: 100%;
+  min-width: 0;
 }
 
 .counter-type-badge {
@@ -767,6 +813,8 @@ subtle-glow {
   padding: 3px 8px;
   border-radius: 8px;
   font-size: 0.72rem;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .counter-type-badge.double-weakness {
@@ -785,6 +833,8 @@ subtle-glow {
   flex-direction: column;
   gap: 6px;
   margin-top: 4px;
+  width: 100%;
+  min-width: 0;
 }
 
 .counter-poke-item {
@@ -795,24 +845,31 @@ subtle-glow {
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 6px 10px;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .counter-poke-rank {
   font-weight: 800;
   font-size: 0.7rem;
   color: var(--text-muted);
+  flex-shrink: 0;
 }
 
 .counter-poke-img {
   width: 32px;
   height: 32px;
   object-fit: contain;
+  flex-shrink: 0;
 }
 
 .counter-poke-info {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 1 1 0%;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -823,6 +880,8 @@ subtle-glow {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .counter-poke-moves {
@@ -830,10 +889,19 @@ subtle-glow {
   color: var(--text-muted);
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.counter-moves-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .counter-score-pill {
@@ -845,6 +913,53 @@ subtle-glow {
   padding: 2px 6px;
   border-radius: 6px;
   white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dialgadex-metrics-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin-top: 14px;
+  overflow: hidden;
+}
+
+.dd-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr));
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.dd-stat-box {
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.dd-stat-label {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.dd-stat-value {
+  font-size: 0.95rem;
+  font-weight: 850;
 }
 
 /* Expand Hint Badge (Detail ▼ / Zavřít ▲) */
@@ -920,12 +1035,17 @@ subtle-glow {
 @media (max-width: 768px) {
   .rankings-header-card {
     padding: 14px;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .rankings-title-row {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
+    width: 100%;
+    min-width: 0;
   }
 
   .ranking-mode-selector-header {
@@ -934,6 +1054,7 @@ subtle-glow {
     justify-content: flex-start;
     flex-wrap: wrap;
     gap: 6px;
+    min-width: 0;
   }
 
   .mode-toggle-btn {
@@ -945,6 +1066,8 @@ subtle-glow {
 
   .types-filter-container {
     gap: 6px 8px;
+    width: 100%;
+    min-width: 0;
   }
 
   .type-filter-btn {
@@ -961,95 +1084,149 @@ subtle-glow {
   .ranking-pokemon-row {
     padding: 14px 12px;
     gap: 12px;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .ranking-row-top-main {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
     justify-content: flex-start;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .ranking-rank-col {
     display: flex;
     flex-direction: row;
-    gap: 4px;
+    gap: 3px;
     order: 1;
+    flex-shrink: 0;
   }
 
   .rank-badge {
-    width: 48px;
-    padding: 4px 3px;
+    width: 42px;
+    padding: 4px 2px;
     border-radius: 8px;
+    flex-shrink: 0;
   }
 
   .rank-badge .rank-num {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
+  }
+
+  .rank-badge .rank-lbl {
+    font-size: 0.4rem;
+    max-width: 38px;
   }
 
   .ranking-score-badge {
     order: 2;
-    width: 48px;
-    height: 48px;
+    width: 42px;
+    height: 42px;
     border-radius: 10px;
     padding: 2px;
+    flex-shrink: 0;
   }
 
   .score-val {
-    font-size: 1.05rem;
+    font-size: 0.98rem;
   }
 
   .ranking-poke-img-wrapper {
     order: 3;
-    width: 70px;
-    height: 70px;
+    width: 64px;
+    height: 64px;
     background-color: rgba(255, 255, 255, 0.04);
+    flex-shrink: 0;
   }
 
   .ranking-poke-img {
-    width: 64px;
-    height: 64px;
+    width: 58px;
+    height: 58px;
   }
 
   .poke-sprite-badge-bottom-left {
-    width: 25px;
-    height: 25px;
+    width: 24px;
+    height: 24px;
     bottom: -2px;
     left: -2px;
   }
 
   .ranking-poke-main-info {
     order: 4;
-    flex: 1 1 160px;
-    min-width: 130px;
+    flex: 1 1 130px;
+    min-width: 0;
+    overflow: hidden;
   }
 
   .poke-name {
-    font-size: 1.02rem;
+    font-size: 0.98rem;
     font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .poke-badges-flex {
+    min-width: 0;
+    max-width: 100%;
   }
 
   .ranking-stats-col {
     order: 5;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     width: 100%;
-    padding: 8px 12px;
+    padding: 8px 10px;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--border-color);
     border-radius: 10px;
-    gap: 6px;
+    gap: 4px;
     margin-top: 2px;
+    box-sizing: border-box;
+    min-width: 0;
+  }
+
+  .stat-item {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .stat-val {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.78rem;
   }
 
   .ranking-moveset-col {
     order: 6;
     width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
 
   .moves-box {
-    padding: 8px 12px;
+    padding: 8px 10px;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .fast-move, .charged-move {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .poke-expand-hint-badge {
@@ -1061,110 +1238,130 @@ subtle-glow {
   }
 
   .expanded-sections-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 12px;
+    width: 100%;
+    min-width: 0;
   }
 
   .movesets-top5-card, .counters-section-card, .dialgadex-metrics-card {
-    padding: 12px;
+    padding: 10px;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
   .moveset-row-item {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    padding: 8px 10px;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .moveset-main-col {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .moveset-moves-pair {
+    width: 100%;
     gap: 4px;
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+
+  .moveset-stats-badge {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    gap: 8px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.08);
+    padding-top: 4px;
+    margin-top: 2px;
+  }
+
+  .counter-poke-item {
+    padding: 6px 8px;
+    gap: 6px;
+    min-width: 0;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .counter-poke-info {
+    flex: 1 1 0%;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .counter-poke-name {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.76rem;
+  }
+
+  .counter-poke-moves {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.65rem;
+  }
+
+  .counter-moves-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  .counter-score-pill {
+    font-size: 0.68rem;
+    padding: 2px 5px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .dd-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
   }
 }
 
 @media (max-width: 480px) {
   .ranking-pokemon-row {
-    padding: 12px 10px;
-    gap: 10px;
-  }
-
-  .ranking-row-top-main {
+    padding: 10px 8px;
     gap: 8px;
   }
 
+  .ranking-row-top-main {
+    gap: 6px;
+  }
+
   .rank-badge {
-    width: 44px;
-    padding: 3px 2px;
+    width: 36px;
+    padding: 3px 1px;
   }
 
   .rank-badge .rank-num {
-    font-size: 0.88rem;
+    font-size: 0.8rem;
   }
 
   .rank-badge .rank-lbl {
-    font-size: 0.4rem;
-  }
-
-  .ranking-score-badge {
-    width: 44px;
-    height: 44px;
-  }
-
-  .score-val {
-    font-size: 0.98rem;
-  }
-
-  .ranking-poke-img-wrapper {
-    width: 66px;
-    height: 66px;
-  }
-
-  .ranking-poke-img {
-    width: 60px;
-    height: 60px;
-  }
-
-  .poke-sprite-badge-bottom-left {
-    width: 23px;
-    height: 23px;
-    bottom: -2px;
-    left: -2px;
-  }
-
-  .ranking-poke-main-info {
-    min-width: 110px;
-  }
-
-  .poke-name {
-    font-size: 0.95rem;
-  }
-
-  .ranking-stats-col {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 6px 10px;
-    padding: 6px 10px;
-  }
-
-  .stat-val {
-    font-size: 0.78rem;
-  }
-}
-
-@media (max-width: 360px) {
-  .ranking-poke-img-wrapper {
-    width: 58px;
-    height: 58px;
-  }
-
-  .ranking-poke-img {
-    width: 52px;
-    height: 52px;
-  }
-
-  .poke-sprite-badge-bottom-left {
-    width: 20px;
-    height: 20px;
-  }
-
-  .rank-badge {
-    width: 38px;
-  }
-
-  .rank-badge .rank-num {
-    font-size: 0.82rem;
+    font-size: 0.36rem;
+    max-width: 32px;
   }
 
   .ranking-score-badge {
@@ -1174,6 +1371,127 @@ subtle-glow {
 
   .score-val {
     font-size: 0.88rem;
+  }
+
+  .ranking-poke-img-wrapper {
+    width: 52px;
+    height: 52px;
+  }
+
+  .ranking-poke-img {
+    width: 46px;
+    height: 46px;
+  }
+
+  .poke-sprite-badge-bottom-left {
+    width: 20px;
+    height: 20px;
+    bottom: -1px;
+    left: -1px;
+  }
+
+  .ranking-poke-main-info {
+    flex: 1 1 110px;
+    min-width: 0;
+  }
+
+  .poke-name {
+    font-size: 0.9rem;
+  }
+
+  .ranking-stats-col {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 8px;
+    padding: 6px 8px;
+  }
+
+  .stat-val {
+    font-size: 0.74rem;
+  }
+
+  .moveset-row-item {
+    padding: 6px 8px;
+  }
+
+  .counter-poke-item {
+    padding: 5px 6px;
+    gap: 5px;
+  }
+
+  .counter-score-pill {
+    font-size: 0.65rem;
+    padding: 2px 4px;
+  }
+}
+
+@media (max-width: 360px) {
+  .ranking-pokemon-row {
+    padding: 8px 6px;
+  }
+
+  .ranking-row-top-main {
+    gap: 5px;
+  }
+
+  .ranking-poke-img-wrapper {
+    width: 46px;
+    height: 46px;
+  }
+
+  .ranking-poke-img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .poke-sprite-badge-bottom-left {
+    width: 17px;
+    height: 17px;
+  }
+
+  .rank-badge {
+    width: 32px;
+    padding: 2px 1px;
+  }
+
+  .rank-badge .rank-num {
+    font-size: 0.74rem;
+  }
+
+  .rank-badge .rank-lbl {
+    font-size: 0.32rem;
+    max-width: 28px;
+  }
+
+  .ranking-score-badge {
+    width: 34px;
+    height: 34px;
+  }
+
+  .score-val {
+    font-size: 0.8rem;
+  }
+
+  .counter-poke-img {
+    width: 26px;
+    height: 26px;
+  }
+
+  .moveset-row-item {
+    padding: 5px 6px;
+  }
+
+  .moveset-move {
+    font-size: 0.7rem;
+  }
+
+  .move-type-badge {
+    font-size: 0.55rem !important;
+    padding: 1px 4px !important;
+  }
+
+  .dd-metrics-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
   }
 }
 

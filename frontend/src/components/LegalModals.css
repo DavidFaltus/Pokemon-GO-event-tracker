@@ -110,3 +110,41 @@
     padding: 16px 20px;
   }
 }
+
+/* ── LIGHT MODE OVERRIDES FOR LEGAL MODALS ── */
+body.light-mode .legal-modal-overlay {
+  background: rgba(15, 23, 42, 0.45);
+}
+
+body.light-mode .legal-modal-card {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+}
+
+body.light-mode .legal-modal-header {
+  background: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+body.light-mode .legal-modal-header h2 {
+  color: #0f172a !important;
+}
+
+body.light-mode .legal-modal-close {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+}
+
+body.light-mode .legal-modal-close:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #ef4444 !important;
+}
+
+body.light-mode .legal-modal-body {
+  color: #1e293b !important;
+}
+
+body.light-mode .legal-modal-body h3 {
+  color: #0284c7 !important;
+}

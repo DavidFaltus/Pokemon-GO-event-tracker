@@ -275,3 +275,69 @@
     width: 100%;
   }
 }
+
+/* ── LIGHT MODE OVERRIDES FOR DOWNLOAD APP VIEW ── */
+body.light-mode .download-hero-card {
+  background: linear-gradient(135deg, #ffffff 0%, #faf5ff 100%) !important;
+  border-color: rgba(170, 59, 255, 0.3) !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08) !important;
+}
+
+body.light-mode .download-hero-title {
+  color: #0f172a !important;
+  background: none !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+body.light-mode .download-hero-subtitle {
+  color: #475569 !important;
+}
+
+body.light-mode .download-github-btn {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.18) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .download-github-btn:hover {
+  background: #f1f5f9 !important;
+}
+
+body.light-mode .download-pwa-btn {
+  background: rgba(170, 59, 255, 0.1) !important;
+  color: #7e22ce !important;
+  border-color: rgba(170, 59, 255, 0.3) !important;
+}
+
+body.light-mode .download-card {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05) !important;
+}
+
+body.light-mode .download-card-header {
+  color: #0f172a !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+body.light-mode .download-feature-item {
+  color: #1e293b !important;
+}
+
+body.light-mode .download-step-item {
+  background: #f8fafc !important;
+  color: #1e293b !important;
+}
+
+body.light-mode .download-github-box {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+}
+
+body.light-mode .download-github-left h3 {
+  color: #0f172a !important;
+}
+
+body.light-mode .download-github-left p {
+  color: #475569 !important;
+}

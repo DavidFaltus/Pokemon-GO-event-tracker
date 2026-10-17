@@ -399,3 +399,64 @@
   padding: 14px;
   margin-top: 12px;
 }
+
+/* ── LIGHT MODE OVERRIDES FOR NOTIFICATION SETTINGS ── */
+body.light-mode .settings-header {
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+body.light-mode .settings-card {
+  background-color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05) !important;
+}
+
+body.light-mode .settings-card h3 {
+  color: #0f172a !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+body.light-mode .checkbox-custom {
+  background-color: #f1f5f9 !important;
+  border-color: rgba(15, 23, 42, 0.2) !important;
+}
+
+body.light-mode .checkbox-label {
+  color: #1e293b !important;
+}
+
+body.light-mode .secondary-btn {
+  background-color: #f1f5f9 !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  color: #1e293b !important;
+}
+
+body.light-mode .secondary-btn:hover {
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .notif-item {
+  background-color: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+body.light-mode .language-select {
+  background-color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.18) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .timezone-display {
+  background-color: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+}
+
+body.light-mode .tz-code {
+  color: #059669 !important;
+}
+
+body.light-mode .special-event-guide-box {
+  background: #f8fafc !important;
+  border-color: rgba(170, 59, 255, 0.25) !important;
+}

@@ -108,10 +108,19 @@
 /* Guides Grid */
 .guides-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 18px;
   align-items: stretch;
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .guides-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
 }
 
 .guide-card {
@@ -489,8 +498,17 @@
 
 .guide-evolution-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: 16px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .guide-evolution-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
 }
 
 .guide-evolution-card {
@@ -1277,6 +1295,39 @@ body.light-mode .widget-tab:not(.active) {
   background: #f8fafc !important;
   border-color: rgba(15, 23, 42, 0.12) !important;
   color: #475569 !important;
+}
+
+body.light-mode .article-hero-deck {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05) !important;
+}
+
+body.light-mode .article-subtitle {
+  color: #334155 !important;
+}
+
+body.light-mode .article-section h2 {
+  color: #0284c7 !important;
+  border-color: rgba(2, 132, 199, 0.2) !important;
+}
+
+body.light-mode .guide-section-pokemon-deck {
+  background: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+body.light-mode .guide-card-image-wrapper {
+  background: radial-gradient(circle at center, rgba(56, 189, 248, 0.12) 0%, rgba(241, 245, 249, 0.9) 70%) !important;
+}
+
+body.light-mode .guide-card p {
+  color: #475569 !important;
+}
+
+body.light-mode .guide-card-meta {
+  color: #64748b !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
 }
 
 /* ==========================================================================
@@ -4633,9 +4684,11 @@ body.light-mode .guide-inline-article-link:hover {
 
 .trainer-hero-stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
   gap: 12px;
-  min-width: 320px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .trainer-hero-stat-card {

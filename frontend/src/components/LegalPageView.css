@@ -264,6 +264,12 @@ body.light-mode .legal-contact-box {
   color: #0f172a;
 }
 
+body.light-mode .legal-back-btn {
+  background-color: #f1f5f9 !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  color: #1e293b !important;
+}
+
 /* Mobile Optimizations */
 @media (max-width: 640px) {
   .legal-page-card {

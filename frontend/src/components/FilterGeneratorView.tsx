@@ -6,6 +6,7 @@ import type { Language } from '../data/translations';
 import type { EventData } from './EventCard';
 import { 
   getTopCountersForPokemonDetailed, 
+  getFilteredCountersForBoss,
   getCounterTypesForName, 
   getPokemonTypesByName, 
   generateRaidSearchString,
@@ -17,7 +18,7 @@ import { getPokemonName } from '../utils/pokemonTranslator';
 import { pokemonRankings } from '../data/pokemonRankings';
 import { getRecommendedMegaForEvents } from '../utils/megaFilterHelper';
 import { apiFetch } from '../config';
-import { Copy, Check, Search, Filter, Zap, Sparkles, Dna, ShieldCheck, ShieldAlert, Sliders, Globe, Crown, Sprout, CloudSun } from 'lucide-react';
+import { Copy, Check, Search, Filter, Zap, Sparkles, Dna, ShieldCheck, ShieldAlert, Sliders, Globe, Sprout, CloudSun } from 'lucide-react';
 
 interface FilterGeneratorViewProps {
   lang: Language;
@@ -58,6 +59,10 @@ const LEGENDARY_5STAR_AND_MEGAS = new Set<string>([
 
 function is5StarOrMegaBoss(name: string): boolean {
   if (!name) return false;
+  const lower = name.toLowerCase();
+  if (lower.startsWith('mega ') || lower.startsWith('primal ') || lower.includes('mega') || lower.includes('primal')) {
+    return true;
+  }
   const clean = name.replace(/^(shadow|mega|primal)\s+/, '').trim().toLowerCase();
   for (const item of LEGENDARY_5STAR_AND_MEGAS) {
     const itemClean = item.replace(/^(shadow|mega|primal)\s+/, '').trim().toLowerCase();
@@ -71,9 +76,9 @@ function is5StarOrMegaBoss(name: string): boolean {
 export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
   lang,
   events = [],
-  initialRaidBoss = 'Mesprit'
+  initialRaidBoss
 }) => {
-  const [selectedBoss, setSelectedBoss] = useState<string>(initialRaidBoss);
+  const [selectedBoss, setSelectedBoss] = useState<string>(initialRaidBoss || 'Dialga');
   const [copiedRaid, setCopiedRaid] = useState<boolean>(false);
   const [copiedMega, setCopiedMega] = useState<boolean>(false);
   const [filterStrategy, setFilterStrategy] = useState<'resistant' | 'max_dps'>('resistant');
@@ -91,17 +96,28 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
         if (isMounted && Array.isArray(data)) {
           const fetchedNames: string[] = [];
           data.forEach(item => {
+            const tierStr = (item.tier || '').toLowerCase();
+            const nameStr = (item.name || '').toLowerCase();
+            const is5Star = tierStr === '5' || tierStr.includes('5') || tierStr.includes('legendary');
+            const isMega = tierStr.includes('mega') || tierStr.includes('primal') || nameStr.startsWith('mega ') || nameStr.startsWith('primal ');
+
             // Keep 5-Star, Mega, and Shadow-5 raid bosses
-            if (item.tier === '5' || item.tier === 'mega' || item.tier === 'shadow-5' || (item.tier && item.tier.includes('5'))) {
-              const base = getBasePokemonName(item.name);
-              if (base && !fetchedNames.includes(base)) {
-                fetchedNames.push(base);
+            if (is5Star || isMega) {
+              let cleanName = item.name.trim();
+              cleanName = cleanName.replace(/\s+in\s+.*raids?/gi, '').replace(/\s+raids?/gi, '').trim();
+              const base = getBasePokemonName(cleanName);
+              let finalName = base;
+              if (isMega && !finalName.toLowerCase().startsWith('mega ') && !finalName.toLowerCase().startsWith('primal ')) {
+                finalName = `Mega ${finalName}`;
+              }
+              if (finalName && !fetchedNames.includes(finalName)) {
+                fetchedNames.push(finalName);
               }
             }
           });
           if (fetchedNames.length > 0) {
             setApiRaidBosses(fetchedNames);
-            if (!initialRaidBoss || initialRaidBoss === 'Palkia') {
+            if (!initialRaidBoss) {
               setSelectedBoss(fetchedNames[0]);
             }
           }
@@ -116,7 +132,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
   }, [initialRaidBoss]);
 
   useEffect(() => {
-    if (initialRaidBoss) {
+    if (initialRaidBoss && initialRaidBoss.trim()) {
       setSelectedBoss(initialRaidBoss);
     }
   }, [initialRaidBoss]);
@@ -130,7 +146,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
   const currentRaidBosses = useMemo(() => {
     const set = new Set<string>();
 
-    // 1. First add live raid bosses from /api/raids (Mesprit, Shadow Giratina, Mega Blaziken)
+    // 1. First add live raid bosses from /api/raids (Dialga, Mega Dragonite, Mega Charizard Y, etc.)
     if (apiRaidBosses && apiRaidBosses.length > 0) {
       apiRaidBosses.forEach(b => set.add(b));
     }
@@ -155,10 +171,16 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
             if (Array.isArray(list)) {
               list.forEach(b => {
                 const rawName = typeof b === 'string' ? b : b?.name;
+                const tierStr = typeof b === 'object' && b?.tier ? String(b.tier).toLowerCase() : '';
                 if (rawName) {
                   const base = getBasePokemonName(rawName);
-                  if (base && is5StarOrMegaBoss(base)) {
-                    set.add(base);
+                  const isMegaItem = rawName.toLowerCase().includes('mega') || tierStr.includes('mega') || rawName.toLowerCase().includes('primal') || tierStr.includes('primal');
+                  let finalName = base;
+                  if (isMegaItem && !finalName.toLowerCase().startsWith('mega ') && !finalName.toLowerCase().startsWith('primal ')) {
+                    finalName = `Mega ${finalName}`;
+                  }
+                  if (finalName && is5StarOrMegaBoss(finalName)) {
+                    set.add(finalName);
                   }
                 }
               });
@@ -166,8 +188,13 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
           });
 
           const titleBase = getBasePokemonName(e.name);
-          if (titleBase && titleBase.length > 2 && is5StarOrMegaBoss(titleBase)) {
-            set.add(titleBase);
+          const isTitleMega = e.name.toLowerCase().includes('mega') || e.name.toLowerCase().includes('primal');
+          let finalTitle = titleBase;
+          if (isTitleMega && !finalTitle.toLowerCase().startsWith('mega ') && !finalTitle.toLowerCase().startsWith('primal ')) {
+            finalTitle = `Mega ${finalTitle}`;
+          }
+          if (finalTitle && finalTitle.length > 2 && is5StarOrMegaBoss(finalTitle)) {
+            set.add(finalTitle);
           }
         }
       });
@@ -175,10 +202,14 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
 
     // 3. Fallback default legendaries and megas
     if (set.size === 0) {
-      ['Mesprit', 'Giratina', 'Blaziken', 'Palkia', 'Dialga', 'Necrozma', 'Rayquaza', 'Groudon', 'Kyogre', 'Reshiram', 'Zekrom', 'Mewtwo', 'Heatran', 'Darkrai', 'Charizard', 'Lopunny', 'Lucario', 'Tyranitar'].forEach(b => set.add(b));
+      [
+        'Dialga', 'Palkia', 'Mega Dragonite', 'Mega Charizard Y', 'Mega Lucario',
+        'Rayquaza', 'Giratina', 'Groudon', 'Kyogre', 'Mega Garchomp',
+        'Reshiram', 'Zekrom', 'Mewtwo', 'Mega Tyranitar', 'Heatran', 'Darkrai'
+      ].forEach(b => set.add(b));
     }
 
-    if (initialRaidBoss) {
+    if (initialRaidBoss && initialRaidBoss.trim()) {
       const baseInit = getBasePokemonName(initialRaidBoss);
       if (baseInit && is5StarOrMegaBoss(baseInit)) {
         set.add(baseInit);
@@ -202,22 +233,22 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
       .slice(0, 10);
   }, [selectedBoss, currentRaidBosses]);
 
-  const [tierMode, setTierMode] = useState<'universal' | 'hardcore' | 'budget' | 'weather'>('universal');
+  const [tierMode, setTierMode] = useState<'universal' | 'budget' | 'weather'>('universal');
   const [excludeFrustration, setExcludeFrustration] = useState<boolean>(true);
   const [dualMoves, setDualMoves] = useState<boolean>(true);
   const [ivFilter, setIvFilter] = useState<'all' | '3*,4*' | '4*'>('all');
 
-  // Detailed Top Counters algorithm dynamically recalculating based on filterStrategy (Resistant vs Max DPS)
+  // Detailed Top Counters algorithm dynamically recalculating based on ALL active filter options
   const topCountersDetailed = useMemo(() => {
-    const clean = selectedBoss.toLowerCase().replace(/^(shadow|mega|primal)\s+/, '').trim();
-    const resolvedTypes = getPokemonTypesByName(selectedBoss);
-    const targetPoke = pokemonRankings.find(p => p.name.toLowerCase().includes(clean)) || {
-      name: selectedBoss, pokedexId: 9999, types: resolvedTypes, attack: 250, defense: 200, stamina: 200, maxCp: 3800, pveScore: 90, dps: 25,
-      bestFastMove: { name: 'Tackle', type: resolvedTypes[0] || 'Normal' }, bestChargedMove: { name: 'Body Slam', type: resolvedTypes[0] || 'Normal' }
-    };
-
-    return getTopCountersForPokemonDetailed(targetPoke, pokemonRankings, 12, filterStrategy);
-  }, [selectedBoss, filterStrategy]);
+    return getFilteredCountersForBoss(selectedBoss, {
+      tierMode,
+      filterStrategy,
+      dualMoves,
+      excludeFrustration,
+      ivFilter,
+      limit: 12
+    });
+  }, [selectedBoss, tierMode, filterStrategy, dualMoves, excludeFrustration, ivFilter]);
 
   const counterTypes = useMemo(() => {
     return getCounterTypesForName(selectedBoss);
@@ -386,40 +417,42 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
           <span>{getText('select_prompt')}</span>
         </div>
         
-        <div className="filter-search-input-wrapper">
-          <Search size={16} className="search-icon" />
-          <input
-            type="text"
-            className="filter-search-input"
-            value={selectedBoss}
-            onChange={e => setSelectedBoss(e.target.value)}
-            placeholder={getText('placeholder')}
-          />
-        </div>
-
-        {autocompleteSuggestions.length > 0 && selectedBoss.trim().length >= 2 && (
-          <div className="filter-autocomplete-bar">
-            <span className="autocomplete-label">{getText('suggestions')}</span>
-            <div className="autocomplete-chips">
-              {autocompleteSuggestions.map(name => (
-                <button
-                  key={name}
-                  type="button"
-                  className="autocomplete-chip-btn"
-                  onClick={() => setSelectedBoss(name)}
-                >
-                  <img
-                    src={getPokemonIconUrl(name)}
-                    alt={name}
-                    className="chip-pokemon-sprite"
-                    onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, name)}
-                  />
-                  <span>{getPokemonName(name, lang)}</span>
-                </button>
-              ))}
-            </div>
+        <div className="filter-search-suggestions-row">
+          <div className="filter-search-input-wrapper">
+            <Search size={16} className="search-icon" />
+            <input
+              type="text"
+              className="filter-search-input"
+              value={selectedBoss}
+              onChange={e => setSelectedBoss(e.target.value)}
+              placeholder={getText('placeholder')}
+            />
           </div>
-        )}
+
+          {autocompleteSuggestions.length > 0 && selectedBoss.trim().length >= 2 && (
+            <div className="filter-autocomplete-bar">
+              <span className="autocomplete-label">{getText('suggestions')}</span>
+              <div className="autocomplete-chips">
+                {autocompleteSuggestions.map(name => (
+                  <button
+                    key={name}
+                    type="button"
+                    className="autocomplete-chip-btn"
+                    onClick={() => setSelectedBoss(name)}
+                  >
+                    <img
+                      src={getPokemonIconUrl(name)}
+                      alt={name}
+                      className="chip-pokemon-sprite"
+                      onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, name)}
+                    />
+                    <span>{getPokemonName(name, lang)}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* Current Active Events Raid Bosses Section (STRICTLY Live API & 5-Star & Megas Only) */}
         <div className="filter-boss-section-header">
@@ -446,7 +479,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
           ))}
         </div>
 
-        {/* Tier Mode Selector (Universal vs Hardcore vs Budget vs Weather) */}
+        {/* Tier Mode Selector (Universal vs Budget vs Weather boosted) */}
         <div className="filter-tier-section">
           <div className="filter-tier-header">
             <Sliders size={14} style={{ color: 'var(--accent-purple, #a855f7)' }} />
@@ -462,19 +495,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
               }}
             >
               <Globe size={14} />
-              <span>{lang === 'cs' ? '🌐 Univerzální (Doporučeno)' : lang === 'ja' ? '🌐 万能型（おすすめ）' : lang === 'ru' ? '🌐 Универсальный' : '🌐 Universal (Recommended)'}</span>
-            </button>
-
-            <button
-              type="button"
-              className={`filter-tier-pill-btn ${tierMode === 'hardcore' ? 'active' : ''}`}
-              onClick={() => {
-                setTierMode('hardcore');
-                setIvFilter('3*,4*');
-              }}
-            >
-              <Crown size={14} />
-              <span>{lang === 'cs' ? '👑 Hardcore Meta (3*, 4*, CP 2500+)' : lang === 'ja' ? '👑 トップメタ (3*, 4*, 2500+)' : lang === 'ru' ? '👑 Топ-Мета (3*, 4*)' : '👑 Hardcore Meta (3*, 4*, CP 2500+)'}</span>
+              <span>Universal</span>
             </button>
 
             <button
@@ -486,7 +507,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
               }}
             >
               <Sprout size={14} />
-              <span>{lang === 'cs' ? '🌱 Budget & Wild (Dostupní)' : lang === 'ja' ? '🌱 育成コスト低・野生捕獲' : lang === 'ru' ? '🌱 Бюджетный / Дикие' : '🌱 Budget & Wild Spawns'}</span>
+              <span>Budget</span>
             </button>
 
             <button
@@ -495,12 +516,12 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
               onClick={() => setTierMode('weather')}
             >
               <CloudSun size={14} />
-              <span>{lang === 'cs' ? '☀️ Weather Boost (@weather)' : lang === 'ja' ? '☀️ 天候ブースト (@weather)' : lang === 'ru' ? '☀️ Погодный буст' : '☀️ Weather Boosted (@weather)'}</span>
+              <span>Weather boosted</span>
             </button>
           </div>
         </div>
 
-        {/* Advanced Filter Toggles (Anti-Frustration, Dual STAB Moves, IV) */}
+        {/* Advanced Filter Toggles (Exclude frustration, Correct attacks, IV) */}
         <div className="filter-options-toolbar">
           <button
             type="button"
@@ -509,7 +530,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
             title={lang === 'cs' ? 'Vyloučí Shadow Pokémony s neupraveným útokem Frustration' : 'Excludes Shadow Pokémon with un-TMd Frustration'}
           >
             <ShieldAlert size={14} />
-            <span>{lang === 'cs' ? '🚫 Bez Frustrace (!@frustration)' : lang === 'ja' ? '🚫 やつあたり除外 (!@frustration)' : lang === 'ru' ? '🚫 Без Фрустрации' : '🚫 Exclude Frustration (!@frustration)'}</span>
+            <span>Exclude frustration</span>
             {excludeFrustration && <Check size={12} className="toggle-check-icon" />}
           </button>
 
@@ -520,12 +541,12 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
             title={lang === 'cs' ? 'Filtruje rychlý útok (@1) i nabitý útok (@2,@3) se Super Effective bonusem' : 'Validates both Fast move (@1) and Charged move (@2,@3)'}
           >
             <Zap size={14} />
-            <span>{lang === 'cs' ? '⚔️ Rychlý i Nabitý (@1 & @2,@3)' : lang === 'ja' ? '⚔️ 通常＆ゲージ技両方一致' : lang === 'ru' ? '⚔️ Быстрая и заряжаемая (@1 & @2,@3)' : '⚔️ Dual Fast+Charged (@1 & @2,@3)'}</span>
+            <span>Correct attacks</span>
             {dualMoves && <Check size={12} className="toggle-check-icon" />}
           </button>
 
           <div className="filter-iv-selector-group">
-            <span className="iv-selector-label">⭐ IV:</span>
+            <span className="iv-selector-label">IV:</span>
             <button
               type="button"
               className={`filter-iv-pill ${ivFilter === 'all' ? 'active' : ''}`}
@@ -549,43 +570,9 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
             </button>
           </div>
         </div>
-
-        {/* Recommended Counters Showcase Grid with Defensive Resistance Badges */}
-        {topCountersDetailed.length > 0 && (
-          <div className="filter-counters-showcase">
-            <div className="counters-showcase-header">
-              <ShieldCheck size={16} style={{ color: 'var(--accent-purple, #a855f7)' }} />
-              <span>{getText('counters_showcase_header')}</span>
-            </div>
-            <div className="counters-showcase-grid">
-              {topCountersDetailed.map(c => (
-                <div key={c.pokemon.name} className={`counter-card-mini ${c.defensiveRating}`}>
-                  <div className="counter-sprite-wrapper">
-                    <img
-                      src={getPokemonIconUrl(c.pokemon.name)}
-                      alt={c.pokemon.name}
-                      className="counter-sprite-img"
-                      onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, c.pokemon.name)}
-                    />
-                  </div>
-                  <div className="counter-card-meta">
-                    <strong className="counter-poke-name">{getPokemonName(c.pokemon.name, lang)}</strong>
-                    <span className="counter-move-badge">⚔️ {c.pokemon.bestChargedMove.name}</span>
-                    <span className={`counter-def-badge ${c.defensiveRating}`}>
-                      {c.defensiveRating === 'resistant'
-                        ? (lang === 'cs' ? '🛡️ Odolný (NVE)' : '🛡️ Resists (NVE)')
-                        : c.defensiveRating === 'vulnerable'
-                        ? (lang === 'cs' ? '⚠️ Glass Cannon' : '⚠️ Glass Cannon')
-                        : (lang === 'cs' ? '⚔️ Neutrální' : '⚔️ Neutral')}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
+      {/* Generated Filter Output Card (Samotný filtr - placed ABOVE Recommended counters) */}
       <div className="filter-output-card">
         <div className="filter-output-header">
           <div className="filter-output-title-wrapper">
@@ -617,6 +604,81 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
           <code>{searchFilterString}</code>
         </div>
       </div>
+
+      {/* Recommended Counters Showcase Card (Placed BELOW the generated filter) */}
+      {topCountersDetailed.length > 0 && (
+        <div className="filter-counters-card">
+          <div className="counters-showcase-header">
+            <div className="counters-showcase-title-group">
+              <ShieldCheck size={16} style={{ color: 'var(--accent-purple, #a855f7)' }} />
+              <span>{getText('counters_showcase_header')}</span>
+            </div>
+            <div className="counters-active-filter-indicators">
+              {tierMode === 'budget' && (
+                <span className="active-mode-pill budget">🌱 Budget (CP 1800+)</span>
+              )}
+              {tierMode === 'weather' && (
+                <span className="active-mode-pill weather">☀️ Weather boosted (+20%)</span>
+              )}
+              {tierMode === 'universal' && (
+                <span className="active-mode-pill universal">🌐 Universal</span>
+              )}
+              {dualMoves && (
+                <span className="active-mode-pill dual">⚔️ Correct attacks</span>
+              )}
+              {filterStrategy === 'resistant' ? (
+                <span className="active-mode-pill resistant">🛡️ Tanky & NVE</span>
+              ) : (
+                <span className="active-mode-pill dps">⚡ Max DPS</span>
+              )}
+              {ivFilter !== 'all' && (
+                <span className="active-mode-pill iv">⭐ {ivFilter}</span>
+              )}
+            </div>
+          </div>
+          <div className="counters-showcase-grid">
+            {topCountersDetailed.map(c => (
+              <div key={c.pokemon.name} className={`counter-card-mini ${c.defensiveRating}`}>
+                <div className="counter-sprite-wrapper">
+                  <img
+                    src={getPokemonIconUrl(c.pokemon.name)}
+                    alt={c.pokemon.name}
+                    className="counter-sprite-img"
+                    onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, c.pokemon.name)}
+                  />
+                </div>
+                <div className="counter-card-meta">
+                  <strong className="counter-poke-name">{getPokemonName(c.pokemon.name, lang)}</strong>
+                  <span className="counter-move-badge">
+                    ⚔️ {dualMoves && c.pokemon.bestFastMove ? `${c.pokemon.bestFastMove.name} / ` : ''}{c.pokemon.bestChargedMove.name}
+                  </span>
+                  <div className="counter-card-badges-row">
+                    <span className={`counter-def-badge ${c.defensiveRating}`}>
+                      {c.defensiveRating === 'resistant'
+                        ? (lang === 'cs' ? '🛡️ Odolný' : '🛡️ Resists')
+                        : c.defensiveRating === 'vulnerable'
+                        ? (lang === 'cs' ? '⚠️ Glass' : '⚠️ Glass')
+                        : (lang === 'cs' ? '⚔️ Neutrální' : '⚔️ Neutral')}
+                    </span>
+                    {c.isBudget && (
+                      <span className="counter-def-badge budget">🌱 Budget</span>
+                    )}
+                    {c.weatherBoosted && (
+                      <span className="counter-def-badge weather">☀️ +20%</span>
+                    )}
+                    {ivFilter === '4*' && (
+                      <span className="counter-def-badge gold-hundo">⭐ 100%</span>
+                    )}
+                    {ivFilter === '3*,4*' && (
+                      <span className="counter-def-badge iv-high">⭐ 3★+</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Recommended Mega Evolution Card */}
       <div className="filter-mega-card">

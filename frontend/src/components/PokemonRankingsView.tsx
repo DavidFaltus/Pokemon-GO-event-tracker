@@ -46,6 +46,7 @@ function getMoveTypeBadgeStyle(type: string): React.CSSProperties {
     textShadow: '0 1px 2px rgba(0,0,0,0.4)',
     letterSpacing: '0.03em',
     whiteSpace: 'nowrap' as const,
+    flexShrink: 0,
   };
 }
 
@@ -627,17 +628,19 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
                         <div className="movesets-table">
                           {topMovesets.map((ms, index) => (
                             <div key={index} className={`moveset-row-item ${index === 0 ? 'best-moveset' : ''}`}>
-                              <span className="moveset-rank-index">#{index + 1}</span>
-                              <div className="moveset-moves-pair">
-                                <span className="moveset-move">
-                                  <MoveTypeBadgeWithIcon type={ms.fastMove.type} />
-                                  <span>{ms.fastMove.name}{ms.fastMove.isLegacy && <span className="legacy-asterisk" title="Elite TM / Legacy">*</span>}</span>
-                                </span>
-                                <span className="moveset-plus">+</span>
-                                <span className="moveset-move">
-                                  <MoveTypeBadgeWithIcon type={ms.chargedMove.type} />
-                                  <span>{ms.chargedMove.name}{ms.chargedMove.isLegacy && <span className="legacy-asterisk" title="Elite TM / Legacy">*</span>}</span>
-                                </span>
+                              <div className="moveset-main-col">
+                                <span className="moveset-rank-index">#{index + 1}</span>
+                                <div className="moveset-moves-pair">
+                                  <span className="moveset-move">
+                                    <MoveTypeBadgeWithIcon type={ms.fastMove.type} />
+                                    <span>{ms.fastMove.name}{ms.fastMove.isLegacy && <span className="legacy-asterisk" title="Elite TM / Legacy">*</span>}</span>
+                                  </span>
+                                  <span className="moveset-plus">+</span>
+                                  <span className="moveset-move">
+                                    <MoveTypeBadgeWithIcon type={ms.chargedMove.type} />
+                                    <span>{ms.chargedMove.name}{ms.chargedMove.isLegacy && <span className="legacy-asterisk" title="Elite TM / Legacy">*</span>}</span>
+                                  </span>
+                                </div>
                               </div>
                               <div className="moveset-stats-badge">
                                 <span className="moveset-dps-val">{ms.dps} DPS</span>
@@ -689,7 +692,9 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
                                 <span className="counter-poke-name">{getPokemonName(cp.pokemon.name, lang)}</span>
                                 <span className="counter-poke-moves">
                                   <MoveTypeBadgeWithIcon type={cp.pokemon.bestFastMove.type} />
-                                  {cp.pokemon.bestFastMove.name} + {cp.pokemon.bestChargedMove.name}
+                                  <span className="counter-moves-text">
+                                    {cp.pokemon.bestFastMove.name} + {cp.pokemon.bestChargedMove.name}
+                                  </span>
                                 </span>
                               </div>
                               <span className="counter-score-pill">
@@ -707,7 +712,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
                         <Sparkles size={15} style={{ color: '#fbbf24' }} />
                         {t.ranking_dialgadex_title}
                       </h4>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '10px', marginTop: '8px' }}>
+                      <div className="dd-metrics-grid">
                         <div className="dd-stat-box">
                           <span className="dd-stat-label">{t.ranking_edps_label}</span>
                           <strong className="dd-stat-value" style={{ color: '#c084fc' }}>{dialgaDex.eDps}</strong>

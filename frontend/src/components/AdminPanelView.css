@@ -1234,3 +1234,51 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── LIGHT MODE OVERRIDES FOR ADMIN PANEL VIEW ── */
+body.light-mode .admin-login-card {
+  background: #ffffff !important;
+  border-color: rgba(168, 85, 247, 0.3) !important;
+  box-shadow: 0 12px 48px rgba(15, 23, 42, 0.08) !important;
+}
+
+body.light-mode .admin-password-input {
+  background-color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.18) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .btn-secondary {
+  background-color: #f1f5f9 !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  color: #1e293b !important;
+}
+
+body.light-mode .admin-card,
+body.light-mode .admin-dashboard-container {
+  background-color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+}
+
+body.light-mode .admin-input,
+body.light-mode .admin-select,
+body.light-mode .admin-textarea {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.18) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .admin-nav-tabs {
+  background: #f1f5f9 !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+body.light-mode .admin-nav-btn {
+  color: #475569 !important;
+}
+
+body.light-mode .admin-nav-btn.active {
+  background: #ffffff !important;
+  color: #7e22ce !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+}
