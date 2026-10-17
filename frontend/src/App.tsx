@@ -1037,7 +1037,8 @@ function App({
 
   // Filter events by tab
   const getFilteredEvents = () => {
-    let list = getAdjustedEvents();
+    const allAdjusted = getAdjustedEvents();
+    let list = [...allAdjusted];
     
     // Filter by user visibility settings first
     list = list.filter(e => isEventVisible(e.eventType));
@@ -1060,6 +1061,14 @@ function App({
       list = list.filter(e => !specificTypes.includes(e.eventType));
     } else {
       list = list.filter(e => e.eventType === filterType);
+    }
+
+    // Always pin the target expandedEventId at the top so /[lang]/events/[slug] renders its expanded card in SSR even if upcoming or ended
+    if (expandedEventId) {
+      const target = allAdjusted.find(e => e.eventID === expandedEventId);
+      if (target) {
+        list = [target, ...list.filter(e => e.eventID !== expandedEventId)];
+      }
     }
 
     return list;
@@ -1169,6 +1178,7 @@ function App({
                             lang={lang} 
                             timezone={timezone} 
                             defaultExpanded={event.eventID === expandedEventId}
+                            useInline={event.eventID === expandedEventId}
                             priority={index === 0}
                             onOpenFilterGenerator={handleOpenFilterGenerator}
                             onToggleExpand={handleEventToggleExpand}

@@ -235,3 +235,17 @@ export function isPokemonReleasedInGo(poke: PokemonRankData): boolean {
   // Gen 9 (IDs 906 to 1025)
   return RELEASED_GEN_9_IDS.has(id);
 }
+
+/**
+ * Checks if a base Pokémon species is released by Pokédex ID.
+ */
+export function isPokemonReleased(pokedexId: number): boolean {
+  if (pokedexId <= 809) {
+    return !UNRELEASED_GEN_1_TO_7_IDS.has(pokedexId);
+  }
+  if (pokedexId <= 905) {
+    return RELEASED_GEN_8_IDS.has(pokedexId);
+  }
+  return RELEASED_GEN_9_IDS.has(pokedexId);
+}
+

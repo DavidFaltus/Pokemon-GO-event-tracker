@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PokemonRankingsView } from '@/components/PokemonRankingsView';
 import { pokemonRankings, getPokemonByIdOrSlug, ALL_POKEDEX_IDS } from '@/data/pokemonRankings';
 import { getPokemonName } from '@/utils/pokemonTranslator';
 import { getCounterTypes, getTopCountersForPokemon } from '@/utils/pokemonCountersHelper';
+import { isPokemonReleased } from '@/utils/pokemonReleaseHelper';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
 import type { Language } from '@/data/translations';
 
@@ -29,6 +31,10 @@ interface PokemonPageProps {
   }>;
 }
 
+function calcCpAtCpm(attack: number, defense: number, stamina: number, cpm: number): number {
+  return Math.max(10, Math.floor(((attack + 15) * Math.sqrt(defense + 15) * Math.sqrt(stamina + 15) * (cpm * cpm)) / 10));
+}
+
 export async function generateMetadata({ params }: PokemonPageProps): Promise<Metadata> {
   const { lang, id } = await params;
   const matched = getPokemonByIdOrSlug(id);
@@ -44,6 +50,7 @@ export async function generateMetadata({ params }: PokemonPageProps): Promise<Me
   const validLanguages: Language[] = ['cs', 'en', 'ja', 'ru'];
   const validLang: Language = validLanguages.includes(lang as Language) ? (lang as Language) : 'cs';
   const localizedName = getPokemonName(matched.name, validLang);
+  const released = isPokemonReleased(matched.pokedexId);
 
   const titleByLang: Record<Language, string> = {
     cs: `${localizedName} (#${matched.pokedexId}) – Statistiky, Nejlepší Útoky & Max CP | Pokémon GO`,
@@ -65,6 +72,7 @@ export async function generateMetadata({ params }: PokemonPageProps): Promise<Me
   return {
     title,
     description,
+    robots: released ? { index: true, follow: true } : { index: false, follow: true },
     keywords: [
       matched.name,
       localizedName,
@@ -114,6 +122,26 @@ export default async function PokemonPage({ params }: PokemonPageProps) {
   const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${matched.pokedexId}.png`;
   const weaknesses = getCounterTypes(matched.types).map((w) => `${w.type} (${w.label})`);
   const topCounters = getTopCountersForPokemon(matched, pokemonRankings).slice(0, 5);
+  const released = isPokemonReleased(matched.pokedexId);
+
+  const cpLv15 = calcCpAtCpm(matched.attack, matched.defense, matched.stamina, 0.51739395);
+  const cpLv20 = calcCpAtCpm(matched.attack, matched.defense, matched.stamina, 0.5974);
+  const cpLv25 = calcCpAtCpm(matched.attack, matched.defense, matched.stamina, 0.667934);
+  const cpLv40 = calcCpAtCpm(matched.attack, matched.defense, matched.stamina, 0.7903);
+
+  const faqQuestionByLang: Record<Language, string> = {
+    cs: `Jaké jsou nejlepší útoky a Max CP pro ${localizedName} (#${matched.pokedexId})?`,
+    en: `What is the best moveset and Max CP for ${matched.name} (#${matched.pokedexId}) in Pokémon GO?`,
+    ja: `Pokémon GOにおける${localizedName}（図鑑No.${matched.pokedexId}）の最適技と最大CPは？`,
+    ru: `Какие лучшие атаки и максимальный CP у ${matched.name} (#${matched.pokedexId}) в Pokémon GO?`,
+  };
+
+  const faqAnswerByLang: Record<Language, string> = {
+    cs: `${localizedName} (#${matched.pokedexId}) je Pokémon typu ${matched.types.join('/')} s maximálním CP ${matched.maxCp} na úrovni 50 (Útok: ${matched.attack}, Obrana: ${matched.defense}, Výdrž: ${matched.stamina}). Jeho optimální PvE kombinace útoků je ${matched.bestFastMove.name} (rychlý útok) a ${matched.bestChargedMove.name} (nabíjecí útok) s výkonem ${matched.dps} DPS. Mezi jeho hlavní slabosti patří útoky typů ${weaknesses.join(', ')}.`,
+    en: `${matched.name} (#${matched.pokedexId}) is a ${matched.types.join('/')} type Pokémon with a Maximum CP of ${matched.maxCp} at Level 50 (Attack: ${matched.attack}, Defense: ${matched.defense}, Stamina: ${matched.stamina}). Its optimal PvE moveset is ${matched.bestFastMove.name} (Fast) and ${matched.bestChargedMove.name} (Charged), delivering ${matched.dps} DPS. It is weak to ${weaknesses.join(', ')} attacks.`,
+    ja: `${localizedName}（図鑑No.${matched.pokedexId}）は${matched.types.join('/')}タイプのポケモンで、レベル50時の最大CPは${matched.maxCp}（攻撃: ${matched.attack}、防御: ${matched.defense}、HP: ${matched.stamina}）です。PvEの最適技構成は「${matched.bestFastMove.name}」（ノーマルアタック）と「${matched.bestChargedMove.name}」（スペシャルアタック）で、DPSは${matched.dps}です。弱点タイプは${weaknesses.join('、')}です。`,
+    ru: `${matched.name} (#${matched.pokedexId}) — покемон типа ${matched.types.join('/')} с максимальным CP ${matched.maxCp} на 50-м уровне (Атака: ${matched.attack}, Защита: ${matched.defense}, Выносливость: ${matched.stamina}). Лучший набор атак для PvE: ${matched.bestFastMove.name} и ${matched.bestChargedMove.name} (${matched.dps} DPS). Уязвим к атакам типов: ${weaknesses.join(', ')}.`,
+  };
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -121,8 +149,8 @@ export default async function PokemonPage({ params }: PokemonPageProps) {
       {
         '@type': 'ItemPage',
         '@id': canonicalUrl,
-        name: `${localizedName} (#${matched.pokedexId}) - Pokémon GO Guide & Stats`,
-        description: `Complete stats, fast/charged movesets, max CP and PvP/PvE rankings for ${matched.name} in Pokémon GO.`,
+        name: `${localizedName} (#${matched.pokedexId}) - Pokémon GO`,
+        description: faqAnswerByLang[validLang] || faqAnswerByLang.en,
         url: canonicalUrl,
         primaryImageOfPage: {
           '@type': 'ImageObject',
@@ -130,9 +158,9 @@ export default async function PokemonPage({ params }: PokemonPageProps) {
         },
         mainEntity: {
           '@type': 'Thing',
-          name: matched.name,
+          name: localizedName,
           identifier: matched.pokedexId.toString(),
-          description: `Pokémon #${matched.pokedexId} (${matched.types.join('/')}) with Attack: ${matched.attack}, Defense: ${matched.defense}, Stamina: ${matched.stamina}, Max CP: ${matched.maxCp}, Best Moveset: ${matched.bestFastMove.name} + ${matched.bestChargedMove.name}.`,
+          description: faqAnswerByLang[validLang] || faqAnswerByLang.en,
           image: imageUrl,
         }
       },
@@ -141,10 +169,10 @@ export default async function PokemonPage({ params }: PokemonPageProps) {
         mainEntity: [
           {
             '@type': 'Question',
-            name: validLang === 'cs' ? `Jaké jsou nejlepší útoky a Max CP pro ${localizedName} (#${matched.pokedexId})?` : `What is the best moveset and Max CP for ${matched.name} (#${matched.pokedexId}) in Pokémon GO?`,
+            name: faqQuestionByLang[validLang] || faqQuestionByLang.en,
             acceptedAnswer: {
               '@type': 'Answer',
-              text: `${matched.name} (#${matched.pokedexId}) is a ${matched.types.join('/')} type Pokémon with a Maximum CP of ${matched.maxCp} (Attack: ${matched.attack}, Defense: ${matched.defense}, Stamina: ${matched.stamina}). Its optimal PvE moveset is ${matched.bestFastMove.name} (Fast) and ${matched.bestChargedMove.name} (Charged), delivering ${matched.dps} DPS. It is weak to ${weaknesses.join(', ')} attacks.`,
+              text: faqAnswerByLang[validLang] || faqAnswerByLang.en,
             },
           },
         ],
@@ -192,19 +220,72 @@ export default async function PokemonPage({ params }: PokemonPageProps) {
         }}
       >
         <h2 style={{ fontSize: '1.2rem', fontWeight: 800, margin: '0 0 8px 0' }}>
-          {localizedName} (#{matched.pokedexId}) – {validLang === 'cs' ? 'Přehled statistik, útoků a slabostí' : 'Base Stats, Best Moveset & Weaknesses'}
+          {localizedName} (#{matched.pokedexId}) –{' '}
+          {validLang === 'cs'
+            ? 'Přehled statistik, 100% IV CP, útoků a slabostí'
+            : validLang === 'ja'
+              ? '種族値・100% IV CP・最適技・弱点まとめ'
+              : validLang === 'ru'
+                ? 'Статистика, 100% IV CP, лучшие атаки и слабости'
+                : 'Base Stats, 100% IV CP, Best Moveset & Weaknesses'}
         </h2>
+        {!released && (
+          <p style={{ margin: '0 0 10px 0', padding: '8px 12px', borderRadius: '10px', backgroundColor: 'rgba(245, 158, 11, 0.12)', border: '1px solid rgba(245, 158, 11, 0.35)', fontSize: '0.84rem', color: '#fbbf24' }}>
+            {validLang === 'cs'
+              ? `Upozornění: ${localizedName} (#${matched.pokedexId}) zatím nebyl oficiálně vydán ve hře Pokémon GO. Níže uvedené statistiky a přepočty CP vycházejí ze základních parametrů hlavní série her.`
+              : validLang === 'ja'
+                ? `※注意：${localizedName}（図鑑No.${matched.pokedexId}）は現在Pokémon GOに未実装です。以下のステータスおよびCPは原作データからの予測換算値です。`
+                : validLang === 'ru'
+                  ? `Примечание: ${matched.name} (#${matched.pokedexId}) еще не выпущен в Pokémon GO. Приведенные ниже характеристики и значения CP рассчитаны на основе базовых параметров основной серии игр.`
+                  : `Note: ${matched.name} (#${matched.pokedexId}) has not yet been officially released in Pokémon GO. The base stats and CP projections below are calculated from mainline game parameters.`}
+          </p>
+        )}
         <p style={{ margin: '0 0 8px 0', fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.55 }}>
-          <strong>{validLang === 'cs' ? 'Typ:' : 'Type:'}</strong> {matched.types.join(' / ')} |{' '}
-          <strong>Max CP (Lv 50):</strong> {matched.maxCp} CP |{' '}
+          <strong>{validLang === 'cs' ? 'Typ:' : validLang === 'ja' ? 'タイプ:' : validLang === 'ru' ? 'Тип:' : 'Type:'}</strong>{' '}
+          {matched.types.map((t, i) => (
+            <span key={t}>
+              {i > 0 ? ' / ' : ''}
+              <Link href={`/${validLang}/types/${t.toLowerCase()}`} style={{ color: 'var(--cyan-accent)', textDecoration: 'none', fontWeight: 700 }}>
+                {t}
+              </Link>
+            </span>
+          ))}{' '}
+          | <strong>Max CP (Lv 50):</strong> {matched.maxCp} CP |{' '}
           <strong>ATK / DEF / STA:</strong> {matched.attack} / {matched.defense} / {matched.stamina} |{' '}
-          <strong>{validLang === 'cs' ? 'Ideální Moveset:' : 'Best Moveset:'}</strong> {matched.bestFastMove.name} + {matched.bestChargedMove.name} ({matched.dps} DPS) |{' '}
-          <strong>{validLang === 'cs' ? 'Slabosti:' : 'Weaknesses:'}</strong> {weaknesses.join(', ')}
+          <strong>{validLang === 'cs' ? 'Ideální Moveset:' : validLang === 'ja' ? '最適技:' : validLang === 'ru' ? 'Лучший мувсет:' : 'Best Moveset:'}</strong>{' '}
+          {matched.bestFastMove.name} + {matched.bestChargedMove.name} ({matched.dps} DPS) |{' '}
+          <strong>{validLang === 'cs' ? 'Slabosti:' : validLang === 'ja' ? '弱点:' : validLang === 'ru' ? 'Слабости:' : 'Weaknesses:'}</strong>{' '}
+          {weaknesses.join(', ')}
+        </p>
+        <p style={{ margin: '0 0 8px 0', fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.55 }}>
+          <strong>100% IV (Hundo) CP:</strong>{' '}
+          Lv 15 ({validLang === 'cs' ? 'Field Research' : 'Research'}): <strong>{cpLv15} CP</strong> |{' '}
+          Lv 20 ({validLang === 'cs' ? 'Raid / Líhnutí' : 'Raid / Egg'}): <strong>{cpLv20} CP</strong> |{' '}
+          Lv 25 (Weather Boost): <strong>{cpLv25} CP</strong> |{' '}
+          Lv 40: <strong>{cpLv40} CP</strong> |{' '}
+          Lv 50 (XL): <strong>{matched.maxCp} CP</strong>
+        </p>
+        <p style={{ margin: '0 0 8px 0', fontSize: '0.84rem', color: 'var(--text-secondary)', lineHeight: 1.55 }}>
+          {validLang === 'cs'
+            ? `V PvE raidech a soubojích o Gymy dosahuje ${localizedName} se základním útokem ${matched.attack} a výdrží ${matched.stamina} efektivního výkonu ${matched.dps} DPS. Pro maximální poškození používejte rychlý útok ${matched.bestFastMove.name} v kombinaci s nabíjecím útokem ${matched.bestChargedMove.name}. Pokud proti ${localizedName} stojíte jako proti raid bossovi nebo obránci Gymu, využijte útočníky s útoky typů ${weaknesses.slice(0, 3).join(', ')}.`
+            : validLang === 'ja'
+              ? `レイドバトルやジム攻撃において、${localizedName}は攻撃種族値${matched.attack}・HP種族値${matched.stamina}を持ち、最適技「${matched.bestFastMove.name}」と「${matched.bestChargedMove.name}」の組み合わせで${matched.dps} DPSを発揮します。対策する場合は弱点である${weaknesses.slice(0, 3).join('、')}タイプのアタッカーを編成しましょう。`
+              : validLang === 'ru'
+                ? `В PvE-рейдах и битвах за гимы ${matched.name} с базовой атакой ${matched.attack} и выносливостью ${matched.stamina} выдает ${matched.dps} DPS при использовании комбинации ${matched.bestFastMove.name} + ${matched.bestChargedMove.name}. Для победы над ${matched.name} в рейде выбирайте контр-покемонов с атаками типов ${weaknesses.slice(0, 3).join(', ')}.`
+                : `In PvE raid battles and Gym offenses, ${matched.name} combines a base Attack of ${matched.attack} and Stamina of ${matched.stamina} to achieve ${matched.dps} DPS with ${matched.bestFastMove.name} and ${matched.bestChargedMove.name}. When facing ${matched.name} as a raid boss or defender, prioritize counters using ${weaknesses.slice(0, 3).join(', ')} moves.`}
         </p>
         {topCounters.length > 0 && (
-          <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--text-muted)' }}>
-            <strong>{validLang === 'cs' ? 'Nejlepší Counters:' : 'Top Counters:'}</strong>{' '}
-            {topCounters.map((c) => `${getPokemonName(c.pokemon.name, validLang)} (${c.pokemon.bestFastMove.name} / ${c.pokemon.bestChargedMove.name})`).join(', ')}
+          <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--text-muted)', lineHeight: 1.55 }}>
+            <strong>{validLang === 'cs' ? 'Nejlepší Counters:' : validLang === 'ja' ? 'おすすめ対策ポケモン:' : validLang === 'ru' ? 'Лучшие контр-покемоны:' : 'Top Counters:'}</strong>{' '}
+            {topCounters.map((c, idx) => (
+              <span key={c.pokemon.pokedexId + '-' + idx}>
+                {idx > 0 ? ', ' : ''}
+                <Link href={`/${validLang}/pokemon/${c.pokemon.pokedexId}`} style={{ color: 'var(--text-primary)', textDecoration: 'underline' }}>
+                  {getPokemonName(c.pokemon.name, validLang)}
+                </Link>{' '}
+                ({c.pokemon.bestFastMove.name} / {c.pokemon.bestChargedMove.name})
+              </span>
+            ))}
           </p>
         )}
       </article>

@@ -96,12 +96,23 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
       case 'ditto': return `${prefix}/guides/ditto-disguises-guide`;
       case 'eggs': return `${prefix}/guides/egg-hatching-guide`;
       case 'filter': return `${prefix}/filter`;
-      case 'types': return `${prefix}/types`;
+      case 'types': return `${prefix}/rankings`;
       case 'download': return `${prefix}/download`;
       case 'settings': return `${prefix}/settings`;
       case 'events':
       default: return `${prefix}`;
     }
+  };
+
+  // Preserve exact subpage route when switching language (prevents 404s on /types/[type] and preserves /guides/[slug], /raids/[slug], /privacy, etc.)
+  const getLanguageSwitchPath = (targetLang: Language): string => {
+    if (!pathname || pathname === '/') return `/${targetLang}`;
+    if (pathname.startsWith('/admin')) return '/admin';
+    const replaced = pathname.replace(/^\/(cs|en|ja|ru)(?=\/|$)/, `/${targetLang}`);
+    if (replaced.startsWith(`/${targetLang}`)) {
+      return replaced;
+    }
+    return getSectionPath(targetLang);
   };
 
   // Mobile Hub Menu State
@@ -255,7 +266,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
             {(['cs', 'en', 'ja', 'ru'] as Language[]).map(l => (
               <Link
                 key={l}
-                href={getSectionPath(l)}
+                href={getLanguageSwitchPath(l)}
                 className={`lang-btn ${lang === l ? 'active' : ''}`}
                 style={{
                   padding: '2px 7px',
@@ -401,7 +412,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
               {(['cs', 'en', 'ja', 'ru'] as Language[]).map(l => (
                 <Link
                   key={l}
-                  href={getSectionPath(l)}
+                  href={getLanguageSwitchPath(l)}
                   className={`lang-btn ${lang === l ? 'active' : ''}`}
                   style={{
                     padding: '3px 8px',

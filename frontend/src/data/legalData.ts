@@ -114,12 +114,27 @@ export const LEGAL_PAGES_DATA: Record<LegalPageType, LegalPageInfo> = {
         },
       },
       {
+        id: 'adsense-cookies',
+        title: {
+          cs: '4. Reklamní systémy třetích stran (Google AdSense) a soubory Cookie',
+          en: '4. Third-Party Advertising (Google AdSense) & Cookies',
+          ja: '4. 第三者配信の広告サービス（Google AdSense）とCookieについて',
+          ru: '4. Сторонние рекламные сервисы (Google AdSense) и файлы Cookie',
+        },
+        content: {
+          cs: 'Pro financování provozu a rozvoje webu využíváme reklamní systém Google AdSense poskytovaný společností Google Ireland Limited / Google LLC. Společnost Google a její certifikovaní partneři využívají soubory cookie (včetně reklamního souboru cookie DoubleClick DART) k zobrazování reklam na základě vašich předchozích návštěv tohoto webu nebo jiných webových stránek na internetu. Uživatelé z Evropského hospodářského prostoru (EHP), Spojeného království a Švýcarska mohou svůj souhlas s personalizovanými reklamami kdykoliv udělit, upravit nebo odvolat prostřednictvím certifikované lišty pro správu souhlasu (CMP) podle standardu IAB TCF v2.2. Používání souborů cookie pro personalizované reklamy můžete rovněž kdykoliv vypnout v Nastavení reklam Google na adrese https://adssettings.google.com nebo na stránce https://www.aboutads.info.',
+          en: 'To support the hosting and ongoing development of this website, we use Google AdSense, an advertising service provided by Google Ireland Limited / Google LLC. Google and its certified third-party vendors use cookies (including the DoubleClick DART cookie) to serve ads based on a user\'s prior visits to this website or other websites on the internet. Visitors from the European Economic Area (EEA), the UK, and Switzerland can manage or withdraw their consent for personalized advertising at any time via our Google-certified Consent Management Platform (CMP) compliant with IAB TCF v2.2. Users may also opt out of personalized advertising at any time by visiting Google Ads Settings at https://adssettings.google.com or https://www.aboutads.info.',
+          ja: '当サイトでは、サイトの運営および開発を維持するために、Google LLCが提供する第三者配信の広告サービス「Google AdSense（グーグル・アドセンス）」を利用しています。Googleおよび認定パートナーは、Cookie（DoubleClick DART Cookieを含む）を使用して、ユーザーが当サイトや他のウェブサイトに過去にアクセスした際の情報に基づいて広告を配信します。ユーザーはGoogleの広告設定ページ（https://adssettings.google.com）または https://www.aboutads.info にアクセスすることで、パーソナライズド広告の掲載に使用されるCookieをいつでも無効にすることができます。',
+          ru: 'Для поддержки работы и развития сайта мы используем рекламный сервис Google AdSense (Google Ireland Limited / Google LLC). Компания Google и ее сертифицированные партнеры используют файлы cookie (включая файлы cookie DoubleClick DART) для показа объявлений на основе предыдущих посещений пользователями нашего или других сайтов. Пользователи из ЕЭЗ и Великобритании могут управлять согласием через сертифицированную платформу управления согласием (CMP) по стандарту IAB TCF v2.2, а также отключить персонализированную рекламу в Настройках рекламных предпочтений Google по адресу https://adssettings.google.com или на сайте https://www.aboutads.info.',
+        },
+      },
+      {
         id: 'rights-and-gdpr',
         title: {
-          cs: '4. Práva uživatelů a GDPR',
-          en: '4. User Rights & GDPR Compliance',
-          ja: '4. ユーザーの権利とGDPR遵守',
-          ru: '4. Права пользователей и регламент GDPR',
+          cs: '5. Práva uživatelů a GDPR',
+          en: '5. User Rights & GDPR Compliance',
+          ja: '5. ユーザーの権利とGDPR遵守',
+          ru: '5. Права пользователей и регламент GDPR',
         },
         content: {
           cs: 'V souladu s Nařízením Evropského parlamentu a Rady (EU) 2016/679 (GDPR) a dalšími platnými předpisy mají uživatelé právo na informace o zpracování dat. Jelikož neukládáme žádné osobní identifikátory na serverech, vymazání všech lokálních dat můžete provést jednoduše vymazáním mezipaměti a LocalStorage ve vašem prohlížeči.',

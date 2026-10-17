@@ -1,7 +1,8 @@
 import type { MetadataRoute } from 'next';
 import { API_BASE_URL } from '@/config';
 import { GUIDES_DATA } from '@/data/guidesData';
-import { ALL_POKEDEX_IDS } from '@/data/pokemonRankings';
+import { ALL_POKEDEX_IDS, getPokemonByIdOrSlug } from '@/data/pokemonRankings';
+import { isPokemonReleased } from '@/utils/pokemonReleaseHelper';
 import { raidCountersDb } from '@/data/raidCounters';
 import { RANKING_CATEGORIES } from '@/app/[lang]/rankings/[category]/page';
 import { POKEMON_TYPES } from '@/app/[lang]/types/[type]/page';
@@ -24,6 +25,12 @@ const ALL_RAID_SLUGS = Array.from(
     ),
   ])
 );
+
+const RELEASED_SITEMAP_POKEDEX_IDS = ALL_POKEDEX_IDS.filter((id) => {
+  if (!isPokemonReleased(id)) return false;
+  const poke = getPokemonByIdOrSlug(id.toString());
+  return Boolean(poke && poke.maxCp >= 2200);
+});
 
 function buildSitemapAlternates(baseUrl: string, pathSuffix: string) {
   const cleanSuffix = pathSuffix ? (pathSuffix.startsWith('/') ? pathSuffix : `/${pathSuffix}`) : '';
@@ -73,7 +80,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   languages.forEach((lang) => {
-    // 1. Core Section Pages (only canonical 200 OK routes — no 404s or redirects)
+    // 1. Core Section & E-E-A-T Pages (only canonical 200 OK routes — no 404s or redirects)
     const sections = [
       { path: '', priority: 1.0, changeFrequency: 'hourly' as const },
       { path: '/friends', priority: 0.92, changeFrequency: 'daily' as const },
@@ -83,8 +90,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       { path: '/guides', priority: 0.88, changeFrequency: 'weekly' as const },
       { path: '/filter', priority: 0.8, changeFrequency: 'weekly' as const },
       { path: '/download', priority: 0.7, changeFrequency: 'monthly' as const },
+      { path: '/about', priority: 0.6, changeFrequency: 'monthly' as const },
       { path: '/privacy', priority: 0.5, changeFrequency: 'monthly' as const },
       { path: '/terms', priority: 0.5, changeFrequency: 'monthly' as const },
+      { path: '/disclaimer', priority: 0.5, changeFrequency: 'monthly' as const },
+      { path: '/contact', priority: 0.5, changeFrequency: 'monthly' as const },
     ];
 
     sections.forEach((sec) => {
@@ -169,8 +179,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     });
 
-    // 8. Full National Pokédex Pages (#1 to #1025)
-    ALL_POKEDEX_IDS.forEach((id) => {
+    // 8. Released Meta & PvE Relevant Pokédex Pages (excludes unreleased noindex placeholders & low-CP base stages)
+    RELEASED_SITEMAP_POKEDEX_IDS.forEach((id) => {
       const suffix = `/pokemon/${id}`;
       routes.push({
         url: `${baseUrl}/${lang}${suffix}`,

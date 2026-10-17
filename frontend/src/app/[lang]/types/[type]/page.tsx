@@ -186,10 +186,28 @@ export default async function PokemonTypePage({ params }: PageProps) {
 
   const capitalizedType = typeSlug.charAt(0).toUpperCase() + typeSlug.slice(1);
   const canonicalUrl = `https://pogoevents.app/${lang}/types/${typeSlug}`;
-  const weaknesses = getCounterTypes([capitalizedType]);
+  const weaknessInfos = getCounterTypes([capitalizedType]);
+  const weaknesses = weaknessInfos.map((w) => `${w.type} (${w.label})`);
   const resistances = Object.entries(TYPE_CHART)
     .filter(([, defMap]) => (defMap[capitalizedType] ?? 1) < 1)
     .map(([atkType]) => atkType);
+  const superEffectiveTargets = Object.entries(TYPE_CHART[capitalizedType] || {})
+    .filter(([, mult]) => mult > 1)
+    .map(([defType]) => defType);
+
+  const faqQuestionByLang: Record<Language, string> = {
+    cs: `Jaké má ${info.name} typ slabosti a odolnosti v Pokémon GO?`,
+    en: `What are ${capitalizedType}-type weaknesses and resistances in Pokémon GO?`,
+    ja: `Pokémon GOにおける${info.name}タイプの弱点と耐性は？`,
+    ru: `Какие слабости и сопротивления у типа «${info.name}» в Pokémon GO?`,
+  };
+
+  const faqAnswerByLang: Record<Language, string> = {
+    cs: `Pokémoni typu ${info.name} (${capitalizedType}) mají v Pokémon GO slabost vůči útokům typů ${weaknesses.join(', ')} (1,6× zvýšené zranění) a naopak odolávají útokům typů ${resistances.length > 0 ? resistances.join(', ') : 'žádným'}. Útoky tohoto typu jsou super efektivní proti typům: ${superEffectiveTargets.length > 0 ? superEffectiveTargets.join(', ') : 'žádným'}.`,
+    en: `${capitalizedType}-type Pokémon are weak to ${weaknesses.join(', ')} attacks (1.6x damage in Pokémon GO) and resist ${resistances.length > 0 ? resistances.join(', ') : 'none'}. Offensively, ${capitalizedType}-type moves deal super-effective damage against ${superEffectiveTargets.length > 0 ? superEffectiveTargets.join(', ') : 'no'} types.`,
+    ja: `Pokémon GOの${info.name}（${capitalizedType}）タイプは、${weaknesses.join('、')}タイプの技が弱点（1.6倍ダメージ）で、${resistances.length > 0 ? resistances.join('、') : 'なし'}タイプに耐性があります。攻撃面では${superEffectiveTargets.length > 0 ? superEffectiveTargets.join('、') : 'なし'}タイプに効果ばつぐんです。`,
+    ru: `Покемоны типа «${info.name}» (${capitalizedType}) в Pokémon GO уязвимы к атакам типов ${weaknesses.join(', ')} (1.6× урона) и имеют сопротивление к типам: ${resistances.length > 0 ? resistances.join(', ') : 'нет'}. В атаке этот тип суперэффективен против: ${superEffectiveTargets.length > 0 ? superEffectiveTargets.join(', ') : 'нет'}.`,
+  };
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -205,10 +223,10 @@ export default async function PokemonTypePage({ params }: PageProps) {
         mainEntity: [
           {
             '@type': 'Question',
-            name: lang === 'cs' ? `Jaké má ${info.name} typ slabosti a odolnosti v Pokémon GO?` : `What are ${capitalizedType}-type weaknesses and resistances in Pokémon GO?`,
+            name: faqQuestionByLang[lang] || faqQuestionByLang.en,
             acceptedAnswer: {
               '@type': 'Answer',
-              text: `${capitalizedType}-type Pokémon are weak to ${weaknesses.join(', ')} attacks (1.6x damage in Pokémon GO) and resist ${resistances.length > 0 ? resistances.join(', ') : 'none'}.`,
+              text: faqAnswerByLang[lang] || faqAnswerByLang.en,
             },
           },
         ],
@@ -241,10 +259,23 @@ export default async function PokemonTypePage({ params }: PageProps) {
         }}
       >
         <h2 style={{ fontSize: '1.15rem', fontWeight: 800, margin: '0 0 6px 0' }}>{info.title}</h2>
-        <p style={{ margin: '0 0 8px 0', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>{info.desc}</p>
-        <p style={{ margin: 0, fontSize: '0.86rem', color: 'var(--text-muted)' }}>
-          <strong>{lang === 'cs' ? 'Slabosti (1.6× zranění):' : 'Weaknesses (1.6x DMG):'}</strong> {weaknesses.join(', ')} |{' '}
-          <strong>{lang === 'cs' ? 'Odolnosti (0.625× / 0.39×):' : 'Resistances:'}</strong> {resistances.length > 0 ? resistances.join(', ') : '—'}
+        <p style={{ margin: '0 0 8px 0', fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.55 }}>{info.desc}</p>
+        <p style={{ margin: '0 0 8px 0', fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.55 }}>
+          <strong>{lang === 'cs' ? 'Slabosti (1.6× zranění):' : lang === 'ja' ? '弱点（1.6倍ダメージ）:' : lang === 'ru' ? 'Слабости (1.6× урона):' : 'Weaknesses (1.6x DMG):'}</strong>{' '}
+          {weaknesses.join(', ')} |{' '}
+          <strong>{lang === 'cs' ? 'Odolnosti (0.625× / 0.39×):' : lang === 'ja' ? '耐性:' : lang === 'ru' ? 'Сопротивления:' : 'Resistances:'}</strong>{' '}
+          {resistances.length > 0 ? resistances.join(', ') : '—'} |{' '}
+          <strong>{lang === 'cs' ? 'Silný v útoku proti:' : lang === 'ja' ? '攻撃で効果ばつぐん:' : lang === 'ru' ? 'Суперэффективен против:' : 'Super effective against:'}</strong>{' '}
+          {superEffectiveTargets.length > 0 ? superEffectiveTargets.join(', ') : '—'}
+        </p>
+        <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--text-secondary)', lineHeight: 1.55 }}>
+          {lang === 'cs'
+            ? `Při stavbě týmu do 5★ a Mega Raidů vybírejte útočníky s bonusem stejného typu útoku (STAB, +20 % poškození) a aktivní Mega evolucí, která v raidu posiluje všechny spojence o dalších 30 %. V tabulce níže najdete kompletní žebříček nejsilnějších Pokémonů typu ${info.name} seřazený podle efektivního hodnocení (ER) a DPS.`
+            : lang === 'ja'
+              ? `5つ星レイドやメガレイドの対策パーティを組む際は、タイプ一致ボーナス（STAB：威力1.2倍）と味方全体を強化するメガシンカ枠（同タイプ威力1.3倍）を活用しましょう。以下のランキングでは${info.name}タイプの最強アタッカーをER（総合火力指数）とDPS順で比較できます。`
+              : lang === 'ru'
+                ? `При сборке команды для 5★ и Мега-рейдов выбирайте покемонов с бонусом одного типа (STAB, +20% к урону) и активной Мега-эволюцией, усиливающей союзников на 30%. В таблице ниже представлен рейтинг лучших покемонов типа «${info.name}» по показателям ER и DPS.`
+                : `When building a team for 5-Star and Mega Raids, prioritize attackers that benefit from Same-Type Attack Bonus (STAB, 1.2x damage) alongside an active Mega Evolution to boost all allies' ${capitalizedType}-type attacks by 30%. The table below ranks the strongest ${capitalizedType}-type Pokémon by Effective Rating (ER) and DPS.`}
         </p>
       </article>
       <PokemonRankingsView lang={lang} initialSelectedType={capitalizedType} />

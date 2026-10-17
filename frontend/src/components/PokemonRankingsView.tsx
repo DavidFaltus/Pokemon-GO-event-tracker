@@ -243,9 +243,11 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
   // Filtered + sorted list for display
   const filteredRankings = useMemo(() => {
     let result = [...pokemonRankings];
+    const trimmedQuery = searchQuery.trim().toLowerCase();
+    const isDirectDexLookup = trimmedQuery.startsWith('#') && /^\d+$/.test(trimmedQuery.slice(1));
 
-    // Filter by released status strictly
-    if (onlyReleased) {
+    // Filter by released status strictly (except when directly looking up a specific Pokédex #ID page)
+    if (onlyReleased && !isDirectDexLookup) {
       result = result.filter(isPokemonReleasedInGo);
     }
 
