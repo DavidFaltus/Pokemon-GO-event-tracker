@@ -153,6 +153,24 @@ app.get('/robots.txt', (req, res) => {
   return res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: https://pogoevents.app/sitemap.xml\n');
 });
 
+// Serve BingSiteAuth.xml directly for Bing Webmaster Tools verification
+app.get('/BingSiteAuth.xml', (req, res) => {
+  const possiblePaths = [
+    path.join(__dirname, '..', 'BingSiteAuth.xml'),
+    path.join(__dirname, '..', 'dist', 'BingSiteAuth.xml'),
+    path.join(__dirname, '..', '..', 'BingSiteAuth.xml'),
+    path.join(__dirname, '..', '..', 'frontend', 'public', 'BingSiteAuth.xml'),
+    path.join(__dirname, '..', '..', 'frontend', 'dist', 'BingSiteAuth.xml'),
+  ];
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+      return res.sendFile(path.resolve(p));
+    }
+  }
+  return res.type('application/xml').send('<?xml version="1.0"?>\n<users>\n\t<user>0746ACFAD4C7CE3636499CBA0A9D3342</user>\n</users>');
+});
+
 // ==========================================
 // Hybrid Cache (In-Memory + Persistent Disk)
 // ==========================================
