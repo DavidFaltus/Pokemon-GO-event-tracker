@@ -38,6 +38,7 @@ import {
 import { VIVILLON_PATTERNS, getVivillonSpriteUrl } from './FriendFinderView';
 import { DittoEggsView } from './DittoEggsView';
 import { FieldResearchView } from './FieldResearchView';
+import { GalarianBirdsInteractiveWidget } from './GalarianBirdsInteractiveWidget';
 import { 
   BookOpen, 
   Search, 
@@ -1369,6 +1370,9 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
   };
 
   const renderVisualArticleWidget = (slug: string) => {
+    if (slug === 'galarian-birds-encounter-catch-guide') {
+      return <GalarianBirdsInteractiveWidget lang={lang} />;
+    }
     // 1. All Evolution Quests Master Widget
     if (slug === 'pokemon-evolution-quests-guide') {
       const filteredQuests = EVOLUTION_QUEST_ITEMS.filter(q => {

@@ -53,6 +53,227 @@ export interface GuideArticle {
 
 export const GUIDES_DATA: GuideArticle[] = [
   {
+    "id": "galarian-birds-encounter-catch-guide",
+    "slug": "galarian-birds-encounter-catch-guide",
+    "iconName": "Target",
+    "imageUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10169.png",
+    "featured": true,
+    "author": "PoGo Events Team",
+    "readTime": "11 min",
+    "updatedAt": "2026-10-23",
+    "category": {
+      "cs": "Legendární průvodci & Denní mechaniky",
+      "en": "Legendary Guides & Daily Mechanics",
+      "ja": "伝説攻略＆デイリー仕様",
+      "ru": "Легендарные гайды и механики"
+    },
+    "title": {
+      "cs": "Jak ulovit Galarian Birds v Pokémon GO: Daily Adventure Incense, šance na chycení a triky",
+      "en": "How to Catch Galarian Birds in Pokémon GO: Daily Adventure Incense, Catch Odds & Pro Tricks",
+      "ja": "ガラル三鳥（フリーザー・サンダー・ファイヤー）捕獲完全攻略：おさんぽおこう仕様、捕獲率＆裏技",
+      "ru": "Как поймать Галарских птиц в Pokémon GO: Daily Incense, математика поимки и секреты"
+    },
+    "subtitle": {
+      "cs": "Exkluzivní analýza mechanik Daily Adventure Incense, 0,3% Base Catch Rate, 0% Flee Rate u Shiny variant, Master Ball rozhodovací matice a Origin Dialga trik.",
+      "en": "Exhaustive guide on Daily Adventure Incense vectoring, 0.3% Base Catch Rate, the 0% Flee Rate rule for Shiny birds, Master Ball strategy, and Roar of Time chaining.",
+      "ja": "おさんぽおこうの移動ベクトル判定、0.3%の基礎捕獲率、色違いの「逃走率0%」ルール、マスターボールの使い所、ディアルガ「ときのほうこう」延長術まで徹底解説。",
+      "ru": "Полный разбор Daily Adventure Incense, базовый шанс 0.3%, правило 0% побега для Shiny, выбор Master Ball и продление времени с Origin Dialga."
+    },
+    "sections": [
+      {
+        "id": "dai-spawn-mechanics-and-speed",
+        "pokemon": [
+          "Articuno",
+          "Zapdos",
+          "Moltres"
+        ],
+        "heading": {
+          "cs": "1. Daily Adventure Incense: Jak funguje generátor spawnů a rychlostní limit",
+          "en": "1. Daily Adventure Incense: Spawn Engine & Movement Velocity",
+          "ja": "1. おさんぽおこう：出現エンジンと移動速度の絶対条件",
+          "ru": "1. Daily Adventure Incense: Механика спавна и скорость движения"
+        },
+        "content": {
+          "cs": "Galarian Articuno (#144), Galarian Zapdos (#145) a Galarian Moltres (#146) jsou nejvzácnější divocí legendární Pokémoni ve hře. Objevují se výhradně prostřednictvím modrého denního kadidla (Daily Adventure Incense — DAI), které každý trenér dostává zdarma jednou denně na 15 minut.\n\nKlíčové principy generátoru spawnů:\n• 30sekundový cyklus: Hra kontroluje vaši GPS polohu přesně každých 30,0 sekund. Pokud jste se za tuto dobu pohnuli o alespoň 40 až 50 metrů v přímém směru od předchozího bodu, vygeneruje se nový spawn. Pokud stojíte nebo se vracíte zpět na stejné místo, spawn se nespustí.\n• Optimální tempo chůze: Ideální rychlost je 7,0 až 9,5 km/h (velmi svižná chůze, jogging nebo pomalá jízda na kole). Minimální prahová rychlost je cca 5,4 km/h.\n• Šance na setkání: Každý jednotlivý spawn slot z DAI má přibližně 0,8 % až 1,0 % šanci, že se namísto běžného Pokémona vylosuje Galarian pták (~0,33 % pro konkrétní druh). Během optimální 15minutové procházky s 28 až 30 spawny je kumulativní šance na potkání alespoň jednoho ptáka přibližně 22,4 % — v průměru se s ptákem setkáte jednou za každých 4 až 5 dní aktivního používání DAI.\n• Vliv Weather Boostu: Větrné počasí (Windy) posiluje všechny tři ptáky (sdílejí Flying typ; Articuno navíc Psychic a Moltres Dark). Zapdos je navíc posilován v zataženu (Cloudy) díky Fighting typu. Weather Boost zvyšuje rozsah úrovní z Level 1–30 na Level 31–35 s garantovanou IV podlahou 4/4/4. Vyšší level však drasticky ztěžuje odchyt a posouvá CP nad limit pro Great League.",
+          "en": "Galarian Articuno (#144), Galarian Zapdos (#145), and Galarian Moltres (#146) are the rarest wild legendary spawns in Pokémon GO. They appear exclusively through Daily Adventure Incense (DAI), a free 15-minute daily item granted to every trainer.\n\nCore spawn mechanics:\n• 30-Second Cadence: The game evaluates your GPS displacement vector every 30.0 seconds. A new spawn triggers only if you have traveled at least 40 to 50 meters in a straight line from your previous checkpoint. Standing still or looping produces zero spawns.\n• Ideal Velocity Floor: The sweet spot is 7.0 to 9.5 km/h (brisk walking, jogging, or slow cycling), with a minimum speed floor of ~5.4 km/h.\n• Encounter Odds: Each DAI spawn slot has a ~0.8% to 1.0% probability of rolling a Galarian Bird (~0.33% per specific bird). In an optimal 28-spawn walk, the cumulative session odds of seeing at least one bird are ~22.4% — an average of one encounter every 4 to 5 daily incense sessions.\n• Weather Boost Dynamics: Windy weather boosts all three birds due to their Flying secondary typing. Cloudy boosts Zapdos (Fighting), while Fog boosts Moltres (Dark). Weather Boost elevates spawn levels to Level 31–35 with a 4/4/4 IV floor, but higher levels significantly lower catch probability and disqualify spawns from Great League (<1500 CP).",
+          "ja": "ガラルフリーザー（#144）、ガラルサンダー（#145）、ガラルファイヤー（#146）は、Pokémon GOで最も希少な野生の伝説ポケモンです。毎日1回無料で配られる15分間の「おさんぽおこう」でのみ出現します。\n\n出現エンジンの重要仕様：\n• 30秒周期判定：GPSの位置ベクトルが30秒ごとに計測され、直前の位置から直線距離で40〜50m以上移動している場合のみ新規ポケモンが出現します。立ち止まりや往復では出現しません。\n• 最適移動速度：時速7.0〜9.5km（早歩き、ジョギング、またはゆっくりとした自転車走行）が理想的です。最低速度は約5.4km/hです。\n• 出現確率：おさんぽおこうの各出現枠でガラル三鳥が選ばれる確率は約0.8%〜1.0%（各鳥単体では約0.33%）です。1回のおこうで28匹以上出現させた場合、いずれかの鳥に遭遇できる確率は約22.4%（4〜5回のおこうにつき1回遭遇する計算）となります。\n• 天候ブースト：強風（ひこうタイプ共有）、曇り（サンダーのかくとう）、霧（ファイヤーのあく）でブーストされます。PL31〜35・個体値4/4/4保証となる一方、捕獲率が低下しスーパーリーグ（CP1500以下）の上限を超えてしまいます。",
+          "ru": "Galarian Articuno (#144), Galarian Zapdos (#145) и Galarian Moltres (#146) — самые редкие дикие легендарные покемоны в Pokémon GO. Они появляются исключительно при использовании синего Daily Adventure Incense (DAI), выдаваемого раз в день на 15 минут.\n\nКлючевые принципы спавна:\n• 30-секундный цикл: Игра замеряет ваше перемещение каждые 30 секунд. Новый покемон появится только в том случае, если вы сместились минимум на 40–50 метров по прямой. Стояние на месте или развороты сбивают спавн.\n• Скорость движения: Оптимальная скорость — 7,0–9,5 км/ч (быстрый шаг или легкий бег). Минимальный порог — ~5,4 км/ч.\n• Шанс появления: В каждом слоте шанс появления птицы составляет ~0,8–1,0% (~0,33% на конкретный вид). За 28 спавнов вероятность встретить птицу достигает ~22,4% (в среднем 1 встреча на каждые 4–5 дней).\n• Погодный буст: Ветреная погода (Windy) усиливает всех троих птиц. Облачность (Cloudy) усиливает Zapdos, туман (Fog) — Moltres. Погода поднимает уровень до 31–35 с гарантией IV 4/4/4, но значительно снижает шанс поимки."
+        },
+        "tips": {
+          "cs": [
+            "Plánujte trasu v přímé linii (dlouhé ulice, parkové aleje, cyklostezky) bez křižovatek a prudkých zatáček, aby GPS neztrácela lineární vzdálenost.",
+            "Jakmile se Galarian pták na mapě objeví, okamžitě zastavte chůzi a zůstaňte stát na místě po celou dobu chytání, abyste předešli speed-locku."
+          ],
+          "en": [
+            "Plan straight-line walking routes (long uninterrupted boulevards or bike paths) to maximize GPS displacement vectors every 30 seconds.",
+            "The second a Galarian Bird spawns, immediately stop moving and stand completely still during the entire encounter to prevent speed-lock."
+          ],
+          "ja": [
+            "30秒ごとの直線距離を最大化するため、曲がり角のない長い直線道路やサイクリングロードを歩きましょう。",
+            "ガラル三鳥が出現した瞬間、その場に完全に立ち止まり、捕獲が終わるまで移動しないことが鉄則です（速度制限による逃走防止）。"
+          ],
+          "ru": [
+            "Планируйте маршрут строго по прямой (длинные аллеи, набережные) без резких поворотов для максимального расстояния по GPS.",
+            "В момент появления птицы немедленно остановитесь и стойте неподвижно до конца поимки, чтобы избежать спидлока."
+          ]
+        }
+      },
+      {
+        "id": "catch-and-flee-mathematics",
+        "pokemon": [
+          "Articuno",
+          "Zapdos",
+          "Moltres"
+        ],
+        "heading": {
+          "cs": "2. Matematika chycení a útěku: 0,3% Base Catch Rate a 90% Flee Rate",
+          "en": "2. Catch & Flee Engineering: 0.3% Base Catch Rate & 90% Flee Rate",
+          "ja": "2. 捕獲と逃走の計算式：基礎捕獲率0.3%・逃走率90%の真実",
+          "ru": "2. Математика поимки и побега: Базовый шанс 0.3% и 90% побег"
+        },
+        "content": {
+          "cs": "Důvodem, proč jsou Galarian ptáci tak legendárně těžko ulovitelní, jsou dva extrémní parametry v kódu hry:\n• Base Catch Rate (BCR = 0,3 %): Běžní raidoví boti mají BCR 2,0 %. Galarian ptáci jsou tedy téměř 7× těžší na chycení než Mewtwo či Rayquaza v raidu!\n• Base Flee Rate (BFR = 90 %): Při každém neúspěšném pokusu má pták 90% šanci, že okamžitě uteče. V průměru máte pouze 1,11 hodu na celé setkání!\n\nReálné šance s maximálními bonusy (Ultra Ball 2×, Golden Razz Berry 2,5×, Curved Excellent 2×, obě Platinové medaile typů 1,4× = celkový násobič 23,8×):\n• Level 1 (CP pod 50): 31,8 % na hod (kumulativně ~34,1 % za celý encounter)\n• Level 15 (~1 000–1 500 CP): 6,7 % na hod\n• Level 20 (~1 500–2 000 CP): 5,8 % na hod\n• Level 25 (Weather Boost): 5,2 % na hod\n• Level 30 (Běžné maximum): 4,8 % na hod\n• Level 35 (Weather Boost maximum): 4,6 % na hod\n\nPokud byste hodili obyčejný červený Pokéball rovným hodem bez bobule, šance na chycení u Levelu 30 je pouhých 0,2 %!",
+          "en": "Two extreme hard-coded parameters define the near-impossible capture difficulty of Galarian Birds:\n• Base Catch Rate (BCR = 0.3%): Standard raid legendaries feature a 2.0% BCR. Galarian Birds are nearly 7 times harder to catch than a 5★ raid boss!\n• Base Flee Rate (BFR = 90%): Every breakout carries a 90% chance that the bird immediately flees. Trainers average a minuscule 1.11 throws per encounter!\n\nActual catch odds with maximum multipliers (Ultra Ball 2x, Golden Razz 2.5x, Curved Excellent 2x, dual Platinum medals 1.4x = total 23.8x multiplier):\n• Level 1 (CP under 50): 31.8% single throw (~34.1% cumulative encounter odds)\n• Level 15 (~1,000–1,500 CP): 6.7% single throw\n• Level 20 (~1,500–2,000 CP): 5.8% single throw\n• Level 25 (Weather Boosted): 5.2% single throw\n• Level 30 (Regular Wild Cap): 4.8% single throw\n• Level 35 (Weather Boosted Cap): 4.6% single throw\n\nThrowing a standard red Poké Ball straight without berries yields a microscopic 0.2% catch probability at Level 30!",
+          "ja": "ガラル三鳥の捕獲が極めて困難である理由は、ゲームデータ内の2つの極端なパラメーターにあります：\n• 基礎捕獲率（BCR = 0.3%）：通常の伝説レイドボスは2.0%です。ガラル三鳥はレイドのミュウツーやレックウザより約6.7倍も捕まりにくく設定されています。\n• 逃走率（BFR = 90%）：ボールから抜け出した場合、90%の確率で即座に煙を出して逃亡します。1回の遭遇につき平均1.11回しかボールを投げられません！\n\n最高補正時（ハイパーボール2倍×きんのズリのみ2.5倍×カーブ1.7倍×エクセレント約2倍×両タイププラチナメダル1.4倍＝合計約23.8倍）の捕獲率：\n• PL1（CP50以下）：1投あたり31.8%（遭遇全体の累計捕獲率 約34.1%）\n• PL15（CP1000〜1500）：1投あたり6.7%\n• PL20（CP1500〜2000）：1投あたり5.8%\n• PL25（天候ブースト）：1投あたり5.2%\n• PL30（通常野生上限）：1投あたり4.8%\n• PL35（天候ブースト上限）：1投あたり4.6%\n\nズリのみなし・普通のモンスターボールのストレート投げでは、PL30でわずか0.2%しかありません！",
+          "ru": "Два экстремальных параметра в коде игры определяют запредельную сложность поимки Galarian птиц:\n• Base Catch Rate (BCR = 0,3%): Стандартные рейдовые легенды имеют 2,0%. Galarian птиц почти в 7 раз труднее поймать, чем легендарного босса 5★!\n• Base Flee Rate (BFR = 90%): При каждом выбивании из покебола шанс побега составляет 90%. В среднем у тренера есть всего 1,11 броска за всю встречу!\n\nРеальные шансы при максимальных множителях (Ultra Ball 2x + Golden Razz 2.5x + Curved Excellent 2x + платиновые медали 1.4x = 23.8x):\n• Level 1 (CP до 50): 31,8% за бросок (~34,1% за всю встречу)\n• Level 15 (~1 000–1 500 CP): 6,7% за бросок\n• Level 20 (~1 500–2 000 CP): 5,8% за бросок\n• Level 25 (Weather Boost): 5,2% за бросок\n• Level 30 (Дикий максимум): 4,8% за бросок\n• Level 35 (Максимум с погодой): 4,6% за бросок\n\nПрямой бросок красного покебола без ягод на 30-м уровне дает ничтожные 0,2% шанса!"
+        },
+        "tips": {
+          "cs": [
+            "Nikdy neházejte bez Golden Razz Berry a Ultra Ballu — každé procento multiplikátoru rozhoduje.",
+            "Platinové medaile obou typů (např. Flying + Dark pro Moltrese) poskytují trvalý 1,40× násobič, který je naprosto klíčový pro překročení 5% hranice chycení."
+          ],
+          "en": [
+            "Never throw without a Golden Razz Berry and an Ultra Ball — every single multiplier point is vital.",
+            "Dual Platinum medals (e.g., Flying + Dark for Moltres) provide a permanent 1.40x multiplier that is essential to push capture odds above 5%."
+          ],
+          "ja": [
+            "きんのズリのみとハイパーボールなしでは絶対に投げないでください。倍率の積み重ねがすべてです。",
+            "両タイプのプラチナメダル（ファイヤーならひこう＋あく）は常時1.40倍の補正をもたらし、5%の壁を越えるために不可欠です。"
+          ],
+          "ru": [
+            "Никогда не бросайте без Golden Razz Berry и Ultra Ball — каждый множитель на счету.",
+            "Платиновые медали обоих типов (например, Flying + Dark для Moltres) дают постоянный бонус 1.40x, без которого шанс поимки падает в разы."
+          ]
+        }
+      },
+      {
+        "id": "shiny-galarian-birds-zero-flee",
+        "pokemon": [
+          "Articuno",
+          "Zapdos",
+          "Moltres"
+        ],
+        "heading": {
+          "cs": "3. Zlaté pravidlo pro Shiny: 0% Flee Rate a Kanto barevné palety",
+          "en": "3. The Golden Rule: 0% Flee Rate for Shiny Galarian Birds",
+          "ja": "3. 最重要ルール：色違いガラル三鳥は逃走率0%！",
+          "ru": "3. Золотое правило: Shiny Галарские птицы имеют 0% шанс побега"
+        },
+        "content": {
+          "cs": "Od události Galarian Expedition (říjen 2024) lze v Daily Adventure Incense narazit na Shiny varianty všech tří Galarian ptáků. A platí pro ně to nejdůležitější pravidlo celé hry:\n\n⭐ SHINY GALARIAN BIRDS MAJÍ 0% FLEE RATE!\nZatímco běžný Galarian pták po vyskočení z pokéballu na 90 % uteče, Shiny Galarian pták po neúspěšném hodu NIKDY NEUTEČE. Můžete na něj házet Ultra Bally a Golden Razz Berries tak dlouho, dokud ho nechytíte (jedinou výjimkou je aktivace speed-locku nebo vyčerpání zásob pokéballů).\n\n⚠️ Z toho plyne naprosto zásadní pravidlo:\nNIKDY NEPLÝTVEJTE MASTER BALL NA SHINY GALARIAN PTÁKA!\nPoužití Master Ballu na Shiny ptáka je okamžité zahození nejcennějšího předmětu ve hře, protože pták vám neuteče ani při použití běžných Ultra Ballů.\n\nVizuální vzhled Shiny variant vzdává poctu původním kanto barvám:\n• Shiny Galarian Articuno: Namísto fialové má zářivě světle modré ledové peří.\n• Shiny Galarian Zapdos: Namísto oranžovo-černé má zářivě žluté peří s oranžovým zobákem a nohama.\n• Shiny Galarian Moltres: Namísto purpurově černé má zlaté tělo obklopené neonově růžovými plameny.",
+          "en": "Since the Galarian Expedition event (October 2024), Shiny variants of all three Galarian Birds roam through Daily Adventure Incense. They feature the most important rule in the entire game:\n\n⭐ SHINY GALARIAN BIRDS HAVE A 0% FLEE RATE!\nWhile non-shiny birds flee on 90% of breakouts, a Shiny Galarian Bird will NEVER flee after breaking out. You can patiently throw Ultra Balls and Golden Razz Berries until it stays inside (the only hazards are GPS speed-lock or running out of balls).\n\n⚠️ This dictates an essential tactical rule:\nNEVER WASTE A MASTER BALL ON A SHINY GALARIAN BIRD!\nUsing a Master Ball on a Shiny Galarian Bird is an immediate waste of an irreplaceable item, because the bird has zero flee probability.\n\nVisuals homage classic Kanto regional palettes:\n• Shiny Galarian Articuno: Swaps deep magenta plumage for classic pale ice-blue feathers.\n• Shiny Galarian Zapdos: Replaces dark runner tones with vibrant electric yellow plumage and bright orange beak/legs.\n• Shiny Galarian Moltres: Replaces crimson-black flames with an ethereal golden body enveloped in vibrant hot-pink fire.",
+          "ja": "2024年10月の「ガラル探検」イベント以降、おさんぽおこうで色違いのガラル三鳥が出現するようになりました。そしてここには最も重要な仕様が存在します：\n\n⭐ 色違いガラル三鳥は逃走率0%（絶対に逃げない）！\n通常色はボールから出ると90%の確率で逃げますが、色違いのガラル三鳥はボールから抜け出しても一切逃げません！ボールが尽きるか速度制限にかからない限り、ハイパーボール＋きんのズリのみで捕まるまで何十回でも投げ続けることができます。\n\n⚠️ これにより鉄則が導き出されます：\n色違いガラル三鳥にマスターボールを使ってはいけません！\n逃げないポケモンにマスターボールを消費するのは、ゲーム内で最も貴重なアイテムの無駄遣いです。\n\n色違いのカラーリングは初代カントーの三鳥へのオマージュです：\n• 色違いガラルフリーザー：紫ではなく、初代フリーザーのような淡いアイスブルー。\n• 色違いガラルサンダー：黒橙ではなく、初代サンダーを彷彿とさせる鮮やかなエレクトリックイエロー。\n• 色違いガラルファイヤー：黒紫ではなく、黄金色のボディにネオンピンクの炎をまとっています。",
+          "ru": "С ивента Galarian Expedition (октябрь 2024) в Daily Adventure Incense можно встретить Shiny версии всех трех Galarian птиц. Для них действует главное правило игры:\n\n⭐ У SHINY GALARIAN ПТИЦ ШАНС ПОБЕГА РАВЕН 0%!\nВ то время как обычная птица сбегает с вероятностью 90% при выбивании, Shiny птица НЕ СБЕЖИТ НИКОГДА. Вы можете спокойно кидать Ultra Ball и Golden Razz до победного конца (единственный риск — спидлок или нехватка покеболов).\n\n⚠️ Главное тактическое правило:\nНИКОГДА НЕ ТРАТЬТЕ MASTER BALL НА SHINY GALARIAN ПТИЦУ!\nБросать Master Ball в покемона, который не может убежать — пустая трата редчайшего предмета.\n\nЦветовая палитра Shiny отсылает к оригинальным птицам Канто:\n• Shiny Galarian Articuno: Вместо пурпурного — ледяной бледно-голубой окрас.\n• Shiny Galarian Zapdos: Вместо темного — ярко-желтое оперение с оранжевым клювом.\n• Shiny Galarian Moltres: Вместо черного — золотое тело с ярко-розовым пламенем."
+        },
+        "tips": {
+          "cs": [
+            "Při setkání se Shiny Galarian ptákem nepanikařte a v klidu krmte Golden Razz Berries a házejte Ultra Bally — máte tolik pokusů, kolik máte míčků v batohu.",
+            "Ujistěte se, že máte v batohu vždy rezervu alespoň 30+ Ultra Ballů, aby vám při setkání se Shiny nedošla munice."
+          ],
+          "en": [
+            "Stay calm upon encountering a shiny Galarian bird — take your time feeding Golden Razz Berries and throwing Ultra Balls, as you have unlimited attempts.",
+            "Always maintain a safety cushion of at least 30+ Ultra Balls in your bag so you never run out of throws during a shiny encounter."
+          ],
+          "ja": [
+            "色違いが出ても焦らず、きんのズリのみを使いながら落ち着いてハイパーボールを投げてください。逃げる心配はありません。",
+            "不意の色違い遭遇に備えて、バッグには常に最低30個以上のハイパーボールを常備しておきましょう。"
+          ],
+          "ru": [
+            "При встрече с Shiny птицей не паникуйте — спокойно кормите Golden Razz и кидайте Ultra Ball. Попыток столько, сколько мячей в сумке.",
+            "Всегда держите в инвентаре запас минимум 30+ Ultra Ball, чтобы мячи не закончились в самый неподходящий момент."
+          ]
+        }
+      },
+      {
+        "id": "master-ball-decision-matrix",
+        "pokemon": [
+          "Articuno",
+          "Zapdos",
+          "Moltres"
+        ],
+        "heading": {
+          "cs": "4. Kdy použít Master Ball: Rozhodovací matice a 100% IV (Hundo) hodnoty",
+          "en": "4. Master Ball Strategic Matrix: Hundo CP Checkpoints & PvP IVs",
+          "ja": "4. マスターボール判断基準：個体値100%（Hundo）CPラインとPvP",
+          "ru": "4. Когда бросать Master Ball: CP для 100% IV (Hundo) и PvP"
+        },
+        "content": {
+          "cs": "Master Ball zaručuje 100% jistotu odchytu a zcela obchází BCR i Flee Rate. Jelikož je však jeho množství ve hře extrémně limitované (zpravidla 1 kus za speciální sezónní výzkum), jeho použití vyžaduje přísnou disciplínu.\n\nROZHODOVACÍ MATICE PRO POUŽITÍ MASTER BALLU:\n\n1. KATEGORIE S — OKAMŽITĚ HODIT MASTER BALL:\n• Vysoké CP blížící se 100% IV (Hundo) na Levelu 30 (bez boostu) nebo Levelu 35 (s Weather Boostem). Zde je šance Ultra Ballem pod 5 % a útěk na 90 % jistý:\n  - Galarian Articuno: 3 077 CP (L30 Hundo) / 3 334 CP (L35 WB Hundo)\n  - Galarian Zapdos: 3 042 CP (L30 Hundo) / 3 295 CP (L35 WB Hundo)\n  - Galarian Moltres: 2 715 CP (L30 Hundo) / 2 941 CP (L35 WB Hundo)\n• Poslední chybějící pták do kompletní trojice v Pokédexu, pokud má vysoké CP.\n\n2. KATEGORIE B — ZVÁŽIT PODLE PREFERENCÍ:\n• CP těsně pod 1 500 CP (kolem 1 450–1 490 CP) s potenciálem na špičkový PvP rank v Great League.\n\n3. KATEGORIE NIKDY — MASTER BALL ROZHODNĚ NEHÁZET:\n• Jakýkoliv Shiny Galarian pták (má 0% flee rate, chytíte ho Ultra Ballem).\n• Level 1 ptáci (CP pod 50) — šance na chycení Ultra Ballem je přes 30 %!\n• Pokud se pohybujete v jedoucím autě či autobuse (hrozí aktivní speed-lock).",
+          "en": "The Master Ball guarantees a 100% capture rate, bypassing BCR and BFR entirely. Because Master Balls are exceptionally scarce (typically 1 per seasonal Special Research), using one requires strict strategic discipline.\n\nMASTER BALL DECISION MATRIX:\n\n1. TIER S — IMMEDIATE MASTER BALL CANDIDATES:\n• High-CP non-shiny spawns matching 100% IV (Hundo) checkpoints at Level 30 (unboosted) or Level 35 (Weather Boosted), where Ultra Ball catch rate drops below 5% and breakout flee rate is 90%:\n  - Galarian Articuno: 3,077 CP (L30 Hundo) / 3,334 CP (L35 WB Hundo)\n  - Galarian Zapdos: 3,042 CP (L30 Hundo) / 3,295 CP (L35 WB Hundo)\n  - Galarian Moltres: 2,715 CP (L30 Hundo) / 2,941 CP (L35 WB Hundo)\n• The final missing bird required to complete your trio Pokédex entry with high CP.\n\n2. TIER B — SITUATIONAL / PVP CANDIDATES:\n• CP hovering just below 1,500 CP (around 1,450–1,490 CP) with elite Great League PvP stat distribution potential.\n\n3. NEVER — DO NOT THROW MASTER BALL:\n• ANY Shiny Galarian Bird (0% flee rate — save your Master Ball!)\n• Level 1 birds (CP under 50) — capture probability exceeds 31% with Ultra Ball and Golden Razz!\n• While riding in moving transit (speed-lock invalidates captures).",
+          "ja": "マスターボールは捕獲率100%を保証し、基礎捕獲率や逃走率の判定を完全に無視します。しかし所持数が極めて限られているため（通常シーズンごとのスペシャルリサーチで1個のみ）、使用には厳格な基準が必要です。\n\nマスターボール判断マトリクス：\n\n1. Sランク（即座に使用推奨）：\n• 通常色でPL30（通常）またはPL35（天候ブースト）の個体値100%（Hundo）に近い超高CP個体：\n  - ガラルフリーザー：CP 3,077（PL30 100%）/ CP 3,334（PL35 100%）\n  - ガラルサンダー：CP 3,042（PL30 100%）/ CP 3,295（PL35 100%）\n  - ガラルファイヤー：CP 2,715（PL30 100%）/ CP 2,941（PL35 100%）\n• ガラル三鳥で最後の1匹となっており、高CPで図鑑をコンプリートしたい場合。\n\n2. Bランク（PvP重視なら検討）：\n• CP1500未満（CP1450〜1490前後）でスーパーリーグ用の上位PvP個体値が期待できる個体。\n\n3. 絶対に使ってはいけないケース：\n• 色違いのガラル三鳥全般（逃走率0%のためハイパーボールで捕獲可能）。\n• PL1個体（CP50以下） — ハイパーボール＋きんのズリで30%以上の確率で捕獲可能。\n• 車や電車での移動中（速度制限による逃走リスク）。",
+          "ru": "Master Ball гарантирует 100% поимку, полностью обходя BCR и Flee Rate. Поскольку Master Ball выдается крайне редко (обычно 1 шт. за сезонные спецквесты), тратить его нужно строго по правилам.\n\nМАТРИЦА РЕШЕНИЙ ДЛЯ MASTER BALL:\n\n1. ТИР S — БРОСАТЬ СРАЗУ:\n• Высокий CP обычной птицы, близкий к 100% IV (Hundo) на 30-м или 35-м уровне:\n  - Galarian Articuno: 3 077 CP (L30 Hundo) / 3 334 CP (L35 WB Hundo)\n  - Galarian Zapdos: 3 042 CP (L30 Hundo) / 3 295 CP (L35 WB Hundo)\n  - Galarian Moltres: 2 715 CP (L30 Hundo) / 2 941 CP (L35 WB Hundo)\n• Последняя недостающая птица для закрытия трио в Покедексе при высоком CP.\n\n2. ТИР B — ДЛЯ ФАНАТОВ PVP:\n• CP чуть ниже 1 500 (1 450–1 490 CP) с потенциалом на высокий ранг в Great League.\n\n3. НИКОГДА НЕ БРОСАТЬ:\n• В ЛЮБУЮ Shiny Galarian птицу (у нее 0% шанс побега!).\n• В птиц 1-го уровня (CP до 50) — шанс поимки Ultra Ball превышает 31%!\n• Во время движения в транспорте (риск спидлока)."
+        },
+        "tips": {
+          "cs": [
+            "Zapamatujte si orientační hranice 100% IV pro Level 30 (Articuno 3077, Zapdos 3042, Moltres 2715) — pokud potkáte ptáka s takovým CP, neváhejte a použijte Master Ball.",
+            "Před hodem Master Ballu zkontrolujte, zda máte stabilní internetové připojení a zda nestojíte v zóně slabého GPS signálu."
+          ],
+          "en": [
+            "Memorize the Level 30 Hundo CP thresholds (Articuno 3,077, Zapdos 3,042, Moltres 2,715) — encountering a bird with these numbers is the premier Master Ball scenario.",
+            "Ensure you have a rock-solid cellular connection and zero GPS drift before confirming your Master Ball throw."
+          ],
+          "ja": [
+            "PL30の100% CP（フリーザー3077、サンダー3042、ファイヤー2715）を頭に入れておき、この数値に近い高CPが出た時こそマスターボールの出番です。",
+            "マスターボールを投げる前に、通信状態が安定していることを必ず確認してください。"
+          ],
+          "ru": [
+            "Запомните значения 100% IV для 30-го уровня (Articuno 3077, Zapdos 3042, Moltres 2715) — это главный повод для Master Ball.",
+            "Перед броском Master Ball убедитесь в стабильном интернет-соединении и отсутствии GPS-дрифта."
+          ]
+        }
+      },
+      {
+        "id": "pro-tactics-speedlock-and-dialga",
+        "pokemon": [
+          "Dialga",
+          "Articuno",
+          "Zapdos",
+          "Moltres"
+        ],
+        "heading": {
+          "cs": "5. Pokročilé taktiky: Anti-Speed Lock, autocatchery a Roar of Time trik",
+          "en": "5. Pro Field Tactics: Anti-Speed Lock, Auto-Catcher Hazard & Dialga Roar of Time",
+          "ja": "5. 上級テクニック：速度制限トラップ、自動捕獲器の罠＆ときのほうこう延長術",
+          "ru": "5. Продвинутые тактики: Защита от Speed Lock, ловушка автолокера и Roar of Time"
+        },
+        "content": {
+          "cs": "Pro maximalizaci úspěšnosti lovu Galarian ptáků existují 4 zásadní pokročilé mechaniky:\n\n1. Past zvaná Speed Lock (rychlostní limit):\nPokud hrajete v autobuse, autě nebo vlaku při rychlosti nad 80 km/h, nebo pokud se od okamžiku kliknutí na ptáka vzdálíte o více než 250 metrů od souřadnic spawnu, server aktivuje bezpečnostní speed-lock. Míček se jednou pohne a Pokémon s 100% jistotou okamžitě uteče. Zlaté pravidlo: jakmile pták vyskočí, okamžitě zastavte chůzi a stůjte na místě až do konce odchytu.\n\n2. Katastrofa s Bluetooth Auto-catchery (Pokémon GO Plus+ / Gotcha):\nAutocatcher hodí jeden jediný červený Pokéball rovným hodem bez bobule (šance na chycení 0,2 %) a při neúspěchu encounter okamžitě ukončí. Na 99,8 % vám ptáka okamžitě odežene ještě dříve, než se na něj stihnete podívat na displeji! Před aktivací DAI vždy v nastavení Bluetooth příslušenství vypněte automatické chytání Pokémonů.\n\n3. Circle Lock specifika pro jednotlivé ptáky:\n• Articuno (vzdálenost 5,0 m): Vznáší se ve vzduchu. Zamkněte kruh na cca 20 %, vyčkejte, až po útočné animaci klesne zpět do spodní polohy, a házejte na vrcholu máchnutí křídel.\n• Zapdos (vzdálenost 3,5 m): Pozemní běžec velmi blízko kameře. Vyžaduje krátký a rychlý švih — pozor na přehození!\n• Moltres (vzdálenost 6,0 m): Nejdále od hráče. Oheň na křídlech není součástí hitboxu! Je nutný dlouhý vysoký oblouk mířený přesně do středu trupu.\n\n4. Adventure Effect: Roar of Time (Origin Dialga):\nAktivace efektu Roar of Time za 5 000 Stardustu a 5 Dialga Candies zmrazí odpočet DAI na 6 minut, přičemž spawny z pohybu dál normálně fungují! Efekt lze řetězit až na 2 hodiny. Prodloužením DAI na 75 minut získáte až 148 spawnů v kuse a šance potkat alespoň jednoho ptáka v daném dni vzroste na neuvěřitelných 73,9 %!",
+          "en": "Four elite technical mechanics determine long-term success when hunting Galarian Birds:\n\n1. The Speed Lock Trap:\nPlaying from moving transit (buses, cars, trains) traveling over 80 km/h or moving more than 250 meters away from the initial spawn coordinate triggers a server-side speed lock. The ball shakes once and the Pokémon flees with 100% certainty. The golden field rule: the moment a bird spawns, halt immediately and stand completely still until capture concludes.\n\n2. The Auto-Catcher Catastrophe (Pokémon GO Plus+ / Gotcha):\nAuto-catchers throw a single, straight red Poké Ball with no berry (0.2% catch rate) and abort immediately on failure. They will flee your Galarian Bird with 99.8% certainty before you even see it on the map! Always toggle off 'Identify Pokémon' or auto-catch in accessory settings before lighting DAI.\n\n3. Bird-Specific Target Geometries & Circle Lock:\n• Articuno (5.0m distance): Floats vertically. Lock target circle to ~20%, wait for lower resting position, throw during wing sweep peak.\n• Zapdos (3.5m distance): Ground runner close to the screen. Requires a short, fast flick — do not overthrow!\n• Moltres (6.0m distance): Deepest model. Flaming plumage does not count toward hitbox! Throw a high, powerful arc aimed directly at chest core.\n\n4. Origin Dialga Adventure Effect (Roar of Time):\nActivating Roar of Time for 5,000 Stardust + 5 Dialga Candies pauses the DAI timer for 6 minutes while walking spawns continue uninterrupted. Chaining this effect to 75 minutes yields up to 148 spawns and elevates single-day Galarian bird encounter probability to an astonishing 73.9%!",
+          "ja": "ガラル三鳥ハントで勝率を最大化するための4つの上級テクニック：\n\n1. 速度制限（スピードロック）の罠：\n時速80km以上の乗り物に乗っている場合、または出現地点から250m以上離れてボールを投げた場合、サーバーの速度制限により1揺れで100%逃亡します。鉄則：鳥が出現したらその場に完全に静止してください。\n\n2. 自動捕獲器（GO Plus+ / Gotcha）の悲劇：\n自動捕獲デバイスはズリのみなしの赤ボールを1球だけストレートで投げるため、捕獲率はわずか0.2%です。99.8%の確率で画面をタップする前に逃走させてしまいます！おさんぽおこう使用前は、設定から「ポケモンの通知」を必ずオフにしてください。\n\n3. 三鳥ごとのサークルロック特徴：\n• フリーザー（距離5.0m）：滞空型。サークルを約20%に固定し、攻撃モーション後の下降タイミングに合わせて翼の頂点で投げます。\n• サンダー（距離3.5m）：地上接近型。手前にいるため奥に投げすぎないよう、短く素早いフリックで投げます。\n• ファイヤー（距離6.0m）：最遠型。翼の炎には当たり判定がありません！胸の中心部を狙い、高く力強い大きな弧を描いて投げてください。\n\n4. オリジンディアルガのフィールド効果「ときのほうこう」：\nほしのすな5,000＋ディアルガのアメ5個で、おさんぽおこうのタイマーを6分間停止できます（移動による出現は継続）。これを重ねがけして75分間（148匹出現）まで延長すると、その日ガラル三鳥に遭遇できる確率はなんと73.9%まで跳ね上がります！",
+          "ru": "Четыре главных продвинутых правила для успешной охоты на Galarian птиц:\n\n1. Ловушка Speed Lock:\nИгра в транспорте на скорости выше 80 км/ч или удаление более чем на 250 м от точки спавна активирует спидлок: покебол качнется один раз и птица со 100% гарантией сбежит. Правило: при спавне птицы немедленно остановитесь и стойте на месте.\n\n2. Катастрофа с автолокерами (Pokémon GO Plus+ / Gotcha):\nАвтолокер бросает один красный покебол без ягод (шанс 0,2%) и при неудаче сразу закрывает встречу. В 99,8% случаев он спустит вашу птицу до того, как вы успеете нажать на нее на экране! Перед включением DAI всегда отключайте автопоимку в настройках.\n\n3. Техника Circle Lock для каждой птицы:\n• Articuno (дистанция 5,0 м): Парит в воздухе. Зафиксируйте круг на 20%, дождитесь опускания после атаки и бросайте на взмахе крыльев.\n• Zapdos (дистанция 3,5 м): Стоит очень близко к экрану. Нужен короткий и резкий свайп, чтобы не перебросить.\n• Moltres (дистанция 6,0 м): Дальше всех. Пламя на крыльях не входит в хитбокс! Нужен высокий крутой бросок точно в центр груди.\n\n4. Adventure Effect: Roar of Time (Origin Dialga):\nАктивация эффекта за 5 000 пыли и 5 конфет Dialga замораживает таймер DAI на 6 минут при сохранении спавнов от шагов. Продление DAI до 75 минут (148 спавнов) поднимает вероятность встретить птицу в этот день до внушительных 73,9%!"
+        },
+        "tips": {
+          "cs": [
+            "Vždy před zapnutím Daily Adventure Incense dvakrát zkontrolujte, že máte vypnutý autocatcher v nastavení Pokémon GO Plus+.",
+            "Pokud máte zásobu Stardustu a Dialga Candy, naplánujte si 'safari procházku' a prodlužte DAI pomocí Roar of Time na 45 až 60 minut."
+          ],
+          "en": [
+            "Double-check that auto-catch is toggled off in accessory settings before lighting your Daily Adventure Incense.",
+            "If you have surplus Stardust and Dialga Candy, chain Roar of Time to extend your DAI walk to 45–60 minutes for a high-probability hunt."
+          ],
+          "ja": [
+            "おさんぽおこうを使う前に、オートキャッチャーの自動捕獲がオフになっていることを必ず再確認してください。",
+            "ディアルガのアメとすなに余裕があるなら、「ときのほうこう」で45〜60分に延長して週末に集中ハントするのが最も効果的です。"
+          ],
+          "ru": [
+            "Перед включением Daily Adventure Incense дважды проверьте, отключена ли автопоимка в настройках покебол-аксессуара.",
+            "Если есть запас пыли и конфет Dialga, продлите DAI через Roar of Time до 45–60 минут для максимальной вероятности встречи."
+          ]
+        }
+      }
+    ]
+  },
+  {
     id: "weekly-hidden-mini-events-guide",
     slug: "weekly-hidden-mini-events-guide",
     iconName: "Calendar",

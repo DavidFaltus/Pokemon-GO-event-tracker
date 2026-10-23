@@ -38,3 +38,4 @@ jobs:
           channelId: live
           projectId: pokego-event-tracker-2026
           entryPoint: frontend
+          firebaseToolsVersion: '15.34.0'
