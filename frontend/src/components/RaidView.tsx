@@ -607,8 +607,8 @@ export const RaidView: React.FC<RaidViewProps> = ({ lang, initialBosses, initial
           <Swords size={16} />
           {lang === 'cs' ? 'Raid Boss Rotace & Countery' : lang === 'ja' ? 'レイドボス出現情報 & 対策' : lang === 'ru' ? 'Ротация рейд-боссов и контры' : 'Raid Bosses & Counters'}
         </div>
-        <h1>{t.tabs_raid}</h1>
-        <p>{(t as any).seo_raid_desc}</p>
+        <h1 className="tab-seo-title">{t.tabs_raid}</h1>
+        <p className="tab-seo-description">{(t as any).seo_raid_desc}</p>
         {/* Tier Filter Pills */}
         <div className="filter-pill-container font-small" style={{ marginTop: '4px' }}>
           <button 

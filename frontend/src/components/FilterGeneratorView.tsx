@@ -18,6 +18,7 @@ import { getPokemonName } from '../utils/pokemonTranslator';
 import { pokemonRankings } from '../data/pokemonRankings';
 import { getRecommendedMegaForEvents } from '../utils/megaFilterHelper';
 import { apiFetch } from '../config';
+import { syncRaidDataToNativeOverlay } from '../utils/overlaySyncHelper';
 import { Copy, Check, Search, Filter, Zap, Sparkles, Dna, ShieldCheck, ShieldAlert, Sliders, Globe, Sprout, CloudSun } from 'lucide-react';
 
 interface FilterGeneratorViewProps {
@@ -94,6 +95,7 @@ export const FilterGeneratorView: React.FC<FilterGeneratorViewProps> = ({
       })
       .then(data => {
         if (isMounted && Array.isArray(data)) {
+          syncRaidDataToNativeOverlay(data, lang).catch(() => {});
           const fetchedNames: string[] = [];
           data.forEach(item => {
             const tierStr = (item.tier || '').toLowerCase();

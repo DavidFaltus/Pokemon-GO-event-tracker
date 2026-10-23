@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
+    "dev:webpack": "next dev --webpack",
     "build": "next build",
     "build:deploy": "cross-env NEXT_PUBLIC_BUILD_TARGET=export next build && node post-build.js",
     "start": "next start",

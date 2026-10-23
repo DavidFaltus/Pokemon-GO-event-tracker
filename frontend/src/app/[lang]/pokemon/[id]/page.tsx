@@ -6,6 +6,7 @@ import { pokemonRankings, getPokemonByIdOrSlug, ALL_POKEDEX_IDS } from '@/data/p
 import { getPokemonName } from '@/utils/pokemonTranslator';
 import { getCounterTypes, getTopCountersForPokemon } from '@/utils/pokemonCountersHelper';
 import { isPokemonReleased } from '@/utils/pokemonReleaseHelper';
+import { analyzeGreatLeague, analyzeUltraLeague, getEvolutionFamily } from '@/utils/pokedexSeoHelper';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
 import type { Language } from '@/data/translations';
 
@@ -39,7 +40,7 @@ export async function generateMetadata({ params }: PokemonPageProps): Promise<Me
   const { lang, id } = await params;
   const matched = getPokemonByIdOrSlug(id);
 
-  if (!matched) {
+  if (!matched || matched.pokedexId > 1025) {
     return {
       title: 'Pokémon Not Found | Pokémon GO Event Tracker',
       description: 'Pokémon detail not found.',
@@ -113,7 +114,7 @@ export default async function PokemonPage({ params }: PokemonPageProps) {
   const validLang: Language = validLanguages.includes(lang as Language) ? (lang as Language) : 'cs';
 
   const matched = getPokemonByIdOrSlug(id);
-  if (!matched) {
+  if (!matched || matched.pokedexId > 1025) {
     notFound();
   }
 
@@ -123,6 +124,10 @@ export default async function PokemonPage({ params }: PokemonPageProps) {
   const weaknesses = getCounterTypes(matched.types).map((w) => `${w.type} (${w.label})`);
   const topCounters = getTopCountersForPokemon(matched, pokemonRankings).slice(0, 5);
   const released = isPokemonReleased(matched.pokedexId);
+
+  const glAnalysis = analyzeGreatLeague(matched);
+  const ulAnalysis = analyzeUltraLeague(matched);
+  const { prev: prevPoke, next: nextPoke, megaVariants } = getEvolutionFamily(matched);
 
   const cpLv15 = calcCpAtCpm(matched.attack, matched.defense, matched.stamina, 0.51739395);
   const cpLv20 = calcCpAtCpm(matched.attack, matched.defense, matched.stamina, 0.5974);
@@ -275,7 +280,7 @@ export default async function PokemonPage({ params }: PokemonPageProps) {
                 : `In PvE raid battles and Gym offenses, ${matched.name} combines a base Attack of ${matched.attack} and Stamina of ${matched.stamina} to achieve ${matched.dps} DPS with ${matched.bestFastMove.name} and ${matched.bestChargedMove.name}. When facing ${matched.name} as a raid boss or defender, prioritize counters using ${weaknesses.slice(0, 3).join(', ')} moves.`}
         </p>
         {topCounters.length > 0 && (
-          <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--text-muted)', lineHeight: 1.55 }}>
+          <p style={{ margin: '0 0 12px 0', fontSize: '0.84rem', color: 'var(--text-muted)', lineHeight: 1.55 }}>
             <strong>{validLang === 'cs' ? 'Nejlepší Counters:' : validLang === 'ja' ? 'おすすめ対策ポケモン:' : validLang === 'ru' ? 'Лучшие контр-покемоны:' : 'Top Counters:'}</strong>{' '}
             {topCounters.map((c, idx) => (
               <span key={c.pokemon.pokedexId + '-' + idx}>
@@ -288,6 +293,63 @@ export default async function PokemonPage({ params }: PokemonPageProps) {
             ))}
           </p>
         )}
+
+        {/* PvP League Stat Product Deep Dive */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '12px', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border-color)' }}>
+          <div style={{ padding: '10px 14px', borderRadius: '12px', backgroundColor: 'rgba(56, 189, 248, 0.08)', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
+            <h3 style={{ margin: '0 0 4px 0', fontSize: '0.9rem', fontWeight: 800, color: 'var(--cyan-accent)' }}>
+              🔵 Great League (CP ≤ 1500)
+            </h3>
+            <p style={{ margin: '0 0 4px 0', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+              <strong>{validLang === 'cs' ? 'Max CP v lize:' : validLang === 'ja' ? 'リーグ内最大CP:' : validLang === 'ru' ? 'Макс. CP:' : 'Max League CP:'}</strong> {glAnalysis.maxCpInLeague} CP ({validLang === 'cs' ? 'cca Level' : 'approx. Lvl'} {glAnalysis.bestLevel})
+            </p>
+            <p style={{ margin: '0 0 4px 0', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+              <strong>{validLang === 'cs' ? 'Optimální PvP IV:' : validLang === 'ja' ? '最適PvP個体値:' : validLang === 'ru' ? 'Оптимальный IV:' : 'Optimal PvP IV:'}</strong> <span style={{ color: 'var(--gold-hundo)', fontWeight: 700 }}>{glAnalysis.optimalIvSpread}</span>
+            </p>
+            <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+              {glAnalysis.notes[validLang] || glAnalysis.notes.en}
+            </p>
+          </div>
+
+          <div style={{ padding: '10px 14px', borderRadius: '12px', backgroundColor: 'rgba(170, 59, 255, 0.08)', border: '1px solid rgba(170, 59, 255, 0.25)' }}>
+            <h3 style={{ margin: '0 0 4px 0', fontSize: '0.9rem', fontWeight: 800, color: 'var(--accent-color)' }}>
+              🟡 Ultra League (CP ≤ 2500)
+            </h3>
+            <p style={{ margin: '0 0 4px 0', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+              <strong>{validLang === 'cs' ? 'Max CP v lize:' : validLang === 'ja' ? 'リーグ内最大CP:' : validLang === 'ru' ? 'Макс. CP:' : 'Max League CP:'}</strong> {ulAnalysis.maxCpInLeague} CP ({validLang === 'cs' ? 'cca Level' : 'approx. Lvl'} {ulAnalysis.bestLevel})
+            </p>
+            <p style={{ margin: '0 0 4px 0', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+              <strong>{validLang === 'cs' ? 'Optimální PvP IV:' : validLang === 'ja' ? '最適PvP個体値:' : validLang === 'ru' ? 'Оптимальный IV:' : 'Optimal PvP IV:'}</strong> <span style={{ color: 'var(--gold-hundo)', fontWeight: 700 }}>{ulAnalysis.optimalIvSpread}</span>
+            </p>
+            <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+              {ulAnalysis.notes[validLang] || ulAnalysis.notes.en}
+            </p>
+          </div>
+        </div>
+
+        {/* Pokédex Interlinking & Mega Variants */}
+        <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', fontSize: '0.82rem' }}>
+          <div>
+            {prevPoke && (
+              <Link href={`/${validLang}/pokemon/${prevPoke.pokedexId}`} style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 600 }}>
+                ← #{prevPoke.pokedexId} {getPokemonName(prevPoke.name, validLang)}
+              </Link>
+            )}
+          </div>
+          {megaVariants.length > 0 && (
+            <div style={{ color: 'var(--gold-hundo)', fontWeight: 700 }}>
+              {validLang === 'cs' ? 'Mega Formy:' : validLang === 'ja' ? 'メガシンカ:' : validLang === 'ru' ? 'Мега-формы:' : 'Mega Forms:'}{' '}
+              {megaVariants.map((m) => getPokemonName(m.name, validLang)).join(', ')}
+            </div>
+          )}
+          <div>
+            {nextPoke && (
+              <Link href={`/${validLang}/pokemon/${nextPoke.pokedexId}`} style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontWeight: 600 }}>
+                #{nextPoke.pokedexId} {getPokemonName(nextPoke.name, validLang)} →
+              </Link>
+            )}
+          </div>
+        </div>
       </article>
       <PokemonRankingsView lang={validLang} initialSearchQuery={`#${matched.pokedexId}`} />
     </>

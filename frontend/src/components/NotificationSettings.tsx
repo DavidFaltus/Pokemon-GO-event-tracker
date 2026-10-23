@@ -5,7 +5,10 @@ import type { NotificationPreference } from '../hooks/useNotifications';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
 import { MapPin, CheckCircle, AlertTriangle, Bell, SlidersHorizontal, Eye, Scale, Lock, Globe, LayoutGrid, Sun, Moon, Layers } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 import OverlayPlugin from '../utils/overlayPlugin';
+import { syncRaidDataToNativeOverlay } from '../utils/overlaySyncHelper';
+import { apiFetch } from '../config';
 
 export interface VisibleEventsPreference {
   communityDays: boolean;
@@ -48,7 +51,7 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
   theme,
   setTheme,
 }) => {
-  const isNative = typeof window !== 'undefined' && !!(window as any).Capacitor;
+  const isNative = typeof window !== 'undefined' && Capacitor.isNativePlatform();
   const [gpsSyncing, setGpsSyncing] = React.useState(false);
   const [syncStatus, setSyncStatus] = React.useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [overlayActive, setOverlayActive] = React.useState(false);
@@ -56,10 +59,16 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
   React.useEffect(() => {
     if (isNative) {
       OverlayPlugin.isPermissionGranted().then(res => {
-        const saved = localStorage.getItem('pogo_tracker_overlay_enabled');
-        if (saved === 'true' && res.granted) {
-          setOverlayActive(true);
-        }
+        OverlayPlugin.isOverlayRunning().then(runRes => {
+          if (runRes?.running) {
+            setOverlayActive(true);
+          } else {
+            const saved = localStorage.getItem('pogo_tracker_overlay_enabled');
+            if (saved === 'true' && res.granted) {
+              setOverlayActive(true);
+            }
+          }
+        }).catch(() => {});
       }).catch(() => {});
     }
   }, [isNative]);
@@ -81,6 +90,13 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = ({
         if (!perm.granted) {
           await OverlayPlugin.requestPermission();
         }
+        try {
+          const res = await apiFetch('/api/raids');
+          if (res.ok) {
+            const raids = await res.json();
+            await syncRaidDataToNativeOverlay(raids, lang);
+          }
+        } catch {}
         await OverlayPlugin.startOverlay({ lang });
         setOverlayActive(true);
         localStorage.setItem('pogo_tracker_overlay_enabled', 'true');

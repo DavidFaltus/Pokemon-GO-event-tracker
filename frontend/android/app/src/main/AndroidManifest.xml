@@ -46,6 +46,20 @@
                 android:resource="@xml/event_widget_info" />
         </receiver>
 
+        <receiver
+            android:name=".RaidWidgetProvider"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.pokego.eventtracker.ACTION_REFRESH_RAIDS" />
+                <action android:name="com.pokego.eventtracker.ACTION_COPY_FILTER" />
+                <action android:name="com.pokego.eventtracker.ACTION_TOGGLE_OVERLAY" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/raid_widget_info" />
+        </receiver>
+
         <service
             android:name=".OverlayService"
             android:enabled="true"

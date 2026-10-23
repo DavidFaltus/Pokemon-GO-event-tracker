@@ -1535,6 +1535,15 @@ body.light-mode .status-tab-btn.active {
   opacity: 0.95;
 }
 
+/* Ensure tab-seo-description styles within all unified header cards */
+.guides-header .tab-seo-description,
+.raid-header-card .tab-seo-description,
+.rocket-header-card .tab-seo-description,
+.rankings-header-card .tab-seo-description {
+  margin: 4px 0 12px 0;
+  border-left: 3px solid var(--accent-color) !important;
+}
+
 /* SEO Titles for Tabs */
 .tab-seo-title {
   font-size: 1.6rem;

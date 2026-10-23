@@ -55,8 +55,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://img.pokemondb.net" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fastly.jsdelivr.net" />
         <link rel="dns-prefetch" href="https://cdn.leekduck.com" />
-        <script
+        <Script
           id="theme-init"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function() {

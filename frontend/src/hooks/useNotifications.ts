@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { LocalNotifications } from '@capacitor/local-notifications';
 import type { Language } from '../data/translations';
 
 export interface NotificationPreference {
@@ -22,8 +24,7 @@ export interface InAppNotification {
   type: string;
 }
 
-const isNative = typeof window !== 'undefined' && !!(window as any).Capacitor;
-const CAPACITOR_NOTIF_PKG = '@capacitor/local-notifications';
+const isNative = typeof window !== 'undefined' && Capacitor.isNativePlatform();
 
 // localStorage key for scheduled notification IDs (Record<eventID, notifId[]>)
 const STORAGE_SCHEDULED_IDS = 'pogo_tracker_scheduled_notif_ids';
@@ -83,8 +84,6 @@ export function useNotifications() {
   const ensureNotificationChannels = async () => {
     if (!isNative) return;
     try {
-      // @ts-ignore
-      const { LocalNotifications } = await import(/* @vite-ignore */ CAPACITOR_NOTIF_PKG);
       await LocalNotifications.createChannel({
         id: 'events',
         name: 'Pokémon GO Události / Events',
@@ -112,8 +111,6 @@ export function useNotifications() {
     const checkNotificationPermission = async () => {
       if (isNative) {
         try {
-          // @ts-ignore
-          const { LocalNotifications } = await import(/* @vite-ignore */ CAPACITOR_NOTIF_PKG);
           const perm = await LocalNotifications.checkPermissions();
           const mapped = perm.display === 'granted' ? 'granted' : perm.display === 'denied' ? 'denied' : 'default';
           setPermission(mapped);
@@ -132,16 +129,16 @@ export function useNotifications() {
 
   // Listen for notification tap → open event link
   useEffect(() => {
-    if (isNative) {
-      // @ts-ignore
-      import(/* @vite-ignore */ CAPACITOR_NOTIF_PKG).then(({ LocalNotifications }) => {
+    if (isNative) {      try {
         LocalNotifications.addListener('localNotificationActionPerformed', (action: any) => {
           const eventLink = action.notification.extra?.eventLink;
           if (eventLink) {
             window.open(eventLink, '_blank');
           }
         });
-      }).catch(e => console.error("Failed to register notification action listener:", e));
+      } catch (e) {
+        console.error("Failed to register notification action listener:", e);
+      }
     }
   }, []);
 
@@ -156,8 +153,6 @@ export function useNotifications() {
   const requestPermission = async () => {
     if (!isNative) return false;
     try {
-      // @ts-ignore
-      const { LocalNotifications } = await import(/* @vite-ignore */ CAPACITOR_NOTIF_PKG);
       const resp = await LocalNotifications.requestPermissions();
       const mapped = resp.display === 'granted' ? 'granted' : resp.display === 'denied' ? 'denied' : 'default';
       setPermission(mapped);
@@ -211,8 +206,6 @@ export function useNotifications() {
     // Native immediate notification
     if (isNative && permission === 'granted') {
       try {
-        // @ts-ignore
-        const { LocalNotifications } = await import(/* @vite-ignore */ CAPACITOR_NOTIF_PKG);
         await LocalNotifications.schedule({
           notifications: [{
             title,
@@ -279,8 +272,6 @@ export function useNotifications() {
     // Native
     if (isNative && permission === 'granted') {
       try {
-        // @ts-ignore
-        const { LocalNotifications } = await import(/* @vite-ignore */ CAPACITOR_NOTIF_PKG);
         await LocalNotifications.schedule({
           notifications: [{
             title,
@@ -315,8 +306,6 @@ export function useNotifications() {
     if (!preferences.all) return;
 
     try {
-      // @ts-ignore
-      const { LocalNotifications } = await import(/* @vite-ignore */ CAPACITOR_NOTIF_PKG);
       const now = new Date();
 
       // Step 1: Cancel previously scheduled notifications

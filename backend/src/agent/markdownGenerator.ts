@@ -1,6 +1,16 @@
 import { EventData, ScrapedRaidBoss, EnrichedResearchTask, EnrichedEggGroup, SpecialEventDetails } from '../types';
 
-export type AgentLanguage = 'cs' | 'en';
+export type AgentLanguage = 'cs' | 'en' | 'ja' | 'ru';
+
+function t(dict: Record<AgentLanguage, string>, lang: AgentLanguage): string {
+  return dict[lang] || dict.en || dict.cs;
+}
+
+function getLocalizedText(obj: any, lang: AgentLanguage): string {
+  if (!obj) return '';
+  if (typeof obj === 'string') return obj;
+  return obj[lang] || obj.en || obj.cs || '';
+}
 
 /**
  * Format events list into clean, token-efficient Markdown for AI agents and LLMs.
@@ -10,7 +20,6 @@ export function generateEventsMarkdown(
   lang: AgentLanguage = 'cs',
   getDetails?: (eventId: string) => SpecialEventDetails | null
 ): string {
-  const isCs = lang === 'cs';
   const now = new Date();
 
   const active = events.filter(e => {
@@ -24,53 +33,99 @@ export function generateEventsMarkdown(
     return start > now;
   });
 
-  let md = `# ${isCs ? 'Pokémon GO — Přehled Událostí' : 'Pokémon GO — Events Overview'}\n\n`;
-  md += `> ${isCs ? 'Zdroj dat' : 'Data source'}: [pogoevents.app](https://pogoevents.app/${lang}) | ${isCs ? 'Aktualizováno' : 'Updated'}: ${now.toISOString()}\n\n`;
+  const titleByLang: Record<AgentLanguage, string> = {
+    cs: 'Pokémon GO — Přehled Událostí',
+    en: 'Pokémon GO — Events Overview',
+    ja: 'Pokémon GO — イベント一覧',
+    ru: 'Pokémon GO — Обзор событий',
+  };
+
+  const sourceByLang: Record<AgentLanguage, string> = {
+    cs: 'Zdroj dat',
+    en: 'Data source',
+    ja: '情報元',
+    ru: 'Источник данных',
+  };
+
+  const updatedByLang: Record<AgentLanguage, string> = {
+    cs: 'Aktualizováno',
+    en: 'Updated',
+    ja: '更新日時',
+    ru: 'Обновлено',
+  };
+
+  let md = `# ${t(titleByLang, lang)}\n\n`;
+  md += `> ${t(sourceByLang, lang)}: [pogoevents.app](https://pogoevents.app/${lang}) | ${t(updatedByLang, lang)}: ${now.toISOString()}\n\n`;
 
   // Active Events
-  md += `## 🟢 ${isCs ? 'Právě aktivní události' : 'Active Events Now'} (${active.length})\n\n`;
+  const activeHeader: Record<AgentLanguage, string> = {
+    cs: 'Právě aktivní události',
+    en: 'Active Events Now',
+    ja: '現在開催中のイベント',
+    ru: 'Текущие активные события',
+  };
+  md += `## 🟢 ${t(activeHeader, lang)} (${active.length})\n\n`;
+
   if (active.length === 0) {
-    md += `_${isCs ? 'Momentálně neprobíhá žádná speciální událost.' : 'No special events active right now.'}_\n\n`;
+    const noActive: Record<AgentLanguage, string> = {
+      cs: 'Momentálně neprobíhá žádná speciální událost.',
+      en: 'No special events active right now.',
+      ja: '現在開催中の特別イベントはありません。',
+      ru: 'В данный момент нет активных специальных событий.',
+    };
+    md += `_${t(noActive, lang)}_\n\n`;
   } else {
     for (const ev of active) {
       const details = getDetails ? getDetails(ev.eventID) : null;
       md += `### ${ev.name}\n`;
-      md += `- **${isCs ? 'Trvání' : 'Duration'}**: ${ev.start} ➔ ${ev.end}\n`;
-      md += `- **${isCs ? 'Typ' : 'Type'}**: ${ev.eventType || 'Event'}\n`;
+      md += `- **${lang === 'cs' ? 'Trvání' : lang === 'ja' ? '期間' : lang === 'ru' ? 'Длительность' : 'Duration'}**: ${ev.start} ➔ ${ev.end}\n`;
+      md += `- **${lang === 'cs' ? 'Typ' : lang === 'ja' ? '種別' : lang === 'ru' ? 'Тип' : 'Type'}**: ${ev.eventType || 'Event'}\n`;
       if (ev.heading) {
-        md += `- **${isCs ? 'Popis' : 'Summary'}**: ${ev.heading}\n`;
+        md += `- **${lang === 'cs' ? 'Popis' : lang === 'ja' ? '概要' : lang === 'ru' ? 'Описание' : 'Summary'}**: ${ev.heading}\n`;
       }
       if (details?.bonuses && details.bonuses.length > 0) {
-        md += `- **${isCs ? 'Bonusy' : 'Bonuses'}**:\n`;
+        md += `- **${lang === 'cs' ? 'Bonusy' : lang === 'ja' ? 'ボーナス' : lang === 'ru' ? 'Бонусы' : 'Bonuses'}**:\n`;
         for (const b of details.bonuses) {
-          const bText = typeof b.text === 'string' ? b.text : (isCs ? (b.text.cs || b.text.en) : b.text.en);
+          const bText = getLocalizedText(b.text, lang);
           md += `  - ${bText}\n`;
         }
       }
       if (details?.spawns && details.spawns.length > 0) {
-        md += `- **${isCs ? 'Výskyty (Spawns)' : 'Wild Spawns'}**: ${details.spawns.map(s => `${s.name}${s.isShinyAvailable ? ' ✨' : ''}`).join(', ')}\n`;
+        md += `- **${lang === 'cs' ? 'Výskyty (Spawns)' : lang === 'ja' ? '野生出現' : lang === 'ru' ? 'Спавны' : 'Wild Spawns'}**: ${details.spawns.map(s => `${s.name}${s.isShinyAvailable ? ' ✨' : ''}`).join(', ')}\n`;
       }
       md += `- **URL**: https://pogoevents.app/${lang}/events/${ev.eventID}\n\n`;
     }
   }
 
   // Upcoming Events
-  md += `## ⏳ ${isCs ? 'Nadcházející události' : 'Upcoming Events'} (${upcoming.length})\n\n`;
+  const upcomingHeader: Record<AgentLanguage, string> = {
+    cs: 'Nadcházející události',
+    en: 'Upcoming Events',
+    ja: '近日開催のイベント',
+    ru: 'Предстоящие события',
+  };
+  md += `## ⏳ ${t(upcomingHeader, lang)} (${upcoming.length})\n\n`;
   if (upcoming.length === 0) {
-    md += `_${isCs ? 'Žádné ohlášené nadcházející události.' : 'No upcoming events announced.'}_\n\n`;
+    const noUpcoming: Record<AgentLanguage, string> = {
+      cs: 'Žádné ohlášené nadcházející události.',
+      en: 'No upcoming events announced.',
+      ja: '告知されている今後のイベントはありません。',
+      ru: 'Нет объявленных предстоящих событий.',
+    };
+    md += `_${t(noUpcoming, lang)}_\n\n`;
   } else {
     for (const ev of upcoming.slice(0, 15)) {
       const details = getDetails ? getDetails(ev.eventID) : null;
       md += `### ${ev.name}\n`;
-      md += `- **${isCs ? 'Začátek' : 'Starts'}**: ${ev.start} | **${isCs ? 'Konec' : 'Ends'}**: ${ev.end}\n`;
-      md += `- **${isCs ? 'Typ' : 'Type'}**: ${ev.eventType || 'Event'}\n`;
+      md += `- **${lang === 'cs' ? 'Začátek' : lang === 'ja' ? '開始' : lang === 'ru' ? 'Начало' : 'Starts'}**: ${ev.start} | **${lang === 'cs' ? 'Konec' : lang === 'ja' ? '終了' : lang === 'ru' ? 'Конец' : 'Ends'}**: ${ev.end}\n`;
+      md += `- **${lang === 'cs' ? 'Typ' : lang === 'ja' ? '種別' : lang === 'ru' ? 'Тип' : 'Type'}**: ${ev.eventType || 'Event'}\n`;
       if (ev.heading) {
-        md += `- **${isCs ? 'Popis' : 'Summary'}**: ${ev.heading}\n`;
+        md += `- **${lang === 'cs' ? 'Popis' : lang === 'ja' ? '概要' : lang === 'ru' ? 'Описание' : 'Summary'}**: ${ev.heading}\n`;
       }
       if (details?.bonuses && details.bonuses.length > 0) {
-        md += `- **${isCs ? 'Bonusy' : 'Bonuses'}**:\n`;
+        md += `- **${lang === 'cs' ? 'Bonusy' : lang === 'ja' ? 'ボーナス' : lang === 'ru' ? 'Бонусы' : 'Bonuses'}**:\n`;
         for (const b of details.bonuses) {
-          const bText = typeof b.text === 'string' ? b.text : (isCs ? (b.text.cs || b.text.en) : b.text.en);
+          const bText = getLocalizedText(b.text, lang);
           md += `  - ${bText}\n`;
         }
       }
@@ -91,31 +146,31 @@ export function generateSingleEventMarkdown(
 ): string {
   const isCs = lang === 'cs';
   let md = `# ${ev.name} — Pokémon GO Event\n\n`;
-  md += `> ${isCs ? 'Zdroj' : 'Source'}: [pogoevents.app](https://pogoevents.app/${lang}/events/${ev.eventID})\n\n`;
-  md += `- **${isCs ? 'Začátek' : 'Start'}**: ${ev.start}\n`;
-  md += `- **${isCs ? 'Konec' : 'End'}**: ${ev.end}\n`;
-  md += `- **${isCs ? 'Typ události' : 'Event Type'}**: ${ev.eventType || 'Event'}\n`;
+  md += `> ${lang === 'cs' ? 'Zdroj' : lang === 'ja' ? '情報元' : lang === 'ru' ? 'Источник' : 'Source'}: [pogoevents.app](https://pogoevents.app/${lang}/events/${ev.eventID})\n\n`;
+  md += `- **${lang === 'cs' ? 'Začátek' : lang === 'ja' ? '開始' : lang === 'ru' ? 'Начало' : 'Start'}**: ${ev.start}\n`;
+  md += `- **${lang === 'cs' ? 'Konec' : lang === 'ja' ? '終了' : lang === 'ru' ? 'Конец' : 'End'}**: ${ev.end}\n`;
+  md += `- **${lang === 'cs' ? 'Typ události' : lang === 'ja' ? 'イベント種別' : lang === 'ru' ? 'Тип события' : 'Event Type'}**: ${ev.eventType || 'Event'}\n`;
   if (ev.heading) {
-    md += `- **${isCs ? 'Shrnutí' : 'Heading'}**: ${ev.heading}\n`;
+    md += `- **${lang === 'cs' ? 'Shrnutí' : lang === 'ja' ? '概要' : lang === 'ru' ? 'Описание' : 'Heading'}**: ${ev.heading}\n`;
   }
   md += `\n`;
 
   if (details?.bonuses && details.bonuses.length > 0) {
-    md += `## ${isCs ? 'Aktivní Bonusy' : 'Event Bonuses'}\n\n`;
+    md += `## ${lang === 'cs' ? 'Aktivní Bonusy' : lang === 'ja' ? 'イベントボーナス' : lang === 'ru' ? 'Активные бонусы' : 'Event Bonuses'}\n\n`;
     for (const b of details.bonuses) {
-      const bText = typeof b.text === 'string' ? b.text : (isCs ? (b.text.cs || b.text.en) : b.text.en);
+      const bText = getLocalizedText(b.text, lang);
       md += `- ${bText}\n`;
     }
     md += `\n`;
   }
 
   if (details?.spawns && details.spawns.length > 0) {
-    md += `## ${isCs ? 'Výskyty v divočině (Wild Spawns)' : 'Wild Spawns'}\n\n`;
+    md += `## ${lang === 'cs' ? 'Výskyty v divočině (Wild Spawns)' : lang === 'ja' ? '野生出現' : lang === 'ru' ? 'Спавны в дикой природе' : 'Wild Spawns'}\n\n`;
     md += details.spawns.map(s => `- **${s.name}**${s.isShinyAvailable ? ' ✨ (Shiny available)' : ''}`).join('\n') + `\n\n`;
   }
 
   if (details?.eggs && details.eggs.length > 0) {
-    md += `## ${isCs ? 'Líhnutí z vajec' : 'Event Egg Hatches'}\n\n`;
+    md += `## ${lang === 'cs' ? 'Líhnutí z vajec' : lang === 'ja' ? 'タマゴ孵化' : lang === 'ru' ? 'Высиживание яиц' : 'Event Egg Hatches'}\n\n`;
     for (const eg of details.eggs) {
       md += `- **${eg.distance}**: ${(eg.contents || []).map(c => `${c.name}${c.isShinyAvailable ? ' ✨' : ''}`).join(', ')}\n`;
     }
@@ -123,9 +178,9 @@ export function generateSingleEventMarkdown(
   }
 
   if (details?.research && details.research.length > 0) {
-    md += `## ${isCs ? 'Polní výzkum (Field Research)' : 'Event Field Research'}\n\n`;
+    md += `## ${lang === 'cs' ? 'Polní výzkum (Field Research)' : lang === 'ja' ? 'フィールドリサーチ' : lang === 'ru' ? 'Полевые исследования' : 'Event Field Research'}\n\n`;
     for (const r of details.research) {
-      const taskText = typeof r.task === 'string' ? r.task : (isCs ? (r.task.cs || r.task.en) : r.task.en);
+      const taskText = getLocalizedText(r.task, lang);
       md += `- **${taskText}** ➔ ${r.reward}${r.isShinyAvailable ? ' ✨' : ''}\n`;
     }
     md += `\n`;
@@ -138,9 +193,21 @@ export function generateSingleEventMarkdown(
  * Format raid bosses and counters into clean Markdown.
  */
 export function generateRaidsMarkdown(raids: ScrapedRaidBoss[], lang: AgentLanguage = 'cs'): string {
-  const isCs = lang === 'cs';
-  let md = `# ${isCs ? 'Pokémon GO — Aktuální Raid Bossi & Counters' : 'Pokémon GO — Current Raid Bosses & Counters'}\n\n`;
-  md += `> ${isCs ? 'Zdroj' : 'Source'}: [pogoevents.app](https://pogoevents.app/${lang}/raids) | ${new Date().toISOString()}\n\n`;
+  const titles: Record<AgentLanguage, string> = {
+    cs: 'Pokémon GO — Aktuální Raid Bossi & Counters',
+    en: 'Pokémon GO — Current Raid Bosses & Counters',
+    ja: 'Pokémon GO — 現在のレイドボス＆対策ポケモン',
+    ru: 'Pokémon GO — Текущие Рейд-боссы и контр-покемоны',
+  };
+  const sourceLabel: Record<AgentLanguage, string> = {
+    cs: 'Zdroj',
+    en: 'Source',
+    ja: '情報元',
+    ru: 'Источник',
+  };
+
+  let md = `# ${t(titles, lang)}\n\n`;
+  md += `> ${t(sourceLabel, lang)}: [pogoevents.app](https://pogoevents.app/${lang}/raids) | ${new Date().toISOString()}\n\n`;
 
   const tiers: ('5' | 'mega' | 'shadow-5' | '3' | 'shadow-3' | '1' | 'shadow-1')[] = [
     'mega', '5', 'shadow-5', '3', 'shadow-3', '1', 'shadow-1'
@@ -163,7 +230,7 @@ export function generateRaidsMarkdown(raids: ScrapedRaidBoss[], lang: AgentLangu
     for (const boss of bossesInTier) {
       md += `### ${boss.name} ${boss.canBeShiny ? '✨ (Shiny Available)' : ''}\n`;
       if (boss.types && boss.types.length > 0) {
-        md += `- **${isCs ? 'Typy' : 'Types'}**: ${boss.types.join(' / ')}\n`;
+        md += `- **${lang === 'cs' ? 'Typy' : lang === 'ja' ? 'タイプ' : lang === 'ru' ? 'Типы' : 'Types'}**: ${boss.types.join(' / ')}\n`;
       }
       if (boss.cpRange) {
         md += `- **100% IV (Lvl 20)**: ${boss.cpRange} CP\n`;
@@ -172,9 +239,9 @@ export function generateRaidsMarkdown(raids: ScrapedRaidBoss[], lang: AgentLangu
         md += `- **100% IV Weather Boost (Lvl 25)**: ${boss.boostedCpRange} CP\n`;
       }
       if (boss.playersRecommended || boss.difficultyTier) {
-        const players = boss.playersRecommended || (isCs ? 'Skupina' : 'Group');
+        const players = boss.playersRecommended || (lang === 'cs' ? 'Skupina' : lang === 'ja' ? 'グループ' : lang === 'ru' ? 'Группа' : 'Group');
         const diffTier = boss.difficultyTier || '';
-        md += `- **${isCs ? 'Obtížnost' : 'Difficulty'}**: ${players} (${diffTier})\n`;
+        md += `- **${lang === 'cs' ? 'Obtížnost' : lang === 'ja' ? '難易度' : lang === 'ru' ? 'Сложность' : 'Difficulty'}**: ${players} (${diffTier})\n`;
       }
       if (boss.counters) {
         const cList = [
@@ -182,7 +249,7 @@ export function generateRaidsMarkdown(raids: ScrapedRaidBoss[], lang: AgentLangu
           ...(boss.counters.advancedCounters || []).slice(0, 4)
         ];
         if (cList.length > 0) {
-          md += `- **${isCs ? 'Doporučené countery' : 'Top Counters'}**:\n`;
+          md += `- **${lang === 'cs' ? 'Doporučené countery' : lang === 'ja' ? 'おすすめ対策ポケモン' : lang === 'ru' ? 'Лучшие контр-покемоны' : 'Top Counters'}**:\n`;
           for (const cName of cList) {
             md += `  - **${cName}**\n`;
           }
@@ -199,28 +266,41 @@ export function generateRaidsMarkdown(raids: ScrapedRaidBoss[], lang: AgentLangu
  * Format field research tasks into clean Markdown.
  */
 export function generateResearchMarkdown(tasks: EnrichedResearchTask[], lang: AgentLanguage = 'cs'): string {
-  const isCs = lang === 'cs';
-  let md = `# ${isCs ? 'Pokémon GO — Polní Výzkumy & Odměny' : 'Pokémon GO — Field Research Tasks & Rewards'}\n\n`;
-  md += `> ${isCs ? 'Zdroj' : 'Source'}: [pogoevents.app](https://pogoevents.app/${lang}/guides/field-research-tasks-guide) | ${new Date().toISOString()}\n\n`;
+  const titles: Record<AgentLanguage, string> = {
+    cs: 'Pokémon GO — Polní Výzkumy & Odměny',
+    en: 'Pokémon GO — Field Research Tasks & Rewards',
+    ja: 'Pokémon GO — フィールドリサーチタスク＆報酬',
+    ru: 'Pokémon GO — Полевые исследования и награды',
+  };
+  const sourceLabel: Record<AgentLanguage, string> = {
+    cs: 'Zdroj',
+    en: 'Source',
+    ja: '情報元',
+    ru: 'Источник',
+  };
+
+  let md = `# ${t(titles, lang)}\n\n`;
+  md += `> ${t(sourceLabel, lang)}: [pogoevents.app](https://pogoevents.app/${lang}/guides/field-research-tasks-guide) | ${new Date().toISOString()}\n\n`;
 
   const categories = ['catch', 'throw', 'raid', 'buddy', 'power_up', 'spin', 'misc'] as const;
-  const categoryLabels: Record<string, string> = {
-    catch: isCs ? 'Chytání Pokémonů' : 'Catching Pokémon',
-    throw: isCs ? 'Házení Pokéballů' : 'Throwing Pokeballs',
-    raid: isCs ? 'Raidy & Boje' : 'Raids & Battles',
-    buddy: isCs ? 'Parťák & Přátelé' : 'Buddy & Friendship',
-    power_up: isCs ? 'Vylepšování & Vývoj' : 'Power Up & Evolve',
-    spin: isCs ? 'Pokéstopy' : 'PokéStops',
-    misc: isCs ? 'Ostatní úkoly' : 'Miscellaneous'
+  const categoryLabels: Record<string, Record<AgentLanguage, string>> = {
+    catch: { cs: 'Chytání Pokémonů', en: 'Catching Pokémon', ja: 'ポケモン捕獲', ru: 'Ловля покемонов' },
+    throw: { cs: 'Házení Pokéballů', en: 'Throwing Pokeballs', ja: 'ボール投げ', ru: 'Броски покеболов' },
+    raid: { cs: 'Raidy & Boje', en: 'Raids & Battles', ja: 'レイド＆バトル', ru: 'Рейды и битвы' },
+    buddy: { cs: 'Parťák & Přátelé', en: 'Buddy & Friendship', ja: '相棒＆フレンド', ru: 'Бадди и друзья' },
+    power_up: { cs: 'Vylepšování & Vývoj', en: 'Power Up & Evolve', ja: '強化＆進化', ru: 'Усиление и эволюция' },
+    spin: { cs: 'Pokéstopy', en: 'PokéStops', ja: 'ポケストップ', ru: 'Покестопы' },
+    misc: { cs: 'Ostatní úkoly', en: 'Miscellaneous', ja: 'その他', ru: 'Разное' }
   };
 
   for (const cat of categories) {
     const tasksInCat = tasks.filter(t => t.category === cat);
     if (tasksInCat.length === 0) continue;
 
-    md += `## ${categoryLabels[cat] || cat}\n\n`;
+    const catLabel = categoryLabels[cat] ? t(categoryLabels[cat], lang) : cat;
+    md += `## ${catLabel}\n\n`;
     for (const item of tasksInCat) {
-      const taskText = isCs ? (item.task.cs || item.task.en) : item.task.en;
+      const taskText = getLocalizedText(item.task, lang);
       const rewardsStr = (item.rewards || []).map(r => {
         const shiny = r.canBeShiny ? ' ✨' : '';
         const cp = (r.minCp && r.maxCp) ? ` (${r.minCp}-${r.maxCp} CP)` : '';
@@ -240,12 +320,30 @@ export function generateResearchMarkdown(tasks: EnrichedResearchTask[], lang: Ag
  * Format egg hatch pools into clean Markdown for /api/agent/eggs.md
  */
 export function generateEggsMarkdown(eggs: EnrichedEggGroup[], lang: AgentLanguage = 'cs'): string {
-  const isCs = lang === 'cs';
-  let md = `# ${isCs ? 'Pokémon GO — Líhnutí z vajec (Egg Hatch Pools)' : 'Pokémon GO — Egg Hatch Pools (2km, 5km, 7km, 10km, 12km)'}\n\n`;
-  md += `> ${isCs ? 'Zdroj' : 'Source'}: [pogoevents.app](https://pogoevents.app/${lang}/guides/egg-hatching-guide) | ${new Date().toISOString()}\n\n`;
+  const titles: Record<AgentLanguage, string> = {
+    cs: 'Pokémon GO — Líhnutí z vajec (Egg Hatch Pools)',
+    en: 'Pokémon GO — Egg Hatch Pools (2km, 5km, 7km, 10km, 12km)',
+    ja: 'Pokémon GO — タマゴ孵化一覧 (2km, 5km, 7km, 10km, 12km)',
+    ru: 'Pokémon GO — Высиживание яиц (2км, 5км, 7км, 10км, 12км)',
+  };
+  const sourceLabel: Record<AgentLanguage, string> = {
+    cs: 'Zdroj',
+    en: 'Source',
+    ja: '情報元',
+    ru: 'Источник',
+  };
+
+  let md = `# ${t(titles, lang)}\n\n`;
+  md += `> ${t(sourceLabel, lang)}: [pogoevents.app](https://pogoevents.app/${lang}/guides/egg-hatching-guide) | ${new Date().toISOString()}\n\n`;
 
   if (!eggs || eggs.length === 0) {
-    md += `_${isCs ? 'Data o vejcích nejsou momentálně k dispozici.' : 'Egg pool data is currently unavailable.'}_\n`;
+    const noEggs: Record<AgentLanguage, string> = {
+      cs: 'Data o vejcích nejsou momentálně k dispozici.',
+      en: 'Egg pool data is currently unavailable.',
+      ja: 'タマゴデータは現在利用できません。',
+      ru: 'Данные о яйцах в настоящее время недоступны.',
+    };
+    md += `_${t(noEggs, lang)}_\n`;
     return md;
   }
 
@@ -267,19 +365,38 @@ export function generateEggsMarkdown(eggs: EnrichedEggGroup[], lang: AgentLangua
  * Format Team GO Rocket lineups (Giovanni, Cliff, Sierra, Arlo, Grunts) into clean Markdown for /api/agent/rocket.md
  */
 export function generateRocketMarkdown(rocket: any, lang: AgentLanguage = 'cs'): string {
-  const isCs = lang === 'cs';
-  let md = `# ${isCs ? 'Pokémon GO — Team GO Rocket Sestavy & Counters' : 'Pokémon GO — Team GO Rocket Lineups & Counters'}\n\n`;
-  md += `> ${isCs ? 'Zdroj' : 'Source'}: [pogoevents.app](https://pogoevents.app/${lang}/rocket) | ${new Date().toISOString()}\n\n`;
+  const titles: Record<AgentLanguage, string> = {
+    cs: 'Pokémon GO — Team GO Rocket Sestavy & Counters',
+    en: 'Pokémon GO — Team GO Rocket Lineups & Counters',
+    ja: 'Pokémon GO — GOロケット団 手持ち＆対策',
+    ru: 'Pokémon GO — Команда GO Rocket Составы и контр-покемоны',
+  };
+  const sourceLabel: Record<AgentLanguage, string> = {
+    cs: 'Zdroj',
+    en: 'Source',
+    ja: '情報元',
+    ru: 'Источник',
+  };
+
+  let md = `# ${t(titles, lang)}\n\n`;
+  md += `> ${t(sourceLabel, lang)}: [pogoevents.app](https://pogoevents.app/${lang}/rocket) | ${new Date().toISOString()}\n\n`;
 
   if (!rocket) {
-    md += `_${isCs ? 'Data o Team GO Rocket nejsou k dispozici.' : 'Team GO Rocket data is currently unavailable.'}_\n`;
+    const noRocket: Record<AgentLanguage, string> = {
+      cs: 'Data o Team GO Rocket nejsou k dispozici.',
+      en: 'Team GO Rocket data is currently unavailable.',
+      ja: 'GOロケット団データは現在利用できません。',
+      ru: 'Данные о Команде GO Rocket недоступны.',
+    };
+    md += `_${t(noRocket, lang)}_\n`;
     return md;
   }
 
   const formatMember = (m: any) => {
     let block = `### ${m.name} (${m.title || 'Leader'})\n`;
     if (m.reward?.name) {
-      block += `- **${isCs ? 'Shadow Odměna' : 'Shadow Reward'}**: ${m.reward.name}${m.reward.canBeShiny ? ' ✨' : ''}\n`;
+      const rewardLabel = lang === 'cs' ? 'Shadow Odměna' : lang === 'ja' ? 'シャドウ報酬' : lang === 'ru' ? 'Теневая награда' : 'Shadow Reward';
+      block += `- **${rewardLabel}**: ${m.reward.name}${m.reward.canBeShiny ? ' ✨' : ''}\n`;
     }
     if (m.lineup) {
       const s1 = (m.lineup.slot1 || []).map((p: any) => `${p.name} (Counters: ${(p.counters || []).join(', ') || 'Fighting/Fast'})`).join(' / ');
@@ -308,7 +425,16 @@ export function generateRocketMarkdown(rocket: any, lang: AgentLanguage = 'cs'):
   if (Array.isArray(rocket.grunts) && rocket.grunts.length > 0) {
     md += `## 👥 Team GO Rocket Grunts\n\n`;
     for (const g of rocket.grunts) {
-      const phrase = isCs ? (g.phraseCs || g.phraseEn) : g.phraseEn;
+      let phrase = '';
+      if (lang === 'cs') {
+        phrase = g.phraseCs || g.phrase || g.phraseEn || '';
+      } else if (lang === 'ja') {
+        phrase = g.phraseJa || g.phraseEn || g.phrase || '';
+      } else if (lang === 'ru') {
+        phrase = g.phraseRu || g.phraseEn || g.phrase || '';
+      } else {
+        phrase = g.phraseEn || g.phrase || g.phraseCs || '';
+      }
       const tier1 = g.lineup?.slot1 || g.shadowPokemon || [];
       md += `- **"${phrase}"** (${g.type}): ${tier1.join(', ')}\n`;
     }
@@ -329,18 +455,30 @@ export function generateSummaryMarkdown(
   research: EnrichedResearchTask[],
   lang: AgentLanguage = 'cs'
 ): string {
-  const isCs = lang === 'cs';
-  let md = `# Pokémon GO — ${isCs ? 'Aktuální Stav & Souhrn' : 'Live Status & Summary'}\n\n`;
+  const titles: Record<AgentLanguage, string> = {
+    cs: 'Pokémon GO — Aktuální Stav & Souhrn',
+    en: 'Pokémon GO — Live Status & Summary',
+    ja: 'Pokémon GO — 最新状況サマリー',
+    ru: 'Pokémon GO — Текущий статус и сводка',
+  };
+
+  let md = `# ${t(titles, lang)}\n\n`;
   md += `> [pogoevents.app](https://pogoevents.app/${lang}) — Generated for LLM / AI Agents at ${new Date().toISOString()}\n\n`;
 
   // Events
-  md += `## 1. ${isCs ? 'Aktivní Události' : 'Active Events'}\n`;
+  const eventsSec: Record<AgentLanguage, string> = {
+    cs: 'Aktivní Události',
+    en: 'Active Events',
+    ja: '開催中のイベント',
+    ru: 'Активные события',
+  };
+  md += `## 1. ${t(eventsSec, lang)}\n`;
   const activeEvents = events.filter(e => {
     const now = new Date();
     return new Date(e.start) <= now && now <= new Date(e.end);
   });
   if (activeEvents.length === 0) {
-    md += `- ${isCs ? 'Žádné speciální události neprobíhají.' : 'No special events active.'}\n`;
+    md += `- ${lang === 'cs' ? 'Žádné speciální události neprobíhá.' : lang === 'ja' ? '現在開催中の特別イベントはありません。' : lang === 'ru' ? 'Нет активных событий.' : 'No special events active.'}\n`;
   } else {
     for (const e of activeEvents) {
       md += `- **${e.name}** (do ${e.end}): ${e.heading || ''}\n`;
@@ -349,7 +487,13 @@ export function generateSummaryMarkdown(
   md += `\n`;
 
   // Raids
-  md += `## 2. ${isCs ? 'Top Raid Bossi' : 'Current Top Raid Bosses'}\n`;
+  const raidsSec: Record<AgentLanguage, string> = {
+    cs: 'Top Raid Bossi',
+    en: 'Current Top Raid Bosses',
+    ja: '主要レイドボス',
+    ru: 'Основные рейд-боссы',
+  };
+  md += `## 2. ${t(raidsSec, lang)}\n`;
   const topRaids = raids.filter(r => ['5', 'mega', 'shadow-5'].includes(r.tier));
   for (const r of topRaids) {
     md += `- **${r.name}** [Tier ${r.tier}] ${r.canBeShiny ? '✨' : ''}: CP ${r.cpRange || 'N/A'}\n`;
@@ -364,7 +508,13 @@ export function generateSummaryMarkdown(
 
   // Eggs
   if (eggs && eggs.length > 0) {
-    md += `## 4. ${isCs ? 'Vejce' : 'Egg Pools'}\n`;
+    const eggsSec: Record<AgentLanguage, string> = {
+      cs: 'Vejce',
+      en: 'Egg Pools',
+      ja: 'タマゴ孵化',
+      ru: 'Высиживание яиц',
+    };
+    md += `## 4. ${t(eggsSec, lang)}\n`;
     for (const group of eggs) {
       const pokemonList = (group.eggs || []).map(e => `${e.name}${e.canBeShiny ? '✨' : ''}`).slice(0, 6).join(', ');
       md += `- **${group.distance}**: ${pokemonList}${group.eggs.length > 6 ? ', ...' : ''}\n`;
@@ -374,3 +524,4 @@ export function generateSummaryMarkdown(
 
   return md;
 }
+

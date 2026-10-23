@@ -83,11 +83,29 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const DEFAULT_ADMIN_HASH = 'c0596c79573a2a5ecb180ad1123a692aa2269433dfe08b6c0aa8ac5f229b81ac';
 const activeAdminTokens = new Set<string>();
 
+const ALLOWED_ORIGINS = [
+  'https://pogoevents.app',
+  'https://pokemon-go-event-tracker.web.app',
+  'http://localhost:3000',
+  'http://localhost:4000',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:4000'
+];
+
 // Enable CORS so the React app can call the API
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production'
-    ? ['https://pogoevents.app', 'https://pokemon-go-event-tracker.web.app']
-    : true,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (
+      process.env.NODE_ENV !== 'production' ||
+      ALLOWED_ORIGINS.includes(origin) ||
+      /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)
+    ) {
+      return callback(null, true);
+    }
+    return callback(null, false);
+  },
   credentials: true
 }));
 app.use(express.json());
@@ -780,13 +798,19 @@ function getCachedEventDetailsSync(eventId: string) {
   return getFromCache<any>(`details_${eventId}`, 24 * 60 * 60 * 1000) || getStaleCache<any>(`details_${eventId}`);
 }
 
+function parseAgentLanguage(langQuery: any): AgentLanguage {
+  const l = String(langQuery || '').toLowerCase().trim();
+  if (l === 'en' || l === 'ja' || l === 'ru') return l;
+  return 'cs';
+}
+
 // Get Events (Merged Scraped + Custom)
 app.get('/api/events', async (req, res) => {
   try {
     const forceNoCache = req.query.nocache === 'true';
     const data = await getEnrichedEventsList(forceNoCache);
     if (req.headers.accept?.includes('text/markdown') || req.query.format === 'md') {
-      const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+      const lang = parseAgentLanguage(req.query.lang);
       res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
       return res.send(generateEventsMarkdown(data, lang, getCachedEventDetailsSync));
     }
@@ -805,7 +829,7 @@ app.get('/api/events/:id', async (req, res) => {
     const event = data.find((e: any) => e.eventID === req.params.id);
     if (event) {
       if (req.headers.accept?.includes('text/markdown') || req.query.format === 'md') {
-        const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+        const lang = parseAgentLanguage(req.query.lang);
         const details = getCachedEventDetailsSync(event.eventID);
         res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
         return res.send(generateSingleEventMarkdown(event, details, lang));
@@ -879,7 +903,7 @@ app.get('/api/raids', async (req, res) => {
     const forceNoCache = req.query.nocache === 'true';
     const data = await getRaidBossesList(forceNoCache);
     if (req.headers.accept?.includes('text/markdown') || req.query.format === 'md') {
-      const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+      const lang = parseAgentLanguage(req.query.lang);
       res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
       return res.send(generateRaidsMarkdown(data, lang));
     }
@@ -897,7 +921,7 @@ app.get('/api/rocket', async (req, res) => {
     const forceNoCache = req.query.nocache === 'true';
     const data = await getRocketLineupsList(forceNoCache);
     if (req.headers.accept?.includes('text/markdown') || req.query.format === 'md') {
-      const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+      const lang = parseAgentLanguage(req.query.lang);
       res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
       return res.send(generateRocketMarkdown(data, lang));
     }
@@ -918,7 +942,7 @@ app.get('/api/eggs', async (req, res) => {
     const forceNoCache = req.query.nocache === 'true';
     const data = await getEggPoolList(forceNoCache);
     if (req.headers.accept?.includes('text/markdown') || req.query.format === 'md') {
-      const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+      const lang = parseAgentLanguage(req.query.lang);
       res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
       return res.send(generateEggsMarkdown(data, lang));
     }
@@ -936,7 +960,7 @@ app.get('/api/research', async (req, res) => {
     const forceNoCache = req.query.nocache === 'true';
     const data = await getFieldResearchList(forceNoCache);
     if (req.headers.accept?.includes('text/markdown') || req.query.format === 'md') {
-      const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+      const lang = parseAgentLanguage(req.query.lang);
       res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
       return res.send(generateResearchMarkdown(data, lang));
     }
@@ -955,7 +979,7 @@ app.get('/api/research', async (req, res) => {
 // GET /api/agent/events.md - Live Events in Token-Efficient Markdown
 app.get('/api/agent/events.md', async (req, res) => {
   try {
-    const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+    const lang = parseAgentLanguage(req.query.lang);
     const events = await getEnrichedEventsList(false).catch(() => []);
     const md = generateEventsMarkdown(events, lang, getCachedEventDetailsSync);
     res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
@@ -969,7 +993,7 @@ app.get('/api/agent/events.md', async (req, res) => {
 // GET /api/agent/events/:id.md - Single Event Details in Markdown
 app.get('/api/agent/events/:id.md', async (req, res) => {
   try {
-    const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+    const lang = parseAgentLanguage(req.query.lang);
     const eventId = req.params.id;
     const events = await getEnrichedEventsList(false).catch(() => []);
     const event = events.find((e: any) => e.eventID === eventId);
@@ -990,7 +1014,7 @@ app.get('/api/agent/events/:id.md', async (req, res) => {
 // GET /api/agent/raids.md - Live Raids & Battle Counters in Markdown
 app.get('/api/agent/raids.md', async (req, res) => {
   try {
-    const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+    const lang = parseAgentLanguage(req.query.lang);
     const raids = await getRaidBossesList(false).catch(() => []);
     const md = generateRaidsMarkdown(raids, lang);
     res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
@@ -1004,7 +1028,7 @@ app.get('/api/agent/raids.md', async (req, res) => {
 // GET /api/agent/research.md - Field Research in Markdown
 app.get('/api/agent/research.md', async (req, res) => {
   try {
-    const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+    const lang = parseAgentLanguage(req.query.lang);
     const tasks = await getFieldResearchList(false).catch(() => []);
     const md = generateResearchMarkdown(tasks, lang);
     res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
@@ -1018,7 +1042,7 @@ app.get('/api/agent/research.md', async (req, res) => {
 // GET /api/agent/eggs.md - Egg Hatch Pools in Markdown
 app.get('/api/agent/eggs.md', async (req, res) => {
   try {
-    const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+    const lang = parseAgentLanguage(req.query.lang);
     const eggs = await getEggPoolList(false).catch(() => []);
     const md = generateEggsMarkdown(eggs, lang);
     res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
@@ -1032,7 +1056,7 @@ app.get('/api/agent/eggs.md', async (req, res) => {
 // GET /api/agent/rocket.md - Team GO Rocket Lineups in Markdown
 app.get('/api/agent/rocket.md', async (req, res) => {
   try {
-    const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+    const lang = parseAgentLanguage(req.query.lang);
     const rocket = await getRocketLineupsList(false).catch(() => null);
     const md = generateRocketMarkdown(rocket, lang);
     res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
@@ -1046,7 +1070,7 @@ app.get('/api/agent/rocket.md', async (req, res) => {
 // GET /api/agent/summary.md - Full Executive Live Summary in Markdown
 app.get('/api/agent/summary.md', async (req, res) => {
   try {
-    const lang = (req.query.lang === 'en' ? 'en' : 'cs') as AgentLanguage;
+    const lang = parseAgentLanguage(req.query.lang);
     const [events, raids, rocket, eggs, research] = await Promise.all([
       getEnrichedEventsList(false).catch(() => []),
       getRaidBossesList(false).catch(() => []),

@@ -27,6 +27,7 @@ const ALL_RAID_SLUGS = Array.from(
 );
 
 const RELEASED_SITEMAP_POKEDEX_IDS = ALL_POKEDEX_IDS.filter((id) => {
+  if (id < 1 || id > 1025) return false;
   if (!isPokemonReleased(id)) return false;
   const poke = getPokemonByIdOrSlug(id.toString());
   return Boolean(poke && poke.maxCp >= 2200);

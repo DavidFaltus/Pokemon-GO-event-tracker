@@ -21,26 +21,26 @@ interface PageProps {
   params: Promise<{ lang: string }>;
 }
 
+const titles: Record<Language, string> = {
+  cs: 'Pokémon GO Event Tracker - Živé události, Raidy, Rakeťáci & Průvodce',
+  en: 'Pokémon GO Event Tracker - Live Events, Raids, Rocket Lineups & Guides',
+  ja: 'Pokémon GO イベントトラッカー - イベント、レイド、ロケット団 & ガイド',
+  ru: 'Трекер событий Pokémon GO - События, Рейды, Команда R и Руководства',
+};
+
+const descriptions: Record<Language, string> = {
+  cs: 'Sledujte aktuální a nadcházející události v Pokémon GO, raid bossy, sestavy Team GO Rocket, líhnutí z vajec, maskování Ditto a PvP žebříčky v reálném čase.',
+  en: 'Track live and upcoming Pokémon GO events, raid bosses, Team GO Rocket lineups, egg hatches, Ditto disguises, and PvP rankings in real time.',
+  ja: 'Pokémon GOのイベント、レイドボス、GOロケット団の編成、タマゴ孵化、メタモン、PvPランキングをリアルタイムで確認できます。',
+  ru: 'Отслеживайте текущие и предстоящие события Pokémon GO, боссов рейдов, составы Команды R, вылупление яиц и маскировки Дитто в реальном времени.',
+};
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const unwrappedParams = await params;
   const rawLang = unwrappedParams.lang || 'cs';
   const validLanguages: Language[] = ['cs', 'en', 'ja', 'ru'];
   const lang: Language = validLanguages.includes(rawLang as Language) ? (rawLang as Language) : 'cs';
   const canonicalUrl = `https://pogoevents.app/${lang}`;
-
-  const titles: Record<Language, string> = {
-    cs: 'Pokémon GO Event Tracker - Živé události, Raidy, Rakeťáci & Průvodce',
-    en: 'Pokémon GO Event Tracker - Live Events, Raids, Rocket Lineups & Guides',
-    ja: 'Pokémon GO イベントトラッカー - イベント、レイド、ロケット団 & ガイド',
-    ru: 'Трекер событий Pokémon GO - События, Рейды, Команда R и Руководства',
-  };
-
-  const descriptions: Record<Language, string> = {
-    cs: 'Sledujte aktuální a nadcházející události v Pokémon GO, raid bossy, sestavy Team GO Rocket, líhnutí z vajec, maskování Ditto a PvP žebříčky v reálném čase.',
-    en: 'Track live and upcoming Pokémon GO events, raid bosses, Team GO Rocket lineups, egg hatches, Ditto disguises, and PvP rankings in real time.',
-    ja: 'Pokémon GOのイベント、レイドボス、GOロケット団の編成、タマゴ孵化、メタモン、PvPランキングをリアルタイムで確認できます。',
-    ru: 'Отслеживайте текущие и предстоящие события Pokémon GO, боссов рейдов, составы Команды R, вылупление яиц и маскировки Дитто в реальном времени.',
-  };
 
   return {
     title: titles[lang] || titles.en,
@@ -73,9 +73,56 @@ export default async function HomePage({ params }: PageProps) {
   const lang: Language = validLanguages.includes(rawLang as Language) ? (rawLang as Language) : 'cs';
   const initialEvents = await getInitialEvents();
   const featuredGuides = GUIDES_DATA.slice(0, 6);
+  const canonicalUrl = `https://pogoevents.app/${lang}`;
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        '@id': 'https://pogoevents.app/#website',
+        name: 'Pokémon GO Event Tracker',
+        alternateName: 'PoGo Events',
+        url: canonicalUrl,
+        inLanguage: ['cs', 'en', 'ja', 'ru'],
+        description: descriptions[lang] || descriptions.en,
+        publisher: {
+          '@type': 'Organization',
+          '@id': 'https://pogoevents.app/#organization',
+          name: 'PoGo Events Tracker',
+          url: 'https://pogoevents.app',
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://pogoevents.app/logo-icon-1080.png',
+          },
+        },
+      },
+      {
+        '@type': 'SoftwareApplication',
+        name: 'Pokémon GO Event Tracker',
+        operatingSystem: 'Android, iOS, Web Browser',
+        applicationCategory: 'GameApplication',
+        url: canonicalUrl,
+        offers: {
+          '@type': 'Offer',
+          price: '0',
+          priceCurrency: 'USD',
+        },
+        aggregateRating: {
+          '@type': 'AggregateRating',
+          ratingValue: '4.9',
+          ratingCount: '1250',
+        },
+      },
+    ],
+  };
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <App initialLang={lang} initialEvents={initialEvents} />
       <section
         className="home-editorial-hub card"

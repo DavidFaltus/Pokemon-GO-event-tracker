@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/overlay_expanded_root"
-    android:layout_width="340dp"
-    android:layout_height="490dp"
-    android:background="@drawable/widget_background"
+    android:layout_width="330dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/overlay_hud_background"
     android:orientation="vertical"
     android:padding="14dp">
 
@@ -11,7 +11,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp">
+        android:layout_marginBottom="10dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -24,25 +24,26 @@
             <ImageView
                 android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:layout_marginEnd="6dp"
+                android:layout_marginEnd="8dp"
                 android:src="@drawable/ic_pokeball_overlay" />
 
             <TextView
+                android:id="@+id/overlay_hud_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PoGo Helper Overlay"
-                android:textColor="#FFFFFF"
-                android:textSize="13sp"
+                android:text="Generátor filtrů raidů"
+                android:textColor="#F8FAFC"
+                android:textSize="14sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/overlay_close_btn"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:background="#2AFFFFFF"
+            android:background="#26FFFFFF"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
@@ -52,164 +53,173 @@
             android:textStyle="bold" />
     </RelativeLayout>
 
-    <!-- Divider -->
-    <FrameLayout
+    <!-- Search Input with Any Pokemon support -->
+    <EditText
+        android:id="@+id/overlay_search_input"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="38dp"
         android:layout_marginBottom="8dp"
-        android:background="#2AFFFFFF" />
+        android:background="#2A1E2433"
+        android:hint="Hledat jakéhokoliv bose (např. Rayquaza, Lucario)..."
+        android:imeOptions="actionDone"
+        android:inputType="text"
+        android:maxLines="1"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textColor="#F8FAFC"
+        android:textColorHint="#94A3B8"
+        android:textSize="12sp" />
 
-    <!-- 1-Tap Screen Boss Scanner Button -->
+    <!-- Active Boss Chips Section -->
     <TextView
-        android:id="@+id/overlay_scan_screen_btn"
+        android:id="@+id/overlay_chips_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:text="AKTUÁLNÍ RAID BOSSOVÉ"
+        android:textColor="#C084FC"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+
+    <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:background="#3338BDF8"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/overlay_boss_chips_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+    <!-- Filter Variant Selector (Universal, Budget, Hardcore) -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:text="VARIANTA TÝMU"
+        android:textColor="#94A3B8"
+        android:textSize="10sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/overlay_variant_universal"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/overlay_variant_pill_active"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="⭐ Univerzální"
+            android:textColor="#FFFFFF"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/overlay_variant_budget"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/overlay_variant_pill_default"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="💰 Budget"
+            android:textColor="#CBD5E1"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/overlay_variant_hardcore"
+            android:layout_width="0dp"
+            android:layout_height="32dp"
+            android:layout_weight="1"
+            android:background="@drawable/overlay_variant_pill_default"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="🔥 Hardcore"
+            android:textColor="#CBD5E1"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Selected Boss Details Container -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#1E171924"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/overlay_selected_boss_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="⚔️ Kyurem (5★ Raid)"
+            android:textColor="#FACC15"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/overlay_weaknesses_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="6dp"
+            android:text="💥 Slabosti: Fighting, Rock, Steel, Dragon, Fairy"
+            android:textColor="#E2E8F0"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/overlay_filter_preview_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#2E0A0D14"
+            android:ellipsize="middle"
+            android:fontFamily="monospace"
+            android:maxLines="3"
+            android:padding="6dp"
+            android:text="3*,4*&amp;@1fighting,@1rock...&amp;448,639&amp;!@frustration"
+            android:textColor="#93C5FD"
+            android:textSize="10sp" />
+    </LinearLayout>
+
+    <!-- Copy Filter Button (Renamed strictly to "Zkopírovat filtr") -->
+    <TextView
+        android:id="@+id/overlay_copy_filter_btn"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/overlay_copy_button_background"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
-        android:padding="9dp"
-        android:text="📷 Skenovat bosse na obrazovce (1-Tap OCR)"
-        android:textColor="#38BDF8"
-        android:textSize="11sp"
+        android:text="Zkopírovat filtr"
+        android:textColor="#FFFFFF"
+        android:textSize="13sp"
         android:textStyle="bold" />
 
-    <!-- Progress / Loading -->
-    <ProgressBar
-        android:id="@+id/overlay_progress_bar"
-        style="?android:attr/progressBarStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:visibility="gone" />
-
-    <!-- Scrollable Content Area -->
-    <ScrollView
+    <TextView
+        android:id="@+id/overlay_footer_hint"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true">
-
-        <LinearLayout
-            android:id="@+id/overlay_content_container"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Section 1: Active 5★ & Mega Raid Bosses Selector -->
-            <TextView
-                android:id="@+id/overlay_boss_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:text="⚔️ 5★ &amp; MEGA RAID BOSSOVÉ"
-                android:textColor="#C084FC"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-
-            <!-- Horizontal Scroll Selector for Active 5* & Mega Bosses -->
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:id="@+id/overlay_boss_chips_layout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal" />
-            </HorizontalScrollView>
-
-            <!-- Detailed Counter Recommendations Box -->
-            <TextView
-                android:id="@+id/overlay_raids_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
-                android:background="#20A855F7"
-                android:lineSpacingExtra="3dp"
-                android:padding="10dp"
-                android:text="Vyberte raid bossa nahoře pro zobrazení nejlepších counterů..."
-                android:textColor="#FFFFFF"
-                android:textSize="11sp" />
-
-            <TextView
-                android:id="@+id/overlay_copy_raid_counters_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:background="#33A855F7"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:padding="8dp"
-                android:text="📋 Kopírovat filtr Raid Counterů"
-                android:textColor="#FFFFFF"
-                android:textSize="10sp"
-                android:textStyle="bold" />
-
-            <!-- Section 2: Recommended Mega Evolution for Active Events -->
-            <TextView
-                android:id="@+id/overlay_mega_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:text="🧬 DOPORUČENÁ MEGA EVOLUCE (BONUS CANDY)"
-                android:textColor="#34D399"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/overlay_mega_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
-                android:background="#2010B981"
-                android:lineSpacingExtra="2dp"
-                android:padding="10dp"
-                android:text="Vyhodnocuji nejlepší Mega Evoluci..."
-                android:textColor="#E2E8F0"
-                android:textSize="11sp" />
-
-            <TextView
-                android:id="@+id/overlay_copy_mega_filter_btn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:background="#3310B981"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:padding="8dp"
-                android:text="📋 Kopírovat Mega filtr do Pokémon GO"
-                android:textColor="#FFFFFF"
-                android:textSize="10sp"
-                android:textStyle="bold" />
-
-            <!-- Section 3: Active Events -->
-            <TextView
-                android:id="@+id/overlay_events_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:text="🔥 AKTIVNÍ UDÁLOSTI"
-                android:textColor="#FACC15"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/overlay_events_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:lineSpacingExtra="2dp"
-                android:text="Načítání událostí..."
-                android:textColor="#E2E8F0"
-                android:textSize="11sp" />
-
-        </LinearLayout>
-    </ScrollView>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:gravity="center"
+        android:text="Klepnutím na tlačítko se filtr zkopíruje a okno se zavře"
+        android:textColor="#94A3B8"
+        android:textSize="10sp" />
 
 </LinearLayout>

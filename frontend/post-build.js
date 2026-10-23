@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -124,6 +125,16 @@ if (sourceHtml) {
     fs.copyFileSync(robotsOut, publicRobots);
     fs.copyFileSync(robotsOut, backendRobots);
     fs.copyFileSync(robotsOut, backendDistRobots);
+  }
+
+  // Generate up-to-date /llms-full.txt knowledge base
+  try {
+    const llmsScript = path.join(__dirname, 'scripts', 'generate-llms-full.mjs');
+    if (fs.existsSync(llmsScript)) {
+      execSync(`node "${llmsScript}"`, { stdio: 'inherit' });
+    }
+  } catch (err) {
+    console.warn('[post-build] Warning: generate-llms-full.mjs failed:', err.message);
   }
 
   console.log(`Successfully updated dist/app.html, dist/index.html, dist/admin/index.html, backend/app.html, sitemap.xml, and robots.txt from ${path.basename(sourceHtml)} (${fs.statSync(sourceHtml).size} bytes)!`);

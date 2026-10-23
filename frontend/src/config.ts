@@ -1,6 +1,8 @@
+import { Capacitor } from '@capacitor/core';
+
 export const CLOUD_RUN_BACKEND_URL = 'https://pogo-tracker-backend-1084389140873.europe-west3.run.app';
 
-const isCapacitor = typeof window !== 'undefined' && !!(window as any).Capacitor;
+const isCapacitor = typeof window !== 'undefined' && Capacitor.isNativePlatform();
 const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || (!isCapacitor && isLocalhost
@@ -14,9 +16,9 @@ const SCRAPED_DUCK_FALLBACKS: Record<string, string[]> = {
     'https://raw.githubusercontent.com/bigfoott/ScrapedDuck/data/raids.min.json'
   ],
   '/api/rocket': [
-    'https://cdn.jsdelivr.net/gh/bigfoott/ScrapedDuck@data/rocket.min.json',
-    'https://fastly.jsdelivr.net/gh/bigfoott/ScrapedDuck@data/rocket.min.json',
-    'https://raw.githubusercontent.com/bigfoott/ScrapedDuck/data/rocket.min.json'
+    'https://cdn.jsdelivr.net/gh/bigfoott/ScrapedDuck@data/rocketLineups.min.json',
+    'https://fastly.jsdelivr.net/gh/bigfoott/ScrapedDuck@data/rocketLineups.min.json',
+    'https://raw.githubusercontent.com/bigfoott/ScrapedDuck/data/rocketLineups.min.json'
   ],
   '/api/eggs': [
     'https://cdn.jsdelivr.net/gh/bigfoott/ScrapedDuck@data/eggs.min.json',

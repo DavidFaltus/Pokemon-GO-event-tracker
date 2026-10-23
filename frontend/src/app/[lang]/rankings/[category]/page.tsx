@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PokemonRankingsView } from '@/components/PokemonRankingsView';
 import type { Language } from '@/data/translations';
@@ -342,8 +343,19 @@ export default async function CategoryRankingsPage({ params }: PageProps) {
             <strong>TOP 5:</strong>{' '}
             {topPokemon
               .slice(0, 5)
-              .map((p, i) => `#${i + 1} ${getPokemonName(p.name, lang)} (${p.maxCp} CP, ${p.bestFastMove.name} + ${p.bestChargedMove.name})`)
-              .join(' • ')}
+              .map((p, i) => (
+                <span key={p.pokedexId + '-' + i}>
+                  {i > 0 ? ' • ' : ''}
+                  #{i + 1}{' '}
+                  <Link
+                    href={`/${lang}/pokemon/${p.pokedexId}`}
+                    style={{ color: 'var(--cyan-accent)', textDecoration: 'none', fontWeight: 600 }}
+                  >
+                    {getPokemonName(p.name, lang)}
+                  </Link>{' '}
+                  ({p.maxCp} CP, {p.bestFastMove.name} + {p.bestChargedMove.name})
+                </span>
+              ))}
           </p>
         )}
       </article>

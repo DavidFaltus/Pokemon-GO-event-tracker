@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import App from '@/App';
 import { resolveImage } from '@/utils/imageResolver';
@@ -196,6 +197,7 @@ export default async function EventPage({ params }: EventPageProps) {
     .filter((s) => Boolean(s.name));
 
   const strategyParagraph = getEventEditorialStrategy(event, validLang);
+  const isExpired = event.end ? new Date(event.end).getTime() < Date.now() : false;
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -205,7 +207,7 @@ export default async function EventPage({ params }: EventPageProps) {
         name: title,
         startDate: event.start,
         endDate: event.end,
-        eventStatus: 'https://schema.org/EventScheduled',
+        eventStatus: isExpired ? 'https://schema.org/EventCompleted' : 'https://schema.org/EventScheduled',
         eventAttendanceMode: 'https://schema.org/OnlineEventAttendanceMode',
         location: {
           '@type': 'VirtualLocation',
@@ -245,6 +247,48 @@ export default async function EventPage({ params }: EventPageProps) {
           backgroundColor: 'var(--bg-card)',
         }}
       >
+        {isExpired && (
+          <div
+            style={{
+              padding: '10px 14px',
+              marginBottom: '14px',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(245, 158, 11, 0.12)',
+              border: '1px solid rgba(245, 158, 11, 0.35)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '8px',
+              fontSize: '0.86rem',
+              color: '#fbbf24',
+            }}
+          >
+            <span>
+              ⏱️ {validLang === 'cs'
+                ? `Tato událost již skončila (${event.end?.slice(0, 10)}).`
+                : validLang === 'ja'
+                  ? `このイベントは終了しました（${event.end?.slice(0, 10)}）。`
+                  : validLang === 'ru'
+                    ? `Это событие уже завершилось (${event.end?.slice(0, 10)}).`
+                    : `This event has ended (${event.end?.slice(0, 10)}).`}
+            </span>
+            <Link
+              href={`/${validLang}`}
+              style={{
+                color: '#ffffff',
+                backgroundColor: 'rgba(245, 158, 11, 0.25)',
+                padding: '4px 10px',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                fontWeight: 700,
+                fontSize: '0.82rem',
+              }}
+            >
+              {validLang === 'cs' ? 'Zobrazit aktuální kalendář →' : validLang === 'ja' ? '最新カレンダーを見る →' : validLang === 'ru' ? 'Актуальный календарь →' : 'View live calendar →'}
+            </Link>
+          </div>
+        )}
         <h2 style={{ fontSize: '1.25rem', fontWeight: 800, margin: '0 0 8px 0' }}>{title}</h2>
         <p className="tab-seo-description" style={{ margin: '0 0 10px 0' }}>
           <strong>{validLang === 'cs' ? 'Začátek:' : validLang === 'ja' ? '開始:' : validLang === 'ru' ? 'Начало:' : 'Start:'}</strong> {event.start}{' '}

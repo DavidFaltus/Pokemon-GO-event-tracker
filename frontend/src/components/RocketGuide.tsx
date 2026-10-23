@@ -431,7 +431,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, initialRocketDat
           setRocketData(data);
         }
       } catch (err) {
-        console.error('Failed to load rocket lineups from API:', err);
+        console.debug('Could not load live rocket lineups from API, using default data:', err);
       } finally {
         setLoading(false);
       }
@@ -525,8 +525,8 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, initialRocketDat
           <Zap size={16} />
           {lang === 'cs' ? 'Team GO Rocket Databáze' : lang === 'ja' ? 'GOロケット団 対策ガイド' : lang === 'ru' ? 'База данных Team GO Rocket' : 'Team GO Rocket Hub'}
         </div>
-        <h1>{t.tabs_rocket}</h1>
-        <p>{(t as any).seo_rocket_desc}</p>
+        <h1 className="tab-seo-title">{t.tabs_rocket}</h1>
+        <p className="tab-seo-description">{(t as any).seo_rocket_desc}</p>
 
         {/* Mode Switcher */}
         <div className="mode-switcher">

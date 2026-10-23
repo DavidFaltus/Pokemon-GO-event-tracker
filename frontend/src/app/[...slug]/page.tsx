@@ -25,8 +25,11 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const unwrapped = await params;
-  const first = unwrapped.slug?.[0]?.toLowerCase();
-  if (!first || !VALID_ROOT_ROUTES.has(first)) {
+  const slugArray = unwrapped.slug || [];
+  const first = slugArray[0]?.toLowerCase();
+
+  // Strict sanitization: reject multiple path segments or unrecognized paths
+  if (slugArray.length !== 1 || !first || !VALID_ROOT_ROUTES.has(first)) {
     return {
       title: 'Page Not Found | Pokémon GO Event Tracker',
       description: 'Page not found.',
@@ -44,9 +47,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function CatchAllRootPage({ params }: PageProps) {
   const unwrapped = await params;
-  const first = unwrapped.slug?.[0]?.toLowerCase();
+  const slugArray = unwrapped.slug || [];
+  const first = slugArray[0]?.toLowerCase();
 
-  if (!first || !VALID_ROOT_ROUTES.has(first)) {
+  if (slugArray.length !== 1 || !first || !VALID_ROOT_ROUTES.has(first)) {
     notFound();
   }
 

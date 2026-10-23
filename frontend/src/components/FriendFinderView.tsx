@@ -267,7 +267,7 @@ export const FriendFinderView: React.FC<FriendFinderViewProps> = ({ lang }) => {
           }
         }
       } catch (err) {
-        console.warn('Could not load friends from API, using fallback:', err);
+        console.debug('Could not load friends from API, using fallback:', err);
         const fallbackList = mergeClientListings(localCachedList, SEED_COMMUNITY_FRIENDS);
         setListings(fallbackList);
       } finally {
