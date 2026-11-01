@@ -195,15 +195,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     });
 
-    // 8. Canonical Pokédex Pages for Released Pokémon
+    // 8. Canonical Pokédex Pages for All Pokémon in Pokédex Catalog
     POKEDEX_CATALOG.forEach((poke) => {
-      if (!poke.isReleasedInGo) return;
       const suffix = `/pokedex/${poke.slug}`;
       routes.push({
         url: `${baseUrl}/${lang}${suffix}`,
         lastModified: now,
         changeFrequency: 'weekly',
-        priority: 0.8,
+        priority: poke.isReleasedInGo ? 0.8 : 0.6,
         alternates: buildSitemapAlternates(baseUrl, suffix),
       });
     });
