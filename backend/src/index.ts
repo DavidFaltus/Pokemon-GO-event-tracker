@@ -122,13 +122,14 @@ app.use('/api/admin', rateLimit(60 * 1000, 600));
 // 3) General public API routes: max 300 requests / min
 app.use('/api', rateLimit(60 * 1000, 300));
 
-// Serve sitemap.xml directly with fast streaming
-app.get('/sitemap.xml', (req, res) => {
+// Serve sitemaps (index and sub-sitemaps) directly with fast streaming
+app.get(['/sitemap.xml', '/sitemap-:sub.xml'], (req, res) => {
+  const filename = req.params.sub ? `sitemap-${req.params.sub}.xml` : 'sitemap.xml';
   const possiblePaths = [
-    path.join(__dirname, '..', 'sitemap.xml'),
-    path.join(__dirname, '..', 'dist', 'sitemap.xml'),
-    path.join(__dirname, '..', '..', 'frontend', 'out', 'sitemap.xml'),
-    path.join(__dirname, '..', '..', 'frontend', 'dist', 'sitemap.xml'),
+    path.join(__dirname, '..', filename),
+    path.join(__dirname, '..', 'dist', filename),
+    path.join(__dirname, '..', '..', 'frontend', 'out', filename),
+    path.join(__dirname, '..', '..', 'frontend', 'dist', filename),
   ];
   for (const p of possiblePaths) {
     if (fs.existsSync(p)) {

@@ -32,6 +32,11 @@ export default function robots(): MetadataRoute.Robots {
     ],
     sitemap: [
       'https://pogoevents.app/sitemap.xml',
+      'https://pogoevents.app/sitemap-core.xml',
+      'https://pogoevents.app/sitemap-pokedex.xml',
+      'https://pogoevents.app/sitemap-guides.xml',
+      'https://pogoevents.app/sitemap-events.xml',
+      'https://pogoevents.app/sitemap-raids-rocket.xml',
     ],
   };
 }

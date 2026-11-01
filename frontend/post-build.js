@@ -106,21 +106,39 @@ if (sourceHtml) {
     fs.copyFileSync(adminHtml, adminIndexHtml);
   }
 
-  // Copy sitemap.xml & robots.txt to public/, backend root and backend/dist
-  const sitemapOut = path.join(outDir, 'sitemap.xml');
+  // Copy all sitemap XML files & robots.txt to public/, backend root and backend/dist
+  const sitemapFiles = [
+    'sitemap.xml',
+    'sitemap-core.xml',
+    'sitemap-pokedex.xml',
+    'sitemap-guides.xml',
+    'sitemap-events.xml',
+    'sitemap-raids-rocket.xml',
+  ];
+
+  for (const sName of sitemapFiles) {
+    const sOut = path.join(outDir, sName);
+    const pubPath = path.join(__dirname, 'public', sName);
+    const distPath = path.join(distDir, sName);
+    const backendPath = path.join(__dirname, '..', 'backend', sName);
+    const backendDistPath = path.join(__dirname, '..', 'backend', 'dist', sName);
+
+    if (fs.existsSync(sOut)) {
+      fs.copyFileSync(sOut, distPath);
+      fs.copyFileSync(sOut, pubPath);
+      fs.copyFileSync(sOut, backendPath);
+      fs.copyFileSync(sOut, backendDistPath);
+      console.log(`[post-build] Synced ${sName} to dist/, public/, backend/, and backend/dist/`);
+    } else {
+      console.warn(`[post-build] Warning: ${sName} not found in ${outDir}!`);
+    }
+  }
+
   const robotsOut = path.join(outDir, 'robots.txt');
-  const publicSitemap = path.join(__dirname, 'public', 'sitemap.xml');
   const publicRobots = path.join(__dirname, 'public', 'robots.txt');
-  const backendSitemap = path.join(__dirname, '..', 'backend', 'sitemap.xml');
   const backendRobots = path.join(__dirname, '..', 'backend', 'robots.txt');
-  const backendDistSitemap = path.join(__dirname, '..', 'backend', 'dist', 'sitemap.xml');
   const backendDistRobots = path.join(__dirname, '..', 'backend', 'dist', 'robots.txt');
 
-  if (fs.existsSync(sitemapOut)) {
-    fs.copyFileSync(sitemapOut, publicSitemap);
-    fs.copyFileSync(sitemapOut, backendSitemap);
-    fs.copyFileSync(sitemapOut, backendDistSitemap);
-  }
   if (fs.existsSync(robotsOut)) {
     fs.copyFileSync(robotsOut, publicRobots);
     fs.copyFileSync(robotsOut, backendRobots);
