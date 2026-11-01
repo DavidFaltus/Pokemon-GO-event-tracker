@@ -11,7 +11,7 @@ import { Calendar, Swords, Shield, Clock, Egg, Sparkles, Trophy, Filter, Setting
 import { apiFetch } from '../config';
 import { useTheme } from '../context/ThemeContext';
 
-export type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'research' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin' | 'download' | 'types' | '404';
+export type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'research' | 'ditto' | 'eggs' | 'ranking' | 'pokedex' | 'filter' | 'settings' | 'admin' | 'download' | 'types' | '404';
 
 const InstagramLogo = ({ size = 15, color = '#ffffff' }: { size?: number; color?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, display: 'inline-block', verticalAlign: 'middle' }}>
@@ -74,6 +74,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
     if (cleanPath.includes('/research')) return 'research';
     if (cleanPath.includes('/ditto')) return 'ditto';
     if (cleanPath.includes('/eggs')) return 'eggs';
+    if (cleanPath.includes('/pokedex')) return 'pokedex';
     if (cleanPath.includes('/rankings') || cleanPath.includes('/pokemon')) return 'ranking';
     if (cleanPath.includes('/filter')) return 'filter';
     if (cleanPath.includes('/types')) return 'types';
@@ -95,6 +96,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
       case 'rocket': return `${prefix}/rocket`;
       case 'research': return `${prefix}/guides/field-research-tasks-guide`;
       case 'ranking': return `${prefix}/rankings`;
+      case 'pokedex': return `${prefix}/pokedex`;
       case 'ditto': return `${prefix}/guides/ditto-disguises-guide`;
       case 'eggs': return `${prefix}/guides/egg-hatching-guide`;
       case 'filter': return `${prefix}/filter`;
@@ -166,6 +168,14 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
   const hubMenuItems: HubMenuItem[] = [
     // Live events & research
     {
+      tab: 'raid',
+      icon: <Swords size={20} style={{ color: '#f87171' }} />,
+      title: t.tabs_raid || 'Raidy',
+      description: lang === 'cs' ? 'Aktuální raid bossové & countery' : (lang === 'ja' ? 'レイドボス・対策ポケモン' : (lang === 'ru' ? 'Рейд-боссы и контр-пики' : 'Current raid bosses & counters')),
+      category: 'live',
+      keywords: ['raid', 'raidy', 'boss', 'mega', 'primal', 'legendary', 'рейд', 'レイド']
+    },
+    {
       tab: 'rocket',
       icon: <Shield size={20} style={{ color: '#ef4444' }} />,
       title: t.tabs_rocket || 'Rocket',
@@ -174,6 +184,14 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
       keywords: ['rocket', 'rakeťáci', 'giovanni', 'cliff', 'sierra', 'arlo', 'shadow', 'grunt', 'stín', 'ракета', 'ロケット団']
     },
     // Database & mechanics
+    {
+      tab: 'pokedex',
+      icon: <BookOpen size={20} style={{ color: '#38bdf8' }} />,
+      title: t.tabs_pokedex || 'Pokédex',
+      description: lang === 'cs' ? 'Všech 1 024+ Pokémonů, formy & statistiky' : (lang === 'ja' ? '全1,024匹のポケモン、フォルム、ステータス' : (lang === 'ru' ? 'Все 1024+ покемонов, формы и характеристики' : 'All 1,024+ Pokémon, forms & stats')),
+      category: 'db',
+      keywords: ['pokedex', 'pokédex', 'pokemon', 'pokémon', 'dynamax', 'gigantamax', 'mega', 'shadow', 'stats', 'покедекс', 'ポケモン図鑑']
+    },
     {
       tab: 'guides',
       icon: <BookOpen size={20} style={{ color: '#a855f7' }} />,
@@ -316,6 +334,16 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
             <span>{t.tabs_events}</span>
           </Link>
 
+          <Link href={getSectionPath(lang, 'pokedex')} className={`sidebar-nav-item ${activeTab === 'pokedex' ? 'active' : ''}`}>
+            <BookOpen size={18} />
+            <span>{t.tabs_pokedex || 'Pokédex'}</span>
+          </Link>
+
+          <Link href={getSectionPath(lang, 'ranking')} className={`sidebar-nav-item ${activeTab === 'ranking' ? 'active' : ''}`}>
+            <Trophy size={18} />
+            <span>{t.tabs_ranking}</span>
+          </Link>
+
           <Link href={getSectionPath(lang, 'raid')} className={`sidebar-nav-item ${activeTab === 'raid' ? 'active' : ''}`}>
             <Swords size={18} />
             <span>{t.tabs_raid}</span>
@@ -326,18 +354,13 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
             <span>{t.tabs_rocket}</span>
           </Link>
 
-          <Link href={getSectionPath(lang, 'ranking')} className={`sidebar-nav-item ${activeTab === 'ranking' ? 'active' : ''}`}>
-            <Trophy size={18} />
-            <span>{t.tabs_ranking}</span>
-          </Link>
-
           <Link href={getSectionPath(lang, 'filter')} className={`sidebar-nav-item ${activeTab === 'filter' ? 'active' : ''}`}>
             <Filter size={18} />
             <span>{t.tabs_filter}</span>
           </Link>
 
           <Link href={getSectionPath(lang, 'guides')} className={`sidebar-nav-item ${activeTab === 'guides' ? 'active' : ''}`}>
-            <BookOpen size={18} />
+            <ScrollText size={18} />
             <span>{t.tabs_guides || 'Průvodce'}</span>
           </Link>
 
@@ -495,21 +518,21 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
             <span className="nav-text">{t.tabs_events}</span>
           </Link>
 
-          {/* Pillar 2: Raids */}
+          {/* Pillar 2: Pokédex */}
           <Link
-            href={getSectionPath(lang, 'raid')}
-            className={`nav-item ${activeTab === 'raid' && !isHubOpen ? 'active' : ''}`}
+            href={getSectionPath(lang, 'pokedex')}
+            className={`nav-item ${activeTab === 'pokedex' && !isHubOpen ? 'active' : ''}`}
             onClick={() => setIsHubOpen(false)}
           >
-            <span className="nav-icon"><Swords size={20} /></span>
-            <span className="nav-text">{t.tabs_raid}</span>
+            <span className="nav-icon"><BookOpen size={20} /></span>
+            <span className="nav-text">{t.tabs_pokedex || 'Pokédex'}</span>
           </Link>
 
           {/* Pillar Center: Pokéball Hub Button */}
           <button
             type="button"
             className={`nav-item nav-hub-trigger ${isHubOpen ? 'hub-active' : ''} ${
-              !['events', 'raid', 'ranking', 'friends', 'admin'].includes(activeTab) ? 'subpage-active' : ''
+              !['events', 'pokedex', 'ranking', 'friends', 'admin'].includes(activeTab) ? 'subpage-active' : ''
             }`}
             onClick={() => setIsHubOpen(prev => !prev)}
             aria-label={t.tabs_menu || 'Menu'}

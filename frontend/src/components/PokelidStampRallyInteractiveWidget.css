@@ -1,0 +1,76 @@
+/* Pokelid Stamp Rally Interactive Widget Stylesheet */
+.guide-pokelid-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+body.light-mode .guide-pokelid-widget {
+  color: #0f172a;
+}
+
+body.light-mode .pokelid-hero-banner {
+  background: #ffffff;
+  border-color: rgba(234, 179, 8, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+body.light-mode .pokelid-hero-banner h3 {
+  color: #0f172a;
+}
+
+body.light-mode .pokelid-hero-banner p {
+  color: #475569;
+}
+
+body.light-mode .stamp-rule-card {
+  background: #f8fafc;
+  border-color: rgba(15, 23, 42, 0.1);
+}
+
+body.light-mode .stamp-rule-card h4 {
+  color: #0f172a;
+}
+
+body.light-mode .stamp-rule-card p {
+  color: #334155;
+}
+
+body.light-mode .pokelid-reward-callout {
+  background: #fefce8;
+  border-color: #fde047;
+}
+
+body.light-mode .reward-text-content h4 {
+  color: #a16207;
+}
+
+body.light-mode .reward-text-content p {
+  color: #475569;
+}
+
+body.light-mode .pokelid-tab-btn {
+  background: #f1f5f9;
+  border-color: rgba(15, 23, 42, 0.1);
+  color: #475569;
+}
+
+body.light-mode .pokelid-prefecture-card {
+  background: #f8fafc;
+  border-color: rgba(15, 23, 42, 0.1);
+}
+
+body.light-mode .pref-name-en {
+  color: #0f172a;
+}
+
+body.light-mode .pref-meta-row {
+  color: #475569;
+}
+
+body.light-mode .pokelid-detail-modal-content {
+  background: #ffffff;
+  color: #0f172a;
+}

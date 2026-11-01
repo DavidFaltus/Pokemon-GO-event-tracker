@@ -32,7 +32,11 @@ import {
   addFriendListing,
   deleteFriendListing,
   importFriendListings,
-  FriendListing
+  FriendListing,
+  loadCustomGuides,
+  saveCustomGuides,
+  getEnrichedGuidesList,
+  CustomGuideArticle
 } from './storage';
 import { dataStore } from './dataStore';
 import { generateBotHtml, generate404Html, RouteTarget, Language } from './ssr';
@@ -1651,6 +1655,183 @@ app.delete('/api/admin/events/:id', requireAuth, async (req, res) => {
 });
 
 // ==========================================
+// Guides Endpoints (Public & Admin)
+// ==========================================
+
+// Get all published guides (public)
+app.get('/api/guides', async (req, res) => {
+  try {
+    const cached = getFromCache<any[]>('guides_list', 5 * 60 * 1000);
+    if (cached) {
+      return res.json(cached);
+    }
+    const guides = await getEnrichedGuidesList(false);
+    setToCache('guides_list', guides, 5 * 60 * 1000);
+    res.json(guides);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get a single guide by slug (public)
+app.get('/api/guides/:slug', async (req, res) => {
+  try {
+    const slug = req.params.slug;
+    const guides = await getEnrichedGuidesList(false);
+    const guide = guides.find(g => g.slug === slug);
+    if (!guide) {
+      return res.status(404).json({ error: 'Guide not found' });
+    }
+    res.json(guide);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get all guides including overrides & hidden (admin only)
+app.get('/api/admin/guides', requireAuth, async (req, res) => {
+  try {
+    const guides = await getEnrichedGuidesList(true);
+    res.json({ success: true, guides });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Create or update guide (admin only)
+app.post('/api/admin/guides', requireAuth, async (req, res) => {
+  try {
+    const guideData: CustomGuideArticle = (req.body && req.body.guide) ? req.body.guide : req.body;
+    if (!guideData || !guideData.slug || !guideData.title) {
+      return res.status(400).json({ error: 'Missing required guide fields (slug, title)' });
+    }
+
+    const cleanSlug = guideData.slug.toLowerCase().trim().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
+    if (!cleanSlug) {
+      return res.status(400).json({ error: 'Invalid guide slug' });
+    }
+    guideData.slug = cleanSlug;
+    if (!guideData.id) {
+      guideData.id = cleanSlug;
+    }
+
+    const customGuides = await loadCustomGuides();
+    const existingIdx = customGuides.findIndex(g => g.slug === cleanSlug);
+
+    if (existingIdx !== -1) {
+      customGuides[existingIdx] = {
+        ...customGuides[existingIdx],
+        ...guideData,
+        updatedAt: guideData.updatedAt || new Date().toISOString().split('T')[0],
+      };
+    } else {
+      customGuides.push({
+        ...guideData,
+        updatedAt: guideData.updatedAt || new Date().toISOString().split('T')[0],
+      });
+    }
+
+    await saveCustomGuides(customGuides);
+    deleteFromCache('guides_list');
+    const updatedList = await getEnrichedGuidesList(true);
+    const updatedGuide = updatedList.find(g => g.slug === cleanSlug);
+    res.json({ success: true, guide: updatedGuide, guides: updatedList });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete custom guide or hide default guide (admin only)
+app.delete('/api/admin/guides/:slug', requireAuth, async (req, res) => {
+  try {
+    const slug = req.params.slug;
+    const customGuides = await loadCustomGuides();
+    const enriched = await getEnrichedGuidesList(true);
+    const target = enriched.find(g => g.slug === slug);
+
+    if (!target) {
+      return res.status(404).json({ error: 'Guide not found' });
+    }
+
+    if (target.isCustom) {
+      // Remove custom article completely
+      const filtered = customGuides.filter(g => g.slug !== slug);
+      await saveCustomGuides(filtered);
+    } else {
+      // Default article: mark as hidden
+      const existingIdx = customGuides.findIndex(g => g.slug === slug);
+      if (existingIdx !== -1) {
+        customGuides[existingIdx].isDeleted = true;
+      } else {
+        customGuides.push({
+          ...target,
+          isDeleted: true
+        });
+      }
+      await saveCustomGuides(customGuides);
+    }
+
+    deleteFromCache('guides_list');
+    const updatedList = await getEnrichedGuidesList(true);
+    res.json({ success: true, guides: updatedList });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Restore default guide back to stock (admin only)
+app.post('/api/admin/guides/reset/:slug', requireAuth, async (req, res) => {
+  try {
+    const slug = req.params.slug;
+    const customGuides = await loadCustomGuides();
+    const filtered = customGuides.filter(g => g.slug !== slug);
+    await saveCustomGuides(filtered);
+
+    deleteFromCache('guides_list');
+    const updatedList = await getEnrichedGuidesList(true);
+    res.json({ success: true, guides: updatedList });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Import guides JSON (admin only)
+app.post('/api/admin/guides/import', requireAuth, async (req, res) => {
+  try {
+    const { guides: incoming, mode } = req.body;
+    if (!Array.isArray(incoming)) {
+      return res.status(400).json({ error: 'Invalid guides payload. Expected array.' });
+    }
+
+    let customGuides = mode === 'replace' ? [] : await loadCustomGuides();
+    const map = new Map<string, CustomGuideArticle>(customGuides.map(g => [g.slug, g]));
+
+    let added = 0;
+    let updated = 0;
+
+    for (const g of incoming) {
+      if (!g || !g.slug) continue;
+      if (map.has(g.slug)) {
+        map.set(g.slug, { ...map.get(g.slug)!, ...g });
+        updated++;
+      } else {
+        map.set(g.slug, g);
+        added++;
+      }
+    }
+
+    const merged = Array.from(map.values());
+    await saveCustomGuides(merged);
+    deleteFromCache('guides_list');
+
+    const updatedList = await getEnrichedGuidesList(true);
+    res.json({ success: true, added, updated, total: updatedList.length, guides: updatedList });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========================================
 // Wildcard SPA / Bot pre-rendering handler
 // ==========================================
 
@@ -1836,10 +2017,11 @@ app.get('*', async (req, res, next) => {
 
   try {
     // Fetch dynamic content
-    const [events, raids, rocket] = await Promise.all([
+    const [events, raids, rocket, guides] = await Promise.all([
       getEnrichedEventsList(false).catch(() => []),
       getRaidBossesList(false).catch(() => []),
-      getRocketLineupsList(false).catch(() => [])
+      getRocketLineupsList(false).catch(() => []),
+      getEnrichedGuidesList(false).catch(() => [])
     ]);
 
     // If event detail requested but event does not exist -> 404
@@ -1851,13 +2033,22 @@ app.get('*', async (req, res, next) => {
       }
     }
 
+    // If guide detail requested but guide does not exist -> 404
+    if (target.type === 'guide-detail' && target.param) {
+      const exists = guides.some(g => g.slug === target?.param);
+      if (!exists) {
+        console.warn(`[Guide 404] Guide not found: ${target.param}`);
+        return res.status(404).send(generate404Html(lang));
+      }
+    }
+
     // Helper to fetch details from cache (fresh or stale)
     const getDetails = (eventId: string) => {
       return getFromCache<any>(`details_${eventId}`, 24 * 60 * 60 * 1000) || getStaleCache<any>(`details_${eventId}`);
     };
 
     // Generate pre-rendered HTML with exact canonical and matching hreflangs
-    let html = await generateBotHtml(target, events, raids, rocket, getDetails);
+    let html = await generateBotHtml(target, events, raids, rocket, getDetails, guides);
 
     // If client is a standard browser, attempt to inject the client JS bundle from SPA shell
     try {

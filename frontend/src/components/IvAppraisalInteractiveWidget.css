@@ -1,0 +1,523 @@
+/* ==========================================================================
+   IV APPRAISAL INTERACTIVE WIDGET STYLES
+   ========================================================================== */
+
+.appraise-interactive-widget {
+  width: 100%;
+  margin: 0 0 36px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 1. MAIN APPRAISAL CARD */
+.appraise-main-card {
+  background: var(--bg-card, #171921);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.appraise-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.header-icon-sparkle {
+  color: #c084fc;
+  min-width: 22px;
+  margin-top: 3px;
+}
+
+.appraise-card-header h3 {
+  font-size: 1.25rem;
+  font-weight: 850;
+  color: #f8fafc;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+}
+
+.header-desc {
+  font-size: 0.86rem;
+  color: var(--text-muted, #94a3b8);
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* Presets Row */
+.presets-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.preset-btn {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 0.78rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.preset-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.preset-btn.active {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+.preset-btn.active-hundo {
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.2) 0%, rgba(202, 138, 4, 0.3) 100%);
+  border-color: #facc15;
+  color: #facc15;
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.3);
+}
+
+.preset-btn.active-pvp {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(14, 165, 233, 0.3) 100%);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+}
+
+/* Appraisal Visual Deck */
+.appraisal-visual-deck {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 20px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+@media (max-width: 720px) {
+  .appraisal-visual-deck {
+    grid-template-columns: 1fr;
+  }
+}
+
+.appraisal-stamp-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+}
+
+.stamp-stars-row {
+  display: flex;
+  gap: 4px;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.appraise-star {
+  color: rgba(255, 255, 255, 0.15);
+  transition: all 0.2s ease;
+}
+
+.appraise-star.star-lit {
+  color: #facc15;
+  text-shadow: 0 0 10px rgba(250, 204, 21, 0.6);
+}
+
+.appraise-star.star-hundo {
+  color: #f43f5e;
+  text-shadow: 0 0 12px rgba(244, 63, 94, 0.8);
+}
+
+.star-badge-pill {
+  font-size: 0.78rem;
+  font-weight: 850;
+  padding: 4px 10px;
+  border-radius: 100px;
+  letter-spacing: 0.03em;
+}
+
+.iv-big-percentage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.percent-number {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #f8fafc;
+  letter-spacing: 0.02em;
+}
+
+.points-ratio {
+  font-size: 0.76rem;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+/* 3 Slider Bars */
+.appraisal-bars-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: center;
+}
+
+.bar-control-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bar-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bar-title {
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #cbd5e1;
+}
+
+.bar-val-badge {
+  font-family: ui-monospace, monospace;
+  font-size: 0.82rem;
+  font-weight: 850;
+  color: #facc15;
+}
+
+.gauge-slider-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.iv-range-slider {
+  width: 100%;
+  accent-color: #facc15;
+  cursor: pointer;
+  z-index: 2;
+  margin: 0;
+}
+
+.gauge-segments {
+  position: relative;
+  width: 100%;
+  height: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.gauge-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f97316 0%, #eab308 100%);
+  border-radius: 6px;
+  transition: width 0.1s ease;
+}
+
+.gauge-fill.max-pink {
+  background: linear-gradient(90deg, #f43f5e 0%, #ec4899 100%) !important;
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.6);
+}
+
+.segment-mark {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.mark-5 { left: 33.33%; }
+.mark-10 { left: 66.66%; }
+
+/* Strategic Verdict Row */
+.strategic-verdict-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 680px) {
+  .strategic-verdict-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.verdict-card {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.verdict-highlight-gold {
+  background: rgba(250, 204, 21, 0.08);
+  border-color: rgba(250, 204, 21, 0.35);
+}
+
+.verdict-highlight-cyan {
+  background: rgba(56, 189, 248, 0.08);
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+.verdict-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 850;
+  color: #cbd5e1;
+}
+
+.verdict-card p {
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.verdict-good {
+  color: #facc15;
+}
+
+.verdict-good-cyan {
+  color: #38bdf8;
+}
+
+/* 2. PVP MATH EXPLAINER CARD */
+.pvp-math-explainer-card {
+  background: var(--bg-card, #171921);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.math-explainer-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.math-icon {
+  color: #38bdf8;
+}
+
+.math-explainer-header h3 {
+  font-size: 1.15rem;
+  font-weight: 850;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.math-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 720px) {
+  .math-steps-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.math-step-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.step-badge {
+  width: 26px;
+  height: 26px;
+  background: #0284c7;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.math-step-item strong {
+  font-size: 0.88rem;
+  color: #f8fafc;
+}
+
+.math-step-item p {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* 3. ESSENTIAL SEARCH FILTERS */
+.appraise-filters-box {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filters-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #cbd5e1;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
+}
+
+.filter-item {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.filter-text-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.filter-name {
+  font-size: 0.72rem;
+  font-weight: 750;
+  color: #94a3b8;
+}
+
+.filter-item code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.82rem;
+  color: #38bdf8;
+  font-weight: 750;
+}
+
+.filter-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.filter-copy-btn:hover {
+  background: rgba(56, 189, 248, 0.3);
+}
+
+.filter-copy-btn.copied {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: #22c55e;
+  color: #4ade80;
+}
+
+/* ==========================================================================
+   LIGHT MODE OVERRIDES
+   ========================================================================== */
+
+body.light-mode .appraise-main-card,
+body.light-mode .pvp-math-explainer-card {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-mode .appraise-card-header h3,
+body.light-mode .math-explainer-header h3,
+body.light-mode .percent-number,
+body.light-mode .math-step-item strong {
+  color: #0f172a;
+}
+
+body.light-mode .appraisal-visual-deck,
+body.light-mode .verdict-card,
+body.light-mode .math-step-item,
+body.light-mode .appraise-filters-box {
+  background: #f8fafc;
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-mode .appraisal-stamp-col {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-mode .gauge-segments {
+  background: #e2e8f0;
+}
+
+body.light-mode .bar-title {
+  color: #1e293b;
+}
+
+body.light-mode .preset-btn,
+body.light-mode .filter-item {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.1);
+  color: #1e293b;
+}
+
+body.light-mode .math-step-item p,
+body.light-mode .verdict-card p {
+  color: #475569;
+}

@@ -154,3 +154,93 @@ npm.cmd run build
 cd ../frontend
 npm.cmd run build:deploy
 ```
+
+---
+
+## 5. Article & Interactive Guide Standards (Galarian Birds & Referral Model)
+
+All guides on [pogoevents.app/guides](https://pogoevents.app/guides) follow a strict quality, visual, and architectural standard modeled on flagship articles like **Galarian Birds Encounter & Catch Guide** and **Pokémon GO Referral Program Guide**.
+
+### A. Data Architecture & Schema
+
+Every article must be defined as a `GuideArticle` in `frontend/src/data/guidesData.ts` and mirrored in `backend/src/data/defaultGuidesData.ts`:
+
+```typescript
+export interface GuideArticle {
+  id: string;               // Unique slug identifier, e.g. 'galarian-birds-encounter-catch-guide'
+  slug: string;             // URL slug used in routes: /{lang}/guides/{slug}
+  iconName: string;         // Lucide icon name ('Target', 'Award', 'Sparkles', 'Swords', etc.)
+  imageUrl: string;         // High-res hero image (official artwork or LeekDuck item)
+  featured?: boolean;       // Set true for flagship guides (displays with large badge on /guides)
+  author: string;           // E.g. 'PoGo Events Team'
+  readTime: string;         // E.g. '8 min'
+  updatedAt: string;        // ISO date 'YYYY-MM-DD'
+  category: Record<Language, string>;  // 4 languages (CS, EN, JA, RU)
+  title: Record<Language, string>;     // SEO title in 4 languages
+  subtitle: Record<Language, string>;  // Meta description & subtitle in 4 languages
+  sections: GuideSection[]; // 4 to 6 comprehensive sections
+}
+
+export interface GuideSection {
+  id: string;
+  pokemon?: string[];       // Optional array of Pokémon names for auto-rendering animated sprite chips
+  heading: Record<Language, string>;
+  content: Record<Language, string>;
+  tips?: Record<Language, string[]>; // Actionable strategic callouts
+}
+```
+
+### B. Interactive Companion Widgets
+
+Flagship articles MUST NOT be just static walls of text. They must feature an interactive companion widget mounted inside `GuidesView.tsx` under `renderVisualArticleWidget(slug)`:
+
+1. **Widget Structure**:
+   - Place in `frontend/src/components/<FeatureName>InteractiveWidget.tsx`.
+   - Separate stylesheet in `frontend/src/components/<FeatureName>InteractiveWidget.css`.
+   - Mount in `GuidesView.tsx`:
+     ```tsx
+     if (slug === 'my-guide-slug') {
+       return <MyGuideInteractiveWidget lang={lang} />;
+     }
+     ```
+
+2. **Core Interactive Patterns**:
+   - **Hero Interactive Card / Code Box**:
+     - Gradient glassmorphic card with glowing accent border (`rgba(168, 85, 247, 0.45)`).
+     - Prominent monospace code or key metric.
+     - 1-click **Copy to Clipboard** button with instant visual confirmation (`copied ? 'Zkopírováno!' : 'Kopírovat kód'`).
+     - Step-by-step numbered visual workflow (e.g., 4 steps with rounded number badges).
+   - **Side-by-Side Comparative Cards**:
+     - 2-column comparative layout (e.g. Referee vs Referrer, Regular vs Shiny, Normal vs Shadow).
+     - Real official artwork (`PokeAPI`) or item icons (`LeekDuck`).
+     - Bottom strategy strip (`.milestone-tip-strip`) with `Zap` icon and actionable speedrun advice.
+   - **Interactive Calculators & Catch Simulators**:
+     - Sliders or number inputs (like the Galarian Catch Odds Simulator).
+     - Live calculations with reactive feedback pills.
+
+### C. Standard Image & Asset URLs
+
+Always use high-resolution CDN assets with fallback caching:
+
+- **Official Pokémon Artwork**:  
+  `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${dexId}.png`  
+  Shiny: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${dexId}.png`
+- **Official Pokémon GO Items**:  
+  `https://cdn.leekduck.com/assets/img/items/${Item%20Name}.png`  
+  (e.g., `Poke%20Ball.png`, `Super%20Incubator.png`, `Premium%20Battle%20Pass.png`, `Rare%20Candy.png`, `Mega%20Energy.png`, `Lucky%20Egg.png`)
+
+### D. Multi-Language (i18n) Mandate
+
+Every single user-facing string (titles, headings, tips, button labels, badge texts) must support all 4 languages:
+- `cs` (Čeština — Primary default)
+- `en` (English)
+- `ja` (日本語)
+- `ru` (Русский)
+
+### E. Static Site Generation (SSG) & Route Verification
+
+Whenever an article or widget is added or edited:
+1. Verify `generateStaticParams()` in `frontend/src/app/[lang]/guides/[guideId]/page.tsx` covers the slug.
+2. Run `npm.cmd test` in `frontend/` and `backend/`.
+3. Run `npm.cmd run build:deploy` in `frontend/` to generate static `.html` files in `dist/` across all 4 locales.
+4. Verify the new URL is included in `dist/sitemap.xml` with bidirectional `xhtml:link` hreflang tags.

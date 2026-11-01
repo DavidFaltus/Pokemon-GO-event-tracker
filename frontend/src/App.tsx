@@ -25,6 +25,7 @@ import { RocketGuide } from './components/RocketGuide';
 import { TimelineView } from './components/TimelineView';
 import { DittoEggsView } from './components/DittoEggsView';
 import { PokemonRankingsView } from './components/PokemonRankingsView';
+import { PokedexView } from './components/PokedexView';
 import { FilterGeneratorView } from './components/FilterGeneratorView';
 import { PokeballLogo } from './components/PokeballLogo';
 import { GuidesView } from './components/GuidesView';
@@ -35,7 +36,7 @@ import { NotFoundView } from './components/NotFoundView';
 
 const AdminPanelView = lazy(() => import('./components/AdminPanelView').then(m => ({ default: m.AdminPanelView })));
 
-type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'filter' | 'settings' | 'admin' | 'download' | 'research' | '404';
+type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'ditto' | 'eggs' | 'ranking' | 'pokedex' | 'filter' | 'settings' | 'admin' | 'download' | 'research' | '404';
 
 
 // Calculate difference between target timezone and browser local timezone
@@ -267,6 +268,7 @@ const getTabFromUrlPath = (pathname: string): TabType => {
   if (first === 'friends' || first === 'friend' || first === 'pratele' || first === 'codes') return 'friends';
   if (first === 'raids' || first === 'raid') return 'raid';
   if (first === 'rocket') return 'rocket';
+  if (first === 'pokedex') return 'pokedex';
   if (first === 'rankings' || first === 'ranking' || first === 'pokemon') return 'ranking';
   if (first === 'ditto') return 'ditto';
   if (first === 'eggs') return 'eggs';
@@ -276,6 +278,11 @@ const getTabFromUrlPath = (pathname: string): TabType => {
   if (first === 'settings') return 'settings';
   if (first === 'events' || first === '') return 'events';
   return '404';
+};
+
+const getGuideSlugFromUrlPath = (pathname: string): string | null => {
+  const match = pathname.toLowerCase().match(/\/guides\/([^/]+)/);
+  return match && match[1] ? match[1] : null;
 };
 
 const getEventIdFromUrlPath = (pathname: string): string | null => {
@@ -288,7 +295,7 @@ const getPokemonSearchFromUrlPath = (pathname: string): string | null => {
   return match && match[1] ? decodeURIComponent(match[1]) : null;
 };
 
-const getUrlPathForTab = (tab: TabType, l: Language, eventID?: string | null, pokemonSearch?: string | null): string => {
+const getUrlPathForTab = (tab: TabType, l: Language, eventID?: string | null, pokemonSearch?: string | null, guideSlug?: string | null): string => {
   if (tab === 'admin') return '/admin';
   const prefix = `/${l}`;
   if (tab === 'events' && eventID) {
@@ -297,6 +304,9 @@ const getUrlPathForTab = (tab: TabType, l: Language, eventID?: string | null, po
   if (tab === 'ranking' && pokemonSearch) {
     return `${prefix}/pokemon/${pokemonSearch}`;
   }
+  if (tab === 'guides' && guideSlug) {
+    return `${prefix}/guides/${guideSlug}`;
+  }
   switch (tab) {
     case 'guides': return `${prefix}/guides`;
     case 'friends': return `${prefix}/friends`;
@@ -304,6 +314,7 @@ const getUrlPathForTab = (tab: TabType, l: Language, eventID?: string | null, po
     case 'raid': return `${prefix}/raids`;
     case 'rocket': return `${prefix}/rocket`;
     case 'ranking': return `${prefix}/rankings`;
+    case 'pokedex': return `${prefix}/pokedex`;
     case 'ditto': return `${prefix}/guides/ditto-disguises-guide`;
     case 'eggs': return `${prefix}/guides/egg-hatching-guide`;
     case 'filter': return `${prefix}/filter`;
@@ -325,6 +336,7 @@ const TAB_TITLES: Record<TabType, Record<string, string>> = {
   ditto: { cs: 'Ditto Přestrojení', en: 'Ditto Disguises', ja: 'メタモン変装', ru: 'Маскировки Дитто' },
   eggs: { cs: 'Líhnutí vajec', en: 'Egg Hatching', ja: 'タマゴ孵化', ru: 'Яйца' },
   ranking: { cs: 'PvP Žebříčky', en: 'PvP Rankings', ja: 'PvPランキング', ru: 'PvP Рейтинги' },
+  pokedex: { cs: 'Pokédex', en: 'Pokédex', ja: 'ポケモン図鑑', ru: 'Покедекс' },
   filter: { cs: 'Vyhledávací Filtr', en: 'Search Filter', ja: '検索フィルター', ru: 'Фильтр поиска' },
   download: { cs: 'Stáhnout aplikaci & GitHub', en: 'Download App & GitHub', ja: 'アプリをダウンロード & GitHub', ru: 'Скачать приложение и GitHub' },
   settings: { cs: 'Nastavení', en: 'Settings', ja: '設定', ru: 'Настройки' },
@@ -332,7 +344,7 @@ const TAB_TITLES: Record<TabType, Record<string, string>> = {
   '404': { cs: 'Stránka nenalezena (404)', en: 'Page Not Found (404)', ja: 'ページが見つかりません (404)', ru: 'Страница не найдена (404)' },
 };
 
-const getPageTitle = (tab: TabType, lang: string, eventName?: string | null): string => {
+const getPageTitle = (tab: TabType, lang: string, eventName?: string | null, guideTitle?: string | null): string => {
   const suffix = 'Pokémon GO Event Tracker';
   if (tab === 'events' && eventName) {
     return `${eventName} | ${suffix}`;
@@ -341,9 +353,9 @@ const getPageTitle = (tab: TabType, lang: string, eventName?: string | null): st
   return `${tabTitle} | ${suffix}`;
 };
 
-const updateHeadMeta = (tab: TabType, lang: string, eventId?: string | null): void => {
+const updateHeadMeta = (tab: TabType, lang: string, eventId?: string | null, pokemonSearch?: string | null, guideSlug?: string | null): void => {
   if (typeof window === 'undefined') return;
-  const canonicalPath = getUrlPathForTab(tab, lang as Language, eventId);
+  const canonicalPath = getUrlPathForTab(tab, lang as Language, eventId, pokemonSearch, guideSlug);
   const canonicalUrl = `https://pogoevents.app${canonicalPath}`;
   let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
   if (!link) {
@@ -527,6 +539,11 @@ function App({
       setPokemonSearch(urlPokemonSearch);
     }
 
+    const urlGuideSlug = getGuideSlugFromUrlPath(path);
+    if (urlGuideSlug) {
+      setGuideSlug(urlGuideSlug);
+    }
+
     const isCapacitor = !!(window as any).Capacitor || 
                         window.location.protocol === 'capacitor:' || 
                         window.location.protocol === 'file:';
@@ -553,19 +570,40 @@ function App({
     if (newTab !== 'ranking') {
       setPokemonSearch(null);
     }
+    if (newTab !== 'guides') {
+      setGuideSlug(undefined);
+    }
     if (typeof window !== 'undefined') {
       const isCapacitor = !!(window as any).Capacitor || 
                           window.location.protocol === 'capacitor:' || 
                           window.location.protocol === 'file:';
       const eventId = newTab === 'events' ? expandedEventId : null;
+      const gSlug = newTab === 'guides' ? guideSlug : null;
       if (!isCapacitor) {
-        const targetPath = getUrlPathForTab(newTab, lang, eventId);
+        const targetPath = getUrlPathForTab(newTab, lang, eventId, null, gSlug);
         if (window.location.pathname !== targetPath) {
           navigate.push(targetPath);
         }
       }
       document.title = getPageTitle(newTab, lang);
       updateHeadMeta(newTab, lang, eventId);
+    }
+  };
+
+  const handleSelectGuideArticle = (slug: string | null) => {
+    const newSlug = slug || undefined;
+    setGuideSlug(newSlug);
+    if (typeof window !== 'undefined') {
+      const isCapacitor = !!(window as any).Capacitor || 
+                          window.location.protocol === 'capacitor:' || 
+                          window.location.protocol === 'file:';
+      if (!isCapacitor) {
+        const targetPath = getUrlPathForTab('guides', lang, null, null, newSlug);
+        if (window.location.pathname !== targetPath) {
+          navigate.push(targetPath);
+        }
+      }
+      updateHeadMeta('guides', lang, null, null, newSlug);
     }
   };
 
@@ -599,6 +637,8 @@ function App({
         setLang(urlLang);
         safeLocalStorage.setItem('pogo_tracker_lang', urlLang);
       }
+      const urlGuideSlug = getGuideSlugFromUrlPath(window.location.pathname);
+      setGuideSlug(urlGuideSlug || undefined);
       const urlEventId = getEventIdFromUrlPath(window.location.pathname);
       setExpandedEventId(urlEventId);
       // Update title and meta on browser back/forward
@@ -1179,7 +1219,7 @@ function App({
 
               {activeTab === 'guides' && (
                 <div className="tab-content guides-tab">
-                  <GuidesView lang={lang} initialArticleSlug={guideSlug || initialArticleSlug} />
+                  <GuidesView lang={lang} initialArticleSlug={guideSlug || initialArticleSlug} onSelectArticle={handleSelectGuideArticle} />
                 </div>
               )}
 
@@ -1228,6 +1268,12 @@ function App({
               {activeTab === 'eggs' && (
                 <div className="tab-content eggs-tab">
                   <DittoEggsView lang={lang} mode="eggs" />
+                </div>
+              )}
+
+              {activeTab === 'pokedex' && (
+                <div className="tab-content pokedex-tab">
+                  <PokedexView lang={lang} />
                 </div>
               )}
 

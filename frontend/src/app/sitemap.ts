@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { API_BASE_URL } from '@/config';
 import { GUIDES_DATA } from '@/data/guidesData';
 import { ALL_POKEDEX_IDS, getPokemonByIdOrSlug } from '@/data/pokemonRankings';
+import { POKEDEX_CATALOG } from '@/data/pokedexCatalog';
 import { isPokemonReleased } from '@/utils/pokemonReleaseHelper';
 import { raidCountersDb } from '@/data/raidCounters';
 import { RANKING_CATEGORIES } from '@/app/[lang]/rankings/[category]/page';
@@ -51,6 +52,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const languages = ['cs', 'en', 'ja', 'ru'] as const;
 
   let eventSlugs: string[] = [];
+  let allGuides = GUIDES_DATA;
+
+  try {
+    const guidesRes = await fetch(`${API_BASE_URL}/api/guides`, { next: { revalidate: 3600 } });
+    if (guidesRes.ok) {
+      const gData = await guidesRes.json();
+      if (Array.isArray(gData) && gData.length > 0) {
+        allGuides = gData;
+      }
+    }
+  } catch {
+    // fallback to GUIDES_DATA
+  }
 
   const eventSources = [
     `${API_BASE_URL}/api/events`,
@@ -84,6 +98,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // 1. Core Section & E-E-A-T Pages (only canonical 200 OK routes — no 404s or redirects)
     const sections = [
       { path: '', priority: 1.0, changeFrequency: 'hourly' as const },
+      { path: '/pokedex', priority: 0.95, changeFrequency: 'daily' as const },
       { path: '/friends', priority: 0.92, changeFrequency: 'daily' as const },
       { path: '/raids', priority: 0.9, changeFrequency: 'daily' as const },
       { path: '/rankings', priority: 0.9, changeFrequency: 'daily' as const },
@@ -109,7 +124,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
 
     // 2. Guide Detail Pages
-    GUIDES_DATA.forEach((guide) => {
+    allGuides.forEach((guide) => {
       const suffix = `/guides/${guide.slug}`;
       routes.push({
         url: `${baseUrl}/${lang}${suffix}`,
@@ -180,14 +195,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     });
 
-    // 8. Released Meta & PvE Relevant Pokédex Pages (excludes unreleased noindex placeholders & low-CP base stages)
-    RELEASED_SITEMAP_POKEDEX_IDS.forEach((id) => {
-      const suffix = `/pokemon/${id}`;
+    // 8. Canonical Pokédex Pages for Released Pokémon
+    POKEDEX_CATALOG.forEach((poke) => {
+      if (!poke.isReleasedInGo) return;
+      const suffix = `/pokedex/${poke.slug}`;
       routes.push({
         url: `${baseUrl}/${lang}${suffix}`,
         lastModified: now,
         changeFrequency: 'weekly',
-        priority: 0.7,
+        priority: 0.8,
         alternates: buildSitemapAlternates(baseUrl, suffix),
       });
     });

@@ -1,0 +1,707 @@
+/* ==========================================================================
+   RAID COUNTERS INTERACTIVE WIDGET STYLES
+   ========================================================================== */
+
+.raid-interactive-widget {
+  width: 100%;
+  margin: 0 0 36px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* 1. PARTY POWER & DAMAGE CALCULATOR */
+.raid-calc-card {
+  background: var(--bg-card, #171921);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.raid-calc-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.calc-header-icon {
+  color: #38bdf8;
+  min-width: 22px;
+  margin-top: 3px;
+}
+
+.raid-calc-header h3 {
+  font-size: 1.25rem;
+  font-weight: 850;
+  color: #f8fafc;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+}
+
+.calc-header-desc {
+  font-size: 0.86rem;
+  color: var(--text-muted, #94a3b8);
+  margin: 0;
+  line-height: 1.45;
+}
+
+.calc-controls-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-group label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 750;
+  color: #cbd5e1;
+}
+
+.pill-button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pill-btn {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.pill-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+}
+
+.pill-btn.active {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  border-color: #38bdf8;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+.control-toggles-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.toggle-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.toggle-action-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.toggle-action-btn.toggled-on {
+  background: rgba(250, 204, 21, 0.15);
+  border-color: #facc15;
+  color: #facc15;
+}
+
+.toggle-action-btn.party-active {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(22, 163, 74, 0.3) 100%);
+  border-color: #4ade80;
+  color: #4ade80;
+  box-shadow: 0 0 14px rgba(74, 222, 128, 0.25);
+}
+
+.toggle-action-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Result Box */
+.calc-result-box {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.multiplier-value-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mult-label {
+  font-size: 0.74rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  color: #94a3b8;
+  letter-spacing: 0.04em;
+}
+
+.mult-big-number {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: #38bdf8;
+  letter-spacing: 0.04em;
+}
+
+.multiplier-explanation {
+  max-width: 520px;
+}
+
+.expl-text {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #cbd5e1;
+}
+
+.expl-text.text-green {
+  color: #86efac;
+}
+
+/* 2. HUNDO & COUNTER SELECTOR */
+.raid-hundo-card {
+  background: var(--bg-card, #171921);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.hundo-header-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.hundo-header-icon {
+  color: #facc15;
+  min-width: 22px;
+  margin-top: 3px;
+}
+
+.hundo-header-row h3 {
+  font-size: 1.25rem;
+  font-weight: 850;
+  color: #f8fafc;
+  margin: 0 0 4px 0;
+}
+
+.hundo-header-desc {
+  font-size: 0.86rem;
+  color: var(--text-muted, #94a3b8);
+  margin: 0;
+}
+
+.boss-selector-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.boss-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  padding: 6px 14px;
+  border-radius: 12px;
+  font-size: 0.84rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.boss-pill-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fafc;
+}
+
+.boss-pill-btn.active {
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.15) 0%, rgba(202, 138, 4, 0.25) 100%);
+  border-color: #facc15;
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(250, 204, 21, 0.25);
+}
+
+.boss-mini-sprite {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+/* Boss Display Deck */
+.boss-detail-deck {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 20px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+@media (max-width: 720px) {
+  .boss-detail-deck {
+    grid-template-columns: 1fr;
+  }
+}
+
+.boss-identity-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.boss-art-wrap {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.boss-large-art {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+}
+
+.boss-name-big {
+  font-size: 1.15rem;
+  font-weight: 850;
+  color: #f8fafc;
+}
+
+.boss-weather-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+  font-size: 0.74rem;
+  font-weight: 750;
+  padding: 3px 8px;
+  border-radius: 100px;
+}
+
+/* CP Stats */
+.boss-cp-stats-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cp-tier-card {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tier-card-boosted {
+  border-color: rgba(250, 204, 21, 0.3);
+  background: rgba(250, 204, 21, 0.05);
+}
+
+.cp-tier-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #e2e8f0;
+}
+
+.boosted-title-text {
+  color: #facc15;
+}
+
+.cp-iv-note {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.cp-values-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cp-val-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cp-val-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.cp-val-number {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 1.15rem;
+  font-weight: 850;
+  color: #f1f5f9;
+}
+
+.val-box-hundo {
+  margin-left: auto;
+}
+
+.gold-label {
+  color: #fbbf24;
+}
+
+.gold-number {
+  color: #facc15;
+  font-size: 1.25rem;
+  text-shadow: 0 0 10px rgba(250, 204, 21, 0.35);
+}
+
+/* S-Tier Counters */
+.boss-counters-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.counters-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.94rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.counters-triad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 680px) {
+  .counters-triad-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.triad-counter-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.counter-poke-artwork {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+}
+
+.counter-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.counter-name {
+  font-size: 0.88rem;
+  font-weight: 850;
+  color: #f8fafc;
+}
+
+.counter-type-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.counter-moveset {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  line-height: 1.25;
+}
+
+.counter-moveset strong {
+  color: #e2e8f0;
+}
+
+/* 3. CIRCLE LOCK TECHNIQUE GUIDE */
+.circle-lock-guide-card {
+  background: var(--bg-card, #171921);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.circle-lock-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.circle-lock-icon {
+  color: #38bdf8;
+}
+
+.circle-lock-header h3 {
+  font-size: 1.15rem;
+  font-weight: 850;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.circle-lock-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 720px) {
+  .circle-lock-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+.lock-step {
+  display: flex;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.lock-step-num {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  background: #0284c7;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+}
+
+.lock-step-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lock-step-content strong {
+  font-size: 0.88rem;
+  color: #f8fafc;
+}
+
+.lock-step-content p {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* 4. ESSENTIAL SEARCH FILTERS */
+.raid-search-strings {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.strings-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #cbd5e1;
+}
+
+.strings-pills-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.string-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+.string-pill code {
+  font-family: ui-monospace, monospace;
+  font-size: 0.84rem;
+  color: #38bdf8;
+  font-weight: 750;
+}
+
+.string-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.string-btn:hover {
+  background: rgba(56, 189, 248, 0.3);
+}
+
+.string-btn.copied {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: #22c55e;
+  color: #4ade80;
+}
+
+/* ==========================================================================
+   LIGHT MODE OVERRIDES
+   ========================================================================== */
+
+body.light-mode .raid-calc-card,
+body.light-mode .raid-hundo-card,
+body.light-mode .circle-lock-guide-card {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-mode .raid-calc-header h3,
+body.light-mode .hundo-header-row h3,
+body.light-mode .circle-lock-header h3,
+body.light-mode .counters-heading,
+body.light-mode .boss-name-big,
+body.light-mode .counter-name,
+body.light-mode .lock-step-content strong {
+  color: #0f172a;
+}
+
+body.light-mode .calc-controls-grid,
+body.light-mode .boss-detail-deck,
+body.light-mode .triad-counter-card,
+body.light-mode .lock-step,
+body.light-mode .raid-search-strings {
+  background: #f8fafc;
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-mode .calc-result-box {
+  background: #f1f5f9;
+  border-color: rgba(2, 132, 199, 0.2);
+}
+
+body.light-mode .cp-tier-card {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-mode .cp-val-number {
+  color: #0f172a;
+}
+
+body.light-mode .gold-number {
+  color: #b45309;
+}
+
+body.light-mode .pill-btn,
+body.light-mode .boss-pill-btn,
+body.light-mode .toggle-action-btn,
+body.light-mode .string-pill {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.1);
+  color: #1e293b;
+}
+
+body.light-mode .expl-text {
+  color: #475569;
+}
+
+body.light-mode .lock-step-content p {
+  color: #475569;
+}

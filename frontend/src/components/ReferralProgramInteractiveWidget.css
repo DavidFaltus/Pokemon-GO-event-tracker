@@ -1,0 +1,487 @@
+/* ==========================================================================
+   REFERRAL PROGRAM INTERACTIVE WIDGET STYLES
+   ========================================================================== */
+
+.referral-interactive-container {
+  width: 100%;
+  margin: 0 0 36px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* 1. HERO REFERRAL CODE CARD */
+.referral-hero-card {
+  background: linear-gradient(135deg, rgba(30, 27, 75, 0.75) 0%, rgba(17, 24, 39, 0.9) 100%);
+  border: 2px solid rgba(168, 85, 247, 0.45);
+  border-radius: 20px;
+  padding: 26px 24px;
+  box-shadow: 0 10px 30px rgba(168, 85, 247, 0.15), 0 4px 16px rgba(0, 0, 0, 0.4);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.referral-hero-card:hover {
+  border-color: rgba(168, 85, 247, 0.75);
+  box-shadow: 0 12px 36px rgba(168, 85, 247, 0.25), 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+.referral-hero-card::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.referral-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(168, 85, 247, 0.2);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  color: #c084fc;
+  font-size: 0.8rem;
+  font-weight: 750;
+  padding: 5px 12px;
+  border-radius: 100px;
+  margin-bottom: 14px;
+  letter-spacing: 0.02em;
+}
+
+.referral-hero-badge .sparkle-icon {
+  color: #facc15;
+}
+
+.referral-hero-heading {
+  font-size: 1.45rem;
+  font-weight: 850;
+  color: #f8fafc;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.referral-hero-desc {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: #cbd5e1;
+  margin: 0 0 20px 0;
+  max-width: 860px;
+}
+
+/* Big Code Value Row & Copy Button */
+.referral-code-box {
+  background: rgba(10, 14, 26, 0.85);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.referral-code-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+}
+
+.referral-code-value-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.referral-code-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 2.1rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  background: linear-gradient(135deg, #f8fafc 0%, #c084fc 60%, #e879f9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  user-select: all;
+}
+
+.referral-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 4px 16px rgba(147, 51, 234, 0.4);
+}
+
+.referral-copy-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+  box-shadow: 0 6px 22px rgba(168, 85, 247, 0.55);
+}
+
+.referral-copy-btn.copied {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  box-shadow: 0 4px 16px rgba(22, 163, 74, 0.4);
+  border-color: rgba(74, 222, 128, 0.4);
+}
+
+/* 4 Step Walkthrough */
+.referral-steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.referral-step-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.referral-step-num {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  background: #a855f7;
+  color: #ffffff;
+  border-radius: 50%;
+  font-weight: 850;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.4);
+}
+
+.referral-step-text {
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: #e2e8f0;
+  font-weight: 600;
+}
+
+/* 2. ALL 17 MILESTONE COMPARATIVE CARDS */
+.milestones-section-header {
+  margin-top: 8px;
+}
+
+.milestones-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.milestones-header-icon {
+  color: #38bdf8;
+}
+
+.milestones-section-header h2 {
+  font-size: 1.35rem;
+  font-weight: 850;
+  color: #f8fafc;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.milestones-header-desc {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.milestones-cards-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Individual Milestone Card */
+.milestone-card {
+  background: var(--bg-card, #171921);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.milestone-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Card Header */
+.milestone-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.milestone-index-pill {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+  font-size: 0.76rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+}
+
+.milestone-task-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0;
+  line-height: 1.35;
+}
+
+/* Split Columns */
+.milestone-rewards-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 680px) {
+  .milestone-rewards-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.milestone-reward-col {
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.referee-col {
+  background: rgba(14, 165, 233, 0.08);
+  border: 1px solid rgba(14, 165, 233, 0.25);
+}
+
+.referrer-col {
+  background: rgba(168, 85, 247, 0.08);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+}
+
+.reward-col-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 3px 8px;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+.referee-badge {
+  background: rgba(14, 165, 233, 0.2);
+  color: #38bdf8;
+}
+
+.referrer-badge {
+  background: rgba(168, 85, 247, 0.2);
+  color: #c084fc;
+}
+
+.reward-content-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.reward-image-wrap {
+  width: 58px;
+  height: 58px;
+  min-width: 58px;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.reward-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+  transition: transform 0.2s ease;
+}
+
+.reward-image-wrap:hover .reward-img {
+  transform: scale(1.1);
+}
+
+.reward-info-box {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.reward-amount {
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: #facc15;
+}
+
+.reward-name {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  line-height: 1.3;
+}
+
+.reward-subtag {
+  font-size: 0.72rem;
+  font-weight: 750;
+  color: #4ade80;
+  letter-spacing: 0.02em;
+}
+
+/* Bottom Tip Strip */
+.milestone-tip-strip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.5);
+  border-left: 3px solid #facc15;
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+.tip-strip-icon {
+  color: #facc15;
+  min-width: 15px;
+  margin-top: 2px;
+}
+
+.tip-strip-text {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #cbd5e1;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   LIGHT MODE OVERRIDES
+   ========================================================================== */
+
+body.light-mode .referral-hero-card {
+  background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 100%);
+  border-color: rgba(147, 51, 234, 0.3);
+  box-shadow: 0 8px 24px rgba(147, 51, 234, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+body.light-mode .referral-hero-heading {
+  color: #0f172a;
+}
+
+body.light-mode .referral-hero-desc {
+  color: #475569;
+}
+
+body.light-mode .referral-code-box {
+  background: #f8fafc;
+  border-color: rgba(147, 51, 234, 0.25);
+}
+
+body.light-mode .referral-code-label {
+  color: #64748b;
+}
+
+body.light-mode .referral-code-text {
+  background: linear-gradient(135deg, #0f172a 0%, #7e22ce 70%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body.light-mode .referral-step-item {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.1);
+}
+
+body.light-mode .referral-step-text {
+  color: #1e293b;
+}
+
+body.light-mode .milestone-card {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-mode .milestone-task-title {
+  color: #0f172a;
+}
+
+body.light-mode .referee-col {
+  background: rgba(14, 165, 233, 0.05);
+  border-color: rgba(14, 165, 233, 0.2);
+}
+
+body.light-mode .referrer-col {
+  background: rgba(168, 85, 247, 0.05);
+  border-color: rgba(168, 85, 247, 0.2);
+}
+
+body.light-mode .reward-image-wrap {
+  background: #f1f5f9;
+  border-color: rgba(15, 23, 42, 0.08);
+}
+
+body.light-mode .reward-name {
+  color: #0f172a;
+}
+
+body.light-mode .reward-amount {
+  color: #b45309;
+}
+
+body.light-mode .milestone-tip-strip {
+  background: #f8fafc;
+  border-left-color: #eab308;
+}
+
+body.light-mode .tip-strip-text {
+  color: #334155;
+}

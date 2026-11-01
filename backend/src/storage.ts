@@ -1,4 +1,63 @@
 import { dataStore } from './dataStore';
+import { GUIDES_DATA, GuideArticle, GuideSection } from './data/defaultGuidesData';
+
+export { GuideArticle, GuideSection };
+
+export interface CustomGuideArticle extends GuideArticle {
+  isDeleted?: boolean;
+  isCustom?: boolean;
+  isModified?: boolean;
+}
+
+export async function loadCustomGuides(): Promise<CustomGuideArticle[]> {
+  return await dataStore.get<CustomGuideArticle[]>('custom_guides', { defaultValue: [] }) || [];
+}
+
+export async function saveCustomGuides(guides: CustomGuideArticle[]): Promise<boolean> {
+  return await dataStore.set('custom_guides', guides);
+}
+
+export async function getEnrichedGuidesList(includeHidden = false): Promise<CustomGuideArticle[]> {
+  const customOverrides = await loadCustomGuides();
+  const guidesMap = new Map<string, CustomGuideArticle>();
+
+  // 1. Seed defaults
+  for (const def of GUIDES_DATA) {
+    guidesMap.set(def.slug, {
+      ...JSON.parse(JSON.stringify(def)),
+      isCustom: false,
+      isDeleted: false,
+      isModified: false,
+    });
+  }
+
+  // 2. Apply custom overrides / additions
+  for (const c of customOverrides) {
+    if (!c.slug) continue;
+    const existing = guidesMap.get(c.slug);
+    if (existing) {
+      guidesMap.set(c.slug, {
+        ...existing,
+        ...c,
+        isCustom: false,
+        isModified: true,
+      });
+    } else {
+      guidesMap.set(c.slug, {
+        ...c,
+        isCustom: true,
+        isModified: false,
+      });
+    }
+  }
+
+  const all = Array.from(guidesMap.values());
+  if (!includeHidden) {
+    return all.filter(g => !g.isDeleted);
+  }
+  return all;
+}
+
 
 export interface CustomEvent {
   eventID: string;

@@ -4,15 +4,41 @@ import App from '@/App';
 import type { Language } from '@/data/translations';
 import { GUIDES_DATA } from '@/data/guidesData';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
+import { API_BASE_URL } from '@/config';
 
 export const revalidate = 3600;
 
-export function generateStaticParams() {
-  const languages: Language[] = ['cs', 'en', 'ja', 'ru'];
-  const params: { lang: Language; guideId: string }[] = [];
+async function getGuide(guideId: string) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/guides/${guideId}`, { next: { revalidate: 300 } });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch {
+    // fallback
+  }
+  return GUIDES_DATA.find((g) => g.slug === guideId);
+}
 
+export async function generateStaticParams() {
+  const languages: Language[] = ['cs', 'en', 'ja', 'ru'];
+  let allGuides = GUIDES_DATA;
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/guides`, { next: { revalidate: 3600 } });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        allGuides = data;
+      }
+    }
+  } catch {
+    // Offline build fallback
+  }
+
+  const params: { lang: Language; guideId: string }[] = [];
   languages.forEach((lang) => {
-    GUIDES_DATA.forEach((guide) => {
+    allGuides.forEach((guide) => {
       params.push({ lang, guideId: guide.slug });
     });
   });
@@ -38,7 +64,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const lang: Language = validLanguages.includes(unwrappedParams.lang as Language) ? (unwrappedParams.lang as Language) : 'cs';
   const guideId = unwrappedParams.guideId;
 
-  const guide = GUIDES_DATA.find((g) => g.slug === guideId);
+  const guide = await getGuide(guideId);
   if (!guide) {
     return {
       title: 'Guide Not Found | Pokémon GO Event Tracker',
@@ -82,7 +108,7 @@ export default async function IndividualGuidePage({ params }: PageProps) {
   const lang: Language = validLanguages.includes(unwrappedParams.lang as Language) ? (unwrappedParams.lang as Language) : 'cs';
   const guideId = unwrappedParams.guideId;
 
-  const guide = GUIDES_DATA.find((g) => g.slug === guideId);
+  const guide = await getGuide(guideId);
   if (!guide) {
     notFound();
   }

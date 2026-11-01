@@ -8,7 +8,7 @@ import type { LegalPageType } from '@/data/legalData';
 export const revalidate = 3600;
 
 const VALID_ROOT_ROUTES = new Set([
-  'events', 'guides', 'raids', 'rocket', 'ditto', 'eggs', 'rankings', 'filter', 'settings', 'download', 'app', 'admin',
+  'events', 'guides', 'raids', 'rocket', 'ditto', 'eggs', 'rankings', 'pokedex', 'filter', 'settings', 'download', 'app', 'admin',
   'privacy', 'privacy-policy', 'about', 'terms', 'disclaimer', 'contact'
 ]);
 

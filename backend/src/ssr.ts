@@ -249,7 +249,8 @@ export async function generateBotHtml(
   events: any[],
   raids: any[],
   rocket: any,
-  getDetails: (eventId: string) => SpecialEventDetails | null
+  getDetails: (eventId: string) => SpecialEventDetails | null,
+  guides: any[] = []
 ): Promise<string> {
   const { lang, type, canonicalPath, param } = target;
   const t = botTranslations[lang] || botTranslations.en;
@@ -308,6 +309,32 @@ export async function generateBotHtml(
     pageDesc = lang === 'cs'
       ? 'Najděte aktivní přátele v Pokémon GO pro výměnu dárků, sběr všech 18 vzorů Vivillona, XP grind na Best Friends a pozvánky na Remote Raidy.'
       : 'Find active Pokémon GO trainer friend codes for Vivillon postcards, XP grinding to Best Friends, and Remote Raid invites.';
+  } else if (type === 'guides') {
+    const titles: Record<Language, string> = {
+      cs: 'Pokémon GO Strategické Průvodce & Návody (2026) | PoGo Events',
+      en: 'Pokémon GO Strategy Guides & Tutorials (2026) | PoGo Events',
+      ja: 'Pokémon GO 攻略ガイド・戦略マニュアル一覧 (2026) | PoGo Events',
+      ru: 'Стратегические гайды и руководства Pokémon GO (2026) | PoGo Events',
+    };
+    const descriptions: Record<Language, string> = {
+      cs: 'Detailní návody pro Pokémon GO: jak porazit Giovanniho a lídry Team GO Rocket, nejlepší countery na Raidy, líhnutí vajec, maskování Ditto, Stardust pokémoni a 100% IV hodnoty.',
+      en: 'In-depth Pokémon GO strategy guides: defeating Team GO Rocket Leaders & Giovanni, best Raid counters, Egg hatching pools, Ditto disguises, extra Stardust Pokémon, and 100% IV charts.',
+      ja: 'Pokémon GOの詳細攻略ガイド：GOロケット団（サカキ・リーダー）対策、最強レイド対策、タマゴ孵化一覧、メタモン変装、ほしのすなボーナス、100% IV早見表。',
+      ru: 'Подробные гайды по Pokémon GO: как победить Джованни и лидеров Команды R, лучшие контр-покемоны для рейдов, вылупление яиц, маскировки Дитто и бонусная звездная пыль.',
+    };
+    pageTitle = titles[lang] || titles.en;
+    pageDesc = descriptions[lang] || descriptions.en;
+  } else if (type === 'guide-detail' && param) {
+    const guide = guides.find((g: any) => g.slug === param);
+    if (guide) {
+      const gTitle = (guide.title && (guide.title[lang] || guide.title.cs || guide.title.en)) || guide.slug;
+      const gSubtitle = (guide.subtitle && (guide.subtitle[lang] || guide.subtitle.cs || guide.subtitle.en)) || '';
+      pageTitle = `${gTitle} | Pokémon GO Guide`;
+      pageDesc = gSubtitle || `Detailní návod pro Pokémon GO: ${gTitle}. Strategie, tipy a doporučení.`;
+    } else {
+      pageTitle = `Pokémon GO Guide | PoGo Events`;
+      pageDesc = `Strategic Pokémon GO guide and tutorial.`;
+    }
   }
 
   // Process Events
@@ -535,6 +562,119 @@ export async function generateBotHtml(
     }
   }
 
+  let mainContentHtml = '';
+
+  if (type === 'guide-detail' && param) {
+    const guide = guides.find((g: any) => g.slug === param);
+    if (guide) {
+      const gTitle = (guide.title && (guide.title[lang] || guide.title.cs || guide.title.en)) || guide.slug;
+      const gSubtitle = (guide.subtitle && (guide.subtitle[lang] || guide.subtitle.cs || guide.subtitle.en)) || '';
+      const gCategory = (guide.category && (guide.category[lang] || guide.category.cs || guide.category.en)) || 'Guide';
+      
+      let sectionsHtml = '';
+      if (Array.isArray(guide.sections)) {
+        sectionsHtml = guide.sections.map((sec: any) => {
+          const sHeading = sec.heading ? (sec.heading[lang] || sec.heading.cs || sec.heading.en) : '';
+          const sContent = sec.content ? (sec.content[lang] || sec.content.cs || sec.content.en) : '';
+          const sTips = sec.tips ? (sec.tips[lang] || sec.tips.cs || sec.tips.en || []) : [];
+          const sPokemon = Array.isArray(sec.pokemon) ? sec.pokemon : [];
+
+          const paragraphs = (sContent || '').split('\n').filter((p: string) => p.trim()).map((p: string) => `<p>${p.trim()}</p>`).join('');
+
+          let tipsHtml = '';
+          if (Array.isArray(sTips) && sTips.length > 0) {
+            tipsHtml = `
+              <div class="tips-box" style="background: rgba(168, 85, 247, 0.1); border-left: 3px solid #a855f7; padding: 12px 16px; margin: 16px 0; border-radius: 6px;">
+                <h4 style="margin: 0 0 8px 0; color: #c084fc;">💡 ${lang === 'cs' ? 'Tipy pro maximální efektivitu' : 'Pro Tips'}</h4>
+                <ul style="margin: 0; padding-left: 20px;">
+                  ${sTips.map((tip: string) => `<li>${tip}</li>`).join('')}
+                </ul>
+              </div>
+            `;
+          }
+
+          let pokeChips = '';
+          if (sPokemon.length > 0) {
+            pokeChips = `
+              <div style="display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0;">
+                ${sPokemon.map((pName: string) => `<span style="background: rgba(255,255,255,0.08); padding: 3px 8px; border-radius: 6px; font-size: 0.85rem;">✨ ${pName}</span>`).join('')}
+              </div>
+            `;
+          }
+
+          return `
+            <section class="guide-section" style="margin-top: 30px;">
+              <h2>${sHeading}</h2>
+              ${pokeChips}
+              <div class="article-text">${paragraphs}</div>
+              ${tipsHtml}
+            </section>
+          `;
+        }).join('');
+      }
+
+      mainContentHtml = `
+        <article class="guide-article-view">
+          <p><a href="/${lang}/guides" style="color: var(--accent-color); font-weight: bold;">&larr; ${lang === 'cs' ? 'Zpět na všechny průvodce' : 'Back to all guides'}</a></p>
+          <div class="guide-hero" style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; margin: 20px 0;">
+            <span style="color: #a855f7; font-weight: bold; font-size: 0.85rem; text-transform: uppercase;">${gCategory}</span>
+            <h1 style="font-size: 2rem; margin: 10px 0;">${gTitle}</h1>
+            ${gSubtitle ? `<p style="font-size: 1.1rem; color: #cbd5e1; margin-bottom: 16px;">${gSubtitle}</p>` : ''}
+            <div style="font-size: 0.85rem; color: #94a3b8; display: flex; gap: 15px; flex-wrap: wrap;">
+              <span>👤 ${guide.author || 'PoGo Events Team'}</span>
+              <span>⏱️ ${guide.readTime || '8 min'}</span>
+              <span>📅 ${guide.updatedAt || '2026'}</span>
+            </div>
+          </div>
+          ${sectionsHtml}
+        </article>
+      `;
+    }
+  } else if (type === 'guides') {
+    mainContentHtml = `
+      <section class="guides-catalog">
+        <h2>${t.guidesHeading}</h2>
+        <div class="guides-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 20px;">
+          ${guides.map((g: any) => {
+            const gTitle = (g.title && (g.title[lang] || g.title.cs || g.title.en)) || g.slug;
+            const gSubtitle = (g.subtitle && (g.subtitle[lang] || g.subtitle.cs || g.subtitle.en)) || '';
+            const gCategory = (g.category && (g.category[lang] || g.category.cs || g.category.en)) || 'Guide';
+            return `
+              <div class="guide-card" style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; display: flex; flex-direction: column;">
+                <span style="font-size: 0.75rem; color: #a855f7; font-weight: bold; text-transform: uppercase;">${gCategory}</span>
+                <h3 style="margin: 8px 0; font-size: 1.15rem;"><a href="/${lang}/guides/${g.slug}" style="color: #ffffff; text-decoration: none;">${gTitle}</a></h3>
+                <p style="font-size: 0.9rem; color: var(--text-color); flex: 1; margin: 0 0 12px 0;">${gSubtitle}</p>
+                <div style="font-size: 0.8rem; color: #888; display: flex; justify-content: space-between; align-items: center;">
+                  <span>⏱️ ${g.readTime || '8 min'}</span>
+                  <a href="/${lang}/guides/${g.slug}" style="color: var(--accent-color); font-weight: bold;">Číst &rarr;</a>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </section>
+    `;
+  } else {
+    mainContentHtml = `
+      <h2>${t.events}</h2>
+      ${eventsHtml}
+
+      <h2>${t.raids}</h2>
+      ${raidsHtml}
+
+      <h2>${t.rocket}</h2>
+      ${rocketHtml}
+
+      <section class="guide-section">
+        <h2>${t.guidesHeading}</h2>
+        <h3>${t.raids}</h3>
+        <p>${t.raidsGuideText}</p>
+        <h3>${t.rocket}</h3>
+        <p>${t.rocketGuideText}</p>
+      </section>
+    `;
+  }
+
   // Generate complete HTML page with structured internal navigation (<a href>)
   return `<!DOCTYPE html>
 <html lang="${lang}">
@@ -729,22 +869,7 @@ export async function generateBotHtml(
       <small style="display:block; margin-top: 8px; color: var(--accent-color);">Data updated: ${nowStr}</small>
     </div>
 
-    <h2>${t.events}</h2>
-    ${eventsHtml}
-
-    <h2>${t.raids}</h2>
-    ${raidsHtml}
-
-    <h2>${t.rocket}</h2>
-    ${rocketHtml}
-
-    <section class="guide-section">
-      <h2>${t.guidesHeading}</h2>
-      <h3>${t.raids}</h3>
-      <p>${t.raidsGuideText}</p>
-      <h3>${t.rocket}</h3>
-      <p>${t.rocketGuideText}</p>
-    </section>
+    ${mainContentHtml}
   </main>
 
   <footer>

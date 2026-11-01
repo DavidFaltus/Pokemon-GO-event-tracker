@@ -1,0 +1,455 @@
+.evolution-quests-widget-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Hero Header */
+.evo-widget-hero-header {
+  background: linear-gradient(135deg, rgba(23, 25, 33, 0.95) 0%, rgba(30, 27, 75, 0.4) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.evo-hero-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.evo-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #c084fc;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 100px;
+  width: fit-content;
+}
+
+.evo-hero-title-group h2 {
+  font-size: 1.5rem;
+  font-weight: 850;
+  color: #f8fafc;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.evo-hero-title-group p {
+  font-size: 0.92rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Blanche Fast Trick Highlight Banner */
+.blanche-trick-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: linear-gradient(90deg, rgba(234, 179, 8, 0.12) 0%, rgba(234, 179, 8, 0.03) 100%);
+  border: 1px solid rgba(234, 179, 8, 0.35);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.blanche-trick-banner .banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.blanche-trick-banner .banner-text strong {
+  color: #facc15;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.blanche-trick-banner .banner-text span {
+  color: #e2e8f0;
+}
+
+/* Card Panel */
+.evo-card-panel {
+  background: var(--bg-card, #171921);
+  border: 1px solid var(--border-color, #242836);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.search-and-filters-row {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.evo-search-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 10px 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.evo-search-input-wrap:focus-within {
+  border-color: #a855f7;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.25);
+}
+
+.evo-search-input {
+  background: transparent;
+  border: none;
+  color: #f8fafc;
+  font-size: 0.9rem;
+  width: 100%;
+  outline: none;
+}
+
+.evo-search-input::placeholder {
+  color: #64748b;
+}
+
+.evo-category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.evo-tab-btn {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  padding: 7px 14px;
+  border-radius: 100px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.evo-tab-btn:hover {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(168, 85, 247, 0.4);
+  color: #ffffff;
+}
+
+.evo-tab-btn.active {
+  background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
+  border-color: #c084fc;
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(168, 85, 247, 0.4);
+}
+
+.results-count-bar {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #94a3b8;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Evolution Grid */
+.guide-evolution-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.guide-evolution-card {
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.guide-evolution-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(168, 85, 247, 0.45);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.evolution-card-top {
+  display: flex;
+  flex-direction: column;
+}
+
+.evolution-sprite-deck {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(11, 15, 25, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.pokemon-avatar-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 90px;
+}
+
+.evolution-avatar-img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+  transition: transform 0.2s ease;
+}
+
+.pokemon-avatar-box:hover .evolution-avatar-img {
+  transform: scale(1.1);
+}
+
+.evolution-avatar-name {
+  font-size: 0.74rem;
+  font-weight: 750;
+  color: #f1f5f9;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.evolution-arrow-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.arrow-sym {
+  color: #38bdf8;
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+.req-pill {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.evolution-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quest-task-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #f8fafc;
+  line-height: 1.4;
+}
+
+.quest-task-line strong {
+  font-weight: 750;
+}
+
+.quest-pro-tip {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(234, 179, 8, 0.08);
+  border: 1px solid rgba(234, 179, 8, 0.2);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 0.78rem;
+  color: #fbbf24;
+  line-height: 1.35;
+}
+
+/* 1-Click Search Operators Panel */
+.panel-title-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.panel-title-bar h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.evo-searches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.search-code-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.search-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.search-meta strong {
+  font-family: monospace;
+  font-size: 0.95rem;
+  color: #38bdf8;
+  letter-spacing: 0.03em;
+}
+
+.search-meta span {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.copy-chip-btn {
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.copy-chip-btn:hover {
+  background: rgba(56, 189, 248, 0.25);
+  color: #ffffff;
+}
+
+/* Light Mode Overrides */
+body.light-mode .evolution-quests-widget-container {
+  color: #0f172a;
+}
+
+body.light-mode .evo-widget-hero-header {
+  background: #ffffff;
+  border-color: rgba(168, 85, 247, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+body.light-mode .evo-hero-title-group h2 {
+  color: #0f172a;
+}
+
+body.light-mode .evo-hero-title-group p {
+  color: #475569;
+}
+
+body.light-mode .blanche-trick-banner {
+  background: #fefce8;
+  border-color: #fde047;
+}
+
+body.light-mode .blanche-trick-banner .banner-text strong {
+  color: #a16207;
+}
+
+body.light-mode .blanche-trick-banner .banner-text span {
+  color: #334155;
+}
+
+body.light-mode .evo-card-panel {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.12);
+}
+
+body.light-mode .evo-search-input-wrap {
+  background: #f8fafc;
+  border-color: rgba(15, 23, 42, 0.12);
+}
+
+body.light-mode .evo-search-input {
+  color: #0f172a;
+}
+
+body.light-mode .evo-tab-btn {
+  background: #f1f5f9;
+  border-color: rgba(15, 23, 42, 0.1);
+  color: #475569;
+}
+
+body.light-mode .guide-evolution-card {
+  background: #f8fafc;
+  border-color: rgba(15, 23, 42, 0.1);
+}
+
+body.light-mode .evolution-sprite-deck {
+  background: #f1f5f9;
+  border-color: rgba(15, 23, 42, 0.06);
+}
+
+body.light-mode .evolution-avatar-name {
+  color: #0f172a;
+}
+
+body.light-mode .quest-task-line {
+  color: #0f172a;
+}
+
+body.light-mode .search-code-card {
+  background: #f8fafc;
+  border-color: rgba(15, 23, 42, 0.1);
+}
+
+@media (max-width: 640px) {
+  .guide-evolution-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .evo-searches-grid {
+    grid-template-columns: 1fr;
+  }
+}

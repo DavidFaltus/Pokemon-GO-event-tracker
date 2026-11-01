@@ -7,8 +7,10 @@ import {
   EyeOff, Search, Edit, Database, Upload, RefreshCw, Server,
   Image, PackageOpen, ChevronDown, ChevronUp, X, FileJson, Zap,
   Star, Egg, Swords, Gift, Download, FileText, Sparkles, ExternalLink,
-  Share2, Send, Copy, Check, Filter, Calendar, RotateCcw, Users
+  Share2, Send, Copy, Check, Filter, Calendar, RotateCcw, Users,
+  BookOpen, Eye, ArrowUp, ArrowDown, Shield, Trophy, Globe, MapPin, Clock, Award, Target
 } from 'lucide-react';
+import { GUIDES_DATA, type GuideArticle, type GuideSection } from '../data/guidesData';
 import { EventCard } from './EventCard';
 import type { EventData } from './EventCard';
 import { MonthSummaryInfographic } from './MonthSummaryInfographic';
@@ -25,6 +27,28 @@ interface AdminPanelViewProps {
   lang: Language;
   onBack: () => void;
 }
+
+export interface AdminGuideArticle extends GuideArticle {
+  isCustom?: boolean;
+  isModified?: boolean;
+  isHidden?: boolean;
+}
+
+const GUIDE_AVAILABLE_ICONS = [
+  'BookOpen', 'Target', 'Shield', 'Swords', 'Calendar',
+  'Sparkles', 'Trophy', 'Globe', 'MapPin', 'Clock', 'Award'
+];
+
+const GUIDE_CATEGORY_SUGGESTIONS = [
+  'Legendární průvodci & Denní mechaniky',
+  'Základy & Mechaniky',
+  'PvP & Bojové mechaniky',
+  'Týmové úkoly & Výzvy',
+  'Regionální & Zvláštní formy',
+  'Pokročilé mechaniky & IV',
+  'Vývoj & Speciální úkoly',
+  'Eventové speciality'
+];
 
 export const formatLocalizedString = (val: any, targetLang: Language = 'cs'): string => {
   if (!val) return '';
@@ -511,7 +535,7 @@ const generateSocialCaption = (event: EventData, lang: Language): string => {
 // Main AdminPanelView component
 // ============================================================
 
-type AdminTab = 'events' | 'raids' | 'friends' | 'social' | 'icons' | 'scraper' | 'import' | 'cache';
+type AdminTab = 'events' | 'guides' | 'raids' | 'friends' | 'social' | 'icons' | 'scraper' | 'import' | 'cache';
 
 export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -536,6 +560,37 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
   const [friendsGcsStatus, setFriendsGcsStatus] = useState<any>(null);
   const [friendsMsg, setFriendsMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const friendsFileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Guides management state
+  const [adminGuides, setAdminGuides] = useState<AdminGuideArticle[]>([]);
+  const [guidesLoading, setGuidesLoading] = useState<boolean>(false);
+  const [guidesSearchQuery, setGuidesSearchQuery] = useState<string>('');
+  const [guidesFilter, setGuidesFilter] = useState<'all' | 'custom' | 'modified' | 'hidden'>('all');
+  const [selectedGuide, setSelectedGuide] = useState<AdminGuideArticle | null>(null);
+  const [guideEditMode, setGuideEditMode] = useState<'visual' | 'json'>('visual');
+  const [guideLangTab, setGuideLangTab] = useState<Language>('cs');
+  const [guideCopiedSlug, setGuideCopiedSlug] = useState<string | null>(null);
+  const [guidesMsg, setGuidesMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const guideHeroFileInputRef = useRef<HTMLInputElement | null>(null);
+  const guidesImportFileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Guide form state
+  const [formGuideId, setFormGuideId] = useState<string>('');
+  const [formGuideSlug, setFormGuideSlug] = useState<string>('');
+  const [formGuideIsCustom, setFormGuideIsCustom] = useState<boolean>(true);
+  const [formGuideIsHidden, setFormGuideIsHidden] = useState<boolean>(false);
+  const [formGuideFeatured, setFormGuideFeatured] = useState<boolean>(false);
+  const [formGuideAuthor, setFormGuideAuthor] = useState<string>('PoGo Events Team');
+  const [formGuideReadTime, setFormGuideReadTime] = useState<string>('5 min');
+  const [formGuideUpdatedAt, setFormGuideUpdatedAt] = useState<string>('');
+  const [formGuideIconName, setFormGuideIconName] = useState<string>('BookOpen');
+  const [formGuideImageUrl, setFormGuideImageUrl] = useState<string>('');
+  const [formGuideTitle, setFormGuideTitle] = useState<{ cs: string; en: string; ja: string; ru: string }>({ cs: '', en: '', ja: '', ru: '' });
+  const [formGuideSubtitle, setFormGuideSubtitle] = useState<{ cs: string; en: string; ja: string; ru: string }>({ cs: '', en: '', ja: '', ru: '' });
+  const [formGuideCategory, setFormGuideCategory] = useState<{ cs: string; en: string; ja: string; ru: string }>({ cs: 'Návody & Tipy', en: 'Guides & Tips', ja: 'ガイド', ru: 'Гайды' });
+  const [formGuideSections, setFormGuideSections] = useState<GuideSection[]>([]);
+  const [formGuideJson, setFormGuideJson] = useState<string>('');
+  const [activePokemonChipInput, setActivePokemonChipInput] = useState<{ [sectionIndex: number]: string }>({});
 
   // Add Custom Raid modal state
   const [showRaidModal, setShowRaidModal] = useState<boolean>(false);
@@ -838,6 +893,727 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     }
   };
 
+  const safeParseApiResponse = async (res: Response): Promise<{ ok: boolean; data: any; error?: string }> => {
+    const contentType = res.headers.get('content-type') || '';
+    let data: any = null;
+    if (contentType.includes('application/json')) {
+      try {
+        data = await res.json();
+      } catch {
+        data = null;
+      }
+    } else {
+      const text = await res.text().catch(() => '');
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = null;
+      }
+    }
+
+    if (!res.ok) {
+      const errorMsg = data?.error || (res.status === 404 ? 'Endpoint nenalezen (HTTP 404)' : `Chyba serveru (HTTP ${res.status})`);
+      return { ok: false, data, error: errorMsg };
+    }
+
+    return { ok: true, data };
+  };
+
+  // Guides management functions
+  const fetchAdminGuides = useCallback(async () => {
+    if (!token) return;
+    setGuidesLoading(true);
+    setGuidesMsg(null);
+    try {
+      const res = await apiFetch('/api/admin/guides', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const parsed = await safeParseApiResponse(res);
+      if (parsed.ok && parsed.data) {
+        const guidesList = Array.isArray(parsed.data) ? parsed.data : (parsed.data.guides || []);
+        setAdminGuides(guidesList);
+        if (typeof window !== 'undefined') {
+          try {
+            localStorage.setItem('pogo_admin_guides_cache', JSON.stringify(guidesList));
+          } catch {}
+        }
+      } else {
+        // Fallback: load GUIDES_DATA merged with any local cache
+        let fallbackList: AdminGuideArticle[] = GUIDES_DATA.map(g => ({ ...g, isCustom: false, isModified: false }));
+        if (typeof window !== 'undefined') {
+          try {
+            const cached = localStorage.getItem('pogo_admin_guides_cache');
+            if (cached) {
+              const list = JSON.parse(cached);
+              if (Array.isArray(list) && list.length > 0) {
+                fallbackList = list;
+              }
+            }
+          } catch {}
+        }
+        setAdminGuides(fallbackList);
+      }
+    } catch (err: any) {
+      let fallbackList: AdminGuideArticle[] = GUIDES_DATA.map(g => ({ ...g, isCustom: false, isModified: false }));
+      if (typeof window !== 'undefined') {
+        try {
+          const cached = localStorage.getItem('pogo_admin_guides_cache');
+          if (cached) {
+            const list = JSON.parse(cached);
+            if (Array.isArray(list) && list.length > 0) fallbackList = list;
+          }
+        } catch {}
+      }
+      setAdminGuides(fallbackList);
+    } finally {
+      setGuidesLoading(false);
+    }
+  }, [token]);
+
+  const populateGuideForm = useCallback((guide: AdminGuideArticle) => {
+    setFormGuideId(guide.id || guide.slug);
+    setFormGuideSlug(guide.slug);
+    setFormGuideIsCustom(!!guide.isCustom);
+    setFormGuideIsHidden(!!guide.isHidden);
+    setFormGuideFeatured(!!guide.featured);
+    setFormGuideAuthor(guide.author || 'PoGo Events Team');
+    setFormGuideReadTime(guide.readTime || '5 min');
+    setFormGuideUpdatedAt(guide.updatedAt || new Date().toISOString().split('T')[0]);
+    setFormGuideIconName(guide.iconName || 'BookOpen');
+    setFormGuideImageUrl(guide.imageUrl || '');
+    setFormGuideTitle({
+      cs: guide.title?.cs || '',
+      en: guide.title?.en || '',
+      ja: guide.title?.ja || '',
+      ru: guide.title?.ru || ''
+    });
+    setFormGuideSubtitle({
+      cs: guide.subtitle?.cs || '',
+      en: guide.subtitle?.en || '',
+      ja: guide.subtitle?.ja || '',
+      ru: guide.subtitle?.ru || ''
+    });
+    setFormGuideCategory({
+      cs: guide.category?.cs || 'Návody & Tipy',
+      en: guide.category?.en || 'Guides & Tips',
+      ja: guide.category?.ja || 'ガイド',
+      ru: guide.category?.ru || 'Гайды'
+    });
+    setFormGuideSections(Array.isArray(guide.sections) ? JSON.parse(JSON.stringify(guide.sections)) : []);
+    setFormGuideJson(JSON.stringify(guide, null, 2));
+  }, []);
+
+  const handleSelectGuide = (guide: AdminGuideArticle) => {
+    setSelectedGuide(guide);
+    populateGuideForm(guide);
+    setGuideEditMode('visual');
+    setGuidesMsg(null);
+  };
+
+  const handleCreateNewGuide = () => {
+    const timestamp = Date.now().toString().slice(-4);
+    const initialSlug = `novy-navod-${timestamp}`;
+    const newGuide: AdminGuideArticle = {
+      id: initialSlug,
+      slug: initialSlug,
+      title: {
+        cs: lang === 'cs' ? 'Nový článek / průvodce' : 'New Article / Guide',
+        en: '',
+        ja: '',
+        ru: ''
+      },
+      subtitle: {
+        cs: '',
+        en: '',
+        ja: '',
+        ru: ''
+      },
+      category: {
+        cs: 'Návody & Mechaniky',
+        en: 'Guides & Mechanics',
+        ja: 'ガイド＆仕様',
+        ru: 'Гайды и механики'
+      },
+      author: 'PoGo Events Team',
+      readTime: '5 min',
+      updatedAt: new Date().toISOString().split('T')[0],
+      iconName: 'BookOpen',
+      imageUrl: '',
+      featured: false,
+      isCustom: true,
+      sections: [
+        {
+          id: 'sec-1',
+          heading: { cs: 'Úvod', en: 'Introduction', ja: '', ru: '' },
+          content: {
+            cs: 'Vítejte v novém průvodci. Zde můžete popsat podrobnosti herní mechaniky...',
+            en: '',
+            ja: '',
+            ru: ''
+          },
+          tips: { cs: [], en: [], ja: [], ru: [] },
+          pokemon: []
+        }
+      ]
+    };
+    setSelectedGuide(newGuide);
+    populateGuideForm(newGuide);
+    setGuideEditMode('visual');
+    setGuidesMsg(null);
+  };
+
+  const handleGenerateSlugFromTitle = () => {
+    const sourceText = formGuideTitle.cs || formGuideTitle.en || '';
+    if (!sourceText.trim()) return;
+    const generated = sourceText
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
+    if (generated) {
+      setFormGuideSlug(generated);
+      if (formGuideIsCustom) {
+        setFormGuideId(generated);
+      }
+    }
+  };
+
+  const handleToggleGuideEditMode = (mode: 'visual' | 'json') => {
+    if (mode === 'json' && guideEditMode === 'visual') {
+      const currentObj: AdminGuideArticle = {
+        id: formGuideId || formGuideSlug,
+        slug: formGuideSlug,
+        title: formGuideTitle,
+        subtitle: formGuideSubtitle,
+        category: formGuideCategory,
+        author: formGuideAuthor,
+        readTime: formGuideReadTime,
+        updatedAt: formGuideUpdatedAt,
+        iconName: formGuideIconName,
+        imageUrl: formGuideImageUrl,
+        featured: formGuideFeatured,
+        isCustom: formGuideIsCustom,
+        isHidden: formGuideIsHidden,
+        sections: formGuideSections
+      };
+      setFormGuideJson(JSON.stringify(currentObj, null, 2));
+    } else if (mode === 'visual' && guideEditMode === 'json') {
+      try {
+        const parsed = JSON.parse(formGuideJson);
+        populateGuideForm(parsed);
+      } catch (err: any) {
+        alert(lang === 'cs' ? `Nelze přepnout do vizuálního editoru, JSON obsahuje chybu: ${err.message}` : `Invalid JSON: ${err.message}`);
+        return;
+      }
+    }
+    setGuideEditMode(mode);
+  };
+
+  const handleSaveGuide = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!token) return;
+
+    let guideToSave: AdminGuideArticle;
+
+    if (guideEditMode === 'json') {
+      try {
+        guideToSave = JSON.parse(formGuideJson);
+      } catch (err: any) {
+        setGuidesMsg({ type: 'error', text: lang === 'cs' ? `Neplatný JSON: ${err.message}` : `Invalid JSON: ${err.message}` });
+        return;
+      }
+    } else {
+      const cleanSlug = formGuideSlug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/(^-|-$)+/g, '');
+      if (!cleanSlug) {
+        setGuidesMsg({ type: 'error', text: lang === 'cs' ? 'URL Slug je povinný!' : 'URL Slug is required!' });
+        return;
+      }
+      if (!formGuideTitle.cs.trim()) {
+        setGuidesMsg({ type: 'error', text: lang === 'cs' ? 'Český název (CS) je povinný!' : 'Czech Title (CS) is required!' });
+        return;
+      }
+      if (!formGuideTitle.en.trim()) {
+        setGuidesMsg({ type: 'error', text: lang === 'cs' ? 'Anglický název (EN) je povinný!' : 'English Title (EN) is required!' });
+        return;
+      }
+      if (formGuideSections.length === 0) {
+        setGuidesMsg({ type: 'error', text: lang === 'cs' ? 'Článek musí mít alespoň jednu sekci!' : 'Article must have at least one section!' });
+        return;
+      }
+
+      guideToSave = {
+        id: formGuideId || cleanSlug,
+        slug: cleanSlug,
+        title: {
+          cs: formGuideTitle.cs.trim(),
+          en: formGuideTitle.en.trim(),
+          ja: formGuideTitle.ja.trim() || formGuideTitle.en.trim() || formGuideTitle.cs.trim(),
+          ru: formGuideTitle.ru.trim() || formGuideTitle.en.trim() || formGuideTitle.cs.trim()
+        },
+        subtitle: {
+          cs: formGuideSubtitle.cs.trim(),
+          en: formGuideSubtitle.en.trim() || formGuideSubtitle.cs.trim(),
+          ja: formGuideSubtitle.ja.trim() || formGuideSubtitle.cs.trim(),
+          ru: formGuideSubtitle.ru.trim() || formGuideSubtitle.cs.trim()
+        },
+        category: {
+          cs: formGuideCategory.cs.trim() || 'Návody & Mechaniky',
+          en: formGuideCategory.en.trim() || formGuideCategory.cs.trim() || 'Guides',
+          ja: formGuideCategory.ja.trim() || formGuideCategory.cs.trim() || 'ガイド',
+          ru: formGuideCategory.ru.trim() || formGuideCategory.cs.trim() || 'Гайды'
+        },
+        author: formGuideAuthor.trim() || 'PoGo Events Team',
+        readTime: formGuideReadTime.trim() || '5 min',
+        updatedAt: formGuideUpdatedAt.trim() || new Date().toISOString().split('T')[0],
+        iconName: formGuideIconName.trim() || 'BookOpen',
+        imageUrl: formGuideImageUrl.trim(),
+        featured: formGuideFeatured,
+        isCustom: formGuideIsCustom,
+        isHidden: formGuideIsHidden,
+        sections: formGuideSections.map((sec, idx) => ({
+          id: sec.id || `sec-${idx + 1}`,
+          heading: {
+            cs: sec.heading?.cs?.trim() || `Sekce ${idx + 1}`,
+            en: sec.heading?.en?.trim() || sec.heading?.cs?.trim() || `Section ${idx + 1}`,
+            ja: sec.heading?.ja?.trim() || sec.heading?.cs?.trim() || '',
+            ru: sec.heading?.ru?.trim() || sec.heading?.cs?.trim() || ''
+          },
+          content: {
+            cs: sec.content?.cs || '',
+            en: sec.content?.en || sec.content?.cs || '',
+            ja: sec.content?.ja || sec.content?.cs || '',
+            ru: sec.content?.ru || sec.content?.cs || ''
+          },
+          tips: {
+            cs: Array.isArray(sec.tips?.cs) ? sec.tips.cs.filter(Boolean) : [],
+            en: Array.isArray(sec.tips?.en) ? sec.tips.en.filter(Boolean) : (Array.isArray(sec.tips?.cs) ? sec.tips.cs.filter(Boolean) : []),
+            ja: Array.isArray(sec.tips?.ja) ? sec.tips.ja.filter(Boolean) : [],
+            ru: Array.isArray(sec.tips?.ru) ? sec.tips.ru.filter(Boolean) : []
+          },
+          pokemon: Array.isArray(sec.pokemon) ? sec.pokemon.filter(Boolean) : []
+        }))
+      };
+    }
+
+    try {
+      const res = await apiFetch('/api/admin/guides', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ guide: guideToSave })
+      });
+      const parsed = await safeParseApiResponse(res);
+      if (parsed.ok && (parsed.data?.success || res.ok)) {
+        setGuidesMsg({
+          type: 'success',
+          text: lang === 'cs' ? `Článek "${guideToSave.slug}" úspěšně uložen na server!` : `Guide "${guideToSave.slug}" saved successfully!`
+        });
+        setSelectedGuide(guideToSave);
+        populateGuideForm(guideToSave);
+        if (typeof window !== 'undefined') {
+          try {
+            const currentList = parsed.data?.guides || adminGuides;
+            localStorage.setItem('pogo_admin_guides_cache', JSON.stringify(currentList));
+          } catch {}
+        }
+        fetchAdminGuides();
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('pogo_guides_updated'));
+        }
+      } else {
+        // Fallback: save to localStorage if backend is waiting for deployment
+        if (typeof window !== 'undefined') {
+          try {
+            let currentList: AdminGuideArticle[] = [...adminGuides];
+            if (currentList.length === 0) {
+              currentList = GUIDES_DATA.map(g => ({ ...g, isCustom: false, isModified: false }));
+            }
+            const existingIdx = currentList.findIndex(g => g.slug === guideToSave.slug);
+            if (existingIdx !== -1) {
+              currentList[existingIdx] = { ...currentList[existingIdx], ...guideToSave, isModified: true };
+            } else {
+              currentList.push({ ...guideToSave, isCustom: true });
+            }
+            localStorage.setItem('pogo_admin_guides_cache', JSON.stringify(currentList));
+            setAdminGuides(currentList);
+            setSelectedGuide(guideToSave);
+            populateGuideForm(guideToSave);
+            window.dispatchEvent(new CustomEvent('pogo_guides_updated'));
+            setGuidesMsg({
+              type: 'success',
+              text: lang === 'cs'
+                ? `Článek "${guideToSave.slug}" byl úspěšně uložen! (Na produkčním serveru bude synchronizován po deployi).`
+                : `Guide "${guideToSave.slug}" saved successfully! (Will sync to server after deploy).`
+            });
+            return;
+          } catch {}
+        }
+        setGuidesMsg({ type: 'error', text: parsed.error || (lang === 'cs' ? 'Chyba při ukládání' : 'Save failed') });
+      }
+    } catch (err: any) {
+      setGuidesMsg({ type: 'error', text: err.message });
+    }
+  };
+
+  const handleDeleteOrHideGuide = async (guide: AdminGuideArticle) => {
+    const isCustom = guide.isCustom;
+    const confirmPrompt = isCustom
+      ? (lang === 'cs' ? `Opravdu chcete trvale smazat vlastní článek "${guide.slug}"?` : `Permanently delete custom guide "${guide.slug}"?`)
+      : (guide.isHidden
+          ? (lang === 'cs' ? `Znovu zobrazit článek "${guide.slug}" na webu?` : `Unhide guide "${guide.slug}"?`)
+          : (lang === 'cs' ? `Opravdu chcete skrýt článek "${guide.slug}" z webu?` : `Hide guide "${guide.slug}" from public view?`));
+
+    if (!window.confirm(confirmPrompt)) return;
+
+    try {
+      const res = await apiFetch(`/api/admin/guides/${encodeURIComponent(guide.slug)}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const parsed = await safeParseApiResponse(res);
+      if (parsed.ok && (parsed.data?.success || res.ok)) {
+        setGuidesMsg({
+          type: 'success',
+          text: lang === 'cs' ? `Akce pro "${guide.slug}" proběhla úspěšně.` : `Action for "${guide.slug}" completed.`
+        });
+        if (selectedGuide?.slug === guide.slug) {
+          if (isCustom) {
+            setSelectedGuide(null);
+          } else {
+            const updated = { ...selectedGuide, isHidden: !selectedGuide.isHidden };
+            setSelectedGuide(updated);
+            populateGuideForm(updated);
+          }
+        }
+        fetchAdminGuides();
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('pogo_guides_updated'));
+        }
+      } else {
+        // Fallback in localStorage
+        if (typeof window !== 'undefined') {
+          let currentList: AdminGuideArticle[] = [...adminGuides];
+          if (isCustom) {
+            currentList = currentList.filter(g => g.slug !== guide.slug);
+            setSelectedGuide(null);
+          } else {
+            const idx = currentList.findIndex(g => g.slug === guide.slug);
+            if (idx !== -1) {
+              currentList[idx] = { ...currentList[idx], isHidden: !currentList[idx].isHidden };
+              if (selectedGuide?.slug === guide.slug) {
+                setSelectedGuide(currentList[idx]);
+                populateGuideForm(currentList[idx]);
+              }
+            }
+          }
+          localStorage.setItem('pogo_admin_guides_cache', JSON.stringify(currentList));
+          setAdminGuides(currentList);
+          window.dispatchEvent(new CustomEvent('pogo_guides_updated'));
+          setGuidesMsg({
+            type: 'success',
+            text: lang === 'cs' ? `Změna pro "${guide.slug}" uložena lokálně.` : `Change for "${guide.slug}" saved locally.`
+          });
+          return;
+        }
+        setGuidesMsg({ type: 'error', text: parsed.error || 'Operation failed' });
+      }
+    } catch (err: any) {
+      setGuidesMsg({ type: 'error', text: err.message });
+    }
+  };
+
+  const handleResetDefaultGuide = async (guide: AdminGuideArticle) => {
+    if (!window.confirm(lang === 'cs' ? `Opravdu obnovit článek "${guide.slug}" na původní výchozí verzi? Veškeré úpravy v něm budou zrušeny.` : `Reset guide "${guide.slug}" to default? All custom edits will be undone.`)) return;
+
+    try {
+      const res = await apiFetch(`/api/admin/guides/reset/${encodeURIComponent(guide.slug)}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const parsed = await safeParseApiResponse(res);
+      if (parsed.ok && (parsed.data?.success || res.ok)) {
+        setGuidesMsg({
+          type: 'success',
+          text: lang === 'cs' ? `Článek "${guide.slug}" byl resetován do výchozího stavu.` : `Guide "${guide.slug}" was reset to default.`
+        });
+        fetchAdminGuides();
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('pogo_guides_updated'));
+        }
+      } else {
+        const stock = GUIDES_DATA.find(g => g.slug === guide.slug);
+        if (stock) {
+          let currentList = adminGuides.map(g => g.slug === guide.slug ? { ...stock, isCustom: false, isModified: false } : g);
+          if (typeof window !== 'undefined') {
+            try {
+              localStorage.setItem('pogo_admin_guides_cache', JSON.stringify(currentList));
+            } catch {}
+          }
+          setAdminGuides(currentList);
+          if (selectedGuide?.slug === guide.slug) {
+            const updatedStock = { ...stock, isCustom: false, isModified: false };
+            setSelectedGuide(updatedStock);
+            populateGuideForm(updatedStock);
+          }
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('pogo_guides_updated'));
+          }
+          setGuidesMsg({
+            type: 'success',
+            text: lang === 'cs' ? `Článek "${guide.slug}" byl resetován do výchozího stavu.` : `Guide "${guide.slug}" was reset to default.`
+          });
+          return;
+        }
+        setGuidesMsg({ type: 'error', text: parsed.error || 'Reset failed' });
+      }
+    } catch (err: any) {
+      setGuidesMsg({ type: 'error', text: err.message });
+    }
+  };
+
+  const handleCopyGuideUrl = (slug: string) => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://pogoevents.app';
+    const fullUrl = `${origin}/${lang}/guides/${slug}`;
+    navigator.clipboard.writeText(fullUrl).then(() => {
+      setGuideCopiedSlug(slug);
+      setTimeout(() => setGuideCopiedSlug(null), 2500);
+    });
+  };
+
+  const handleExportGuidesJson = () => {
+    const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(adminGuides, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute('href', dataStr);
+    downloadAnchor.setAttribute('download', `pogo_guides_export_${new Date().toISOString().split('T')[0]}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+
+  const handleImportGuidesJson = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (ev) => {
+      try {
+        const parsed = JSON.parse(ev.target?.result as string);
+        const listToImport = Array.isArray(parsed) ? parsed : (Array.isArray(parsed.guides) ? parsed.guides : null);
+        if (!listToImport) {
+          setGuidesMsg({ type: 'error', text: lang === 'cs' ? 'Neplatný formát souboru (očekáváno pole článků).' : 'Invalid format (array of articles expected).' });
+          return;
+        }
+        const res = await apiFetch('/api/admin/guides/import', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ guides: listToImport })
+        });
+        const parsedRes = await safeParseApiResponse(res);
+        if (parsedRes.ok && (parsedRes.data?.success || res.ok)) {
+          setGuidesMsg({
+            type: 'success',
+            text: lang === 'cs' ? `Úspěšně importováno ${parsedRes.data?.count || parsedRes.data?.total || listToImport.length} článků!` : `Successfully imported articles!`
+          });
+          fetchAdminGuides();
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('pogo_guides_updated'));
+          }
+        } else {
+          // Fallback: save imported to localStorage
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('pogo_admin_guides_cache', JSON.stringify(listToImport));
+            setAdminGuides(listToImport);
+            window.dispatchEvent(new CustomEvent('pogo_guides_updated'));
+            setGuidesMsg({
+              type: 'success',
+              text: lang === 'cs' ? `Články úspěšně naimportovány do lokální paměti (${listToImport.length} článků).` : `Articles imported locally.`
+            });
+            return;
+          }
+          setGuidesMsg({ type: 'error', text: parsedRes.error || 'Import failed' });
+        }
+      } catch (err: any) {
+        setGuidesMsg({ type: 'error', text: lang === 'cs' ? `Chyba při čtení souboru: ${err.message}` : `Error reading file: ${err.message}` });
+      } finally {
+        if (guidesImportFileInputRef.current) guidesImportFileInputRef.current.value = '';
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleGuideHeroFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setGuidesMsg({ type: 'error', text: lang === 'cs' ? 'Soubor je příliš velký (max 5 MB)' : 'File too large (max 5 MB)' });
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      if (ev.target?.result) {
+        setFormGuideImageUrl(ev.target.result as string);
+        setGuidesMsg({ type: 'success', text: lang === 'cs' ? 'Obrázek byl nahrán!' : 'Image loaded!' });
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handlePickPokemonHeroSprite = (pokeName: string) => {
+    if (!pokeName.trim()) return;
+    const spriteUrl = getPokemonIconUrl(pokeName.trim());
+    setFormGuideImageUrl(spriteUrl);
+    setGuidesMsg({ type: 'success', text: lang === 'cs' ? `Obrázek nastaven na sprite: ${pokeName}` : `Set hero image to: ${pokeName}` });
+  };
+
+  const handleAddSection = () => {
+    const newSec: GuideSection = {
+      id: `sec-${Date.now().toString().slice(-4)}`,
+      heading: { cs: 'Nová sekce', en: '', ja: '', ru: '' },
+      content: { cs: '', en: '', ja: '', ru: '' },
+      tips: { cs: [], en: [], ja: [], ru: [] },
+      pokemon: []
+    };
+    setFormGuideSections(prev => [...prev, newSec]);
+  };
+
+  const handleRemoveSection = (idx: number) => {
+    if (formGuideSections.length <= 1) {
+      alert(lang === 'cs' ? 'Článek musí mít alespoň jednu sekci!' : 'Article must have at least one section!');
+      return;
+    }
+    if (!window.confirm(lang === 'cs' ? 'Opravdu chcete odebrat tuto sekci?' : 'Remove this section?')) return;
+    setFormGuideSections(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleMoveSection = (idx: number, direction: 'up' | 'down') => {
+    if ((direction === 'up' && idx === 0) || (direction === 'down' && idx === formGuideSections.length - 1)) return;
+    const targetIdx = direction === 'up' ? idx - 1 : idx + 1;
+    setFormGuideSections(prev => {
+      const copy = [...prev];
+      const temp = copy[idx];
+      copy[idx] = copy[targetIdx];
+      copy[targetIdx] = temp;
+      return copy;
+    });
+  };
+
+  const handleSectionTextChange = (idx: number, field: 'heading' | 'content', text: string) => {
+    setFormGuideSections(prev => {
+      const copy = [...prev];
+      const sec = { ...copy[idx] };
+      const currentObj = (sec as any)[field] || { cs: '', en: '', ja: '', ru: '' };
+      (sec as any)[field] = {
+        ...currentObj,
+        [guideLangTab]: text
+      };
+      copy[idx] = sec;
+      return copy;
+    });
+  };
+
+  const handleInsertSectionFormatting = (idx: number, prefix: string, suffix: string = '') => {
+    const currentText = formGuideSections[idx]?.content?.[guideLangTab] || '';
+    const newText = currentText ? `${currentText}\n${prefix}${suffix}` : `${prefix}${suffix}`;
+    handleSectionTextChange(idx, 'content', newText);
+  };
+
+  const handleAddSectionTip = (idx: number) => {
+    const tipText = window.prompt(lang === 'cs' ? 'Zadejte užitečný tip pro čtenáře:' : 'Enter useful tip:');
+    if (!tipText || !tipText.trim()) return;
+    setFormGuideSections(prev => {
+      const copy = [...prev];
+      const sec = { ...copy[idx] };
+      const currentTips = sec.tips || { cs: [], en: [], ja: [], ru: [] };
+      const langTips = currentTips[guideLangTab] || [];
+      sec.tips = {
+        ...currentTips,
+        [guideLangTab]: [...langTips, tipText.trim()]
+      };
+      copy[idx] = sec;
+      return copy;
+    });
+  };
+
+  const handleRemoveSectionTip = (secIdx: number, tipIdx: number) => {
+    setFormGuideSections(prev => {
+      const copy = [...prev];
+      const sec = { ...copy[secIdx] };
+      const currentTips = sec.tips || { cs: [], en: [], ja: [], ru: [] };
+      const langTips = currentTips[guideLangTab] || [];
+      sec.tips = {
+        ...currentTips,
+        [guideLangTab]: langTips.filter((_, i) => i !== tipIdx)
+      };
+      copy[secIdx] = sec;
+      return copy;
+    });
+  };
+
+  const handleAddPokemonToSection = (secIdx: number, pokeName: string) => {
+    const clean = pokeName.trim();
+    if (!clean) return;
+    setFormGuideSections(prev => {
+      const copy = [...prev];
+      const sec = { ...copy[secIdx] };
+      const currentPokes = sec.pokemon || [];
+      if (!currentPokes.includes(clean)) {
+        sec.pokemon = [...currentPokes, clean];
+      }
+      copy[secIdx] = sec;
+      return copy;
+    });
+  };
+
+  const handleRemovePokemonFromSection = (secIdx: number, pokeName: string) => {
+    setFormGuideSections(prev => {
+      const copy = [...prev];
+      const sec = { ...copy[secIdx] };
+      sec.pokemon = (sec.pokemon || []).filter(p => p !== pokeName);
+      copy[secIdx] = sec;
+      return copy;
+    });
+  };
+
+  const renderGuideIcon = (name: string, size = 16) => {
+    switch (name) {
+      case 'Shield': return <Shield size={size} />;
+      case 'Swords': return <Swords size={size} />;
+      case 'Calendar': return <Calendar size={size} />;
+      case 'Sparkles': return <Sparkles size={size} />;
+      case 'Trophy': return <Trophy size={size} />;
+      case 'Globe': return <Globe size={size} />;
+      case 'MapPin': return <MapPin size={size} />;
+      case 'Clock': return <Clock size={size} />;
+      case 'Target': return <Target size={size} />;
+      case 'Award': return <Award size={size} />;
+      default: return <BookOpen size={size} />;
+    }
+  };
+
+  const filteredGuides = useMemo(() => {
+    return adminGuides.filter(g => {
+      if (guidesFilter === 'custom' && !g.isCustom) return false;
+      if (guidesFilter === 'modified' && (!g.isModified || g.isCustom)) return false;
+      if (guidesFilter === 'hidden' && !g.isHidden) return false;
+
+      if (guidesSearchQuery.trim()) {
+        const q = guidesSearchQuery.toLowerCase();
+        const titleMatch = (g.title?.cs?.toLowerCase() || '').includes(q) ||
+                           (g.title?.en?.toLowerCase() || '').includes(q);
+        const slugMatch = g.slug.toLowerCase().includes(q);
+        const catMatch = (g.category?.cs?.toLowerCase() || '').includes(q) ||
+                         (g.category?.en?.toLowerCase() || '').includes(q);
+        if (!titleMatch && !slugMatch && !catMatch) return false;
+      }
+      return true;
+    });
+  }, [adminGuides, guidesFilter, guidesSearchQuery]);
+
   useEffect(() => {
     if (isLoggedIn) {
       fetchScraperStatus();
@@ -845,8 +1621,9 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
       fetchIconOverrides();
       fetchRaidData();
       fetchAdminFriends();
+      fetchAdminGuides();
     }
-  }, [isLoggedIn, fetchScraperStatus, fetchCacheStats, fetchIconOverrides, fetchRaidData, fetchAdminFriends]);
+  }, [isLoggedIn, fetchScraperStatus, fetchCacheStats, fetchIconOverrides, fetchRaidData, fetchAdminFriends, fetchAdminGuides]);
 
   useEffect(() => {
     if (adminTab === 'scraper' && isLoggedIn) fetchScraperStatus();
@@ -854,7 +1631,8 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
     if (adminTab === 'icons' && isLoggedIn) fetchIconOverrides();
     if (adminTab === 'raids' && isLoggedIn) fetchRaidData();
     if (adminTab === 'friends' && isLoggedIn) fetchAdminFriends();
-  }, [adminTab, isLoggedIn, fetchScraperStatus, fetchCacheStats, fetchIconOverrides, fetchRaidData, fetchAdminFriends]);
+    if (adminTab === 'guides' && isLoggedIn) fetchAdminGuides();
+  }, [adminTab, isLoggedIn, fetchScraperStatus, fetchCacheStats, fetchIconOverrides, fetchRaidData, fetchAdminFriends, fetchAdminGuides]);
 
   const handleRefreshRaids = async () => {
     setRaidsRefreshing(true);
@@ -1638,6 +2416,9 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
         <button className={`admin-nav-btn ${adminTab === 'events' ? 'active' : ''}`} onClick={() => setAdminTab('events')}>
           <Edit size={15} />{lang === 'cs' ? 'Události' : 'Events'}
         </button>
+        <button className={`admin-nav-btn ${adminTab === 'guides' ? 'active' : ''}`} onClick={() => setAdminTab('guides')}>
+          <BookOpen size={15} />{lang === 'cs' ? 'Články & Návody' : 'Articles & Guides'}
+        </button>
         <button className={`admin-nav-btn ${adminTab === 'raids' ? 'active' : ''}`} onClick={() => setAdminTab('raids')}>
           <Swords size={15} />{lang === 'cs' ? 'Správa Raidů' : 'Raid Bosses'}
         </button>
@@ -1660,6 +2441,874 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
           <Server size={15} />{lang === 'cs' ? 'Cache' : 'Cache'}
         </button>
       </div>
+
+      {/* ===== TAB: GUIDES & ARTICLES ===== */}
+      {adminTab === 'guides' && (
+        <div className="admin-guides-panel" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Header Action Bar */}
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '14px', background: 'rgba(255,255,255,0.03)', padding: '16px 20px', borderRadius: '16px', border: '1px solid var(--border-color)' }}>
+            <div>
+              <h2 style={{ margin: 0, fontSize: '1.25rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <BookOpen size={22} style={{ color: '#aa3bff' }} />
+                {lang === 'cs' ? 'Správa článků & Průvodců' : 'Articles & Guides Manager'}
+              </h2>
+              <p style={{ margin: '4px 0 0 0', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                {lang === 'cs'
+                  ? 'Upravujte výchozí články, publikujte nové a generujte čisté indexovatelné URL adresy pro sdílení.'
+                  : 'Manage stock guides, write new articles, and generate clean indexable URLs for easy sharing.'}
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+              <button
+                type="button"
+                onClick={handleCreateNewGuide}
+                className="admin-btn btn-success"
+              >
+                <Plus size={15} />
+                {lang === 'cs' ? 'Nový článek' : 'New Article'}
+              </button>
+              <button
+                type="button"
+                onClick={handleExportGuidesJson}
+                className="admin-btn btn-secondary"
+                title="Stáhnout zálohu všech článků v JSON"
+              >
+                <Download size={14} />
+                {lang === 'cs' ? 'Export JSON' : 'Export JSON'}
+              </button>
+              <input
+                type="file"
+                accept=".json"
+                ref={guidesImportFileInputRef}
+                onChange={handleImportGuidesJson}
+                style={{ display: 'none' }}
+              />
+              <button
+                type="button"
+                onClick={() => guidesImportFileInputRef.current?.click()}
+                className="admin-btn btn-secondary"
+                title="Importovat články ze souboru JSON"
+              >
+                <Upload size={14} />
+                {lang === 'cs' ? 'Import JSON' : 'Import JSON'}
+              </button>
+              <button
+                type="button"
+                onClick={fetchAdminGuides}
+                className="admin-btn btn-secondary"
+                title="Znovu načíst data ze serveru"
+                disabled={guidesLoading}
+              >
+                <RefreshCw size={14} className={guidesLoading ? 'spin' : ''} />
+                {lang === 'cs' ? 'Obnovit' : 'Refresh'}
+              </button>
+            </div>
+          </div>
+
+          {/* Feedback Messages */}
+          {guidesMsg && (
+            <div className={guidesMsg.type === 'error' ? 'admin-form-error' : 'admin-form-success'}>
+              {guidesMsg.type === 'error' ? <AlertTriangle size={16} /> : <CheckCircle size={16} />}
+              <span>{guidesMsg.text}</span>
+            </div>
+          )}
+
+          {/* Main Content Layout */}
+          <div className="admin-dashboard-layout admin-guides-layout">
+            {/* Left Sidebar List */}
+            <div className="admin-sidebar-list admin-guides-sidebar">
+              <div className="sidebar-list-controls">
+                <div className="search-box-container">
+                  <Search size={16} className="search-icon" />
+                  <input
+                    type="text"
+                    placeholder={lang === 'cs' ? 'Hledat v článcích...' : 'Search guides...'}
+                    value={guidesSearchQuery}
+                    onChange={(e) => setGuidesSearchQuery(e.target.value)}
+                    className="admin-search-input"
+                  />
+                </div>
+                <div className="admin-list-tabs">
+                  {(['all', 'custom', 'modified', 'hidden'] as const).map(f => (
+                    <button
+                      key={f}
+                      type="button"
+                      className={`list-tab-btn ${guidesFilter === f ? 'active' : ''}`}
+                      onClick={() => setGuidesFilter(f)}
+                    >
+                      {f === 'all' ? (lang === 'cs' ? 'Vše' : 'All') :
+                       f === 'custom' ? (lang === 'cs' ? 'Vlastní' : 'Custom') :
+                       f === 'modified' ? (lang === 'cs' ? 'Upraveno' : 'Modified') :
+                       (lang === 'cs' ? 'Skryté' : 'Hidden')}
+                      {f === 'all' && ` (${adminGuides.length})`}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="admin-events-scroller">
+                {guidesLoading ? (
+                  <div className="no-events-found" style={{ padding: '30px 10px', textAlign: 'center' }}>
+                    <RefreshCw size={24} className="spin" style={{ color: '#aa3bff', margin: '0 auto 10px auto' }} />
+                    <p>{lang === 'cs' ? 'Načítám články...' : 'Loading articles...'}</p>
+                  </div>
+                ) : filteredGuides.length === 0 ? (
+                  <div className="no-events-found">
+                    <p>{lang === 'cs' ? 'Žádné články nenalezeny' : 'No articles found'}</p>
+                  </div>
+                ) : (
+                  filteredGuides.map(guide => {
+                    const isSelected = selectedGuide?.slug === guide.slug;
+                    return (
+                      <div
+                        key={guide.slug}
+                        className={`admin-guide-card ${isSelected ? 'selected' : ''} ${guide.isHidden ? 'hidden-guide' : ''}`}
+                        onClick={() => handleSelectGuide(guide)}
+                      >
+                        <div className="guide-card-header-row">
+                          <span className="guide-category-chip">
+                            {renderGuideIcon(guide.iconName, 12)}
+                            {guide.category?.[lang] || guide.category?.cs || 'Průvodce'}
+                          </span>
+                          <div className="guide-card-badges">
+                            {guide.isCustom && <span className="guide-badge custom">vlastní</span>}
+                            {!guide.isCustom && guide.isModified && <span className="guide-badge modified">upraveno</span>}
+                            {!guide.isCustom && !guide.isModified && <span className="guide-badge default">výchozí</span>}
+                            {guide.isHidden && <span className="guide-badge hidden"><EyeOff size={10} /> skrytý</span>}
+                            {guide.featured && <span className="guide-badge featured"><Star size={10} /></span>}
+                          </div>
+                        </div>
+
+                        <h4 className="guide-card-title">
+                          {guide.title?.[lang] || guide.title?.cs || guide.slug}
+                        </h4>
+
+                        <div className="guide-card-url-row">
+                          <code className="guide-slug-tag">/{lang}/guides/{guide.slug}</code>
+                          <div className="guide-card-quick-actions" onClick={(e) => e.stopPropagation()}>
+                            <button
+                              type="button"
+                              className="guide-mini-btn"
+                              onClick={() => handleCopyGuideUrl(guide.slug)}
+                              title={lang === 'cs' ? 'Kopírovat URL adresu' : 'Copy URL'}
+                            >
+                              {guideCopiedSlug === guide.slug ? <Check size={12} color="#22c55e" /> : <Copy size={12} />}
+                            </button>
+                            <a
+                              href={`/${lang}/guides/${guide.slug}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="guide-mini-btn"
+                              title={lang === 'cs' ? 'Otevřít článek na webu' : 'Open in app'}
+                            >
+                              <ExternalLink size={12} />
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+
+            {/* Right Editor Container */}
+            <div className="admin-form-container admin-guide-editor-container">
+              {selectedGuide ? (
+                <div className="admin-guide-editor">
+                  {/* Editor Header */}
+                  <div className="admin-guide-editor-header">
+                    <div>
+                      <h3 style={{ margin: 0, fontSize: '1.15rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Edit size={18} style={{ color: '#aa3bff' }} />
+                        {selectedGuide.isCustom
+                          ? (lang === 'cs' ? 'Editace vlastního článku' : 'Edit Custom Guide')
+                          : (lang === 'cs' ? 'Úprava výchozího článku' : 'Override Default Guide')}
+                      </h3>
+                      <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                        ID: <code>{formGuideId || formGuideSlug}</code>
+                      </span>
+                    </div>
+
+                    <div className="admin-editor-mode-toggle">
+                      <button
+                        type="button"
+                        className={`mode-toggle-btn ${guideEditMode === 'visual' ? 'active' : ''}`}
+                        onClick={() => handleToggleGuideEditMode('visual')}
+                      >
+                        <Eye size={13} /> {lang === 'cs' ? 'Vizuální bloky' : 'Visual Blocks'}
+                      </button>
+                      <button
+                        type="button"
+                        className={`mode-toggle-btn ${guideEditMode === 'json' ? 'active' : ''}`}
+                        onClick={() => handleToggleGuideEditMode('json')}
+                      >
+                        <FileJson size={13} /> {lang === 'cs' ? 'JSON kód' : 'JSON Raw'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Public URL Live Banner */}
+                  <div className="guide-editor-url-banner">
+                    <div className="guide-url-info">
+                      <span className="guide-url-label">{lang === 'cs' ? 'Čistá URL adresa pro sdílení & indexaci:' : 'Public Shareable & Indexable URL:'}</span>
+                      <code className="guide-url-preview-code">
+                        {typeof window !== 'undefined' ? window.location.origin : 'https://pogoevents.app'}/{lang}/guides/{formGuideSlug || '...'}
+                      </code>
+                    </div>
+                    <div className="guide-url-actions">
+                      <button
+                        type="button"
+                        className="admin-btn btn-secondary"
+                        onClick={() => handleCopyGuideUrl(formGuideSlug)}
+                        disabled={!formGuideSlug}
+                      >
+                        {guideCopiedSlug === formGuideSlug ? <Check size={14} color="#22c55e" /> : <Copy size={14} />}
+                        {guideCopiedSlug === formGuideSlug ? (lang === 'cs' ? 'Zkopírováno!' : 'Copied!') : (lang === 'cs' ? 'Kopírovat URL' : 'Copy URL')}
+                      </button>
+                      <a
+                        href={`/${lang}/guides/${formGuideSlug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="admin-btn btn-secondary"
+                        style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                      >
+                        <ExternalLink size={14} />
+                        {lang === 'cs' ? 'Zobrazit na webu' : 'View in app'}
+                      </a>
+                    </div>
+                  </div>
+
+                  {guideEditMode === 'visual' ? (
+                    <form onSubmit={handleSaveGuide} className="guide-visual-form">
+                      {/* Language Switcher Tabs */}
+                      <div className="guide-lang-tabs-container">
+                        <div className="guide-lang-tabs">
+                          {(['cs', 'en', 'ja', 'ru'] as const).map(l => (
+                            <button
+                              key={l}
+                              type="button"
+                              className={`guide-lang-tab-btn ${guideLangTab === l ? 'active' : ''}`}
+                              onClick={() => setGuideLangTab(l)}
+                            >
+                              <span className="lang-code">{l.toUpperCase()}</span>
+                              <span className="lang-name">
+                                {l === 'cs' ? 'Čeština (Výchozí)' : l === 'en' ? 'English' : l === 'ja' ? '日本語' : 'Русский'}
+                              </span>
+                              {formGuideTitle[l] && <span className="lang-filled-dot" title="Vyplněno" />}
+                            </button>
+                          ))}
+                        </div>
+                        <div className="guide-lang-help">
+                          {lang === 'cs'
+                            ? `Aktuálně upravujete texty pro: ${guideLangTab.toUpperCase()}. Pokud cizojazyčné záložky nevyplníte, systém automaticky použije českou verzi.`
+                            : `Editing strings for ${guideLangTab.toUpperCase()}. Blank translations fallback to Czech.`}
+                        </div>
+                      </div>
+
+                      {/* Core Metadata Grid */}
+                      <div className="form-grid">
+                        {/* Slug */}
+                        <div className="form-field full-width-field">
+                          <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span>{lang === 'cs' ? 'URL Slug (identifikátor v URL adrese)' : 'URL Slug'} <strong style={{ color: '#ef4444' }}>*</strong></span>
+                            <button
+                              type="button"
+                              onClick={handleGenerateSlugFromTitle}
+                              className="slug-generate-btn"
+                              title="Automaticky vygenerovat z názvu"
+                            >
+                              <Zap size={12} /> {lang === 'cs' ? 'Vygenerovat z názvu' : 'Generate from Title'}
+                            </button>
+                          </label>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600 }}>/{lang}/guides/</span>
+                            <input
+                              type="text"
+                              value={formGuideSlug}
+                              onChange={(e) => {
+                                const val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+                                setFormGuideSlug(val);
+                                if (formGuideIsCustom) setFormGuideId(val);
+                              }}
+                              placeholder="napr-jak-chytit-galarian-birds"
+                              required
+                              style={{ flex: 1 }}
+                            />
+                          </div>
+                        </div>
+
+                        {/* Title */}
+                        <div className="form-field full-width-field">
+                          <label>
+                            {lang === 'cs' ? `Název článku (${guideLangTab.toUpperCase()})` : `Article Title (${guideLangTab.toUpperCase()})`}
+                            {(guideLangTab === 'cs' || guideLangTab === 'en') && <strong style={{ color: '#ef4444' }}> *</strong>}
+                          </label>
+                          <input
+                            type="text"
+                            value={formGuideTitle[guideLangTab] || ''}
+                            onChange={(e) => {
+                              const newTitle = e.target.value;
+                              setFormGuideTitle({ ...formGuideTitle, [guideLangTab]: newTitle });
+                              if (guideLangTab === 'cs' && formGuideIsCustom && (formGuideSlug.startsWith('novy-navod-') || !formGuideSlug)) {
+                                const generated = newTitle
+                                  .normalize('NFD')
+                                  .replace(/[\u0300-\u036f]/g, '')
+                                  .toLowerCase()
+                                  .replace(/[^a-z0-9]+/g, '-')
+                                  .replace(/(^-|-$)+/g, '');
+                                if (generated) {
+                                  setFormGuideSlug(generated);
+                                  setFormGuideId(generated);
+                                }
+                              }
+                            }}
+                            placeholder={guideLangTab === 'cs' ? 'např. Kompletní průvodce chytáním Galarian Birds' : 'Title in this language...'}
+                            required={guideLangTab === 'cs' || guideLangTab === 'en'}
+                          />
+                        </div>
+
+                        {/* Subtitle */}
+                        <div className="form-field full-width-field">
+                          <label>{lang === 'cs' ? `Podtitul (${guideLangTab.toUpperCase()})` : `Subtitle (${guideLangTab.toUpperCase()})`}</label>
+                          <input
+                            type="text"
+                            value={formGuideSubtitle[guideLangTab] || ''}
+                            onChange={(e) => setFormGuideSubtitle({ ...formGuideSubtitle, [guideLangTab]: e.target.value })}
+                            placeholder={guideLangTab === 'cs' ? 'např. Strategie pro Daily Adventure Incense, Master Ball a techniky hodu' : 'Short subtitle / summary...'}
+                          />
+                        </div>
+
+                        {/* Category */}
+                        <div className="form-field full-width-field">
+                          <label>{lang === 'cs' ? `Kategorie (${guideLangTab.toUpperCase()})` : `Category (${guideLangTab.toUpperCase()})`}</label>
+                          <input
+                            type="text"
+                            value={formGuideCategory[guideLangTab] || ''}
+                            onChange={(e) => setFormGuideCategory({ ...formGuideCategory, [guideLangTab]: e.target.value })}
+                            placeholder="např. Legendární průvodci & Denní mechaniky"
+                          />
+                          <div className="guide-preset-chips" style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '6px' }}>
+                            {GUIDE_CATEGORY_SUGGESTIONS.map(cat => (
+                              <button
+                                key={cat}
+                                type="button"
+                                onClick={() => setFormGuideCategory({ ...formGuideCategory, [guideLangTab]: cat })}
+                                className="guide-preset-chip"
+                              >
+                                {cat}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Author */}
+                        <div className="form-field">
+                          <label>{lang === 'cs' ? 'Autor' : 'Author'}</label>
+                          <input
+                            type="text"
+                            value={formGuideAuthor}
+                            onChange={(e) => setFormGuideAuthor(e.target.value)}
+                            placeholder="PoGo Events Team"
+                          />
+                        </div>
+
+                        {/* Read Time */}
+                        <div className="form-field">
+                          <label>{lang === 'cs' ? 'Doba čtení' : 'Read Time'}</label>
+                          <input
+                            type="text"
+                            value={formGuideReadTime}
+                            onChange={(e) => setFormGuideReadTime(e.target.value)}
+                            placeholder="5 min"
+                          />
+                        </div>
+
+                        {/* Updated Date */}
+                        <div className="form-field">
+                          <label>{lang === 'cs' ? 'Datum aktualizace (YYYY-MM-DD)' : 'Updated Date (YYYY-MM-DD)'}</label>
+                          <input
+                            type="date"
+                            value={formGuideUpdatedAt}
+                            onChange={(e) => setFormGuideUpdatedAt(e.target.value)}
+                          />
+                        </div>
+
+                        {/* Icon */}
+                        <div className="form-field">
+                          <label>{lang === 'cs' ? 'Ikona kategorie' : 'Category Icon'}</label>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div className="guide-icon-preview-box">
+                              {renderGuideIcon(formGuideIconName, 18)}
+                            </div>
+                            <select
+                              value={formGuideIconName}
+                              onChange={(e) => setFormGuideIconName(e.target.value)}
+                              style={{ flex: 1 }}
+                            >
+                              {GUIDE_AVAILABLE_ICONS.map(ic => (
+                                <option key={ic} value={ic}>{ic}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        {/* Toggles */}
+                        <div className="form-field checkbox-field">
+                          <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                            <input
+                              type="checkbox"
+                              checked={formGuideFeatured}
+                              onChange={(e) => setFormGuideFeatured(e.target.checked)}
+                            />
+                            <span><Star size={14} style={{ color: '#facc15', verticalAlign: 'middle' }} /> {lang === 'cs' ? 'Doporučený článek (Featured)' : 'Featured Article'}</span>
+                          </label>
+                        </div>
+
+                        <div className="form-field checkbox-field">
+                          <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                            <input
+                              type="checkbox"
+                              checked={formGuideIsHidden}
+                              onChange={(e) => setFormGuideIsHidden(e.target.checked)}
+                            />
+                            <span><EyeOff size={14} style={{ color: '#ef4444', verticalAlign: 'middle' }} /> {lang === 'cs' ? 'Skrýt článek na webu (Hidden)' : 'Hide article from web'}</span>
+                          </label>
+                        </div>
+
+                        {/* Hero Image */}
+                        <div className="form-field full-width-field" style={{ background: 'rgba(255,255,255,0.03)', padding: '14px', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
+                          <label style={{ fontWeight: 700, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <Image size={15} style={{ color: '#38bdf8' }} />
+                            {lang === 'cs' ? 'Hlavní obrázek / Artwork článku (Hero Image)' : 'Hero Image / Artwork'}
+                          </label>
+                          
+                          <div style={{ display: 'flex', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                            <input type="file" accept="image/*" ref={guideHeroFileInputRef} onChange={handleGuideHeroFileUpload} style={{ display: 'none' }} />
+                            <button
+                              type="button"
+                              className="admin-btn btn-secondary"
+                              onClick={() => guideHeroFileInputRef.current?.click()}
+                            >
+                              <Upload size={13} /> {lang === 'cs' ? 'Nahrát soubor z PC/Mobilu' : 'Upload file from PC/Mobile'}
+                            </button>
+                          </div>
+
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <input
+                              type="text"
+                              value={formGuideImageUrl}
+                              onChange={(e) => setFormGuideImageUrl(e.target.value)}
+                              placeholder="https://... nebo vložte URL obrázku"
+                              style={{ flex: 1 }}
+                            />
+                            {formGuideImageUrl && (
+                              <button
+                                type="button"
+                                className="admin-btn btn-secondary"
+                                onClick={() => setFormGuideImageUrl('')}
+                                title="Vymazat obrázek"
+                              >
+                                <X size={14} />
+                              </button>
+                            )}
+                          </div>
+
+                          <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                              {lang === 'cs' ? 'Nebo použít artwork Pokémona:' : 'Or use Pokémon artwork:'}
+                            </span>
+                            {['Articuno', 'Zapdos', 'Moltres', 'Mewtwo', 'Rayquaza', 'Necrozma', 'Lucario', 'Ditto', 'Vivillon', 'Eevee', 'Zygarde', 'Gengar'].map(p => (
+                              <button
+                                key={p}
+                                type="button"
+                                onClick={() => handlePickPokemonHeroSprite(p)}
+                                style={{
+                                  fontSize: '0.72rem',
+                                  padding: '2px 8px',
+                                  borderRadius: '6px',
+                                  background: 'rgba(255,255,255,0.06)',
+                                  border: '1px solid rgba(255,255,255,0.12)',
+                                  color: 'var(--text-secondary)',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                {p}
+                              </button>
+                            ))}
+                          </div>
+
+                          {formGuideImageUrl && (
+                            <div style={{ marginTop: '12px', textAlign: 'center', background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '8px' }}>
+                              <img
+                                src={formGuideImageUrl}
+                                alt="Hero Preview"
+                                style={{ maxHeight: '140px', maxWidth: '100%', objectFit: 'contain', borderRadius: '6px' }}
+                                onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0.3'; }}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Visual Sections Builder */}
+                      <div className="guide-sections-builder" style={{ marginTop: '24px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                          <h3 style={{ margin: 0, fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <FileText size={18} style={{ color: '#38bdf8' }} />
+                            {lang === 'cs' ? `Sekce článku (${formGuideSections.length})` : `Article Sections (${formGuideSections.length})`}
+                          </h3>
+                          <button
+                            type="button"
+                            onClick={handleAddSection}
+                            className="admin-btn btn-secondary"
+                            style={{ fontSize: '0.8rem', padding: '6px 12px' }}
+                          >
+                            <Plus size={14} /> {lang === 'cs' ? 'Přidat sekci' : 'Add Section'}
+                          </button>
+                        </div>
+
+                        <div className="guide-sections-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                          {formGuideSections.map((sec, idx) => {
+                            const headingText = sec.heading?.[guideLangTab] || sec.heading?.cs || '';
+                            const contentText = sec.content?.[guideLangTab] || '';
+                            const tipsList = sec.tips?.[guideLangTab] || [];
+                            const pokemonList = sec.pokemon || [];
+
+                            return (
+                              <div key={sec.id || idx} className="guide-section-card">
+                                <div className="guide-section-card-header">
+                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <span className="guide-section-number">#{idx + 1}</span>
+                                    <strong style={{ fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                                      {headingText || (lang === 'cs' ? 'Bez nadpisu' : 'Untitled Section')}
+                                    </strong>
+                                  </div>
+                                  <div className="guide-section-card-tools">
+                                    <button
+                                      type="button"
+                                      className="guide-mini-btn"
+                                      onClick={() => handleMoveSection(idx, 'up')}
+                                      disabled={idx === 0}
+                                      title={lang === 'cs' ? 'Posunout nahoru' : 'Move up'}
+                                    >
+                                      <ArrowUp size={13} />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="guide-mini-btn"
+                                      onClick={() => handleMoveSection(idx, 'down')}
+                                      disabled={idx === formGuideSections.length - 1}
+                                      title={lang === 'cs' ? 'Posunout dolů' : 'Move down'}
+                                    >
+                                      <ArrowDown size={13} />
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="guide-mini-btn btn-danger-icon"
+                                      onClick={() => handleRemoveSection(idx)}
+                                      title={lang === 'cs' ? 'Odebrat sekci' : 'Remove section'}
+                                    >
+                                      <Trash2 size={13} />
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div className="guide-section-card-body">
+                                  {/* Heading Input */}
+                                  <div className="form-field" style={{ marginBottom: '12px' }}>
+                                    <label style={{ fontSize: '0.78rem' }}>
+                                      {lang === 'cs' ? `Nadpis sekce (${guideLangTab.toUpperCase()})` : `Section Heading (${guideLangTab.toUpperCase()})`}
+                                    </label>
+                                    <input
+                                      type="text"
+                                      value={headingText}
+                                      onChange={(e) => handleSectionTextChange(idx, 'heading', e.target.value)}
+                                      placeholder={lang === 'cs' ? 'např. Mechaniky střetnutí a útěk' : 'Section heading...'}
+                                    />
+                                  </div>
+
+                                  {/* Formatting Toolbar */}
+                                  <div className="guide-formatting-toolbar">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleInsertSectionFormatting(idx, '**tučný text**')}
+                                      title="Tučné písmo"
+                                    >
+                                      <strong>B</strong>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleInsertSectionFormatting(idx, '*kurzíva*')}
+                                      title="Kurzíva"
+                                    >
+                                      <em>I</em>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleInsertSectionFormatting(idx, '\n### Podnadpis H3\n')}
+                                      title="Podnadpis H3"
+                                    >
+                                      H3
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleInsertSectionFormatting(idx, '\n- Položka seznamu 1\n- Položka seznamu 2\n')}
+                                      title="Odrážkový seznam"
+                                    >
+                                      • Seznam
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleInsertSectionFormatting(idx, '\n![Popis obrázku](https://...)\n')}
+                                      title="Vložit obrázek"
+                                    >
+                                      🖼️ Obrázek
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleInsertSectionFormatting(idx, ' [Text odkazu](https://...) ')}
+                                      title="Vložit odkaz"
+                                    >
+                                      🔗 Odkaz
+                                    </button>
+                                  </div>
+
+                                  {/* Content Textarea */}
+                                  <div className="form-field" style={{ marginBottom: '12px' }}>
+                                    <textarea
+                                      rows={6}
+                                      value={contentText}
+                                      onChange={(e) => handleSectionTextChange(idx, 'content', e.target.value)}
+                                      placeholder={lang === 'cs' ? 'Napište obsah sekce... Podporuje formátování markdown, obrázky a odkazy.' : 'Write section content in markdown...'}
+                                      className="guide-section-textarea"
+                                    />
+                                  </div>
+
+                                  {/* Tips */}
+                                  <div className="guide-tips-editor-box">
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                                      <label style={{ fontSize: '0.78rem', margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                        <Sparkles size={13} style={{ color: '#facc15' }} />
+                                        {lang === 'cs' ? `Užitečné tipy (${tipsList.length})` : `Helpful Tips (${tipsList.length})`}
+                                      </label>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleAddSectionTip(idx)}
+                                        style={{ fontSize: '0.72rem', padding: '2px 8px', borderRadius: '4px', background: 'rgba(250, 204, 21, 0.15)', border: '1px solid rgba(250, 204, 21, 0.3)', color: '#facc15', cursor: 'pointer' }}
+                                      >
+                                        + Přidat tip
+                                      </button>
+                                    </div>
+                                    {tipsList.length > 0 ? (
+                                      <div className="guide-tips-list">
+                                        {tipsList.map((tip, tipIdx) => (
+                                          <div key={tipIdx} className="guide-tip-item">
+                                            <span>💡 {tip}</span>
+                                            <button
+                                              type="button"
+                                              onClick={() => handleRemoveSectionTip(idx, tipIdx)}
+                                              title="Smazat tip"
+                                            >
+                                              <X size={12} />
+                                            </button>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                                        {lang === 'cs' ? 'Žádné tipy v této sekci' : 'No tips in this section'}
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  {/* Pokemon Chips */}
+                                  <div className="guide-pokes-editor-box" style={{ marginTop: '10px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                                      <label style={{ fontSize: '0.78rem', margin: 0, display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                        <Egg size={13} style={{ color: '#38bdf8' }} />
+                                        {lang === 'cs' ? `Přiřazení Pokémoni (${pokemonList.length})` : `Tagged Pokémon (${pokemonList.length})`}
+                                      </label>
+                                    </div>
+
+                                    {/* Chips List */}
+                                    <div className="guide-pokemon-chips">
+                                      {pokemonList.map(pokeName => (
+                                        <div key={pokeName} className="guide-pokemon-chip">
+                                          <img
+                                            src={getPokemonIconUrl(pokeName)}
+                                            alt={pokeName}
+                                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                          />
+                                          <span>{pokeName}</span>
+                                          <button
+                                            type="button"
+                                            onClick={() => handleRemovePokemonFromSection(idx, pokeName)}
+                                            title="Odebrat Pokémona"
+                                          >
+                                            <X size={10} />
+                                          </button>
+                                        </div>
+                                      ))}
+                                    </div>
+
+                                    {/* Inline Add Input */}
+                                    <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
+                                      <input
+                                        type="text"
+                                        placeholder="Název Pokémona (např. Pikachu)..."
+                                        value={activePokemonChipInput[idx] || ''}
+                                        onChange={(e) => setActivePokemonChipInput({ ...activePokemonChipInput, [idx]: e.target.value })}
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            if (activePokemonChipInput[idx]) {
+                                              handleAddPokemonToSection(idx, activePokemonChipInput[idx]);
+                                              setActivePokemonChipInput({ ...activePokemonChipInput, [idx]: '' });
+                                            }
+                                          }
+                                        }}
+                                        style={{ fontSize: '0.75rem', padding: '4px 8px', flex: 1 }}
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          if (activePokemonChipInput[idx]) {
+                                            handleAddPokemonToSection(idx, activePokemonChipInput[idx]);
+                                            setActivePokemonChipInput({ ...activePokemonChipInput, [idx]: '' });
+                                          }
+                                        }}
+                                        style={{ fontSize: '0.75rem', padding: '4px 10px', borderRadius: '6px', background: 'rgba(56, 189, 248, 0.2)', border: '1px solid rgba(56, 189, 248, 0.4)', color: '#38bdf8', cursor: 'pointer' }}
+                                      >
+                                        + Přidat
+                                      </button>
+                                    </div>
+
+                                    {/* Quick chips */}
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '6px' }}>
+                                      {POPULAR_POKEMON_SUGGESTIONS.slice(0, 8).map(p => (
+                                        <button
+                                          key={p}
+                                          type="button"
+                                          onClick={() => handleAddPokemonToSection(idx, p)}
+                                          style={{ fontSize: '0.66rem', padding: '1px 6px', borderRadius: '4px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-muted)', cursor: 'pointer' }}
+                                        >
+                                          {p}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+
+                          <button
+                            type="button"
+                            onClick={handleAddSection}
+                            className="guide-add-section-big-btn"
+                          >
+                            <Plus size={16} />
+                            {lang === 'cs' ? 'Přidat další sekci článku' : 'Add another section'}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Bottom Action Footer */}
+                      <div className="form-actions" style={{ marginTop: '24px', display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                          <button type="submit" className="admin-btn btn-success" style={{ padding: '10px 22px', fontSize: '0.95rem' }}>
+                            <Save size={16} />
+                            {lang === 'cs' ? 'Uložit článek' : 'Save Guide'}
+                          </button>
+                          {selectedGuide && !selectedGuide.isCustom && selectedGuide.isModified && (
+                            <button
+                              type="button"
+                              className="admin-btn btn-secondary"
+                              onClick={() => handleResetDefaultGuide(selectedGuide)}
+                              title="Vrátit článek do původního stavu"
+                            >
+                              <RotateCcw size={15} />
+                              {lang === 'cs' ? 'Obnovit výchozí verzi' : 'Reset to Default'}
+                            </button>
+                          )}
+                          {selectedGuide && (
+                            <button
+                              type="button"
+                              className={selectedGuide.isCustom ? 'admin-btn btn-danger' : 'admin-btn btn-secondary'}
+                              onClick={() => handleDeleteOrHideGuide(selectedGuide)}
+                            >
+                              {selectedGuide.isCustom ? (
+                                <><Trash2 size={15} /> {lang === 'cs' ? 'Smazat článek' : 'Delete Guide'}</>
+                              ) : selectedGuide.isHidden ? (
+                                <><Eye size={15} /> {lang === 'cs' ? 'Znovu zobrazit na webu' : 'Unhide Guide'}</>
+                              ) : (
+                                <><EyeOff size={15} /> {lang === 'cs' ? 'Skrýt z webu' : 'Hide Guide'}</>
+                              )}
+                            </button>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          className="admin-btn btn-secondary"
+                          onClick={() => setSelectedGuide(null)}
+                        >
+                          {lang === 'cs' ? 'Zavřít editor' : 'Close Editor'}
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    /* JSON Raw Editor */
+                    <div className="guide-json-form" style={{ marginTop: '16px' }}>
+                      <div style={{ background: 'rgba(56, 189, 248, 0.08)', border: '1px solid rgba(56, 189, 248, 0.2)', padding: '12px 16px', borderRadius: '10px', marginBottom: '14px', fontSize: '0.82rem', color: 'var(--text-secondary)' }}>
+                        <p style={{ margin: 0 }}>
+                          {lang === 'cs'
+                            ? 'Můžete přímo editovat kompletní JSON strukturu článku (všechny jazyky, sekce, tipy a tagy). Po uložení budou data ihned zvalidována a uložena.'
+                            : 'Directly edit complete JSON article structure. Validated and saved upon submit.'}
+                        </p>
+                      </div>
+                      <textarea
+                        rows={24}
+                        value={formGuideJson}
+                        onChange={(e) => setFormGuideJson(e.target.value)}
+                        className="admin-textarea"
+                        style={{ fontFamily: 'monospace', fontSize: '0.82rem', lineHeight: '1.5', width: '100%', boxSizing: 'border-box' }}
+                      />
+                      <div className="form-actions" style={{ marginTop: '16px', display: 'flex', gap: '10px' }}>
+                        <button
+                          type="button"
+                          onClick={() => handleSaveGuide()}
+                          className="admin-btn btn-success"
+                        >
+                          <Save size={16} />
+                          {lang === 'cs' ? 'Uložit JSON' : 'Save JSON'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleToggleGuideEditMode('visual')}
+                          className="admin-btn btn-secondary"
+                        >
+                          <Eye size={15} />
+                          {lang === 'cs' ? 'Zpět do vizuálního editoru' : 'Back to Visual Blocks'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="admin-form-placeholder">
+                  <BookOpen size={48} className="db-placeholder-icon" />
+                  <p>
+                    {lang === 'cs'
+                      ? 'Vyberte článek ze seznamu vlevo nebo klikněte na "+ Nový článek".'
+                      : 'Select a guide from the list on the left or click "+ New Article".'}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ===== TAB: RAIDS ===== */}
       {adminTab === 'raids' && (

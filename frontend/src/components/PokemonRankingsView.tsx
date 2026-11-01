@@ -7,8 +7,10 @@ import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
 import { pokemonRankings } from '../data/pokemonRankings';
 import type { PokemonRankData } from '../data/pokemonRankings';
+import { POKEDEX_MAP } from '../data/pokedexCatalog';
 import { resolveImage, handlePokemonImageError, SHADOW_ICON_URL, MEGA_ICON_URL, PRIMAL_ICON_URL, handleShadowIconError, handleMegaIconError, handlePrimalIconError } from '../utils/imageResolver';
 import { TypeBadge } from './EventCard';
+import { TYPE_COLORS } from '../utils/typeBadgeHelper';
 import { getPokemonName, getStatusTagName } from '../utils/pokemonTranslator';
 import { Search, Trophy, Sword, ShieldAlert, Heart, Star, ChevronDown, ChevronUp, Target, Zap, Sparkles, SlidersHorizontal, Clock } from 'lucide-react';
 import {
@@ -397,22 +399,33 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
           </Link>
           {ALL_TYPES.map(type => {
             const typeClass = type.toLowerCase();
+            const cfg = TYPE_COLORS[type] || TYPE_COLORS.Normal;
+            const isSelected = selectedType === type;
             return (
               <Link
                 key={type}
                 href={`/${lang}/rankings/attackers-${typeClass}`}
-                className={`type-filter-btn type-${typeClass} ${selectedType === type ? 'active' : ''}`}
+                className={`type-filter-btn type-${typeClass} ${isSelected ? 'active' : ''}`}
                 onClick={(e) => {
                   e.preventDefault();
                   setSelectedType(type);
                   setSelectedCategory(null);
                 }}
-                style={{ textDecoration: 'none' }}
+                style={{
+                  textDecoration: 'none',
+                  backgroundColor: isSelected ? cfg.accent : cfg.bg,
+                  borderColor: isSelected ? cfg.accent : cfg.border,
+                  color: '#ffffff',
+                  boxShadow: isSelected ? `0 0 12px ${cfg.border}` : 'none'
+                }}
               >
                 <img
                   src={`https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${typeClass}.svg`}
                   alt={type}
                   className="filter-type-icon"
+                  style={{
+                    filter: 'none'
+                  }}
                 />
                 {type}
               </Link>
@@ -523,7 +536,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
                   <div className="ranking-poke-main-info">
                     <div className="poke-title-flex">
                       <Link
-                        href={`/${lang}/pokemon/${poke.pokedexId}`}
+                        href={`/${lang}/pokedex/${poke.slug || POKEDEX_MAP[poke.pokedexId]?.slug || poke.pokedexId}`}
                         className="poke-name"
                         onClick={(e) => e.stopPropagation()}
                         style={{ color: 'inherit', textDecoration: 'none' }}
