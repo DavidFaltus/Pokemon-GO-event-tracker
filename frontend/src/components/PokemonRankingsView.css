@@ -963,7 +963,10 @@ subtle-glow {
 }
 
 /* Expand Hint Badge (Detail ▼ / Zavřít ▲) */
-.poke-expand-hint-badge {
+.poke-expand-hint-badge,
+.poke-expand-hint-btn {
+  cursor: pointer;
+  outline: none;
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -979,6 +982,14 @@ subtle-glow {
   transition: all 0.2s ease;
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+.poke-expand-hint-btn:hover {
+  background: var(--accent-gradient) !important;
+  border-color: rgba(168, 85, 247, 0.8) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.5) !important;
+  transform: translateY(-1px);
 }
 
 .ranking-pokemon-row:hover .poke-expand-hint-badge {
@@ -1657,7 +1668,9 @@ body.light-mode .dd-stat-label {
   font-weight: 700;
 }
 
-body.light-mode .poke-expand-hint-badge {
+body.light-mode .poke-expand-hint-badge,
+body.light-mode .poke-expand-hint-btn {
+  cursor: pointer;
   background: #faf5ff;
   border: 1px solid #c084fc;
   color: #7e22ce;
@@ -1685,3 +1698,57 @@ body.light-mode .mode-toggle-btn.active {
   min-height: 70vh;
   padding: 20px;
 }
+
+
+body.light-mode .move-type-icon,
+html.light-mode .move-type-icon,
+[data-theme="light"] .move-type-icon,
+.light-mode .move-type-icon {
+  filter: brightness(0) !important;
+}
+
+body.light-mode .filter-type-icon,
+html.light-mode .filter-type-icon,
+[data-theme="light"] .filter-type-icon,
+.light-mode .filter-type-icon {
+  filter: brightness(0) !important;
+}
+
+body.light-mode .type-filter-btn,
+html.light-mode .type-filter-btn,
+[data-theme="light"] .type-filter-btn,
+.light-mode .type-filter-btn {
+  color: #0f172a !important;
+}
+
+body.light-mode .type-filter-btn[class*="type-"],
+html.light-mode .type-filter-btn[class*="type-"],
+[data-theme="light"] .type-filter-btn[class*="type-"],
+.light-mode .type-filter-btn[class*="type-"] {
+  color: #0f172a !important;
+}
+
+body.light-mode .type-filter-btn[class*="type-"].active,
+html.light-mode .type-filter-btn[class*="type-"].active,
+[data-theme="light"] .type-filter-btn[class*="type-"].active,
+.light-mode .type-filter-btn[class*="type-"].active {
+  color: #0f172a !important;
+  font-weight: 800 !important;
+}
+
+body.light-mode .type-filter-btn.active .filter-type-icon,
+html.light-mode .type-filter-btn.active .filter-type-icon,
+[data-theme="light"] .type-filter-btn.active .filter-type-icon,
+.light-mode .type-filter-btn.active .filter-type-icon {
+  filter: brightness(0) !important;
+}
+
+body.light-mode .type-filter-btn:not([class*="type-"]).active,
+html.light-mode .type-filter-btn:not([class*="type-"]).active,
+[data-theme="light"] .type-filter-btn:not([class*="type-"]).active,
+.light-mode .type-filter-btn:not([class*="type-"]).active {
+  background: var(--accent-gradient) !important;
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+

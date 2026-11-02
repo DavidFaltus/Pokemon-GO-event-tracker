@@ -12,6 +12,10 @@ import {
   Flame,
   SlidersHorizontal,
   Swords,
+  Sword,
+  ShieldAlert,
+  Heart,
+  Star,
   Trophy,
   CheckCircle2,
   Clock,
@@ -62,7 +66,7 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
   const [activeVariantId, setActiveVariantId] = useState<string | null>(null);
   const [isShiny, setIsShiny] = useState<boolean>(false);
 
-  // Synchronize shiny state from localStorage and URL query param
+  // Synchronize shiny state and variant from localStorage and URL query param
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
@@ -71,8 +75,23 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
       if (isParamShiny || isStoredShiny) {
         setIsShiny(true);
       }
+
+      const variantParam = urlParams.get('variant');
+      if (variantParam && entry.variants && entry.variants.length > 0) {
+        const lowerParam = variantParam.toLowerCase();
+        const found = entry.variants.find(
+          (v) =>
+            v.id.toLowerCase() === lowerParam ||
+            v.category.toLowerCase() === lowerParam ||
+            v.name.en.toLowerCase() === lowerParam ||
+            v.id.toLowerCase().replace(/_/g, '-') === lowerParam
+        );
+        if (found) {
+          setActiveVariantId(found.id);
+        }
+      }
     }
-  }, []);
+  }, [entry.variants]);
 
   const handleToggleShiny = () => {
     setIsShiny((prev) => {
@@ -132,14 +151,25 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
     (e: React.SyntheticEvent<HTMLImageElement, Event>, poke: PokedexCatalogEntry, shiny = false) => {
       const target = e.currentTarget;
       const currentSrc = target.src;
+      const variantFolder = shiny ? 'shiny' : 'normal';
+      const cleanSlug = poke.slug?.toLowerCase().replace(/[^a-z0-9-]/g, '') || String(poke.dexId);
+
+      // Fallback 1: PokemonDB Home high-res sprite
       if (currentSrc.includes('official-artwork')) {
+        target.src = `https://img.pokemondb.net/sprites/home/${variantFolder}/${cleanSlug}.png`;
+        return;
+      }
+      // Fallback 2: PokeAPI Home 3D sprite
+      if (currentSrc.includes('pokemondb.net')) {
         target.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${shiny ? 'shiny/' : ''}${poke.dexId}.png`;
         return;
       }
+      // Fallback 3: PokeMiners official asset
       if (currentSrc.includes('/home/')) {
         target.src = `https://raw.githubusercontent.com/pokemon-go-api/assets/main/Pokemon/pm${poke.dexId}.icon.png`;
         return;
       }
+      // Fallback 4: Universal Pokeball
       target.src = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png';
     },
     []
@@ -354,23 +384,38 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
           {/* Key Stat Highlights Strip */}
           <div className="pokedex-detail-stats-strip">
             <div className="pokedex-stat-pill-item cp">
-              <span className="label">{t.pokedex_stat_max_cp || 'Max CP (Lv 50)'}</span>
+              <span className="label">
+                <Star size={12} style={{ color: '#fbbf24', marginRight: 4, verticalAlign: 'middle' }} />
+                {t.pokedex_stat_max_cp || 'Max CP (Lv 50)'}
+              </span>
               <span className="val">{currentCp}</span>
             </div>
             <div className="pokedex-stat-pill-item">
-              <span className="label">{t.pokedex_stat_atk_short || 'Útok (ATK)'}</span>
+              <span className="label">
+                <Sword size={12} style={{ color: '#f87171', marginRight: 4, verticalAlign: 'middle' }} />
+                {t.pokedex_stat_atk_short || 'Útok (ATK)'}
+              </span>
               <span className="val">{currentStats.attack}</span>
             </div>
             <div className="pokedex-stat-pill-item">
-              <span className="label">{t.pokedex_stat_def_short || 'Obrana (DEF)'}</span>
+              <span className="label">
+                <ShieldAlert size={12} style={{ color: '#60a5fa', marginRight: 4, verticalAlign: 'middle' }} />
+                {t.pokedex_stat_def_short || 'Obrana (DEF)'}
+              </span>
               <span className="val">{currentStats.defense}</span>
             </div>
             <div className="pokedex-stat-pill-item">
-              <span className="label">{t.pokedex_stat_sta_short || 'Výdrž (HP)'}</span>
+              <span className="label">
+                <Heart size={12} style={{ color: '#4ade80', marginRight: 4, verticalAlign: 'middle' }} />
+                {t.pokedex_stat_sta_short || 'Výdrž (HP)'}
+              </span>
               <span className="val">{currentStats.stamina}</span>
             </div>
             <div className="pokedex-stat-pill-item total">
-              <span className="label">{t.pokedex_stat_total || 'Celkem'}</span>
+              <span className="label">
+                <Trophy size={12} style={{ color: 'var(--accent-color)', marginRight: 4, verticalAlign: 'middle' }} />
+                {t.pokedex_stat_total || 'Celkem'}
+              </span>
               <span className="val">{totalBaseStats}</span>
             </div>
           </div>
@@ -379,54 +424,49 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
 
       {/* ─── Two-Column Analytical Layout ────────────────────────────────────── */}
       <div className="pokedex-detail-columns-grid">
-        {/* Left Column: Stats, CP Table & Type Effectiveness */}
+        {/* Left Column: Type Effectiveness & 100% IV CP Table */}
         <div className="pokedex-detail-col">
-          {/* Base Stats Meter Card */}
-          <section className="pokedex-detail-card" aria-label="Base Stats">
+          {/* Type Effectiveness (Weaknesses & Resistances) */}
+          <section className="pokedex-detail-card" aria-label="Type Effectiveness">
             <h2 className="pokedex-detail-card-title">
-              <Shield size={18} style={{ color: 'var(--cyan-accent)' }} />
-              <span>{t.pokedex_detail_stats_title || 'Základní statistiky (Base Stats)'}</span>
+              <Flame size={18} style={{ color: '#ef4444' }} />
+              <span>{t.pokedex_detail_effectiveness_title || 'Typová efektivita & Slabosti'}</span>
             </h2>
 
-            <div className="pokedex-detail-stat-bars">
-              <div className="pokedex-stat-bar-item">
-                <div className="pokedex-stat-bar-header">
-                  <span className="name">{t.pokedex_stat_atk_full || 'Útok (Attack)'}</span>
-                  <span className="val">{currentStats.attack} / 400</span>
+            <div className="pokedex-effectiveness-group">
+              <h3 className="pokedex-effectiveness-subheading">
+                {t.pokedex_weaknesses_label || 'Slabosti (Zvýšené poškození)'}:
+              </h3>
+              {weaknesses.length === 0 ? (
+                <p className="pokedex-effectiveness-empty">{t.pokedex_weaknesses_none || 'Žádné slabosti.'}</p>
+              ) : (
+                <div className="pokedex-effectiveness-chips">
+                  {weaknesses.map((w) => (
+                    <div key={w.type} className="pokedex-effectiveness-badge weak">
+                      <UnifiedTypeBadge type={w.type} lang={lang} size="xs" showIcon={true} />
+                      <span className="mult">{w.mult.toFixed(2)}×</span>
+                    </div>
+                  ))}
                 </div>
-                <div className="pokedex-stat-track">
-                  <div
-                    className="pokedex-stat-fill atk"
-                    style={{ width: `${Math.min(100, (currentStats.attack / 400) * 100)}%` }}
-                  />
-                </div>
-              </div>
+              )}
+            </div>
 
-              <div className="pokedex-stat-bar-item">
-                <div className="pokedex-stat-bar-header">
-                  <span className="name">{t.pokedex_stat_def_full || 'Obrana (Defense)'}</span>
-                  <span className="val">{currentStats.defense} / 400</span>
+            <div className="pokedex-effectiveness-group" style={{ marginTop: '16px' }}>
+              <h3 className="pokedex-effectiveness-subheading">
+                {t.pokedex_resistances_label || 'Rezistence (Snížené poškození)'}:
+              </h3>
+              {resistances.length === 0 ? (
+                <p className="pokedex-effectiveness-empty">{t.pokedex_resistances_none || 'Žádné odolnosti.'}</p>
+              ) : (
+                <div className="pokedex-effectiveness-chips">
+                  {resistances.map((r) => (
+                    <div key={r.type} className="pokedex-effectiveness-badge res">
+                      <UnifiedTypeBadge type={r.type} lang={lang} size="xs" showIcon={true} />
+                      <span className="mult">{r.mult.toFixed(2)}×</span>
+                    </div>
+                  ))}
                 </div>
-                <div className="pokedex-stat-track">
-                  <div
-                    className="pokedex-stat-fill def"
-                    style={{ width: `${Math.min(100, (currentStats.defense / 400) * 100)}%` }}
-                  />
-                </div>
-              </div>
-
-              <div className="pokedex-stat-bar-item">
-                <div className="pokedex-stat-bar-header">
-                  <span className="name">{t.pokedex_stat_sta_full || 'Výdrž (HP)'}</span>
-                  <span className="val">{currentStats.stamina} / 400</span>
-                </div>
-                <div className="pokedex-stat-track">
-                  <div
-                    className="pokedex-stat-fill sta"
-                    style={{ width: `${Math.min(100, (currentStats.stamina / 400) * 100)}%` }}
-                  />
-                </div>
-              </div>
+              )}
             </div>
           </section>
 
@@ -473,50 +513,6 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
                 </tr>
               </tbody>
             </table>
-          </section>
-
-          {/* Type Effectiveness (Weaknesses & Resistances) */}
-          <section className="pokedex-detail-card" aria-label="Type Effectiveness">
-            <h2 className="pokedex-detail-card-title">
-              <Flame size={18} style={{ color: '#ef4444' }} />
-              <span>{t.pokedex_detail_effectiveness_title || 'Typová efektivita & Slabosti'}</span>
-            </h2>
-
-            <div className="pokedex-effectiveness-group">
-              <h3 className="pokedex-effectiveness-subheading">
-                {t.pokedex_weaknesses_label || 'Slabosti (Zvýšené poškození)'}:
-              </h3>
-              {weaknesses.length === 0 ? (
-                <p className="pokedex-effectiveness-empty">{t.pokedex_weaknesses_none || 'Žádné slabosti.'}</p>
-              ) : (
-                <div className="pokedex-effectiveness-chips">
-                  {weaknesses.map((w) => (
-                    <div key={w.type} className="pokedex-effectiveness-badge weak">
-                      <UnifiedTypeBadge type={w.type} lang={lang} size="xs" showIcon={true} />
-                      <span className="mult">{w.mult.toFixed(2)}×</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="pokedex-effectiveness-group" style={{ marginTop: '16px' }}>
-              <h3 className="pokedex-effectiveness-subheading">
-                {t.pokedex_resistances_label || 'Rezistence (Snížené poškození)'}:
-              </h3>
-              {resistances.length === 0 ? (
-                <p className="pokedex-effectiveness-empty">{t.pokedex_resistances_none || 'Žádné odolnosti.'}</p>
-              ) : (
-                <div className="pokedex-effectiveness-chips">
-                  {resistances.map((r) => (
-                    <div key={r.type} className="pokedex-effectiveness-badge res">
-                      <UnifiedTypeBadge type={r.type} lang={lang} size="xs" showIcon={true} />
-                      <span className="mult">{r.mult.toFixed(2)}×</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
           </section>
         </div>
 

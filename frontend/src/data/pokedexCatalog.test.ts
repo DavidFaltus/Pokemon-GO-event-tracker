@@ -56,7 +56,7 @@ describe('Pokedex Catalog Engine', () => {
     const primal = kyogre?.variants.find((v) => v.category === 'primal');
     expect(primal).toBeDefined();
     expect(primal?.name.ja).toContain('ゲンシ');
-    expect(primal?.spriteOverrides?.officialArtwork).toContain('10075.png');
+    expect(primal?.spriteOverrides?.officialArtwork).toContain('10077.png');
   });
 
   it('retrieves species by slug correctly', () => {

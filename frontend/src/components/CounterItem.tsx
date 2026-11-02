@@ -3,6 +3,8 @@ import { Sun, CloudRain, CloudSun, Cloud, Wind, Snowflake, CloudFog } from 'luci
 import { getPokemonIconUrl, getBasePokemonName, handlePokemonImageError } from '../utils/imageResolver';
 import type { Language } from '../data/translations';
 import { getPokemonName } from '../utils/pokemonTranslator';
+import { useTheme } from '../context/ThemeContext';
+import { getTypeSvgUrl } from '../utils/typeBadgeHelper';
 
 export const moveTypes: Record<string, string> = {
   // Fire
@@ -214,7 +216,9 @@ export const WeatherIcon: React.FC<{ weatherStr: string }> = ({ weatherStr }) =>
 
 export const MoveTypeIcon: React.FC<{ typeStr: string }> = ({ typeStr }) => {
   const typeClass = typeStr.toLowerCase().trim();
-  const iconUrl = `https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${typeClass}.svg`;
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
+  const iconUrl = getTypeSvgUrl(typeClass, isLight);
   
   const typeColors: Record<string, string> = {
     fire: '#ef4444', water: '#3b82f6', grass: '#22c55e', electric: '#eab308',
@@ -230,11 +234,12 @@ export const MoveTypeIcon: React.FC<{ typeStr: string }> = ({ typeStr }) => {
     <img
       src={iconUrl}
       alt={typeStr}
+      className="move-type-icon"
       style={{
         width: '10px',
         height: '10px',
         objectFit: 'contain',
-        filter: `drop-shadow(0 0 1px ${color})`,
+        filter: isLight ? 'brightness(0)' : `drop-shadow(0 0 1px ${color})`,
         display: 'inline-block',
         verticalAlign: 'middle'
       }}

@@ -1,6 +1,7 @@
 import React from 'react';
 import type { PokemonType } from '../data/pokedexCatalog';
 import type { Language } from '../data/translations';
+import { useTheme } from '../context/ThemeContext';
 
 export const TYPE_COLORS: Record<string, { accent: string; bg: string; border: string }> = {
   Normal:   { accent: '#cbd5e1', bg: 'rgba(203, 213, 225, 0.16)', border: 'rgba(203, 213, 225, 0.35)' },
@@ -44,9 +45,11 @@ export const TYPE_TRANSLATIONS: Record<string, Record<Language, string>> = {
   Fairy:    { cs: 'Fairy', en: 'Fairy', ja: 'フェアリー', ru: 'Волшебный' }
 };
 
-export function getTypeSvgUrl(type: string): string {
+export function getTypeSvgUrl(type: string, isDark: boolean = false): string {
   const clean = type.toLowerCase().trim();
-  return `https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${clean}.svg`;
+  return isDark
+    ? `/icons/types/dark/${clean}.svg`
+    : `/icons/types/white/${clean}.svg`;
 }
 
 export function getTypeStyle(type: string): React.CSSProperties {
@@ -78,6 +81,8 @@ export const UnifiedTypeBadge: React.FC<UnifiedTypeBadgeProps> = ({
   className = '',
   showIcon = true
 }) => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const norm = type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
   const cfg = TYPE_COLORS[norm] || TYPE_COLORS.Normal;
   const typeClass = norm.toLowerCase();
@@ -128,18 +133,22 @@ export const UnifiedTypeBadge: React.FC<UnifiedTypeBadgeProps> = ({
     >
       {showIcon && (
         <img
-          src={getTypeSvgUrl(typeClass)}
+          src={getTypeSvgUrl(typeClass, isLight)}
           alt={norm}
+          className="type-badge-icon unified-type-badge-icon"
           style={{
             width: iconSizes[size],
             height: iconSizes[size],
             objectFit: 'contain',
-            verticalAlign: 'middle',
-            filter: 'none'
+            verticalAlign: 'middle'
           }}
           onError={(e) => {
-            // Hide icon if fails to load
-            (e.currentTarget as HTMLElement).style.display = 'none';
+            const target = e.currentTarget as HTMLImageElement;
+            if (!target.src.includes('duiker101')) {
+              target.src = `https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${typeClass}.svg`;
+            } else {
+              target.style.display = 'none';
+            }
           }}
         />
       )}

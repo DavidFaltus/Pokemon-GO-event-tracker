@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import './PokemonRankingsView.css';
 import { translations } from '../data/translations';
 import type { Language } from '../data/translations';
@@ -10,7 +11,8 @@ import type { PokemonRankData } from '../data/pokemonRankings';
 import { POKEDEX_MAP } from '../data/pokedexCatalog';
 import { resolveImage, handlePokemonImageError, SHADOW_ICON_URL, MEGA_ICON_URL, PRIMAL_ICON_URL, handleShadowIconError, handleMegaIconError, handlePrimalIconError } from '../utils/imageResolver';
 import { TypeBadge } from './EventCard';
-import { TYPE_COLORS } from '../utils/typeBadgeHelper';
+import { TYPE_COLORS, getTypeSvgUrl } from '../utils/typeBadgeHelper';
+import { useTheme } from '../context/ThemeContext';
 import { getPokemonName, getStatusTagName } from '../utils/pokemonTranslator';
 import { Search, Trophy, Sword, ShieldAlert, Heart, Star, ChevronDown, ChevronUp, Target, Zap, Sparkles, SlidersHorizontal, Clock } from 'lucide-react';
 import {
@@ -54,14 +56,43 @@ function getMoveTypeBadgeStyle(type: string): React.CSSProperties {
 
 const MoveTypeBadgeWithIcon: React.FC<{ type: string }> = ({ type }) => {
   const typeClass = type.toLowerCase();
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   return (
     <span style={getMoveTypeBadgeStyle(type)} className="move-type-badge">
       <img
-        src={`https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${typeClass}.svg`}
+        src={getTypeSvgUrl(typeClass, isLight)}
         alt={type}
         className="move-type-icon"
+        onError={(e) => {
+          const target = e.currentTarget as HTMLImageElement;
+          if (!target.src.includes('duiker101')) {
+            target.src = `https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${typeClass}.svg`;
+          }
+        }}
       />
       {type}
+    </span>
+  );
+};
+
+const MoveNameWithBadges: React.FC<{ move: { name: string; isPlus?: boolean; isElite?: boolean }; isLegacy?: boolean }> = ({ move, isLegacy }) => {
+  const plusMatches = move.name.match(/\+{1,2}$/);
+  const plusCount = plusMatches ? plusMatches[0].length : (move.isPlus ? 1 : 0);
+  const cleanName = move.name.replace(/\+{1,2}$/, '');
+  const hasLegacy = isLegacy || move.isElite;
+
+  return (
+    <span>
+      {cleanName}
+      {plusCount > 0 && (
+        <span className="plus-move-badge" title={plusCount === 2 ? 'Apex Plus Move (++)' : 'Mega Level 4 Plus Move (+)'}>
+          {plusCount === 2 ? '++' : '+'}
+        </span>
+      )}
+      {hasLegacy && (
+        <span className="legacy-asterisk" title="Legacy / Elite TM Move">*</span>
+      )}
     </span>
   );
 };
@@ -88,6 +119,9 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
   onSearchChange
 }) => {
   const t = translations[lang] || translations.cs;
+  const router = useRouter();
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
   const [selectedType, setSelectedType] = useState<string | null>(initialSelectedType || null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory || null);
@@ -95,6 +129,24 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
   const [rankingMode, setRankingMode] = useState<'er' | 'basic'>('er');
   const [onlyReleased, setOnlyReleased] = useState<boolean>(true);
   const [visibleCount, setVisibleCount] = useState(40);
+  const [rankingsData, setRankingsData] = useState<PokemonRankData[]>(pokemonRankings);
+
+  // Background SWR revalidation with backend /api/rankings endpoint
+  useEffect(() => {
+    let isMounted = true;
+    fetch('/api/rankings')
+      .then(res => {
+        if (res.ok) return res.json();
+        return null;
+      })
+      .then(freshData => {
+        if (isMounted && Array.isArray(freshData) && freshData.length > 0) {
+          setRankingsData(freshData);
+        }
+      })
+      .catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
 
   useEffect(() => {
     try {
@@ -206,31 +258,43 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
     return a.name.localeCompare(b.name);
   }, [getSortScore]);
 
-  // Compute the FULL sorted list — used to derive stable ranks
-  const fullSortedRankings = useMemo(() => {
-    let list = pokemonRankings;
+  // Compute primary builds for overall ranking (single best build per Pokemon)
+  const overallSortedRankings = useMemo(() => {
+    let list = rankingsData.filter(p => p.isOverallBest !== false);
     if (onlyReleased) {
       list = list.filter(isPokemonReleasedInGo);
     }
     return [...list].sort(dynamicSortFn);
-  }, [onlyReleased, dynamicSortFn]);
+  }, [rankingsData, onlyReleased, dynamicSortFn]);
 
-  // Map: uniqueKey -> overall rank (1-based)
+  // Compute the FULL sorted list of all builds — used to derive stable type ranks and counter matchups
+  const fullSortedRankings = useMemo(() => {
+    let list = rankingsData;
+    if (onlyReleased) {
+      list = list.filter(isPokemonReleasedInGo);
+    }
+    return [...list].sort(dynamicSortFn);
+  }, [rankingsData, onlyReleased, dynamicSortFn]);
+
+  // Map: uniqueKey -> overall rank (1-based, continuous in overall view)
   const overallRankMap = useMemo(() => {
     const map = new Map<string, number>();
-    fullSortedRankings.forEach((poke, idx) => {
-      const key = getPokeKey(poke);
-      map.set(key, idx + 1);
-    });
+    let overallIdx = 0;
+    for (const poke of fullSortedRankings) {
+      while (overallIdx < overallSortedRankings.length && dynamicSortFn(overallSortedRankings[overallIdx], poke) < 0) {
+        overallIdx++;
+      }
+      map.set(getPokeKey(poke), overallIdx + 1);
+    }
     return map;
-  }, [fullSortedRankings, getPokeKey]);
+  }, [overallSortedRankings, fullSortedRankings, getPokeKey, dynamicSortFn]);
 
   // Map: uniqueKey -> rank within its attack type (based on bestChargedMove.type)
   const typeRankMap = useMemo(() => {
     const map = new Map<string, number>();
     const byType = new Map<string, typeof pokemonRankings>();
     fullSortedRankings.forEach(poke => {
-      const attackType = poke.bestChargedMove.type;
+      const attackType = poke.bestChargedMove?.type || poke.types[0];
       if (!byType.has(attackType)) byType.set(attackType, []);
       byType.get(attackType)!.push(poke);
     });
@@ -245,13 +309,22 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
 
   // Filtered + sorted list for display
   const filteredRankings = useMemo(() => {
-    let result = [...pokemonRankings];
+    let result = [...rankingsData];
     const trimmedQuery = searchQuery.trim().toLowerCase();
     const isDirectDexLookup = trimmedQuery.startsWith('#') && /^\d+$/.test(trimmedQuery.slice(1));
 
     // Filter by released status strictly (except when directly looking up a specific Pokédex #ID page)
     if (onlyReleased && !isDirectDexLookup) {
       result = result.filter(isPokemonReleasedInGo);
+    }
+
+    // When type is selected, filter strictly by charged move type (specialist raid attackers)
+    if (selectedType) {
+      result = result.filter(poke => poke.bestChargedMove?.type === selectedType);
+    } else {
+      // In global view (no type selected), only show 1 best overall build per species/form
+      // to avoid duplicate entries for the same Pokémon
+      result = result.filter(poke => poke.isOverallBest !== false);
     }
 
     // Filter by category when active
@@ -271,11 +344,6 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
       } else if (selectedCategory === 'little-cup') {
         result = result.filter(poke => !poke.isMega && !poke.isPrimal && poke.maxCp <= 1800);
       }
-    }
-
-    // Filter by type (matches if Pokemon has the type OR its best charged move is of that type)
-    if (selectedType) {
-      result = result.filter(poke => poke.types.includes(selectedType) || poke.bestChargedMove?.type === selectedType);
     }
 
     // Filter by search query (supports English name, translated name, #pokedexId, and forms)
@@ -309,7 +377,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
     }
 
     return result.sort(dynamicSortFn);
-  }, [onlyReleased, selectedCategory, searchQuery, selectedType, dynamicSortFn, lang]);
+  }, [rankingsData, onlyReleased, selectedCategory, searchQuery, selectedType, dynamicSortFn, lang]);
 
   // Auto-expand matching Pokemon when search query is active
   useEffect(() => {
@@ -415,16 +483,18 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
                   textDecoration: 'none',
                   backgroundColor: isSelected ? cfg.accent : cfg.bg,
                   borderColor: isSelected ? cfg.accent : cfg.border,
-                  color: '#ffffff',
                   boxShadow: isSelected ? `0 0 12px ${cfg.border}` : 'none'
                 }}
               >
                 <img
-                  src={`https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${typeClass}.svg`}
+                  src={getTypeSvgUrl(typeClass, isLight)}
                   alt={type}
                   className="filter-type-icon"
-                  style={{
-                    filter: 'none'
+                  onError={(e) => {
+                    const target = e.currentTarget as HTMLImageElement;
+                    if (!target.src.includes('duiker101')) {
+                      target.src = `https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${typeClass}.svg`;
+                    }
                   }}
                 />
                 {type}
@@ -442,7 +512,9 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
         ) : (
           filteredRankings.slice(0, visibleCount).map((poke, indexInFiltered) => {
             const pokeKey = getPokeKey(poke);
-            const overallRank = overallRankMap.get(pokeKey) ?? 1;
+            const overallRank = (!selectedType && !selectedCategory && !searchQuery.trim())
+              ? (indexInFiltered + 1)
+              : (overallRankMap.get(pokeKey) ?? 1);
             const primaryType = selectedType || poke.bestChargedMove?.type || poke.types[0];
             const typeRank = selectedType ? indexInFiltered + 1 : (typeRankMap.get(pokeKey) ?? 1);
             const isExpanded = expandedPokes.has(pokeKey) || (searchQuery.trim() !== '' && indexInFiltered === 0);
@@ -454,12 +526,13 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
             const topMovesets = getTopMovesetsForPokemon(poke);
             const dialgaDex = calculateDialgaDexMetrics(poke);
             const isReleased = isPokemonReleasedInGo(poke);
+            const pokedexUrl = `/${lang}/pokedex/${poke.slug || POKEDEX_MAP[poke.pokedexId]?.slug || poke.pokedexId}${poke.variantId ? `?variant=${encodeURIComponent(poke.variantId)}` : ''}`;
 
             return (
               <div 
                 key={pokeKey} 
                 className={`ranking-pokemon-row ${!isExpanded ? 'collapsed' : ''} ${!isReleased ? 'unreleased-pokemon' : ''}`}
-                onClick={() => toggleExpand(pokeKey)}
+                onClick={() => router.push(pokedexUrl)}
                 style={{ cursor: 'pointer' }}
               >
                 <div className="ranking-row-top-main">
@@ -536,7 +609,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
                   <div className="ranking-poke-main-info">
                     <div className="poke-title-flex">
                       <Link
-                        href={`/${lang}/pokedex/${poke.slug || POKEDEX_MAP[poke.pokedexId]?.slug || poke.pokedexId}`}
+                        href={`/${lang}/pokedex/${poke.slug || POKEDEX_MAP[poke.pokedexId]?.slug || poke.pokedexId}${poke.variantId ? `?variant=${encodeURIComponent(poke.variantId)}` : ''}`}
                         className="poke-name"
                         onClick={(e) => e.stopPropagation()}
                         style={{ color: 'inherit', textDecoration: 'none' }}
@@ -609,21 +682,30 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
                     <div className="moves-box">
                       <span className="fast-move">
                         <MoveTypeBadgeWithIcon type={poke.bestFastMove.type} />
-                        <span>{poke.bestFastMove.name}{isFastLegacy && <span className="legacy-asterisk" title="Legacy / Elite TM Move">*</span>}</span>
+                        <MoveNameWithBadges move={poke.bestFastMove} isLegacy={isFastLegacy} />
                       </span>
                       <span className="move-divider">+</span>
                       <span className="charged-move">
                         <MoveTypeBadgeWithIcon type={poke.bestChargedMove.type} />
-                        <span>{poke.bestChargedMove.name}{isChargedLegacy && <span className="legacy-asterisk" title="Legacy / Elite TM Move">*</span>}</span>
+                        <MoveNameWithBadges move={poke.bestChargedMove} isLegacy={isChargedLegacy} />
                       </span>
                     </div>
 
-                    <div className="poke-expand-hint-badge">
+                    <button
+                      type="button"
+                      className="poke-expand-hint-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleExpand(pokeKey);
+                      }}
+                      aria-expanded={isExpanded}
+                      title={isExpanded ? (lang === 'cs' ? 'Skrýt detaily' : 'Hide details') : (lang === 'cs' ? 'Zobrazit detaily' : 'Show details')}
+                    >
                       <span className="expand-hint-text">
-                        {isExpanded ? t.ranking_detail_close : t.ranking_detail_open}
+                        {isExpanded ? (lang === 'cs' ? 'Zavřít' : 'Close') : (lang === 'cs' ? 'Detaily' : 'Details')}
                       </span>
                       {isExpanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
-                    </div>
+                    </button>
                   </div>
                 </div>
 
@@ -646,12 +728,12 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
                                 <div className="moveset-moves-pair">
                                   <span className="moveset-move">
                                     <MoveTypeBadgeWithIcon type={ms.fastMove.type} />
-                                    <span>{ms.fastMove.name}{ms.fastMove.isLegacy && <span className="legacy-asterisk" title="Elite TM / Legacy">*</span>}</span>
+                                    <MoveNameWithBadges move={ms.fastMove} isLegacy={ms.fastMove.isLegacy} />
                                   </span>
                                   <span className="moveset-plus">+</span>
                                   <span className="moveset-move">
                                     <MoveTypeBadgeWithIcon type={ms.chargedMove.type} />
-                                    <span>{ms.chargedMove.name}{ms.chargedMove.isLegacy && <span className="legacy-asterisk" title="Elite TM / Legacy">*</span>}</span>
+                                    <MoveNameWithBadges move={ms.chargedMove} isLegacy={ms.chargedMove.isLegacy} />
                                   </span>
                                 </div>
                               </div>
@@ -663,7 +745,8 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
                           ))}
                         </div>
                         <span className="legacy-legend-hint">
-                          <span className="legacy-asterisk">*</span> {lang === 'cs' ? 'Elite TM / Eventový legacy útok' : 'Elite TM / Event legacy move'}
+                          <span className="legacy-asterisk">*</span> {lang === 'cs' ? 'Elite TM / Legacy útok' : 'Elite TM / Legacy move'}
+                          <span className="plus-move-badge" style={{ margin: '0 4px 0 10px' }}>+</span> {lang === 'cs' ? 'Mega Level 4 / Apex Plus útok' : 'Mega Level 4 / Apex Plus move'}
                         </span>
                       </div>
 

@@ -1,42 +1,89 @@
 /**
  * generateRankings.ts — Build-time ranking data generator
  *
- * Fetches complete Pokemon data from the Pokemon GO Pokedex API,
- * computes PvE DPS / pveScore for every Pokemon (Normal, Shadow, Mega, Primal, regional forms),
- * and writes frontend/src/data/pokemonRankings.ts with the exact PokemonRankData interface and helpers.
+ * Modernized pipeline that:
+ * 1. Harmonizes Pokémon stats and moves from API and local caches.
+ * 2. Incorporates Mega Level 4 Plus Moves (+), Apex Moves (++), and Signature Moves.
+ * 3. Applies 1.30x STAB for Mega / Primal Pokémon and 1.20x for standard/shadow.
+ * 4. Generates canonical Pokédex slugs and variant IDs on EVERY entry for deep linking.
+ * 5. Emits lightweight `pokemonRankings.json` (~290 KB) to drastically speed up Next.js builds.
+ * 6. Generates backward-compatible `pokemonRankings.ts` facade for existing imports.
  *
  * Usage:
  *   cd backend && npm.cmd run generate:rankings
- *
- * Data source:
- *   https://pokemon-go-api.github.io/pokemon-go-api/api/pokedex.json
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 import axios from 'axios';
 
-// ─── CONFIG ─────────────────────────────────────────────────────────────────
+// ─── CONFIG & PATHS ──────────────────────────────────────────────────────────
 
 const API_URL = 'https://pokemon-go-api.github.io/pokemon-go-api/api/pokedex.json';
-const OUTPUT_PATH = path.resolve(__dirname, '../../../frontend/src/data/pokemonRankings.ts');
 const CACHE_PATH = path.resolve(__dirname, '../../data_pokedex_cache.json');
+const POKEDEX_CATALOG_PATH = path.resolve(__dirname, '../../../frontend/src/data/pokedexCatalog.json');
 
-// Shadow multipliers (Niantic official)
+const FRONTEND_JSON_OUTPUT = path.resolve(__dirname, '../../../frontend/src/data/pokemonRankings.json');
+const FRONTEND_TS_OUTPUT = path.resolve(__dirname, '../../../frontend/src/data/pokemonRankings.ts');
+const BACKEND_DATA_DIR = path.resolve(__dirname, '../../data');
+const BACKEND_JSON_OUTPUT = path.resolve(BACKEND_DATA_DIR, 'pokemonRankings.json');
+
+// Multipliers
 const SHADOW_ATK_MULT = 1.2;
 const SHADOW_DEF_MULT = 5 / 6; // 0.8333...
+const STAB_STANDARD = 1.2;
+const STAB_MEGA = 1.3;
 
 // CP formula constants (CPM at key levels)
 const CP_MULTIPLIER_50 = 0.84029999;
 const CP_MULTIPLIER_40 = 0.7903;
-const CP_MULTIPLIER_25 = 0.667934;  // Weather boosted raid catch (L25)
-const CP_MULTIPLIER_20 = 0.5974;    // Standard raid catch (L20)
-const CP_MULTIPLIER_15 = 0.51739395;// Research encounter (L15)
+const CP_MULTIPLIER_25 = 0.667934;
+const CP_MULTIPLIER_20 = 0.5974;
+const CP_MULTIPLIER_15 = 0.51739395;
 
-// STAB multiplier
-const STAB = 1.2;
+// ─── TYPES ──────────────────────────────────────────────────────────────────
 
-// ─── SIGNATURE & ELITE MOVES INJECTION ───────────────────────────────────────
+export interface MoveData {
+  name: string;
+  type: string;
+  isElite?: boolean;
+  isPlus?: boolean;
+}
+
+export interface AlternativeMoveset {
+  fastMove: MoveData;
+  chargedMove: MoveData;
+  dps: number;
+  score: number;
+}
+
+export interface PokemonRankData {
+  name: string;
+  pokedexId: number;
+  slug: string;
+  variantId?: string;
+  variantSlug?: string;
+  types: string[];
+  attackType?: string;
+  isOverallBest?: boolean;
+  attack: number;
+  defense: number;
+  stamina: number;
+  maxCp: number;
+  maxCp40?: number;
+  cpRaid100?: number;
+  cpWeather100?: number;
+  cpResearch100?: number;
+  pveScore: number;
+  dps: number;
+  bestFastMove: MoveData;
+  bestChargedMove: MoveData;
+  alternativeMovesets?: AlternativeMoveset[];
+  isShadow?: boolean;
+  isMega?: boolean;
+  isPrimal?: boolean;
+  generation?: number;
+}
 
 interface MoveDef {
   id: string;
@@ -45,122 +92,9 @@ interface MoveDef {
   durationMs: number;
   type: { type: string };
   names: Record<string, string>;
+  isElite?: boolean;
+  isPlus?: boolean;
 }
-
-const SIGNATURE_MOVES: Record<string, MoveDef[]> = {
-  'NECROZMA_DAWN_WINGS': [
-    { id: 'MOONGEIST_BEAM', power: 230, energy: -100, durationMs: 3200, type: { type: 'POKEMON_TYPE_GHOST' }, names: { English: 'Moongeist Beam' } }
-  ],
-  'NECROZMA_DUSK_MANE': [
-    { id: 'SUNSTEEL_STRIKE', power: 230, energy: -100, durationMs: 3000, type: { type: 'POKEMON_TYPE_STEEL' }, names: { English: 'Sunsteel Strike' } }
-  ],
-  'RAYQUAZA': [
-    { id: 'DRAGON_ASCENT', power: 140, energy: -50, durationMs: 3500, type: { type: 'POKEMON_TYPE_FLYING' }, names: { English: 'Dragon Ascent' } }
-  ],
-  'DIALGA_ORIGIN': [
-    { id: 'ROAR_OF_TIME', power: 160, energy: -100, durationMs: 3000, type: { type: 'POKEMON_TYPE_DRAGON' }, names: { English: 'Roar of Time' } }
-  ],
-  'PALKIA_ORIGIN': [
-    { id: 'SPACIAL_REND', power: 160, energy: -100, durationMs: 3000, type: { type: 'POKEMON_TYPE_DRAGON' }, names: { English: 'Spacial Rend' } }
-  ],
-  'XERNEAS': [
-    { id: 'GEOMANCY_FAST', power: 20, energy: 14, durationMs: 1500, type: { type: 'POKEMON_TYPE_FAIRY' }, names: { English: 'Geomancy' } }
-  ],
-  'ZACIAN_CROWNED_SWORD': [
-    { id: 'BEHEMOTH_BLADE', power: 100, energy: -50, durationMs: 2000, type: { type: 'POKEMON_TYPE_STEEL' }, names: { English: 'Behemoth Blade' } }
-  ],
-  'ZAMAZENTA_CROWNED_SHIELD': [
-    { id: 'BEHEMOTH_BASH', power: 100, energy: -50, durationMs: 2000, type: { type: 'POKEMON_TYPE_STEEL' }, names: { English: 'Behemoth Bash' } }
-  ],
-  'LUCARIO': [
-    { id: 'FORCE_PALM_FAST', power: 13, energy: 9, durationMs: 1000, type: { type: 'POKEMON_TYPE_FIGHTING' }, names: { English: 'Force Palm' } }
-  ],
-  'MACHAMP': [
-    { id: 'DYNAMIC_PUNCH', power: 90, energy: -50, durationMs: 2700, type: { type: 'POKEMON_TYPE_FIGHTING' }, names: { English: 'Dynamic Punch' } }
-  ],
-  'KYOGRE': [
-    { id: 'ORIGIN_PULSE', power: 130, energy: -100, durationMs: 1700, type: { type: 'POKEMON_TYPE_WATER' }, names: { English: 'Origin Pulse' } }
-  ],
-  'GROUDON': [
-    { id: 'PRECIPICE_BLADES', power: 130, energy: -100, durationMs: 1700, type: { type: 'POKEMON_TYPE_GROUND' }, names: { English: 'Precipice Blades' } }
-  ],
-  'MEWTWO': [
-    { id: 'PSYSTRIKE', power: 90, energy: -50, durationMs: 2300, type: { type: 'POKEMON_TYPE_PSYCHIC' }, names: { English: 'Psystrike' } }
-  ],
-  'KYUREM_BLACK': [
-    { id: 'FREEZE_SHOCK', power: 140, energy: -100, durationMs: 2500, type: { type: 'POKEMON_TYPE_ICE' }, names: { English: 'Freeze Shock' } },
-    { id: 'FUSION_BOLT', power: 140, energy: -100, durationMs: 2500, type: { type: 'POKEMON_TYPE_ELECTRIC' }, names: { English: 'Fusion Bolt' } }
-  ],
-  'KYUREM_WHITE': [
-    { id: 'ICE_BURN', power: 140, energy: -100, durationMs: 2500, type: { type: 'POKEMON_TYPE_ICE' }, names: { English: 'Ice Burn' } },
-    { id: 'FUSION_FLARE', power: 140, energy: -100, durationMs: 2500, type: { type: 'POKEMON_TYPE_FIRE' }, names: { English: 'Fusion Flare' } }
-  ]
-};
-
-// Forms that cannot exist in Shadow variant in Pokémon GO
-const FORMS_EXCLUDED_FROM_SHADOW = new Set([
-  'NECROZMA_DAWN_WINGS', 'NECROZMA_DUSK_MANE', 'NECROZMA_ULTRA',
-  'KYUREM_BLACK', 'KYUREM_WHITE',
-  'ZACIAN_CROWNED_SWORD', 'ZAMAZENTA_CROWNED_SHIELD',
-  'ETERNATUS_ETERNAMAX', 'ETERNATUS',
-  'CALYREX_ICE_RIDER', 'CALYREX_SHADOW_RIDER', 'CALYREX',
-  'PALAFIN_HERO', 'PALAFIN_ZERO',
-  'KORAIDON_APEX', 'KORAIDON',
-  'MIRAIDON_ULTIMATE', 'MIRAIDON',
-  'TERAPAGOS_STELLAR', 'TERAPAGOS_TERASTAL', 'TERAPAGOS',
-  'PECHARUNT', 'OGERPON',
-  'TING_LU', 'CHIEN_PAO', 'WO_CHIEN', 'CHI_YU',
-  'OKIDOGI', 'MUNKIDORI', 'FEZANDIPITI',
-  'GOUGING_FIRE', 'RAGING_BOLT', 'IRON_BOULDER', 'IRON_CROWN',
-  'WALKING_WAKE', 'IRON_LEAVES'
-]);
-
-// Cosmetic form prefixes in GameMaster that should not generate duplicate cards
-const COSMETIC_FORM_PREFIXES = [
-  'SPINDA_', 'UNOWN_', 'VIVILLON_', 'SCATTERBUG_', 'SPEWPA_',
-  'BURMY_PLANT', 'BURMY_SANDY', 'BURMY_TRASH',
-  'SHELLOS_EAST', 'SHELLOS_WEST',
-  'GASTRODON_EAST', 'GASTRODON_WEST',
-  'DEERLING_SPRING', 'DEERLING_SUMMER', 'DEERLING_AUTUMN', 'DEERLING_WINTER',
-  'SAWSBUCK_SPRING', 'SAWSBUCK_SUMMER', 'SAWSBUCK_AUTUMN', 'SAWSBUCK_WINTER',
-  'FLABEBE_', 'FLOETTE_', 'FLORGES_',
-  'FURFROU_', 'MINIOR_', 'ALCREMIE_',
-  'SINISTEA_PHONY', 'POLTEAGEIST_PHONY',
-  'POLTCHAGEIST_COUNTERFEIT', 'SINISTCHA_UNREMARKABLE',
-  'DUDUNSPARCE_THREE', 'MAUSHOLD_FAMILY_OF_FOUR',
-  'SQUAWKABILLY_BLUE', 'SQUAWKABILLY_WHITE', 'SQUAWKABILLY_YELLOW',
-  'TATSUGIRI_DROOPY', 'TATSUGIRI_STRETCHY'
-];
-
-function shouldSkipRegionForm(rfKey: string): boolean {
-  // Always keep regional forms (Alola, Galar, Hisui, Paldea) even if they contain _STANDARD
-  if (
-    rfKey.includes('_GALARIAN') ||
-    rfKey.includes('_ALOLA') ||
-    rfKey.includes('_HISUIAN') ||
-    rfKey.includes('_PALDEA')
-  ) {
-    return false;
-  }
-
-  if (
-    rfKey.endsWith('_S') ||
-    rfKey.endsWith('_SHADOW') ||
-    rfKey.endsWith('_PURIFIED') ||
-    rfKey.endsWith('_NORMAL') ||
-    rfKey.endsWith('_STANDARD') ||
-    rfKey.endsWith('_COPY_2019') ||
-    rfKey.endsWith('_FALL_2019')
-  ) {
-    return true;
-  }
-  for (const prefix of COSMETIC_FORM_PREFIXES) {
-    if (rfKey.startsWith(prefix)) return true;
-  }
-  return false;
-}
-
-// ─── TYPES ──────────────────────────────────────────────────────────────────
 
 interface ApiMove {
   id: string;
@@ -169,6 +103,8 @@ interface ApiMove {
   durationMs: number;
   type: { type: string; names?: Record<string, string> };
   names: Record<string, string>;
+  isElite?: boolean;
+  isPlus?: boolean;
 }
 
 interface ApiStats {
@@ -221,32 +157,207 @@ interface ApiPokemon {
   megaEvolutions?: Record<string, ApiMega> | unknown[];
 }
 
-export interface MoveData {
-  name: string;
-  type: string;
-}
+// ─── COMPREHENSIVE SIGNATURE, APEX & PLUS MOVES REGISTRY ────────────────────
 
-export interface PokemonRankData {
-  name: string;
-  pokedexId: number;
-  slug?: string;
-  types: string[];
-  attack: number;
-  defense: number;
-  stamina: number;
-  maxCp: number;
-  maxCp40?: number;
-  cpRaid100?: number;
-  cpWeather100?: number;
-  cpResearch100?: number;
-  pveScore: number;
-  dps: number;
-  bestFastMove: MoveData;
-  bestChargedMove: MoveData;
-  isShadow?: boolean;
-  isMega?: boolean;
-  isPrimal?: boolean;
-  generation?: number;
+const SIGNATURE_MOVES: Record<string, MoveDef[]> = {
+  // ── Apex Shadow & Purified Plus Moves ──
+  'LUGIA': [
+    { id: 'AEROBLAST_PLUS', power: 170, energy: -100, durationMs: 3400, type: { type: 'POKEMON_TYPE_FLYING' }, names: { English: 'Aeroblast+' }, isPlus: true, isElite: true },
+    { id: 'AEROBLAST_PLUS_PLUS', power: 225, energy: -100, durationMs: 3400, type: { type: 'POKEMON_TYPE_FLYING' }, names: { English: 'Aeroblast++' }, isPlus: true, isElite: true },
+  ],
+  'HO_OH': [
+    { id: 'SACRED_FIRE_PLUS', power: 145, energy: -100, durationMs: 2600, type: { type: 'POKEMON_TYPE_FIRE' }, names: { English: 'Sacred Fire+' }, isPlus: true, isElite: true },
+    { id: 'SACRED_FIRE_PLUS_PLUS', power: 155, energy: -100, durationMs: 2600, type: { type: 'POKEMON_TYPE_FIRE' }, names: { English: 'Sacred Fire++' }, isPlus: true, isElite: true },
+  ],
+
+  // ── Mega Level 4 Plus Moves (+) ──
+  'MEWTWO_MEGA_X': [
+    { id: 'DYNAMIC_PUNCH_PLUS', power: 130, energy: -100, durationMs: 2700, type: { type: 'POKEMON_TYPE_FIGHTING' }, names: { English: 'Dynamic Punch+' }, isPlus: true },
+  ],
+  'MEWTWO_MEGA_Y': [
+    { id: 'FUTURE_SIGHT_PLUS', power: 160, energy: -100, durationMs: 2700, type: { type: 'POKEMON_TYPE_PSYCHIC' }, names: { English: 'Future Sight+' }, isPlus: true },
+  ],
+  'CHARIZARD_MEGA_X': [
+    { id: 'BLAST_BURN_PLUS', power: 150, energy: -100, durationMs: 3300, type: { type: 'POKEMON_TYPE_FIRE' }, names: { English: 'Blast Burn+' }, isPlus: true },
+    { id: 'OUTRAGE_PLUS', power: 150, energy: -100, durationMs: 3900, type: { type: 'POKEMON_TYPE_DRAGON' }, names: { English: 'Outrage+' }, isPlus: true },
+  ],
+  'CHARIZARD_MEGA_Y': [
+    { id: 'BLAST_BURN_PLUS', power: 150, energy: -100, durationMs: 3300, type: { type: 'POKEMON_TYPE_FIRE' }, names: { English: 'Blast Burn+' }, isPlus: true },
+  ],
+  'BLASTOISE_MEGA': [
+    { id: 'HYDRO_CANNON_PLUS', power: 125, energy: -100, durationMs: 1900, type: { type: 'POKEMON_TYPE_WATER' }, names: { English: 'Hydro Cannon+' }, isPlus: true },
+  ],
+  'VENUSAUR_MEGA': [
+    { id: 'FRENZY_PLANT_PLUS', power: 135, energy: -100, durationMs: 2600, type: { type: 'POKEMON_TYPE_GRASS' }, names: { English: 'Frenzy Plant+' }, isPlus: true },
+  ],
+  'BLAZIKEN_MEGA': [
+    { id: 'BLAST_BURN_PLUS', power: 150, energy: -100, durationMs: 3300, type: { type: 'POKEMON_TYPE_FIRE' }, names: { English: 'Blast Burn+' }, isPlus: true },
+    { id: 'BRICK_BREAK_PLUS', power: 105, energy: -100, durationMs: 1600, type: { type: 'POKEMON_TYPE_FIGHTING' }, names: { English: 'Brick Break+' }, isPlus: true },
+  ],
+  'SWAMPERT_MEGA': [
+    { id: 'HYDRO_CANNON_PLUS', power: 125, energy: -100, durationMs: 1900, type: { type: 'POKEMON_TYPE_WATER' }, names: { English: 'Hydro Cannon+' }, isPlus: true },
+  ],
+  'SCEPTILE_MEGA': [
+    { id: 'FRENZY_PLANT_PLUS', power: 135, energy: -100, durationMs: 2600, type: { type: 'POKEMON_TYPE_GRASS' }, names: { English: 'Frenzy Plant+' }, isPlus: true },
+  ],
+  'RAYQUAZA': [
+    { id: 'DRAGON_ASCENT', power: 140, energy: -50, durationMs: 3500, type: { type: 'POKEMON_TYPE_FLYING' }, names: { English: 'Dragon Ascent' }, isElite: true },
+    { id: 'OUTRAGE_PLUS', power: 150, energy: -100, durationMs: 3900, type: { type: 'POKEMON_TYPE_DRAGON' }, names: { English: 'Outrage+' }, isPlus: true },
+    { id: 'DRACO_METEOR_PLUS', power: 180, energy: -100, durationMs: 3600, type: { type: 'POKEMON_TYPE_DRAGON' }, names: { English: 'Draco Meteor+' }, isPlus: true },
+  ],
+  'RAYQUAZA_MEGA': [
+    { id: 'DRAGON_ASCENT', power: 140, energy: -50, durationMs: 3500, type: { type: 'POKEMON_TYPE_FLYING' }, names: { English: 'Dragon Ascent' }, isElite: true },
+    { id: 'OUTRAGE_PLUS', power: 150, energy: -100, durationMs: 3900, type: { type: 'POKEMON_TYPE_DRAGON' }, names: { English: 'Outrage+' }, isPlus: true },
+    { id: 'DRACO_METEOR_PLUS', power: 180, energy: -100, durationMs: 3600, type: { type: 'POKEMON_TYPE_DRAGON' }, names: { English: 'Draco Meteor+' }, isPlus: true },
+  ],
+  'GARCHOMP_MEGA': [
+    { id: 'OUTRAGE_PLUS', power: 150, energy: -100, durationMs: 3900, type: { type: 'POKEMON_TYPE_DRAGON' }, names: { English: 'Outrage+' }, isPlus: true },
+  ],
+  'SALAMENCE_MEGA': [
+    { id: 'OUTRAGE_PLUS', power: 150, energy: -100, durationMs: 3900, type: { type: 'POKEMON_TYPE_DRAGON' }, names: { English: 'Outrage+' }, isPlus: true },
+  ],
+  'TYRANITAR_MEGA': [
+    { id: 'DARK_PULSE_PLUS', power: 120, energy: -100, durationMs: 3000, type: { type: 'POKEMON_TYPE_DARK' }, names: { English: 'Dark Pulse+' }, isPlus: true },
+  ],
+  'GENGAR_MEGA': [
+    { id: 'DARK_PULSE_PLUS', power: 120, energy: -100, durationMs: 3000, type: { type: 'POKEMON_TYPE_DARK' }, names: { English: 'Dark Pulse+' }, isPlus: true },
+    { id: 'NIGHT_SHADE_PLUS', power: 115, energy: -100, durationMs: 2600, type: { type: 'POKEMON_TYPE_GHOST' }, names: { English: 'Night Shade+' }, isPlus: true },
+  ],
+  'BEEDRILL_MEGA': [
+    { id: 'FELL_STINGER_PLUS', power: 75, energy: -100, durationMs: 1500, type: { type: 'POKEMON_TYPE_BUG' }, names: { English: 'Fell Stinger+' }, isPlus: true },
+  ],
+  'PIDGEOT_MEGA': [
+    { id: 'BRAVE_BIRD_PLUS', power: 150, energy: -100, durationMs: 2000, type: { type: 'POKEMON_TYPE_FLYING' }, names: { English: 'Brave Bird+' }, isPlus: true },
+  ],
+  'AMPHAROS_MEGA': [
+    { id: 'ZAP_CANNON_PLUS', power: 175, energy: -100, durationMs: 3700, type: { type: 'POKEMON_TYPE_ELECTRIC' }, names: { English: 'Zap Cannon+' }, isPlus: true },
+  ],
+  'LUCARIO_MEGA': [
+    { id: 'FORCE_PALM_FAST', power: 13, energy: 9, durationMs: 1000, type: { type: 'POKEMON_TYPE_FIGHTING' }, names: { English: 'Force Palm' } },
+    { id: 'DYNAMIC_PUNCH_PLUS', power: 130, energy: -100, durationMs: 2700, type: { type: 'POKEMON_TYPE_FIGHTING' }, names: { English: 'Dynamic Punch+' }, isPlus: true },
+  ],
+  'ALAKAZAM_MEGA': [
+    { id: 'FUTURE_SIGHT_PLUS', power: 160, energy: -100, durationMs: 2700, type: { type: 'POKEMON_TYPE_PSYCHIC' }, names: { English: 'Future Sight+' }, isPlus: true },
+  ],
+  'GARDEVOIR_MEGA': [
+    { id: 'FUTURE_SIGHT_PLUS', power: 160, energy: -100, durationMs: 2700, type: { type: 'POKEMON_TYPE_PSYCHIC' }, names: { English: 'Future Sight+' }, isPlus: true },
+  ],
+
+  // ── Signature & Fusion & Adventure Effects Moves ──
+  'NECROZMA_DAWN_WINGS': [
+    { id: 'MOONGEIST_BEAM', power: 230, energy: -100, durationMs: 3200, type: { type: 'POKEMON_TYPE_GHOST' }, names: { English: 'Moongeist Beam' }, isElite: true }
+  ],
+  'NECROZMA_DUSK_MANE': [
+    { id: 'SUNSTEEL_STRIKE', power: 230, energy: -100, durationMs: 3000, type: { type: 'POKEMON_TYPE_STEEL' }, names: { English: 'Sunsteel Strike' }, isElite: true }
+  ],
+  'DIALGA_ORIGIN': [
+    { id: 'ROAR_OF_TIME', power: 160, energy: -100, durationMs: 3000, type: { type: 'POKEMON_TYPE_DRAGON' }, names: { English: 'Roar of Time' }, isElite: true }
+  ],
+  'PALKIA_ORIGIN': [
+    { id: 'SPACIAL_REND', power: 160, energy: -100, durationMs: 3000, type: { type: 'POKEMON_TYPE_DRAGON' }, names: { English: 'Spacial Rend' }, isElite: true }
+  ],
+  'XERNEAS': [
+    { id: 'GEOMANCY_FAST', power: 20, energy: 14, durationMs: 1500, type: { type: 'POKEMON_TYPE_FAIRY' }, names: { English: 'Geomancy' }, isElite: true }
+  ],
+  'ZACIAN_CROWNED_SWORD': [
+    { id: 'BEHEMOTH_BLADE', power: 100, energy: -50, durationMs: 2000, type: { type: 'POKEMON_TYPE_STEEL' }, names: { English: 'Behemoth Blade' }, isElite: true }
+  ],
+  'ZAMAZENTA_CROWNED_SHIELD': [
+    { id: 'BEHEMOTH_BASH', power: 100, energy: -50, durationMs: 2000, type: { type: 'POKEMON_TYPE_STEEL' }, names: { English: 'Behemoth Bash' }, isElite: true }
+  ],
+  'LUCARIO': [
+    { id: 'FORCE_PALM_FAST', power: 13, energy: 9, durationMs: 1000, type: { type: 'POKEMON_TYPE_FIGHTING' }, names: { English: 'Force Palm' } }
+  ],
+  'MACHAMP': [
+    { id: 'DYNAMIC_PUNCH', power: 90, energy: -50, durationMs: 2700, type: { type: 'POKEMON_TYPE_FIGHTING' }, names: { English: 'Dynamic Punch' } }
+  ],
+  'KYOGRE': [
+    { id: 'ORIGIN_PULSE', power: 130, energy: -100, durationMs: 1700, type: { type: 'POKEMON_TYPE_WATER' }, names: { English: 'Origin Pulse' }, isElite: true }
+  ],
+  'KYOGRE_PRIMAL': [
+    { id: 'ORIGIN_PULSE', power: 130, energy: -100, durationMs: 1700, type: { type: 'POKEMON_TYPE_WATER' }, names: { English: 'Origin Pulse' }, isElite: true }
+  ],
+  'GROUDON': [
+    { id: 'PRECIPICE_BLADES', power: 130, energy: -100, durationMs: 1700, type: { type: 'POKEMON_TYPE_GROUND' }, names: { English: 'Precipice Blades' }, isElite: true },
+    { id: 'FIRE_PUNCH', power: 55, energy: -33, durationMs: 2200, type: { type: 'POKEMON_TYPE_FIRE' }, names: { English: 'Fire Punch' }, isElite: true }
+  ],
+  'GROUDON_PRIMAL': [
+    { id: 'PRECIPICE_BLADES', power: 130, energy: -100, durationMs: 1700, type: { type: 'POKEMON_TYPE_GROUND' }, names: { English: 'Precipice Blades' }, isElite: true },
+    { id: 'FIRE_PUNCH', power: 55, energy: -33, durationMs: 2200, type: { type: 'POKEMON_TYPE_FIRE' }, names: { English: 'Fire Punch' }, isElite: true }
+  ],
+  'MEWTWO': [
+    { id: 'PSYSTRIKE', power: 90, energy: -50, durationMs: 2300, type: { type: 'POKEMON_TYPE_PSYCHIC' }, names: { English: 'Psystrike' }, isElite: true }
+  ],
+  'KYUREM_BLACK': [
+    { id: 'FREEZE_SHOCK', power: 140, energy: -100, durationMs: 2500, type: { type: 'POKEMON_TYPE_ICE' }, names: { English: 'Freeze Shock' }, isElite: true },
+    { id: 'FUSION_BOLT', power: 140, energy: -100, durationMs: 2500, type: { type: 'POKEMON_TYPE_ELECTRIC' }, names: { English: 'Fusion Bolt' }, isElite: true }
+  ],
+  'KYUREM_WHITE': [
+    { id: 'ICE_BURN', power: 140, energy: -100, durationMs: 2500, type: { type: 'POKEMON_TYPE_ICE' }, names: { English: 'Ice Burn' }, isElite: true },
+    { id: 'FUSION_FLARE', power: 140, energy: -100, durationMs: 2500, type: { type: 'POKEMON_TYPE_FIRE' }, names: { English: 'Fusion Flare' }, isElite: true }
+  ]
+};
+
+// Forms that cannot exist in Shadow variant in Pokémon GO
+const FORMS_EXCLUDED_FROM_SHADOW = new Set([
+  'NECROZMA_DAWN_WINGS', 'NECROZMA_DUSK_MANE', 'NECROZMA_ULTRA',
+  'KYUREM_BLACK', 'KYUREM_WHITE',
+  'ZACIAN_CROWNED_SWORD', 'ZAMAZENTA_CROWNED_SHIELD',
+  'ETERNATUS_ETERNAMAX', 'ETERNATUS',
+  'CALYREX_ICE_RIDER', 'CALYREX_SHADOW_RIDER', 'CALYREX',
+  'PALAFIN_HERO', 'PALAFIN_ZERO',
+  'KORAIDON_APEX', 'KORAIDON',
+  'MIRAIDON_ULTIMATE', 'MIRAIDON',
+  'TERAPAGOS_STELLAR', 'TERAPAGOS_TERASTAL', 'TERAPAGOS',
+  'PECHARUNT', 'OGERPON',
+  'TING_LU', 'CHIEN_PAO', 'WO_CHIEN', 'CHI_YU',
+  'OKIDOGI', 'MUNKIDORI', 'FEZANDIPITI',
+  'GOUGING_FIRE', 'RAGING_BOLT', 'IRON_BOULDER', 'IRON_CROWN',
+  'WALKING_WAKE', 'IRON_LEAVES'
+]);
+
+// Cosmetic form prefixes in GameMaster that should not generate duplicate cards
+const COSMETIC_FORM_PREFIXES = [
+  'SPINDA_', 'UNOWN_', 'VIVILLON_', 'SCATTERBUG_', 'SPEWPA_',
+  'BURMY_PLANT', 'BURMY_SANDY', 'BURMY_TRASH',
+  'SHELLOS_EAST', 'SHELLOS_WEST',
+  'GASTRODON_EAST', 'GASTRODON_WEST',
+  'DEERLING_SPRING', 'DEERLING_SUMMER', 'DEERLING_AUTUMN', 'DEERLING_WINTER',
+  'SAWSBUCK_SPRING', 'SAWSBUCK_SUMMER', 'SAWSBUCK_AUTUMN', 'SAWSBUCK_WINTER',
+  'FLABEBE_', 'FLOETTE_', 'FLORGES_',
+  'FURFROU_', 'MINIOR_', 'ALCREMIE_',
+  'SINISTEA_PHONY', 'POLTEAGEIST_PHONY',
+  'POLTCHAGEIST_COUNTERFEIT', 'SINISTCHA_UNREMARKABLE',
+  'DUDUNSPARCE_THREE', 'MAUSHOLD_FAMILY_OF_FOUR',
+  'SQUAWKABILLY_BLUE', 'SQUAWKABILLY_WHITE', 'SQUAWKABILLY_YELLOW',
+  'TATSUGIRI_DROOPY', 'TATSUGIRI_STRETCHY'
+];
+
+function shouldSkipRegionForm(rfKey: string): boolean {
+  if (
+    rfKey.includes('_GALARIAN') ||
+    rfKey.includes('_ALOLA') ||
+    rfKey.includes('_HISUIAN') ||
+    rfKey.includes('_PALDEA')
+  ) {
+    return false;
+  }
+
+  if (
+    rfKey.endsWith('_S') ||
+    rfKey.endsWith('_SHADOW') ||
+    rfKey.endsWith('_PURIFIED') ||
+    rfKey.endsWith('_NORMAL') ||
+    rfKey.endsWith('_STANDARD') ||
+    rfKey.endsWith('_COPY_2019') ||
+    rfKey.endsWith('_FALL_2019')
+  ) {
+    return true;
+  }
+  for (const prefix of COSMETIC_FORM_PREFIXES) {
+    if (rfKey.startsWith(prefix)) return true;
+  }
+  return false;
 }
 
 // ─── HELPERS ────────────────────────────────────────────────────────────────
@@ -273,6 +384,19 @@ function calculateCp(atk: number, def: number, sta: number, cpMultiplier: number
   return Math.max(10, Math.floor(effectiveAtk * Math.sqrt(effectiveDef) * Math.sqrt(effectiveSta) / 10));
 }
 
+function isPlusMove(move: ApiMove | null): boolean {
+  if (!move) return false;
+  if (move.isPlus) return true;
+  if (move.id?.includes('_PLUS')) return true;
+  const name = move.names?.English || '';
+  return name.endsWith('+') || name.endsWith('++');
+}
+
+function isEliteMove(move: ApiMove | null): boolean {
+  if (!move) return false;
+  return !!move.isElite;
+}
+
 function getAllMoves(
   quickMoves?: Record<string, ApiMove>,
   cinematicMoves?: Record<string, ApiMove>,
@@ -290,21 +414,68 @@ function getAllMoves(
     chargedMoves.push(...Object.values(cinematicMoves));
   }
   if (eliteQuick && typeof eliteQuick === 'object' && !Array.isArray(eliteQuick)) {
-    fastMoves.push(...Object.values(eliteQuick));
+    for (const m of Object.values(eliteQuick)) {
+      fastMoves.push({ ...m, isElite: true });
+    }
   }
   if (eliteCharged && typeof eliteCharged === 'object' && !Array.isArray(eliteCharged)) {
-    chargedMoves.push(...Object.values(eliteCharged));
+    for (const m of Object.values(eliteCharged)) {
+      chargedMoves.push({ ...m, isElite: true });
+    }
   }
 
   extraMoves.forEach(m => {
+    const enriched: ApiMove = {
+      id: m.id,
+      power: m.power,
+      energy: m.energy,
+      durationMs: m.durationMs,
+      type: m.type,
+      names: m.names,
+      isElite: m.isElite,
+      isPlus: m.isPlus
+    };
     if (m.id.endsWith('_FAST') || m.energy > 0) {
-      fastMoves.push(m as ApiMove);
+      fastMoves.push(enriched);
     } else {
-      chargedMoves.push(m as ApiMove);
+      chargedMoves.push(enriched);
     }
   });
 
   return { fastMoves, chargedMoves };
+}
+
+function enrichMegaPlusMoves(chargedMoves: ApiMove[], megaTypes: string[]): ApiMove[] {
+  const result: ApiMove[] = [...chargedMoves];
+  const existingPlusNames = new Set(
+    chargedMoves.filter(m => isPlusMove(m)).map(m => (m.names?.English || '').replace(/\+{1,2}$/, '').toLowerCase())
+  );
+
+  for (const move of chargedMoves) {
+    if (isPlusMove(move)) continue;
+    const moveType = parseTypeName(move.type?.type);
+    const moveName = move.names?.English || '';
+    const cleanName = moveName.toLowerCase();
+
+    // Auto-generate Mega Level 4 Plus version for STAB or signature moves (>= 45 power)
+    if (megaTypes.includes(moveType) && !existingPlusNames.has(cleanName) && (move.power || 0) >= 45) {
+      existingPlusNames.add(cleanName);
+      result.push({
+        id: `${move.id}_PLUS`,
+        power: Math.round((move.power || 80) * 1.15),
+        energy: move.energy || -50,
+        durationMs: move.durationMs || 2500,
+        type: move.type,
+        names: {
+          English: `${moveName}+`
+        },
+        isPlus: true,
+        isElite: move.isElite
+      });
+    }
+  }
+
+  return result;
 }
 
 function calculateCycleDps(
@@ -312,12 +483,16 @@ function calculateCycleDps(
   chargedMove: ApiMove,
   attackStat: number,
   pokemonTypes: string[],
-  isShadow = false
+  isShadow = false,
+  isMega = false,
+  isPrimal = false
 ): number {
   const fastType = parseTypeName(fastMove.type?.type);
   const chargedType = parseTypeName(chargedMove.type?.type);
-  const fastStab = pokemonTypes.includes(fastType) ? STAB : 1.0;
-  const chargedStab = pokemonTypes.includes(chargedType) ? STAB : 1.0;
+  const stabMultiplier = (isMega || isPrimal) ? STAB_MEGA : STAB_STANDARD;
+
+  const fastStab = pokemonTypes.includes(fastType) ? stabMultiplier : 1.0;
+  const chargedStab = pokemonTypes.includes(chargedType) ? stabMultiplier : 1.0;
 
   const effAtk = attackStat * (isShadow ? SHADOW_ATK_MULT : 1.0);
   const atkFactor = (effAtk + 15) / 150;
@@ -340,29 +515,98 @@ function calculateCycleDps(
   return Number((rawDps * 1.85).toFixed(2));
 }
 
-function findBestMoveset(
+function formatMoveName(move: ApiMove | null): string {
+  if (!move) return 'Tackle';
+  if (move.names?.English) return move.names.English;
+
+  let formatted = move.id
+    .replace(/_FAST$/, '')
+    .replace(/_PLUS_PLUS$/, '++')
+    .replace(/_PLUS$/, '+')
+    .replace(/_/g, ' ')
+    .toLowerCase()
+    .replace(/\b\w/g, c => c.toUpperCase());
+
+  if (move.id.endsWith('_PLUS_PLUS') && !formatted.endsWith('++')) formatted += '++';
+  else if (move.id.endsWith('_PLUS') && !formatted.endsWith('+')) formatted += '+';
+
+  return formatted;
+}
+
+function formatMoveType(move: ApiMove | null): string {
+  if (!move?.type?.type) return 'Normal';
+  return parseTypeName(move.type.type);
+}
+
+function findTopMovesets(
   fastMoves: ApiMove[],
   chargedMoves: ApiMove[],
   attackStat: number,
   pokemonTypes: string[],
-  isShadow = false
-): { fastMove: ApiMove | null; chargedMove: ApiMove | null; dps: number } {
-  let bestDps = 0;
-  let bestFast: ApiMove | null = null;
-  let bestCharged: ApiMove | null = null;
+  isShadow = false,
+  isMega = false,
+  isPrimal = false
+): {
+  bestFast: ApiMove | null;
+  bestCharged: ApiMove | null;
+  dps: number;
+  alternativeMovesets: AlternativeMoveset[];
+} {
+  const combos: { fast: ApiMove; charged: ApiMove; dps: number }[] = [];
 
   for (const fast of fastMoves) {
     for (const charged of chargedMoves) {
-      const dps = calculateCycleDps(fast, charged, attackStat, pokemonTypes, isShadow);
-      if (dps > bestDps) {
-        bestDps = dps;
-        bestFast = fast;
-        bestCharged = charged;
-      }
+      const dps = calculateCycleDps(fast, charged, attackStat, pokemonTypes, isShadow, isMega, isPrimal);
+      combos.push({ fast, charged, dps });
     }
   }
 
-  return { fastMove: bestFast, chargedMove: bestCharged, dps: bestDps };
+  combos.sort((a, b) => b.dps - a.dps);
+
+  if (combos.length === 0) {
+    return { bestFast: null, bestCharged: null, dps: 0, alternativeMovesets: [] };
+  }
+
+  const best = combos[0];
+  const maxDps = best.dps > 0 ? best.dps : 1;
+
+  // Select up to 4 top unique movesets
+  const seenCombos = new Set<string>();
+  const alternatives: AlternativeMoveset[] = [];
+
+  for (const c of combos) {
+    const fName = formatMoveName(c.fast);
+    const cName = formatMoveName(c.charged);
+    const comboKey = `${fName}-${cName}`;
+    if (seenCombos.has(comboKey)) continue;
+    seenCombos.add(comboKey);
+
+    alternatives.push({
+      fastMove: {
+        name: fName,
+        type: formatMoveType(c.fast),
+        isElite: isEliteMove(c.fast),
+        isPlus: isPlusMove(c.fast)
+      },
+      chargedMove: {
+        name: cName,
+        type: formatMoveType(c.charged),
+        isElite: isEliteMove(c.charged),
+        isPlus: isPlusMove(c.charged)
+      },
+      dps: c.dps,
+      score: Math.min(100, Math.max(10, Math.round((c.dps / maxDps) * 100)))
+    });
+
+    if (alternatives.length >= 4) break;
+  }
+
+  return {
+    bestFast: best.fast,
+    bestCharged: best.charged,
+    dps: best.dps,
+    alternativeMovesets: alternatives
+  };
 }
 
 function computePveScore(dps: number, defense: number, stamina: number, isShadow = false): number {
@@ -374,16 +618,6 @@ function computePveScore(dps: number, defense: number, stamina: number, isShadow
   return Math.min(100, Math.max(15, Math.round(rawEr * (100.0 / 96.5))));
 }
 
-function formatMoveName(move: ApiMove | null): string {
-  if (!move) return 'Tackle';
-  return move.names?.English || move.id.replace(/_FAST$/, '').replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-}
-
-function formatMoveType(move: ApiMove | null): string {
-  if (!move?.type?.type) return 'Normal';
-  return parseTypeName(move.type.type);
-}
-
 function formatPokemonName(
   baseName: string,
   formKey?: string,
@@ -393,26 +627,29 @@ function formatPokemonName(
   isPrimal = false
 ): string {
   let name = rf?.names?.English;
+  const cleanKey = (formKey || '').replace(/_SHADOW$/, '');
 
   // Exact standardizations for key meta forms
-  if (formKey === 'NECROZMA_DAWN_WINGS') name = 'Dawn Wings Necrozma';
-  else if (formKey === 'NECROZMA_DUSK_MANE') name = 'Dusk Mane Necrozma';
-  else if (formKey === 'NECROZMA_ULTRA') name = 'Ultra Necrozma';
-  else if (formKey === 'KYUREM_BLACK') name = 'Black Kyurem';
-  else if (formKey === 'KYUREM_WHITE') name = 'White Kyurem';
-  else if (formKey === 'DIALGA_ORIGIN') name = 'Origin Forme Dialga';
-  else if (formKey === 'PALKIA_ORIGIN') name = 'Origin Forme Palkia';
-  else if (formKey === 'GIRATINA_ORIGIN') name = 'Giratina (Origin)';
-  else if (formKey === 'GIRATINA_ALTERED') name = 'Giratina (Altered Forme)';
-  else if (formKey === 'DARMANITAN_GALARIAN_STANDARD') name = 'Galarian Darmanitan';
-  else if (formKey === 'DARMANITAN_GALARIAN_ZEN') name = 'Galarian Darmanitan (Zen Mode)';
-  else if (formKey === 'DARMANITAN_STANDARD') name = 'Darmanitan';
-  else if (formKey === 'DARMANITAN_ZEN') name = 'Darmanitan (Zen Mode)';
+  if (cleanKey === 'NECROZMA_DAWN_WINGS') name = 'Dawn Wings Necrozma';
+  else if (cleanKey === 'NECROZMA_DUSK_MANE') name = 'Dusk Mane Necrozma';
+  else if (cleanKey === 'NECROZMA_ULTRA') name = 'Ultra Necrozma';
+  else if (cleanKey === 'KYUREM_BLACK') name = 'Black Kyurem';
+  else if (cleanKey === 'KYUREM_WHITE') name = 'White Kyurem';
+  else if (cleanKey === 'DIALGA_ORIGIN') name = 'Origin Forme Dialga';
+  else if (cleanKey === 'PALKIA_ORIGIN') name = 'Origin Forme Palkia';
+  else if (cleanKey === 'GIRATINA_ORIGIN') name = 'Giratina (Origin)';
+  else if (cleanKey === 'GIRATINA_ALTERED') name = 'Giratina (Altered Forme)';
+  else if (cleanKey === 'DARMANITAN_GALARIAN_STANDARD') name = 'Galarian Darmanitan';
+  else if (cleanKey === 'DARMANITAN_GALARIAN_ZEN') name = 'Galarian Darmanitan (Zen Mode)';
+  else if (cleanKey === 'DARMANITAN_STANDARD') name = 'Darmanitan';
+  else if (cleanKey === 'DARMANITAN_ZEN') name = 'Darmanitan (Zen Mode)';
+  else if (cleanKey?.includes('_MEGA_X')) name = `Mega ${baseName} X`;
+  else if (cleanKey?.includes('_MEGA_Y')) name = `Mega ${baseName} Y`;
   else if (!name || name === baseName) {
-    if (formKey?.includes('_GALARIAN')) name = 'Galarian ' + baseName;
-    else if (formKey?.includes('_ALOLA')) name = 'Alolan ' + baseName;
-    else if (formKey?.includes('_HISUIAN')) name = 'Hisuian ' + baseName;
-    else if (formKey?.includes('_PALDEA')) name = 'Paldean ' + baseName;
+    if (cleanKey?.includes('_GALARIAN')) name = 'Galarian ' + baseName;
+    else if (cleanKey?.includes('_ALOLA')) name = 'Alolan ' + baseName;
+    else if (cleanKey?.includes('_HISUIAN')) name = 'Hisuian ' + baseName;
+    else if (cleanKey?.includes('_PALDEA')) name = 'Paldean ' + baseName;
     else name = baseName;
   }
 
@@ -420,6 +657,84 @@ function formatPokemonName(
   if (isPrimal && !name.startsWith('Primal')) return `Primal ${name}`;
   if (isMega && !name.startsWith('Mega')) return `Mega ${name}`;
   return name;
+}
+
+function generateTypeBuilds(
+  baseName: string,
+  dexNr: number,
+  baseSlug: string,
+  variantId: string | undefined,
+  variantSlug: string,
+  baseTypes: string[],
+  atk: number,
+  def: number,
+  sta: number,
+  fastMoves: ApiMove[],
+  chargedMoves: ApiMove[],
+  isShadow = false,
+  isMega = false,
+  isPrimal = false,
+  generation?: number,
+  customForm?: ApiRegionForm | ApiMega
+): PokemonRankData[] {
+  if (fastMoves.length === 0 || chargedMoves.length === 0) return [];
+
+  // Group charged moves by attack type
+  const chargedTypes = Array.from(new Set(chargedMoves.map(m => formatMoveType(m))));
+  const typeBuilds: PokemonRankData[] = [];
+
+  for (const cType of chargedTypes) {
+    const typeChargedMoves = chargedMoves.filter(m => formatMoveType(m) === cType);
+    const topResult = findTopMovesets(fastMoves, typeChargedMoves, atk, baseTypes, isShadow, isMega, isPrimal);
+
+    if (topResult.bestFast && topResult.bestCharged) {
+      typeBuilds.push({
+        name: formatPokemonName(baseName, variantId, customForm, isShadow, isMega, isPrimal),
+        pokedexId: dexNr,
+        slug: baseSlug,
+        variantId,
+        variantSlug,
+        types: baseTypes,
+        attackType: cType,
+        isOverallBest: false,
+        attack: atk,
+        defense: def,
+        stamina: sta,
+        maxCp: calculateCp(atk, def, sta, CP_MULTIPLIER_50),
+        maxCp40: calculateCp(atk, def, sta, CP_MULTIPLIER_40),
+        cpRaid100: calculateCp(atk, def, sta, CP_MULTIPLIER_20),
+        cpWeather100: calculateCp(atk, def, sta, CP_MULTIPLIER_25),
+        cpResearch100: calculateCp(atk, def, sta, CP_MULTIPLIER_15),
+        pveScore: computePveScore(topResult.dps, def, sta, isShadow),
+        dps: topResult.dps,
+        bestFastMove: {
+          name: formatMoveName(topResult.bestFast),
+          type: formatMoveType(topResult.bestFast),
+          isElite: isEliteMove(topResult.bestFast),
+          isPlus: isPlusMove(topResult.bestFast)
+        },
+        bestChargedMove: {
+          name: formatMoveName(topResult.bestCharged),
+          type: formatMoveType(topResult.bestCharged),
+          isElite: isEliteMove(topResult.bestCharged),
+          isPlus: isPlusMove(topResult.bestCharged)
+        },
+        alternativeMovesets: topResult.alternativeMovesets,
+        isShadow,
+        isMega,
+        isPrimal,
+        generation
+      });
+    }
+  }
+
+  // Mark the single highest DPS build across all types as isOverallBest
+  typeBuilds.sort((a, b) => b.dps - a.dps);
+  if (typeBuilds.length > 0) {
+    typeBuilds[0].isOverallBest = true;
+  }
+
+  return typeBuilds;
 }
 
 // ─── MAIN PIPELINE ──────────────────────────────────────────────────────────
@@ -445,6 +760,24 @@ export async function generateRankings(): Promise<void> {
     }
   }
 
+  // Load Pokédex Catalog for canonical slug harmonization
+  const pokedexSlugMap: Record<number, { slug: string; variants?: { id: string }[] }> = {};
+  try {
+    if (fs.existsSync(POKEDEX_CATALOG_PATH)) {
+      const catalog = JSON.parse(fs.readFileSync(POKEDEX_CATALOG_PATH, 'utf8'));
+      if (Array.isArray(catalog)) {
+        catalog.forEach((entry: any) => {
+          if (entry.dexId && entry.slug) {
+            pokedexSlugMap[entry.dexId] = { slug: entry.slug, variants: entry.variants };
+          }
+        });
+        console.log(`📖 Loaded ${Object.keys(pokedexSlugMap).length} canonical slugs from Pokédex Catalog`);
+      }
+    }
+  } catch (err: any) {
+    console.warn('⚠️ Could not load Pokédex catalog for slug mapping:', err?.message || err);
+  }
+
   const entries: PokemonRankData[] = [];
   const seenUniqueKeys = new Set<string>();
 
@@ -460,6 +793,8 @@ export async function generateRankings(): Promise<void> {
     const baseTypes = getTypes(pokemon.primaryType, pokemon.secondaryType);
     const extraMoves = SIGNATURE_MOVES[pokemon.id] || [];
 
+    const baseSlug = pokedexSlugMap[pokemon.dexNr]?.slug || baseName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
     const baseMoves = getAllMoves(
       pokemon.quickMoves,
       pokemon.cinematicMoves,
@@ -473,58 +808,48 @@ export async function generateRankings(): Promise<void> {
       const baseDef = pokemon.stats.defense;
       const baseSta = pokemon.stats.stamina;
 
-      // ── Normal base ──
-      const normalBest = findBestMoveset(baseMoves.fastMoves, baseMoves.chargedMoves, baseAtk, baseTypes, false);
-      if (normalBest.fastMove && normalBest.chargedMove) {
-        addEntry({
-          name: baseName,
-          pokedexId: pokemon.dexNr,
-          types: baseTypes,
-          attack: baseAtk,
-          defense: baseDef,
-          stamina: baseSta,
-          maxCp: calculateCp(baseAtk, baseDef, baseSta, CP_MULTIPLIER_50),
-          maxCp40: calculateCp(baseAtk, baseDef, baseSta, CP_MULTIPLIER_40),
-          cpRaid100: calculateCp(baseAtk, baseDef, baseSta, CP_MULTIPLIER_20),
-          cpWeather100: calculateCp(baseAtk, baseDef, baseSta, CP_MULTIPLIER_25),
-          cpResearch100: calculateCp(baseAtk, baseDef, baseSta, CP_MULTIPLIER_15),
-          pveScore: computePveScore(normalBest.dps, baseDef, baseSta, false),
-          dps: normalBest.dps,
-          bestFastMove: { name: formatMoveName(normalBest.fastMove), type: formatMoveType(normalBest.fastMove) },
-          bestChargedMove: { name: formatMoveName(normalBest.chargedMove), type: formatMoveType(normalBest.chargedMove) },
-          isShadow: false,
-          isMega: false,
-          isPrimal: false,
-          generation: pokemon.generation
-        });
-      }
+      // ── Normal base builds (one per charged move type) ──
+      const normalBuilds = generateTypeBuilds(
+        baseName,
+        pokemon.dexNr,
+        baseSlug,
+        undefined,
+        baseSlug,
+        baseTypes,
+        baseAtk,
+        baseDef,
+        baseSta,
+        baseMoves.fastMoves,
+        baseMoves.chargedMoves,
+        false,
+        false,
+        false,
+        pokemon.generation
+      );
+      normalBuilds.forEach(addEntry);
 
-      // ── Shadow base (only for standard species) ──
+      // ── Shadow base builds ──
       if (!FORMS_EXCLUDED_FROM_SHADOW.has(pokemon.id)) {
-        const shadowBest = findBestMoveset(baseMoves.fastMoves, baseMoves.chargedMoves, baseAtk, baseTypes, true);
-        if (shadowBest.fastMove && shadowBest.chargedMove) {
-          addEntry({
-            name: `Shadow ${baseName}`,
-            pokedexId: pokemon.dexNr,
-            types: baseTypes,
-            attack: baseAtk,
-            defense: baseDef,
-            stamina: baseSta,
-            maxCp: calculateCp(baseAtk, baseDef, baseSta, CP_MULTIPLIER_50),
-            maxCp40: calculateCp(baseAtk, baseDef, baseSta, CP_MULTIPLIER_40),
-            cpRaid100: calculateCp(baseAtk, baseDef, baseSta, CP_MULTIPLIER_20),
-            cpWeather100: calculateCp(baseAtk, baseDef, baseSta, CP_MULTIPLIER_25),
-            cpResearch100: calculateCp(baseAtk, baseDef, baseSta, CP_MULTIPLIER_15),
-            pveScore: computePveScore(shadowBest.dps, baseDef, baseSta, true),
-            dps: shadowBest.dps,
-            bestFastMove: { name: formatMoveName(shadowBest.fastMove), type: formatMoveType(shadowBest.fastMove) },
-            bestChargedMove: { name: formatMoveName(shadowBest.chargedMove), type: formatMoveType(shadowBest.chargedMove) },
-            isShadow: true,
-            isMega: false,
-            isPrimal: false,
-            generation: pokemon.generation
-          });
-        }
+        const shadowVariantId = `${pokemon.id}_SHADOW`;
+        const shadowVariantSlug = `${baseSlug}-shadow`;
+        const shadowBuilds = generateTypeBuilds(
+          baseName,
+          pokemon.dexNr,
+          baseSlug,
+          shadowVariantId,
+          shadowVariantSlug,
+          baseTypes,
+          baseAtk,
+          baseDef,
+          baseSta,
+          baseMoves.fastMoves,
+          baseMoves.chargedMoves,
+          true,
+          false,
+          false,
+          pokemon.generation
+        );
+        shadowBuilds.forEach(addEntry);
       }
     }
 
@@ -545,63 +870,55 @@ export async function generateRankings(): Promise<void> {
         const chargedMoves = rfMoves.chargedMoves.length > 0 ? rfMoves.chargedMoves : baseMoves.chargedMoves;
         if (fastMoves.length === 0 || chargedMoves.length === 0) continue;
 
-        const formName = formatPokemonName(baseName, rfKey, rf, false);
         const rfAtk = rf.stats.attack;
         const rfDef = rf.stats.defense;
         const rfSta = rf.stats.stamina;
 
-        // Normal regional form
-        const rfNormalBest = findBestMoveset(fastMoves, chargedMoves, rfAtk, rfTypes, false);
-        if (rfNormalBest.fastMove && rfNormalBest.chargedMove) {
-          addEntry({
-            name: formName,
-            pokedexId: pokemon.dexNr,
-            types: rfTypes,
-            attack: rfAtk,
-            defense: rfDef,
-            stamina: rfSta,
-            maxCp: calculateCp(rfAtk, rfDef, rfSta, CP_MULTIPLIER_50),
-            maxCp40: calculateCp(rfAtk, rfDef, rfSta, CP_MULTIPLIER_40),
-            cpRaid100: calculateCp(rfAtk, rfDef, rfSta, CP_MULTIPLIER_20),
-            cpWeather100: calculateCp(rfAtk, rfDef, rfSta, CP_MULTIPLIER_25),
-            cpResearch100: calculateCp(rfAtk, rfDef, rfSta, CP_MULTIPLIER_15),
-            pveScore: computePveScore(rfNormalBest.dps, rfDef, rfSta, false),
-            dps: rfNormalBest.dps,
-            bestFastMove: { name: formatMoveName(rfNormalBest.fastMove), type: formatMoveType(rfNormalBest.fastMove) },
-            bestChargedMove: { name: formatMoveName(rfNormalBest.chargedMove), type: formatMoveType(rfNormalBest.chargedMove) },
-            isShadow: false,
-            isMega: false,
-            isPrimal: false,
-            generation: pokemon.generation
-          });
-        }
+        const rfSlugSuffix = rfKey.toLowerCase().replace(/_/g, '-').replace(/[^a-z0-9-]/g, '');
+        const rfVariantSlug = `${baseSlug}-${rfSlugSuffix}`;
 
-        // Shadow regional form (only if allowed)
+        // Normal regional form builds
+        const rfNormalBuilds = generateTypeBuilds(
+          baseName,
+          pokemon.dexNr,
+          baseSlug,
+          rfKey,
+          rfVariantSlug,
+          rfTypes,
+          rfAtk,
+          rfDef,
+          rfSta,
+          fastMoves,
+          chargedMoves,
+          false,
+          false,
+          false,
+          pokemon.generation,
+          rf
+        );
+        rfNormalBuilds.forEach(addEntry);
+
+        // Shadow regional form builds
         if (!FORMS_EXCLUDED_FROM_SHADOW.has(rfKey)) {
-          const rfShadowBest = findBestMoveset(fastMoves, chargedMoves, rfAtk, rfTypes, true);
-          if (rfShadowBest.fastMove && rfShadowBest.chargedMove) {
-            addEntry({
-              name: `Shadow ${formName}`,
-              pokedexId: pokemon.dexNr,
-              types: rfTypes,
-              attack: rfAtk,
-              defense: rfDef,
-              stamina: rfSta,
-              maxCp: calculateCp(rfAtk, rfDef, rfSta, CP_MULTIPLIER_50),
-              maxCp40: calculateCp(rfAtk, rfDef, rfSta, CP_MULTIPLIER_40),
-              cpRaid100: calculateCp(rfAtk, rfDef, rfSta, CP_MULTIPLIER_20),
-              cpWeather100: calculateCp(rfAtk, rfDef, rfSta, CP_MULTIPLIER_25),
-              cpResearch100: calculateCp(rfAtk, rfDef, rfSta, CP_MULTIPLIER_15),
-              pveScore: computePveScore(rfShadowBest.dps, rfDef, rfSta, true),
-              dps: rfShadowBest.dps,
-              bestFastMove: { name: formatMoveName(rfShadowBest.fastMove), type: formatMoveType(rfShadowBest.fastMove) },
-              bestChargedMove: { name: formatMoveName(rfShadowBest.chargedMove), type: formatMoveType(rfShadowBest.chargedMove) },
-              isShadow: true,
-              isMega: false,
-              isPrimal: false,
-              generation: pokemon.generation
-            });
-          }
+          const rfShadowBuilds = generateTypeBuilds(
+            baseName,
+            pokemon.dexNr,
+            baseSlug,
+            `${rfKey}_SHADOW`,
+            `${rfVariantSlug}-shadow`,
+            rfTypes,
+            rfAtk,
+            rfDef,
+            rfSta,
+            fastMoves,
+            chargedMoves,
+            true,
+            false,
+            false,
+            pokemon.generation,
+            rf
+          );
+          rfShadowBuilds.forEach(addEntry);
         }
       }
     }
@@ -621,38 +938,36 @@ export async function generateRankings(): Promise<void> {
           megaExtra
         );
         const fastMoves = megaMoves.fastMoves.length > 0 ? megaMoves.fastMoves : baseMoves.fastMoves;
-        const chargedMoves = megaMoves.chargedMoves.length > 0 ? megaMoves.chargedMoves : baseMoves.chargedMoves;
+        const rawChargedMoves = megaMoves.chargedMoves.length > 0 ? megaMoves.chargedMoves : baseMoves.chargedMoves;
+        const chargedMoves = enrichMegaPlusMoves(rawChargedMoves, megaTypes);
         if (fastMoves.length === 0 || chargedMoves.length === 0) continue;
 
-        const megaName = formatPokemonName(baseName, megaKey, mega, false, !isPrimal, isPrimal);
         const megaAtk = mega.stats.attack;
         const megaDef = mega.stats.defense;
         const megaSta = mega.stats.stamina;
 
-        const megaBest = findBestMoveset(fastMoves, chargedMoves, megaAtk, megaTypes, false);
-        if (megaBest.fastMove && megaBest.chargedMove) {
-          addEntry({
-            name: megaName,
-            pokedexId: pokemon.dexNr,
-            types: megaTypes,
-            attack: megaAtk,
-            defense: megaDef,
-            stamina: megaSta,
-            maxCp: calculateCp(megaAtk, megaDef, megaSta, CP_MULTIPLIER_50),
-            maxCp40: calculateCp(megaAtk, megaDef, megaSta, CP_MULTIPLIER_40),
-            cpRaid100: calculateCp(megaAtk, megaDef, megaSta, CP_MULTIPLIER_20),
-            cpWeather100: calculateCp(megaAtk, megaDef, megaSta, CP_MULTIPLIER_25),
-            cpResearch100: calculateCp(megaAtk, megaDef, megaSta, CP_MULTIPLIER_15),
-            pveScore: computePveScore(megaBest.dps, megaDef, megaSta, false),
-            dps: megaBest.dps,
-            bestFastMove: { name: formatMoveName(megaBest.fastMove), type: formatMoveType(megaBest.fastMove) },
-            bestChargedMove: { name: formatMoveName(megaBest.chargedMove), type: formatMoveType(megaBest.chargedMove) },
-            isShadow: false,
-            isMega: !isPrimal,
-            isPrimal: isPrimal,
-            generation: pokemon.generation
-          });
-        }
+        const megaSlugSuffix = megaKey.toLowerCase().replace(/_/g, '-').replace(/[^a-z0-9-]/g, '');
+        const megaVariantSlug = `${baseSlug}-${megaSlugSuffix}`;
+
+        const megaBuilds = generateTypeBuilds(
+          baseName,
+          pokemon.dexNr,
+          baseSlug,
+          megaKey,
+          megaVariantSlug,
+          megaTypes,
+          megaAtk,
+          megaDef,
+          megaSta,
+          fastMoves,
+          chargedMoves,
+          false,
+          !isPrimal,
+          isPrimal,
+          pokemon.generation,
+          mega
+        );
+        megaBuilds.forEach(addEntry);
       }
     }
   }
@@ -670,22 +985,48 @@ export async function generateRankings(): Promise<void> {
   const primalCount = entries.filter(e => e.isPrimal).length;
   console.log(`   Normal: ${normalCount} | Shadow: ${shadowCount} | Mega: ${megaCount} | Primal: ${primalCount}`);
 
-  // Write TypeScript file directly with helpers
+  // 1. Emit compact JSON to Frontend and Backend
+  const jsonContent = JSON.stringify(entries);
+  fs.writeFileSync(FRONTEND_JSON_OUTPUT, jsonContent, 'utf8');
+  console.log(`🎉 Saved compact JSON to ${FRONTEND_JSON_OUTPUT} (${(Buffer.byteLength(jsonContent) / 1024).toFixed(0)} KB)`);
+
+  if (!fs.existsSync(BACKEND_DATA_DIR)) {
+    fs.mkdirSync(BACKEND_DATA_DIR, { recursive: true });
+  }
+  fs.writeFileSync(BACKEND_JSON_OUTPUT, jsonContent, 'utf8');
+  console.log(`🎉 Saved compact JSON to ${BACKEND_JSON_OUTPUT}`);
+
+  // 2. Emit lightweight TypeScript facade with full backward compatibility
   const tsContent = `// AUTO-GENERATED by backend/src/scripts/generateRankings.ts
 // Source: ${API_URL}
 // Generated: ${new Date().toISOString()}
 // Total entries: ${entries.length}
 
+import rawRankings from './pokemonRankings.json';
+
 export interface MoveData {
   name: string;
   type: string;
+  isElite?: boolean;
+  isPlus?: boolean;
+}
+
+export interface AlternativeMoveset {
+  fastMove: MoveData;
+  chargedMove: MoveData;
+  dps: number;
+  score: number;
 }
 
 export interface PokemonRankData {
   name: string;
   pokedexId: number;
   slug?: string;
+  variantId?: string;
+  variantSlug?: string;
   types: string[];
+  attackType?: string;
+  isOverallBest?: boolean;
   attack: number;
   defense: number;
   stamina: number;
@@ -698,13 +1039,14 @@ export interface PokemonRankData {
   dps: number;
   bestFastMove: MoveData;
   bestChargedMove: MoveData;
+  alternativeMovesets?: AlternativeMoveset[];
   isShadow?: boolean;
   isMega?: boolean;
   isPrimal?: boolean;
   generation?: number;
 }
 
-export const pokemonRankings: PokemonRankData[] = ${JSON.stringify(entries, null, 2)};
+export const pokemonRankings: PokemonRankData[] = rawRankings as PokemonRankData[];
 
 // ─── HELPER EXPORTS FOR APP ROUTER & SITEMAP ────────────────────────────────
 
@@ -731,7 +1073,10 @@ export function getPokemonByIdOrSlug(idOrSlug: string | number): PokemonRankData
   }
 
   const directMatch = pokemonRankings.find(
-    (p) => p.name.toLowerCase() === str || (p.slug && p.slug.toLowerCase() === str)
+    (p) =>
+      p.name.toLowerCase() === str ||
+      (p.slug && p.slug.toLowerCase() === str) ||
+      (p.variantSlug && p.variantSlug.toLowerCase() === str)
   );
   if (directMatch) return directMatch;
 
@@ -740,9 +1085,9 @@ export function getPokemonByIdOrSlug(idOrSlug: string | number): PokemonRankData
 }
 `;
 
-  fs.writeFileSync(OUTPUT_PATH, tsContent, 'utf8');
-  console.log(`🎉 Successfully written to ${OUTPUT_PATH}`);
-  console.log(`   File size: ${(Buffer.byteLength(tsContent) / 1024).toFixed(0)} KB`);
+  fs.writeFileSync(FRONTEND_TS_OUTPUT, tsContent, 'utf8');
+  console.log(`🎉 Successfully updated ${FRONTEND_TS_OUTPUT}`);
+  console.log(`   Facade file size: ${(Buffer.byteLength(tsContent) / 1024).toFixed(1)} KB`);
 }
 
 // Direct execution

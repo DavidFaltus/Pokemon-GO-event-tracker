@@ -24,6 +24,8 @@ import { MaxInfographic } from './MaxInfographic';
 import { EventInfographic } from './EventInfographic';
 import { SeasonSummaryInfographic } from './SeasonSummaryInfographic';
 import { MultiBossAvatar } from './MultiBossAvatar';
+import { useTheme } from '../context/ThemeContext';
+import { getTypeSvgUrl } from '../utils/typeBadgeHelper';
 
 const EggIcon = ({ size = 16 }: { size?: number }) => (
   <svg viewBox="0 0 100 120" width={size} height={size} style={{ display: 'inline-block', verticalAlign: 'middle' }}>
@@ -213,6 +215,8 @@ const typeTranslations: Record<string, { cs: string; en: string; ja: string }> =
 };
 
 export const TypeBadge: React.FC<{ typeStr: string; lang?: Language }> = ({ typeStr, lang = 'en' }) => {
+  const { theme } = useTheme();
+  const isLight = theme === 'light';
   const lower = typeStr.toLowerCase();
   let typeClass = 'normal';
   let label = 'Normal';
@@ -249,7 +253,13 @@ export const TypeBadge: React.FC<{ typeStr: string; lang?: Language }> = ({ type
   return (
     <span className={`type-badge pogo-type-${typeClass}`}>
       <img
-        src={`https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${typeClass}.svg`}
+        src={getTypeSvgUrl(typeClass, isLight)}
+        onError={(e) => {
+          const target = e.currentTarget as HTMLImageElement;
+          if (!target.src.includes('duiker101')) {
+            target.src = `https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${typeClass}.svg`;
+          }
+        }}
         alt={label}
         className="type-badge-icon"
       />

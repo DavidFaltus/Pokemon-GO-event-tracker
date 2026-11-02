@@ -1024,6 +1024,36 @@ body {
   filter: brightness(0);
 }
 
+body.light-mode .type-badge-icon,
+html.light-mode .type-badge-icon,
+[data-theme="light"] .type-badge-icon,
+.light-mode .type-badge-icon,
+body.light-mode .move-type-icon,
+html.light-mode .move-type-icon,
+[data-theme="light"] .move-type-icon,
+.light-mode .move-type-icon,
+body.light-mode .filter-type-icon,
+html.light-mode .filter-type-icon,
+[data-theme="light"] .filter-type-icon,
+.light-mode .filter-type-icon,
+body.light-mode .unified-type-badge-icon,
+html.light-mode .unified-type-badge-icon,
+[data-theme="light"] .unified-type-badge-icon,
+.light-mode .unified-type-badge-icon,
+body.light-mode .move-type-badge img,
+html.light-mode .move-type-badge img,
+[data-theme="light"] .move-type-badge img,
+.light-mode .move-type-badge img {
+  filter: brightness(0) !important;
+}
+
+body.light-mode .unified-type-badge,
+html.light-mode .unified-type-badge,
+[data-theme="light"] .unified-type-badge,
+.light-mode .unified-type-badge {
+  color: #0f172a !important;
+}
+
 /* Individual Type Colors */
 .pogo-type-normal { background-color: #a8a878; }
 .pogo-type-fire { background-color: #f08030; }

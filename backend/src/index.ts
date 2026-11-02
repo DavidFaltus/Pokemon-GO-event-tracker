@@ -50,6 +50,8 @@ import {
   generateSummaryMarkdown,
   AgentLanguage
 } from './agent/markdownGenerator';
+import { checkAndSyncPvPokeGamemaster } from './services/pvpokeGamemasterService';
+import { generateRankings } from './scripts/generateRankings';
 
 // Simple in-memory rate limiter
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -1447,6 +1449,39 @@ app.post('/api/admin/scrape', requireAuth, (req, res) => {
   res.json({ success: true, message: 'Scraper byl úspěšně spuštěn na pozadí' });
 });
 
+// Get rankings data with ETag and SWR caching (public)
+app.get(['/api/rankings', '/api/rankings.json'], (_req, res) => {
+  try {
+    const rankingsPath = path.resolve(__dirname, '../data/pokemonRankings.json');
+    if (!fs.existsSync(rankingsPath)) {
+      return res.status(404).json({ error: 'Rankings data not available yet' });
+    }
+    const stat = fs.statSync(rankingsPath);
+    const etag = `W/"${stat.size.toString(16)}-${stat.mtimeMs.toString(16)}"`;
+    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800');
+    res.setHeader('ETag', etag);
+
+    if (_req.headers['if-none-match'] === etag) {
+      return res.status(304).end();
+    }
+
+    res.sendFile(rankingsPath);
+  } catch (err: any) {
+    res.status(500).json({ error: err?.message || 'Internal server error' });
+  }
+});
+
+// Admin endpoint to force rankings regeneration
+app.post('/api/admin/sync-rankings', requireAuth, async (_req, res) => {
+  try {
+    const syncRes = await checkAndSyncPvPokeGamemaster(true);
+    await generateRankings();
+    res.json({ success: true, message: 'Rankings successfully regenerated', sha: syncRes.sha });
+  } catch (err: any) {
+    res.status(500).json({ error: err?.message || 'Failed to sync rankings' });
+  }
+});
+
 // Get all pokemon icon overrides (public)
 app.get('/api/pokemon-icons', async (_req, res) => {
   try {
@@ -2084,6 +2119,22 @@ app.listen(PORT, '0.0.0.0', () => {
   });
 
   console.log('[Cron] Scheduled: every 3 hours');
+
+  // Schedule PvPoke Gamemaster check once daily at 04:00 AM
+  cron.schedule('0 4 * * *', async () => {
+    console.log('[Cron] ⏰ Checking PvPoke Gamemaster commit SHA for ranking updates...');
+    try {
+      const syncRes = await checkAndSyncPvPokeGamemaster();
+      if (syncRes.updated) {
+        console.log('[Cron] PvPoke Gamemaster updated, regenerating rankings...');
+        await generateRankings();
+      }
+    } catch (err) {
+      console.error('[Cron] Rankings sync error:', err);
+    }
+  });
+
+  console.log('[Cron] Scheduled: PvPoke rankings check daily at 04:00');
 
   // Run initial scrape on startup if cache is stale (older than 3h) or missing
   const meta = loadScraperMeta();

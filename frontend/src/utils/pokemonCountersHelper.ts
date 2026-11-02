@@ -413,13 +413,33 @@ export function getTopCountersForPokemon(
 
 // ─── TOP 5 MOVESETS FOR A POKEMON ───────────────────────────────────────────
 export interface MovesetOption {
-  fastMove: MoveData & { isLegacy?: boolean };
-  chargedMove: MoveData & { isLegacy?: boolean };
+  fastMove: MoveData & { isLegacy?: boolean; isPlus?: boolean };
+  chargedMove: MoveData & { isLegacy?: boolean; isPlus?: boolean };
   dps: number;
   pctOfBest: string;
 }
 
 export function getTopMovesetsForPokemon(poke: PokemonRankData): MovesetOption[] {
+  if (poke.alternativeMovesets && poke.alternativeMovesets.length > 0) {
+    const bestDps = poke.alternativeMovesets[0].dps || poke.dps || 1;
+    return poke.alternativeMovesets.map(alt => ({
+      fastMove: {
+        name: alt.fastMove.name,
+        type: alt.fastMove.type,
+        isLegacy: alt.fastMove.isElite || isLegacyMove(alt.fastMove.name),
+        isPlus: alt.fastMove.isPlus || alt.fastMove.name.includes('+')
+      },
+      chargedMove: {
+        name: alt.chargedMove.name,
+        type: alt.chargedMove.type,
+        isLegacy: alt.chargedMove.isElite || isLegacyMove(alt.chargedMove.name),
+        isPlus: alt.chargedMove.isPlus || alt.chargedMove.name.includes('+')
+      },
+      dps: alt.dps,
+      pctOfBest: `${Math.round((alt.dps / bestDps) * 100)}%`
+    }));
+  }
+
   const baseDps = poke.dps || 25.0;
 
   const fastPrimary = poke.bestFastMove;
