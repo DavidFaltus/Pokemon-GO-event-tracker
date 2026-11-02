@@ -15,6 +15,7 @@ export const RANKING_CATEGORIES = [
   'ultra-league',
   'master-league',
   'little-cup',
+  'max-battles',
   'best-mega',
   'best-shadow',
   'max-cp',
@@ -65,6 +66,12 @@ const CATEGORY_NAMES: Record<RankingCategory, Record<Language, { title: string; 
     en: { title: 'Little Cup Rankings (CP ≤ 500) | Pokémon GO', desc: 'Best Pokémon and meta picks for Little Cup (500 CP) in Pokémon GO.' },
     ja: { title: 'リトルカップ (CP 500以下) 最強ランキング | Pokémon GO', desc: 'Pokémon GO リトルカップのおすすめ最強ポケモン一覧。' },
     ru: { title: 'Рейтинг Малого Кубка (CP ≤ 500) | Pokémon GO', desc: 'Лучшие покемоны для Малого Кубка (500 CP) в Pokémon GO.' },
+  },
+  'max-battles': {
+    cs: { title: 'Max Battles Žebříček (Dynamax & Gigantamax) | Pokémon GO', desc: 'Nejlepší Pokémoni pro Max Battles v Power Spotech – útočníci a tanci s Max a G-Max útoky.' },
+    en: { title: 'Max Battles Tier List (Dynamax & Gigantamax) | Pokémon GO', desc: 'Top Pokémon rankings for Power Spot Max Battles in Pokémon GO – Attacker and Tank tiers.' },
+    ja: { title: 'マックスバトル 最強ランキング (ダイマックス・キョダイマックス) | Pokémon GO', desc: 'Pokémon GO パワースポットのマックスバトル最強ポケモンランキング。' },
+    ru: { title: 'Рейтинг Макс-Битв (Динамакс и Гигантамакс) | Pokémon GO', desc: 'Лучшие покемоны для Макс-Битв в Pokémon GO – атакующие и танки.' },
   },
   'best-mega': {
     cs: { title: 'Nejlepší Mega Evoluce Žebříček | Pokémon GO', desc: 'Žebříček nejlepších Mega a Primal Pokémonů v Pokémon GO podle DPS a raidové síly.' },
@@ -265,6 +272,8 @@ function getCategoryTopPokemon(category: RankingCategory, filterType?: string) {
     list = list.filter((p) => !p.isMega && !p.isPrimal && p.maxCp >= 3500);
   } else if (category === 'little-cup') {
     list = list.filter((p) => !p.isMega && !p.isPrimal && p.maxCp <= 1800);
+  } else if (category === 'max-battles') {
+    list = list.filter((p) => !p.isMega && !p.isPrimal && p.maxCp >= 2800);
   }
 
   if (category === 'max-cp' || category === 'master-league') {

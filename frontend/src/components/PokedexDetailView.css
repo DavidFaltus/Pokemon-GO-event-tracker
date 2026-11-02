@@ -264,9 +264,29 @@
 
 .pokedex-detail-title-row {
   display: flex;
-  align-items: baseline;
-  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   flex-wrap: wrap;
+  width: 100%;
+}
+
+.pokedex-title-meta-badges {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .pokedex-title-meta-badges {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 6px;
+  }
 }
 
 .pokedex-detail-main-title {

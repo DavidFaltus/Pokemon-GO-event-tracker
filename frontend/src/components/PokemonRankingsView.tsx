@@ -14,7 +14,11 @@ import { TypeBadge } from './EventCard';
 import { TYPE_COLORS, getTypeSvgUrl } from '../utils/typeBadgeHelper';
 import { useTheme } from '../context/ThemeContext';
 import { getPokemonName, getStatusTagName } from '../utils/pokemonTranslator';
-import { Search, Trophy, Sword, ShieldAlert, Heart, Star, ChevronDown, ChevronUp, Target, Zap, Sparkles, SlidersHorizontal, Clock } from 'lucide-react';
+import { Search, Trophy, Sword, ShieldAlert, Heart, Star, ChevronDown, ChevronUp, Target, Zap, Sparkles, SlidersHorizontal, Clock, Swords, Shield, Flame, ShieldCheck } from 'lucide-react';
+import { PokemonMetaRankingBadges } from './PokemonMetaRankingBadges';
+import metaIndexData from '../data/pokedexMetaIndex.json';
+
+const META_INDEX = metaIndexData as Record<string, any>;
 import {
   getCounterTypes,
   getTopCountersForPokemon,
@@ -97,6 +101,11 @@ const MoveNameWithBadges: React.FC<{ move: { name: string; isPlus?: boolean; isE
   );
 };
 
+function formatPvpMoveName(raw: string): string {
+  if (!raw) return '';
+  return raw.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+}
+
 interface PokemonRankingsViewProps {
   lang: Language;
   initialSearchQuery?: string;
@@ -125,6 +134,26 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery || '');
   const [selectedType, setSelectedType] = useState<string | null>(initialSelectedType || null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory || null);
+  const [currentLeague, setCurrentLeague] = useState<string>(() => {
+    if (initialCategory && ['great-league', 'ultra-league', 'master-league', 'little-cup', 'max-battles'].includes(initialCategory)) {
+      return initialCategory;
+    }
+    return 'pve';
+  });
+  const [maxBattleRole, setMaxBattleRole] = useState<'attacker' | 'tank'>('attacker');
+
+  const handleLeagueChange = (league: string) => {
+    setCurrentLeague(league);
+    if (league === 'pve') {
+      setSelectedCategory(null);
+      router.push(`/${lang}/rankings`);
+    } else {
+      setSelectedCategory(league);
+      setSelectedType(null);
+      router.push(`/${lang}/rankings/${league}`);
+    }
+    setVisibleCount(40);
+  };
   const [expandedPokes, setExpandedPokes] = useState<Set<string>>(new Set());
   const [rankingMode, setRankingMode] = useState<'er' | 'basic'>('er');
   const [onlyReleased, setOnlyReleased] = useState<boolean>(true);
@@ -172,6 +201,11 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
   useEffect(() => {
     if (initialCategory !== undefined) {
       setSelectedCategory(initialCategory || null);
+      if (['great-league', 'ultra-league', 'master-league', 'little-cup', 'max-battles'].includes(initialCategory)) {
+        setCurrentLeague(initialCategory);
+      } else {
+        setCurrentLeague('pve');
+      }
     }
   }, [initialCategory]);
 
@@ -327,22 +361,87 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
       result = result.filter(poke => poke.isOverallBest !== false);
     }
 
-    // Filter by category when active
-    if (selectedCategory) {
+    // Filter by category or main league when active
+    if (currentLeague === 'great-league') {
+      result = result.filter(poke => META_INDEX[poke.slug]?.pvp?.great != null);
+      const seen = new Set<string>();
+      result = result.filter(poke => {
+        const s = poke.slug || String(poke.pokedexId);
+        if (seen.has(s)) return false;
+        seen.add(s);
+        return true;
+      });
+      result.sort((a, b) => {
+        const rankA = META_INDEX[a.slug]?.pvp?.great?.rank ?? 9999;
+        const rankB = META_INDEX[b.slug]?.pvp?.great?.rank ?? 9999;
+        return rankA - rankB;
+      });
+    } else if (currentLeague === 'ultra-league') {
+      result = result.filter(poke => META_INDEX[poke.slug]?.pvp?.ultra != null);
+      const seen = new Set<string>();
+      result = result.filter(poke => {
+        const s = poke.slug || String(poke.pokedexId);
+        if (seen.has(s)) return false;
+        seen.add(s);
+        return true;
+      });
+      result.sort((a, b) => {
+        const rankA = META_INDEX[a.slug]?.pvp?.ultra?.rank ?? 9999;
+        const rankB = META_INDEX[b.slug]?.pvp?.ultra?.rank ?? 9999;
+        return rankA - rankB;
+      });
+    } else if (currentLeague === 'master-league') {
+      result = result.filter(poke => META_INDEX[poke.slug]?.pvp?.master != null);
+      const seen = new Set<string>();
+      result = result.filter(poke => {
+        const s = poke.slug || String(poke.pokedexId);
+        if (seen.has(s)) return false;
+        seen.add(s);
+        return true;
+      });
+      result.sort((a, b) => {
+        const rankA = META_INDEX[a.slug]?.pvp?.master?.rank ?? 9999;
+        const rankB = META_INDEX[b.slug]?.pvp?.master?.rank ?? 9999;
+        return rankA - rankB;
+      });
+    } else if (currentLeague === 'little-cup') {
+      result = result.filter(poke => META_INDEX[poke.slug]?.pvp?.little != null);
+      const seen = new Set<string>();
+      result = result.filter(poke => {
+        const s = poke.slug || String(poke.pokedexId);
+        if (seen.has(s)) return false;
+        seen.add(s);
+        return true;
+      });
+      result.sort((a, b) => {
+        const rankA = META_INDEX[a.slug]?.pvp?.little?.rank ?? 9999;
+        const rankB = META_INDEX[b.slug]?.pvp?.little?.rank ?? 9999;
+        return rankA - rankB;
+      });
+    } else if (currentLeague === 'max-battles') {
+      result = result.filter(poke => META_INDEX[poke.slug]?.maxBattle != null);
+      const seen = new Set<string>();
+      result = result.filter(poke => {
+        const s = poke.slug || String(poke.pokedexId);
+        if (seen.has(s)) return false;
+        seen.add(s);
+        return true;
+      });
+      result.sort((a, b) => {
+        const metaA = META_INDEX[a.slug]?.maxBattle;
+        const metaB = META_INDEX[b.slug]?.maxBattle;
+        if (maxBattleRole === 'tank') {
+          return (metaA?.tankRank?.rank ?? 9999) - (metaB?.tankRank?.rank ?? 9999);
+        }
+        return (metaA?.attackerRank?.rank ?? 9999) - (metaB?.attackerRank?.rank ?? 9999);
+      });
+    } else if (selectedCategory) {
       if (selectedCategory === 'best-mega') {
         result = result.filter(poke => poke.isMega || poke.isPrimal);
       } else if (selectedCategory === 'best-shadow') {
         result = result.filter(poke => poke.isShadow);
       } else if (selectedCategory === 'best-gym-defenders') {
         result = result.filter(poke => !poke.isMega && !poke.isPrimal && !poke.isShadow && poke.maxCp <= 4200);
-      } else if (selectedCategory === 'great-league') {
-        result = result.filter(poke => !poke.isMega && !poke.isPrimal && poke.maxCp >= 1350 && poke.maxCp <= 3200);
-      } else if (selectedCategory === 'ultra-league') {
-        result = result.filter(poke => !poke.isMega && !poke.isPrimal && poke.maxCp >= 2200 && poke.maxCp <= 4000);
-      } else if (selectedCategory === 'master-league') {
-        result = result.filter(poke => !poke.isMega && !poke.isPrimal && poke.maxCp >= 3500);
-      } else if (selectedCategory === 'little-cup') {
-        result = result.filter(poke => !poke.isMega && !poke.isPrimal && poke.maxCp <= 1800);
       }
     }
 
@@ -369,15 +468,18 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
       });
     }
 
-    if (selectedCategory === 'max-cp' || selectedCategory === 'master-league') {
+    if (['great-league', 'ultra-league', 'master-league', 'little-cup', 'max-battles'].includes(currentLeague)) {
+      return result; // Already sorted by league rank
+    }
+    if (selectedCategory === 'max-cp') {
       return result.sort((a, b) => b.maxCp - a.maxCp || dynamicSortFn(a, b));
     }
-    if (selectedCategory === 'best-gym-defenders' || selectedCategory === 'great-league' || selectedCategory === 'ultra-league' || selectedCategory === 'little-cup') {
+    if (selectedCategory === 'best-gym-defenders') {
       return result.sort((a, b) => (b.defense * b.stamina) - (a.defense * a.stamina) || dynamicSortFn(a, b));
     }
 
     return result.sort(dynamicSortFn);
-  }, [rankingsData, onlyReleased, selectedCategory, searchQuery, selectedType, dynamicSortFn, lang]);
+  }, [rankingsData, onlyReleased, selectedCategory, searchQuery, selectedType, dynamicSortFn, lang, currentLeague, maxBattleRole]);
 
   // Auto-expand matching Pokemon when search query is active
   useEffect(() => {
@@ -400,11 +502,33 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
       <div className="rankings-header-card guides-header">
         <div className="guides-title-badge">
           <Trophy size={16} />
-          {lang === 'cs' ? 'PvE & Raid Meta Žebříčky' : lang === 'ja' ? '最強ポケモンランキング' : lang === 'ru' ? 'Рейтинги и тир-лист' : 'PvE & Raid Meta Rankings'}
+          {currentLeague === 'great-league'
+            ? 'Great League PvP (CP ≤ 1500)'
+            : currentLeague === 'ultra-league'
+            ? 'Ultra League PvP (CP ≤ 2500)'
+            : currentLeague === 'master-league'
+            ? 'Master League PvP (Open)'
+            : currentLeague === 'little-cup'
+            ? 'Little Cup PvP (CP ≤ 500)'
+            : currentLeague === 'max-battles'
+            ? 'Max Battles (Dynamax & Gigantamax)'
+            : (lang === 'cs' ? 'PvE & Raid Meta Žebříčky' : lang === 'ja' ? '最強ポケモンランキング' : lang === 'ru' ? 'Рейтинги и тир-лист' : 'PvE & Raid Meta Rankings')}
         </div>
         <div className="rankings-title-row">
           <div className="rankings-title-left">
-            <h1 className="tab-seo-title" style={{ margin: 0, padding: 0 }}>{t.ranking_title}</h1>
+            <h1 className="tab-seo-title" style={{ margin: 0, padding: 0 }}>
+              {currentLeague === 'great-league'
+                ? ((t as any).ranking_league_great || 'Great League (1500)')
+                : currentLeague === 'ultra-league'
+                ? ((t as any).ranking_league_ultra || 'Ultra League (2500)')
+                : currentLeague === 'master-league'
+                ? ((t as any).ranking_league_master || 'Master League')
+                : currentLeague === 'little-cup'
+                ? ((t as any).ranking_league_little || 'Little Cup (500)')
+                : currentLeague === 'max-battles'
+                ? ((t as any).ranking_league_max || 'Max Battles')
+                : t.ranking_title}
+            </h1>
           </div>
           <div className="ranking-mode-selector-header">
             <button
@@ -417,28 +541,118 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
               <Sparkles size={13} />
               <span>{onlyReleased ? (t as any).ranking_filter_released_only : (t as any).ranking_filter_all}</span>
             </button>
-            <button
-              type="button"
-              className={`mode-toggle-btn ${rankingMode === 'er' ? 'active' : ''}`}
-              onClick={() => setRankingMode('er')}
-              title="Equivalent ranking (DialgaDex ER)"
-            >
-              <SlidersHorizontal size={13} />
-              <span>{t.ranking_metric_eq}</span>
-            </button>
-            <button
-              type="button"
-              className={`mode-toggle-btn ${rankingMode === 'basic' ? 'active' : ''}`}
-              onClick={() => setRankingMode('basic')}
-              title="Basic ranking (GamePress PVE Score)"
-            >
-              <Zap size={13} />
-              <span>{t.ranking_metric_basic}</span>
-            </button>
+            {currentLeague === 'pve' && (
+              <>
+                <button
+                  type="button"
+                  className={`mode-toggle-btn ${rankingMode === 'er' ? 'active' : ''}`}
+                  onClick={() => setRankingMode('er')}
+                  title="Equivalent ranking (DialgaDex ER)"
+                >
+                  <SlidersHorizontal size={13} />
+                  <span>{t.ranking_metric_eq}</span>
+                </button>
+                <button
+                  type="button"
+                  className={`mode-toggle-btn ${rankingMode === 'basic' ? 'active' : ''}`}
+                  onClick={() => setRankingMode('basic')}
+                  title="Basic ranking (GamePress PVE Score)"
+                >
+                  <Zap size={13} />
+                  <span>{t.ranking_metric_basic}</span>
+                </button>
+              </>
+            )}
           </div>
         </div>
 
-        <p className="tab-seo-description" style={{ margin: '2px 0 6px 0' }}>{(t as any).seo_ranking_desc}</p>
+        <p className="tab-seo-description" style={{ margin: '2px 0 6px 0' }}>
+          {currentLeague === 'great-league'
+            ? (lang === 'cs' ? 'Nejlepší Pokémoni pro PvP Great League (do 1500 CP) na základě reálných soubojových simulací PvPoke.' : 'Top Pokémon for PvP Great League (CP ≤ 1500) based on realistic PvPoke battle simulations.')
+            : currentLeague === 'ultra-league'
+            ? (lang === 'cs' ? 'Nejlepší Pokémoni pro PvP Ultra League (do 2500 CP) na základě reálných soubojových simulací PvPoke.' : 'Top Pokémon for PvP Ultra League (CP ≤ 2500) based on realistic PvPoke battle simulations.')
+            : currentLeague === 'master-league'
+            ? (lang === 'cs' ? 'Nejlepší Pokémoni pro PvP Master League (neomezené CP) na základě reálných soubojových simulací PvPoke.' : 'Top Pokémon for PvP Master League (Open uncapped CP) based on realistic PvPoke battle simulations.')
+            : currentLeague === 'little-cup'
+            ? (lang === 'cs' ? 'Nejlepší Pokémoni pro PvP Little Cup (do 500 CP) na základě reálných soubojových simulací PvPoke.' : 'Top Pokémon for PvP Little Cup (CP ≤ 500) based on realistic PvPoke battle simulations.')
+            : currentLeague === 'max-battles'
+            ? (lang === 'cs' ? 'Nejlepší Pokémoni pro Max Battles (Dynamax & Gigantamax) rozdělení na útočníky a tanky/podporu.' : 'Top Pokémon for Max Battles (Dynamax & Gigantamax) ranked by Max Move DPS and Tank survivability.')
+            : (t as any).seo_ranking_desc}
+        </p>
+
+        {/* League Switcher Navigation Bar */}
+        <div className="rankings-leagues-nav-bar">
+          <button
+            type="button"
+            className={`league-nav-btn ${currentLeague === 'pve' ? 'active' : ''}`}
+            onClick={() => handleLeagueChange('pve')}
+          >
+            <img src="/icons/leagues/raid.png" alt="Raid" className="league-nav-icon-img" />
+            <span>{(t as any).ranking_league_pve || 'PvE Raidy'}</span>
+          </button>
+          <button
+            type="button"
+            className={`league-nav-btn ${currentLeague === 'great-league' ? 'active' : ''}`}
+            onClick={() => handleLeagueChange('great-league')}
+          >
+            <img src="/icons/leagues/great.png" alt="GL" className="league-nav-icon-img" />
+            <span>{(t as any).ranking_league_great || 'Great League (1500)'}</span>
+          </button>
+          <button
+            type="button"
+            className={`league-nav-btn ${currentLeague === 'ultra-league' ? 'active' : ''}`}
+            onClick={() => handleLeagueChange('ultra-league')}
+          >
+            <img src="/icons/leagues/ultra.png" alt="UL" className="league-nav-icon-img" />
+            <span>{(t as any).ranking_league_ultra || 'Ultra League (2500)'}</span>
+          </button>
+          <button
+            type="button"
+            className={`league-nav-btn ${currentLeague === 'master-league' ? 'active' : ''}`}
+            onClick={() => handleLeagueChange('master-league')}
+          >
+            <img src="/icons/leagues/master.png" alt="ML" className="league-nav-icon-img" />
+            <span>{(t as any).ranking_league_master || 'Master League'}</span>
+          </button>
+          <button
+            type="button"
+            className={`league-nav-btn ${currentLeague === 'little-cup' ? 'active' : ''}`}
+            onClick={() => handleLeagueChange('little-cup')}
+          >
+            <img src="/icons/leagues/little.png" alt="LC" className="league-nav-icon-img" />
+            <span>{(t as any).ranking_league_little || 'Little Cup (500)'}</span>
+          </button>
+          <button
+            type="button"
+            className={`league-nav-btn ${currentLeague === 'max-battles' ? 'active' : ''}`}
+            onClick={() => handleLeagueChange('max-battles')}
+          >
+            <img src="/icons/leagues/max.png" alt="Max" className="league-nav-icon-img" />
+            <span>{(t as any).ranking_league_max || 'Max Battles'}</span>
+          </button>
+        </div>
+
+        {/* Max Battles Role Selector */}
+        {currentLeague === 'max-battles' && (
+          <div className="max-battle-role-selector">
+            <button
+              type="button"
+              className={`mode-toggle-btn ${maxBattleRole === 'attacker' ? 'active' : ''}`}
+              onClick={() => setMaxBattleRole('attacker')}
+            >
+              <Zap size={13} />
+              <span>{lang === 'cs' ? 'Max Útočníci' : lang === 'ja' ? 'マックスアタッカー' : lang === 'ru' ? 'Макс Атакующие' : 'Max Attackers'}</span>
+            </button>
+            <button
+              type="button"
+              className={`mode-toggle-btn ${maxBattleRole === 'tank' ? 'active' : ''}`}
+              onClick={() => setMaxBattleRole('tank')}
+            >
+              <ShieldCheck size={13} />
+              <span>{lang === 'cs' ? 'Tanci & Podpora' : lang === 'ja' ? 'タンク・サポーター' : lang === 'ru' ? 'Танки и Поддержка' : 'Tanks & Support'}</span>
+            </button>
+          </div>
+        )}
 
         <div className="search-bar-wrapper">
           <Search size={18} className="search-icon" />
@@ -451,57 +665,59 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
           />
         </div>
 
-        <div className="types-filter-container">
-          <Link
-            href={`/${lang}/rankings`}
-            className={`type-filter-btn ${selectedType === null && !selectedCategory ? 'active' : ''}`}
-            onClick={(e) => {
-              e.preventDefault();
-              setSelectedType(null);
-              setSelectedCategory(null);
-            }}
-            style={{ textDecoration: 'none' }}
-          >
-            <Trophy size={14} style={{ marginRight: '6px' }} />
-            {t.ranking_type_all}
-          </Link>
-          {ALL_TYPES.map(type => {
-            const typeClass = type.toLowerCase();
-            const cfg = TYPE_COLORS[type] || TYPE_COLORS.Normal;
-            const isSelected = selectedType === type;
-            return (
-              <Link
-                key={type}
-                href={`/${lang}/rankings/attackers-${typeClass}`}
-                className={`type-filter-btn type-${typeClass} ${isSelected ? 'active' : ''}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setSelectedType(type);
-                  setSelectedCategory(null);
-                }}
-                style={{
-                  textDecoration: 'none',
-                  backgroundColor: isSelected ? cfg.accent : cfg.bg,
-                  borderColor: isSelected ? cfg.accent : cfg.border,
-                  boxShadow: isSelected ? `0 0 12px ${cfg.border}` : 'none'
-                }}
-              >
-                <img
-                  src={getTypeSvgUrl(typeClass, isLight)}
-                  alt={type}
-                  className="filter-type-icon"
-                  onError={(e) => {
-                    const target = e.currentTarget as HTMLImageElement;
-                    if (!target.src.includes('duiker101')) {
-                      target.src = `https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${typeClass}.svg`;
-                    }
+        {currentLeague === 'pve' && (
+          <div className="types-filter-container">
+            <Link
+              href={`/${lang}/rankings`}
+              className={`type-filter-btn ${selectedType === null && !selectedCategory ? 'active' : ''}`}
+              onClick={(e) => {
+                e.preventDefault();
+                setSelectedType(null);
+                setSelectedCategory(null);
+              }}
+              style={{ textDecoration: 'none' }}
+            >
+              <Trophy size={14} style={{ marginRight: '6px' }} />
+              {t.ranking_type_all}
+            </Link>
+            {ALL_TYPES.map(type => {
+              const typeClass = type.toLowerCase();
+              const cfg = TYPE_COLORS[type] || TYPE_COLORS.Normal;
+              const isSelected = selectedType === type;
+              return (
+                <Link
+                  key={type}
+                  href={`/${lang}/rankings/attackers-${typeClass}`}
+                  className={`type-filter-btn type-${typeClass} ${isSelected ? 'active' : ''}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSelectedType(type);
+                    setSelectedCategory(null);
                   }}
-                />
-                {type}
-              </Link>
-            );
-          })}
-        </div>
+                  style={{
+                    textDecoration: 'none',
+                    backgroundColor: isSelected ? cfg.accent : cfg.bg,
+                    borderColor: isSelected ? cfg.accent : cfg.border,
+                    boxShadow: isSelected ? `0 0 12px ${cfg.border}` : 'none'
+                  }}
+                >
+                  <img
+                    src={getTypeSvgUrl(typeClass, isLight)}
+                    alt={type}
+                    className="filter-type-icon"
+                    onError={(e) => {
+                      const target = e.currentTarget as HTMLImageElement;
+                      if (!target.src.includes('duiker101')) {
+                        target.src = `https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${typeClass}.svg`;
+                      }
+                    }}
+                  />
+                  {type}
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <div className="rankings-list">
@@ -512,6 +728,36 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
         ) : (
           filteredRankings.slice(0, visibleCount).map((poke, indexInFiltered) => {
             const pokeKey = getPokeKey(poke);
+            const pokeSlug = poke.slug || POKEDEX_MAP[poke.pokedexId]?.slug || poke.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+            const metaEntry = META_INDEX[pokeSlug];
+
+            let pvpRank = 0;
+            let pvpScore = 0;
+            let pvpData: any = null;
+            if (currentLeague === 'great-league') {
+              pvpData = metaEntry?.pvp?.great;
+              pvpRank = pvpData?.rank ?? (indexInFiltered + 1);
+              pvpScore = pvpData?.score ?? 0;
+            } else if (currentLeague === 'ultra-league') {
+              pvpData = metaEntry?.pvp?.ultra;
+              pvpRank = pvpData?.rank ?? (indexInFiltered + 1);
+              pvpScore = pvpData?.score ?? 0;
+            } else if (currentLeague === 'master-league') {
+              pvpData = metaEntry?.pvp?.master;
+              pvpRank = pvpData?.rank ?? (indexInFiltered + 1);
+              pvpScore = pvpData?.score ?? 0;
+            } else if (currentLeague === 'little-cup') {
+              pvpData = metaEntry?.pvp?.little;
+              pvpRank = pvpData?.rank ?? (indexInFiltered + 1);
+              pvpScore = pvpData?.score ?? 0;
+            }
+
+            const maxData = metaEntry?.maxBattle;
+            const isTank = maxBattleRole === 'tank';
+            const maxRank = (isTank ? maxData?.tankRank?.rank : maxData?.attackerRank?.rank) ?? (indexInFiltered + 1);
+            const maxScore = (isTank ? maxData?.tankRank?.score : maxData?.attackerRank?.score) ?? 0;
+            const maxAtkType = maxData?.attackerRank?.type;
+
             const overallRank = (!selectedType && !selectedCategory && !searchQuery.trim())
               ? (indexInFiltered + 1)
               : (overallRankMap.get(pokeKey) ?? 1);
@@ -537,36 +783,115 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
               >
                 <div className="ranking-row-top-main">
                   <div className="ranking-rank-col">
-                    <div className="rank-badge rank-overall" title="Celkové pořadí">
-                      <div className="rank-num-row">
-                        <span className="rank-hash">#</span>
-                        <span className="rank-num">{overallRank}</span>
+                    {currentLeague === 'great-league' ? (
+                      <div className="rank-badge rank-overall" title="Great League Rank" style={{ background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.35), rgba(14, 165, 233, 0.15))', borderColor: 'rgba(56, 189, 248, 0.6)' }}>
+                        <div className="rank-num-row">
+                          <span className="rank-hash">#</span>
+                          <span className="rank-num">{pvpRank}</span>
+                        </div>
+                        <span className="rank-lbl" style={{ color: '#38bdf8' }}>GREAT</span>
                       </div>
-                      <span className="rank-lbl">OVERALL</span>
-                    </div>
-                    <div className="rank-badge rank-type" title={`Pořadí v typu ${primaryType}`} style={{ background: `linear-gradient(135deg, ${getMoveTypeColor(primaryType)}cc, ${getMoveTypeColor(primaryType)}66)` }}>
-                      <div className="rank-num-row">
-                        <span className="rank-hash">#</span>
-                        <span className="rank-num">{typeRank}</span>
+                    ) : currentLeague === 'ultra-league' ? (
+                      <div className="rank-badge rank-overall" title="Ultra League Rank" style={{ background: 'linear-gradient(135deg, rgba(250, 204, 21, 0.35), rgba(234, 179, 8, 0.15))', borderColor: 'rgba(250, 204, 21, 0.6)' }}>
+                        <div className="rank-num-row">
+                          <span className="rank-hash">#</span>
+                          <span className="rank-num">{pvpRank}</span>
+                        </div>
+                        <span className="rank-lbl" style={{ color: '#facc15' }}>ULTRA</span>
                       </div>
-                      <span className="rank-lbl">{primaryType.toUpperCase()}</span>
-                    </div>
+                    ) : currentLeague === 'master-league' ? (
+                      <div className="rank-badge rank-overall" title="Master League Rank" style={{ background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.35), rgba(147, 51, 234, 0.15))', borderColor: 'rgba(168, 85, 247, 0.6)' }}>
+                        <div className="rank-num-row">
+                          <span className="rank-hash">#</span>
+                          <span className="rank-num">{pvpRank}</span>
+                        </div>
+                        <span className="rank-lbl" style={{ color: '#c084fc' }}>MASTER</span>
+                      </div>
+                    ) : currentLeague === 'little-cup' ? (
+                      <div className="rank-badge rank-overall" title="Little Cup Rank" style={{ background: 'linear-gradient(135deg, rgba(251, 113, 133, 0.35), rgba(244, 63, 94, 0.15))', borderColor: 'rgba(251, 113, 133, 0.6)' }}>
+                        <div className="rank-num-row">
+                          <span className="rank-hash">#</span>
+                          <span className="rank-num">{pvpRank}</span>
+                        </div>
+                        <span className="rank-lbl" style={{ color: '#fb7185' }}>LITTLE</span>
+                      </div>
+                    ) : currentLeague === 'max-battles' ? (
+                      <>
+                        <div className="rank-badge rank-overall" title="Max Battle Rank" style={{ background: 'linear-gradient(135deg, rgba(192, 132, 252, 0.35), rgba(168, 85, 247, 0.15))', borderColor: 'rgba(192, 132, 252, 0.6)' }}>
+                          <div className="rank-num-row">
+                            <span className="rank-hash">#</span>
+                            <span className="rank-num">{maxRank}</span>
+                          </div>
+                          <span className="rank-lbl" style={{ color: '#c084fc' }}>{isTank ? 'TANK' : 'MAX'}</span>
+                        </div>
+                        {!isTank && maxAtkType && (
+                          <div className="rank-badge rank-type" title={`Max Move: ${maxAtkType}`} style={{ background: `linear-gradient(135deg, ${getMoveTypeColor(maxAtkType)}cc, ${getMoveTypeColor(maxAtkType)}66)` }}>
+                            <div className="rank-num-row">
+                              <span className="rank-hash">#</span>
+                              <span className="rank-num">{maxRank}</span>
+                            </div>
+                            <span className="rank-lbl">{maxAtkType.toUpperCase()}</span>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <div className="rank-badge rank-overall" title="Celkové pořadí">
+                          <div className="rank-num-row">
+                            <span className="rank-hash">#</span>
+                            <span className="rank-num">{overallRank}</span>
+                          </div>
+                          <span className="rank-lbl">OVERALL</span>
+                        </div>
+                        <div className="rank-badge rank-type" title={`Pořadí v typu ${primaryType}`} style={{ background: `linear-gradient(135deg, ${getMoveTypeColor(primaryType)}cc, ${getMoveTypeColor(primaryType)}66)` }}>
+                          <div className="rank-num-row">
+                            <span className="rank-hash">#</span>
+                            <span className="rank-num">{typeRank}</span>
+                          </div>
+                          <span className="rank-lbl">{primaryType.toUpperCase()}</span>
+                        </div>
+                      </>
+                    )}
                   </div>
 
-                  <div className="ranking-score-badge" style={{
-                    background: (rankingMode === 'er' ? dialgaDex.rawEr : poke.pveScore) >= 75
-                      ? 'linear-gradient(135deg, #eab308, #ca8a04)'
-                      : (rankingMode === 'er' ? dialgaDex.rawEr : poke.pveScore) >= 60
-                      ? 'linear-gradient(135deg, #a855f7, #7e22ce)'
-                      : 'linear-gradient(135deg, #3b82f6, #1d4ed8)'
-                  }}>
-                    <span className="score-val">
-                      {rankingMode === 'er' ? dialgaDex.rawEr.toFixed(1) : poke.pveScore}
-                    </span>
-                    <span className="score-lbl">
-                      {rankingMode === 'er' ? 'ER' : 'BASIC'}
-                    </span>
-                  </div>
+                  {['great-league', 'ultra-league', 'master-league', 'little-cup'].includes(currentLeague) ? (
+                    <div className="ranking-score-badge" style={{
+                      background: pvpScore >= 90
+                        ? 'linear-gradient(135deg, #eab308, #ca8a04)'
+                        : pvpScore >= 80
+                        ? 'linear-gradient(135deg, #a855f7, #7e22ce)'
+                        : 'linear-gradient(135deg, #3b82f6, #1d4ed8)'
+                    }}>
+                      <span className="score-val">{pvpScore.toFixed(1)}</span>
+                      <span className="score-lbl">PVP</span>
+                    </div>
+                  ) : currentLeague === 'max-battles' ? (
+                    <div className="ranking-score-badge" style={{
+                      background: maxScore >= 85
+                        ? 'linear-gradient(135deg, #eab308, #ca8a04)'
+                        : maxScore >= 70
+                        ? 'linear-gradient(135deg, #a855f7, #7e22ce)'
+                        : 'linear-gradient(135deg, #3b82f6, #1d4ed8)'
+                    }}>
+                      <span className="score-val">{maxScore.toFixed(1)}</span>
+                      <span className="score-lbl">MAX</span>
+                    </div>
+                  ) : (
+                    <div className="ranking-score-badge" style={{
+                      background: (rankingMode === 'er' ? dialgaDex.rawEr : poke.pveScore) >= 75
+                        ? 'linear-gradient(135deg, #eab308, #ca8a04)'
+                        : (rankingMode === 'er' ? dialgaDex.rawEr : poke.pveScore) >= 60
+                        ? 'linear-gradient(135deg, #a855f7, #7e22ce)'
+                        : 'linear-gradient(135deg, #3b82f6, #1d4ed8)'
+                    }}>
+                      <span className="score-val">
+                        {rankingMode === 'er' ? dialgaDex.rawEr.toFixed(1) : poke.pveScore}
+                      </span>
+                      <span className="score-lbl">
+                        {rankingMode === 'er' ? 'ER' : 'BASIC'}
+                      </span>
+                    </div>
+                  )}
 
                   <div className="ranking-poke-img-wrapper" style={{ position: 'relative' }}>
                     <img 
@@ -651,45 +976,62 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
                     </div>
                   </div>
 
-                  <div className="ranking-stats-col">
-                    <div className="stat-item">
-                      <span className="stat-label-icon"><Sword size={12} style={{ color: '#f87171' }} /></span>
-                      <span className="stat-val"><strong>{poke.attack}</strong> {t.ranking_attack}</span>
-                    </div>
-                    <div className="stat-item">
-                      <span className="stat-label-icon"><ShieldAlert size={12} style={{ color: '#60a5fa' }} /></span>
-                      <span className="stat-val"><strong>{poke.defense}</strong> {t.ranking_defense}</span>
-                    </div>
-                    <div className="stat-item">
-                      <span className="stat-label-icon"><Heart size={12} style={{ color: '#4ade80' }} /></span>
-                      <span className="stat-val"><strong>{poke.stamina}</strong> {t.ranking_stamina}</span>
-                    </div>
-                    <div className="stat-item max-cp-item">
-                      <span className="stat-label-icon"><Star size={12} style={{ color: '#fbbf24' }} /></span>
-                      <span className="stat-val"><strong>{poke.maxCp}</strong> CP</span>
-                    </div>
+                  <div className="ranking-badges-col">
+                    <PokemonMetaRankingBadges slug={pokeSlug} lang={lang} size="sm" maxItems={8} />
                   </div>
 
                   <div className="ranking-moveset-col">
                     <div className="moveset-header-row">
-                      <span className="moveset-header">{t.ranking_ideal_moveset}:</span>
-                      {poke.dps && poke.dps > 0 && (
+                      <span className="moveset-header">
+                        {['great-league', 'ultra-league', 'master-league', 'little-cup'].includes(currentLeague)
+                          ? 'PvP Moveset:'
+                          : currentLeague === 'max-battles'
+                          ? 'Max Moveset:'
+                          : `${t.ranking_ideal_moveset}:`}
+                      </span>
+                      {currentLeague === 'pve' && poke.dps && poke.dps > 0 && (
                         <span className="moveset-dps">
                           eDPS: <strong>{dialgaDex.eDps}</strong>
                         </span>
                       )}
                     </div>
-                    <div className="moves-box">
-                      <span className="fast-move">
-                        <MoveTypeBadgeWithIcon type={poke.bestFastMove.type} />
-                        <MoveNameWithBadges move={poke.bestFastMove} isLegacy={isFastLegacy} />
-                      </span>
-                      <span className="move-divider">+</span>
-                      <span className="charged-move">
-                        <MoveTypeBadgeWithIcon type={poke.bestChargedMove.type} />
-                        <MoveNameWithBadges move={poke.bestChargedMove} isLegacy={isChargedLegacy} />
-                      </span>
-                    </div>
+                    {['great-league', 'ultra-league', 'master-league', 'little-cup'].includes(currentLeague) && pvpData?.moveset && pvpData.moveset.length > 0 ? (
+                      <div className="moves-box">
+                        <span className="fast-move" title="Fast Move">
+                          <Zap size={12} style={{ color: '#38bdf8', marginRight: '4px', verticalAlign: 'middle' }} />
+                          <span>{formatPvpMoveName(pvpData.moveset[0])}</span>
+                        </span>
+                        <span className="move-divider">+</span>
+                        <span className="charged-move" title="Charged Moves">
+                          <Swords size={12} style={{ color: '#c084fc', marginRight: '4px', verticalAlign: 'middle' }} />
+                          <span>{pvpData.moveset.slice(1).map(formatPvpMoveName).join(' / ')}</span>
+                        </span>
+                      </div>
+                    ) : currentLeague === 'max-battles' && maxData ? (
+                      <div className="moves-box">
+                        <span className="fast-move">
+                          <MoveTypeBadgeWithIcon type={poke.bestFastMove.type} />
+                          <MoveNameWithBadges move={poke.bestFastMove} isLegacy={isFastLegacy} />
+                        </span>
+                        <span className="move-divider">+</span>
+                        <span className="charged-move">
+                          <Sparkles size={12} style={{ color: '#fbbf24', marginRight: '4px', verticalAlign: 'middle' }} />
+                          <span>{isTank && maxData?.tankRank?.isHealer ? 'Max Spirit (Heal)' : maxData?.attackerRank?.maxMove || 'Max Attack'}</span>
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="moves-box">
+                        <span className="fast-move">
+                          <MoveTypeBadgeWithIcon type={poke.bestFastMove.type} />
+                          <MoveNameWithBadges move={poke.bestFastMove} isLegacy={isFastLegacy} />
+                        </span>
+                        <span className="move-divider">+</span>
+                        <span className="charged-move">
+                          <MoveTypeBadgeWithIcon type={poke.bestChargedMove.type} />
+                          <MoveNameWithBadges move={poke.bestChargedMove} isLegacy={isChargedLegacy} />
+                        </span>
+                      </div>
+                    )}
 
                     <button
                       type="button"
@@ -712,6 +1054,29 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
                 {isExpanded && (
                   <div className="poke-expanded-details-panel" onClick={(e) => e.stopPropagation()}>
                     <div className="expanded-divider"></div>
+
+                    <div className="expanded-base-stats-bar">
+                      <div className="base-stat-item atk">
+                        <span className="base-stat-icon"><Sword size={14} style={{ color: '#f87171' }} /></span>
+                        <span className="base-stat-label">{t.ranking_attack}:</span>
+                        <strong className="base-stat-val">{poke.attack}</strong>
+                      </div>
+                      <div className="base-stat-item def">
+                        <span className="base-stat-icon"><ShieldAlert size={14} style={{ color: '#60a5fa' }} /></span>
+                        <span className="base-stat-label">{t.ranking_defense}:</span>
+                        <strong className="base-stat-val">{poke.defense}</strong>
+                      </div>
+                      <div className="base-stat-item hp">
+                        <span className="base-stat-icon"><Heart size={14} style={{ color: '#4ade80' }} /></span>
+                        <span className="base-stat-label">{t.ranking_stamina}:</span>
+                        <strong className="base-stat-val">{poke.stamina}</strong>
+                      </div>
+                      <div className="base-stat-item cp">
+                        <span className="base-stat-icon"><Star size={14} style={{ color: '#fbbf24' }} /></span>
+                        <span className="base-stat-label">Max CP:</span>
+                        <strong className="base-stat-val">{poke.maxCp}</strong>
+                      </div>
+                    </div>
 
                     <div className="expanded-sections-grid">
                       {/* Top 5 Moveset Combinations */}

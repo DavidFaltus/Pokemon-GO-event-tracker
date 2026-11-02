@@ -224,6 +224,12 @@ export const translations = {
     ranking_tof_label: "Doba v boji ToF",
     ranking_optimal_counter_types: "Optimální typy útoků:",
     ranking_points_short: "pts",
+    ranking_league_pve: "PvE Raidy",
+    ranking_league_great: "Great League (1500)",
+    ranking_league_ultra: "Ultra League (2500)",
+    ranking_league_master: "Master League",
+    ranking_league_little: "Little Cup (500)",
+    ranking_league_max: "Max Battles",
 
     // Header
     header_live: "Živá data",
@@ -607,6 +613,12 @@ export const translations = {
     ranking_tof_label: "Time to Faint ToF",
     ranking_optimal_counter_types: "Optimal counter types:",
     ranking_points_short: "pts",
+    ranking_league_pve: "PvE Raids",
+    ranking_league_great: "Great League (1500)",
+    ranking_league_ultra: "Ultra League (2500)",
+    ranking_league_master: "Master League",
+    ranking_league_little: "Little Cup (500)",
+    ranking_league_max: "Max Battles",
 
     // Header
     header_live: "Live Data",
@@ -991,6 +1003,12 @@ export const translations = {
     ranking_tof_label: "生存時間 ToF",
     ranking_optimal_counter_types: "最適対策タイプ:",
     ranking_points_short: "pt",
+    ranking_league_pve: "レイドバトル (PvE)",
+    ranking_league_great: "スーパーリーグ (1500)",
+    ranking_league_ultra: "ハイパーリーグ (2500)",
+    ranking_league_master: "マスターリーグ",
+    ranking_league_little: "リトルカップ (500)",
+    ranking_league_max: "マックスバトル",
 
     // Header
     header_live: "ライブデータ",
@@ -1375,6 +1393,12 @@ export const translations = {
     ranking_tof_label: "Время в бою ToF",
     ranking_optimal_counter_types: "Оптимальные типы атак:",
     ranking_points_short: "очк",
+    ranking_league_pve: "PvE Рейды",
+    ranking_league_great: "Великая Лига (1500)",
+    ranking_league_ultra: "Ультра Лига (2500)",
+    ranking_league_master: "Мастер Лига",
+    ranking_league_little: "Малый Кубок (500)",
+    ranking_league_max: "Макс-Битвы",
 
     // Header
     header_live: "Актуальные данные",

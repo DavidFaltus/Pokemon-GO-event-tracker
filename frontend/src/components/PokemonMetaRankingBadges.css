@@ -1,0 +1,213 @@
+/* PokemonMetaRankingBadges.css */
+
+.pokemon-meta-badges-container {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.pokemon-meta-badges-container.sm .meta-ranking-badge {
+  font-size: 0.68rem;
+  padding: 2px 7px;
+  border-radius: 6px;
+  gap: 4px;
+}
+
+.pokemon-meta-badges-container.md .meta-ranking-badge {
+  font-size: 0.76rem;
+  padding: 3px 9px;
+  border-radius: 8px;
+  gap: 5px;
+}
+
+.meta-ranking-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-weight: 750;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.meta-ranking-badge:hover {
+  transform: translateY(-1.5px) scale(1.03);
+}
+
+.meta-badge-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.meta-badge-league-img {
+  display: inline-block;
+  vertical-align: middle;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.pokemon-meta-badges-container.sm .meta-badge-league-img {
+  width: 14px;
+  height: 14px;
+}
+
+.pokemon-meta-badges-container.md .meta-badge-league-img {
+  width: 17px;
+  height: 17px;
+}
+
+.meta-badge-type-img {
+  display: inline-block;
+  vertical-align: middle;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.pokemon-meta-badges-container.sm .meta-badge-type-img {
+  width: 12px;
+  height: 12px;
+}
+
+.pokemon-meta-badges-container.md .meta-badge-type-img {
+  width: 15px;
+  height: 15px;
+}
+
+.meta-badge-text {
+  letter-spacing: -0.01em;
+}
+
+/* Category Color Palettes in Dark Mode */
+.meta-badge-gl {
+  background: rgba(56, 189, 248, 0.16);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+}
+.meta-badge-gl:hover {
+  background: rgba(56, 189, 248, 0.25);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+}
+
+.meta-badge-ul {
+  background: rgba(250, 204, 21, 0.16);
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  color: #facc15;
+}
+.meta-badge-ul:hover {
+  background: rgba(250, 204, 21, 0.25);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+}
+
+.meta-badge-ml {
+  background: rgba(168, 85, 247, 0.16);
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  color: #c084fc;
+}
+.meta-badge-ml:hover {
+  background: rgba(168, 85, 247, 0.25);
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+}
+
+.meta-badge-lc {
+  background: rgba(251, 113, 133, 0.16);
+  border: 1px solid rgba(251, 113, 133, 0.4);
+  color: #fb7185;
+}
+.meta-badge-lc:hover {
+  background: rgba(251, 113, 133, 0.25);
+  box-shadow: 0 0 10px rgba(251, 113, 133, 0.3);
+}
+
+/* Elemental Type Badge styling */
+.meta-badge-type {
+  border: 1px solid transparent;
+  font-weight: 750;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.meta-badge-type:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.meta-badge-max-atk {
+  background: rgba(236, 72, 153, 0.16);
+  border: 1px solid rgba(236, 72, 153, 0.4);
+  color: #f472b6;
+}
+.meta-badge-max-atk:hover {
+  background: rgba(236, 72, 153, 0.25);
+  box-shadow: 0 0 10px rgba(236, 72, 153, 0.3);
+}
+
+.meta-badge-max-tank {
+  background: rgba(34, 197, 94, 0.16);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+}
+.meta-badge-max-tank:hover {
+  background: rgba(34, 197, 94, 0.25);
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+}
+
+/* Light Mode Overrides */
+body.light-mode .meta-badge-gl,
+html.light-mode .meta-badge-gl,
+[data-theme="light"] .meta-badge-gl {
+  background: rgba(2, 132, 199, 0.12) !important;
+  border-color: rgba(2, 132, 199, 0.38) !important;
+  color: #0369a1 !important;
+}
+
+body.light-mode .meta-badge-ul,
+html.light-mode .meta-badge-ul,
+[data-theme="light"] .meta-badge-ul {
+  background: rgba(217, 119, 6, 0.12) !important;
+  border-color: rgba(217, 119, 6, 0.38) !important;
+  color: #b45309 !important;
+}
+
+body.light-mode .meta-badge-ml,
+html.light-mode .meta-badge-ml,
+[data-theme="light"] .meta-badge-ml {
+  background: rgba(147, 51, 234, 0.12) !important;
+  border-color: rgba(147, 51, 234, 0.38) !important;
+  color: #7e22ce !important;
+}
+
+body.light-mode .meta-badge-lc,
+html.light-mode .meta-badge-lc,
+[data-theme="light"] .meta-badge-lc {
+  background: rgba(225, 29, 72, 0.12) !important;
+  border-color: rgba(225, 29, 72, 0.38) !important;
+  color: #be123c !important;
+}
+
+body.light-mode .meta-badge-type,
+html.light-mode .meta-badge-type,
+[data-theme="light"] .meta-badge-type {
+  text-shadow: none !important;
+  border-color: rgba(15, 23, 42, 0.2) !important;
+}
+
+body.light-mode .meta-badge-max-atk,
+html.light-mode .meta-badge-max-atk,
+[data-theme="light"] .meta-badge-max-atk {
+  background: rgba(219, 39, 119, 0.12) !important;
+  border-color: rgba(219, 39, 119, 0.38) !important;
+  color: #be185d !important;
+}
+
+body.light-mode .meta-badge-max-tank,
+html.light-mode .meta-badge-max-tank,
+[data-theme="light"] .meta-badge-max-tank {
+  background: rgba(22, 163, 74, 0.12) !important;
+  border-color: rgba(22, 163, 74, 0.38) !important;
+  color: #15803d !important;
+}

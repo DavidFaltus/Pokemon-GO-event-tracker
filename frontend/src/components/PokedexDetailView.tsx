@@ -35,6 +35,7 @@ import { UnifiedTypeBadge, TYPE_COLORS } from '../utils/typeBadgeHelper';
 import { TYPE_CHART, getTopCountersForPokemon } from '../utils/pokemonCountersHelper';
 import { pokemonRankings, type PokemonRankData } from '../data/pokemonRankings';
 import { analyzeGreatLeague, analyzeUltraLeague } from '../utils/pokedexSeoHelper';
+import { PokemonMetaRankingBadges } from './PokemonMetaRankingBadges';
 import './PokedexDetailView.css';
 
 const GENERATION_NAMES: Record<number, { cs: string; en: string; ja: string; ru: string; region: string }> = {
@@ -337,6 +338,13 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
             {lang === 'ja' && (
               <span className="pokedex-detail-en-subtitle">{entry.names.en}</span>
             )}
+            <PokemonMetaRankingBadges
+              slug={entry.slug}
+              lang={lang}
+              size="md"
+              className="pokedex-title-meta-badges"
+              maxItems={8}
+            />
           </div>
 
           {/* Types Badges with Soft Colors and SVG Icons */}
