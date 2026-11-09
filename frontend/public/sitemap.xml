@@ -2,22 +2,22 @@
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
     <loc>https://pogoevents.app/sitemap-core.xml</loc>
-    <lastmod>2026-11-02T19:40:16.753Z</lastmod>
+    <lastmod>2026-11-09T20:27:08.305Z</lastmod>
   </sitemap>
   <sitemap>
     <loc>https://pogoevents.app/sitemap-pokedex.xml</loc>
-    <lastmod>2026-11-02T19:40:16.753Z</lastmod>
+    <lastmod>2026-11-09T20:27:08.305Z</lastmod>
   </sitemap>
   <sitemap>
     <loc>https://pogoevents.app/sitemap-guides.xml</loc>
-    <lastmod>2026-11-02T19:40:16.753Z</lastmod>
+    <lastmod>2026-11-09T20:27:08.305Z</lastmod>
   </sitemap>
   <sitemap>
     <loc>https://pogoevents.app/sitemap-events.xml</loc>
-    <lastmod>2026-11-02T19:40:16.753Z</lastmod>
+    <lastmod>2026-11-09T20:27:08.305Z</lastmod>
   </sitemap>
   <sitemap>
     <loc>https://pogoevents.app/sitemap-raids-rocket.xml</loc>
-    <lastmod>2026-11-02T19:40:16.753Z</lastmod>
+    <lastmod>2026-11-09T20:27:08.305Z</lastmod>
   </sitemap>
 </sitemapindex>

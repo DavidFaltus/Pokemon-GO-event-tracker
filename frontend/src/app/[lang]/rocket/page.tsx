@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { RocketGuide } from '@/components/RocketGuide';
+import { SectionEditorialGuide } from '@/components/SectionEditorialGuide';
 import type { Language } from '@/data/translations';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
 import { API_BASE_URL } from '@/config';
@@ -101,6 +102,7 @@ export default async function RocketPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <RocketGuide lang={lang} initialRocketData={initialRocketData} />
+      <SectionEditorialGuide section="rocket" lang={lang} />
     </>
   );
 }

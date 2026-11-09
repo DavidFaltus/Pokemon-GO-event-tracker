@@ -1,9 +1,15 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PokemonRankingsView } from '@/components/PokemonRankingsView';
 import type { Language } from '@/data/translations';
 import { TYPE_CHART, getCounterTypes } from '@/utils/pokemonCountersHelper';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
+import { localizeTypeName } from '@/utils/eventIntelligenceHelper';
+import { pokemonRankings } from '@/data/pokemonRankings';
+import { isPokemonReleasedInGo } from '@/utils/pokemonReleaseHelper';
+import { getPokemonName } from '@/utils/pokemonTranslator';
+import { getPokedexEntryById } from '@/data/pokedexCatalog';
 
 export const revalidate = 3600;
 
@@ -168,8 +174,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: info.title,
       description: info.desc,
       url: canonicalUrl,
-      images: [{ url: 'https://pogoevents.app/logo-banner.jpg', width: 1200, height: 630, alt: info.title }]
-    }
+      images: [{ url: 'https://pogoevents.app/logo-banner.jpg', width: 1200, height: 630, alt: info.title }],
+    },
   };
 }
 
@@ -186,28 +192,65 @@ export default async function PokemonTypePage({ params }: PageProps) {
 
   const capitalizedType = typeSlug.charAt(0).toUpperCase() + typeSlug.slice(1);
   const canonicalUrl = `https://pogoevents.app/${lang}/types/${typeSlug}`;
+
   const weaknessInfos = getCounterTypes([capitalizedType]);
-  const weaknesses = weaknessInfos.map((w) => `${w.type} (${w.label})`);
+  const weaknesses = weaknessInfos.map((w) => `${localizeTypeName(w.type, lang)} (${w.label})`);
   const resistances = Object.entries(TYPE_CHART)
     .filter(([, defMap]) => (defMap[capitalizedType] ?? 1) < 1)
-    .map(([atkType]) => atkType);
+    .map(([atkType]) => localizeTypeName(atkType, lang));
   const superEffectiveTargets = Object.entries(TYPE_CHART[capitalizedType] || {})
     .filter(([, mult]) => mult > 1)
-    .map(([defType]) => defType);
+    .map(([defType]) => localizeTypeName(defType, lang));
 
-  const faqQuestionByLang: Record<Language, string> = {
-    cs: `Jaké má ${info.name} typ slabosti a odolnosti v Pokémon GO?`,
-    en: `What are ${capitalizedType}-type weaknesses and resistances in Pokémon GO?`,
-    ja: `Pokémon GOにおける${info.name}タイプの弱点と耐性は？`,
-    ru: `Какие слабости и сопротивления у типа «${info.name}» в Pokémon GO?`,
-  };
+  const topTypeAttackers = pokemonRankings
+    .filter(isPokemonReleasedInGo)
+    .filter((p) => p.types.includes(capitalizedType) || p.bestChargedMove?.type === capitalizedType)
+    .sort((a, b) => (b.pveScore * 10 + b.dps * 0.5) - (a.pveScore * 10 + a.dps * 0.5))
+    .slice(0, 10);
 
-  const faqAnswerByLang: Record<Language, string> = {
-    cs: `Pokémoni typu ${info.name} (${capitalizedType}) mají v Pokémon GO slabost vůči útokům typů ${weaknesses.join(', ')} (1,6× zvýšené zranění) a naopak odolávají útokům typů ${resistances.length > 0 ? resistances.join(', ') : 'žádným'}. Útoky tohoto typu jsou super efektivní proti typům: ${superEffectiveTargets.length > 0 ? superEffectiveTargets.join(', ') : 'žádným'}.`,
-    en: `${capitalizedType}-type Pokémon are weak to ${weaknesses.join(', ')} attacks (1.6x damage in Pokémon GO) and resist ${resistances.length > 0 ? resistances.join(', ') : 'none'}. Offensively, ${capitalizedType}-type moves deal super-effective damage against ${superEffectiveTargets.length > 0 ? superEffectiveTargets.join(', ') : 'no'} types.`,
-    ja: `Pokémon GOの${info.name}（${capitalizedType}）タイプは、${weaknesses.join('、')}タイプの技が弱点（1.6倍ダメージ）で、${resistances.length > 0 ? resistances.join('、') : 'なし'}タイプに耐性があります。攻撃面では${superEffectiveTargets.length > 0 ? superEffectiveTargets.join('、') : 'なし'}タイプに効果ばつぐんです。`,
-    ru: `Покемоны типа «${info.name}» (${capitalizedType}) в Pokémon GO уязвимы к атакам типов ${weaknesses.join(', ')} (1.6× урона) и имеют сопротивление к типам: ${resistances.length > 0 ? resistances.join(', ') : 'нет'}. В атаке этот тип суперэффективен против: ${superEffectiveTargets.length > 0 ? superEffectiveTargets.join(', ') : 'нет'}.`,
-  };
+  const topNamesList = topTypeAttackers
+    .slice(0, 5)
+    .map((p) => getPokemonName(p.name, lang))
+    .join(', ');
+
+  const faqs = [
+    {
+      question:
+        lang === 'cs'
+          ? `Jaké má ${info.name} typ slabosti a odolnosti v Pokémon GO?`
+          : lang === 'ja'
+            ? `Pokémon GOにおける${info.name}タイプの弱点と耐性は？`
+            : lang === 'ru'
+              ? `Какие слабости и сопротивления у типа «${info.name}» в Pokémon GO?`
+              : `What are ${capitalizedType}-type weaknesses and resistances in Pokémon GO?`,
+      answer:
+        lang === 'cs'
+          ? `Pokémoni typu ${info.name} (${capitalizedType}) mají v Pokémon GO slabost vůči útokům typů ${weaknesses.join(', ')} (1,6× zvýšené zranění) a naopak odolávají útokům typů ${resistances.length > 0 ? resistances.join(', ') : 'žádným'}. Útoky tohoto typu jsou super efektivní proti typům: ${superEffectiveTargets.length > 0 ? superEffectiveTargets.join(', ') : 'žádným'}.`
+          : lang === 'ja'
+            ? `Pokémon GOの${info.name}タイプは、${weaknesses.join('、')}タイプの技が弱点（1.6倍ダメージ）で、${resistances.length > 0 ? resistances.join('、') : 'なし'}タイプに耐性があります。攻撃面では${superEffectiveTargets.length > 0 ? superEffectiveTargets.join('、') : 'なし'}タイプに効果ばつぐんです。`
+            : lang === 'ru'
+              ? `Покемоны типа «${info.name}» (${capitalizedType}) в Pokémon GO уязвимы к атакам типов ${weaknesses.join(', ')} (1.6× урона) и имеют сопротивление к типам: ${resistances.length > 0 ? resistances.join(', ') : 'нет'}. В атаке этот тип суперэффективен против: ${superEffectiveTargets.length > 0 ? superEffectiveTargets.join(', ') : 'нет'}.`
+              : `${capitalizedType}-type Pokémon are weak to ${weaknesses.join(', ')} attacks (1.6x damage in Pokémon GO) and resist ${resistances.length > 0 ? resistances.join(', ') : 'none'}. Offensively, ${capitalizedType}-type moves deal super-effective damage against ${superEffectiveTargets.length > 0 ? superEffectiveTargets.join(', ') : 'no'} types.`,
+    },
+    {
+      question:
+        lang === 'cs'
+          ? `Kteří Pokémoni jsou nejsilnější útočníci typu ${info.name} do raidů?`
+          : lang === 'ja'
+            ? `${info.name}タイプの最強レイドアタッカーはどのポケモンですか？`
+            : lang === 'ru'
+              ? `Какие покемоны типа «${info.name}» являются лучшими атакующими для рейдов?`
+              : `Which Pokémon are the strongest ${capitalizedType}-type raid attackers?`,
+      answer:
+        lang === 'cs'
+          ? `Mezi 5 nejsilnějších vydaných útočníků typu ${info.name} podle efektivního raidového skóre (ER) a DPS patří: ${topNamesList}. Kompletní Top 10 tabulku s doporučenými Fast a Charged útoky najdete přímo na této stránce.`
+          : lang === 'ja'
+            ? `${info.name}タイプのレイド総合火力（ER・DPS）トップ5は ${topNamesList} です。最適技構成を含むトップ10一覧は本ページのテーブルで確認できます。`
+            : lang === 'ru'
+              ? `В топ-5 сильнейших доступных атакующих типа «${info.name}» по показателям ER и DPS входят: ${topNamesList}. Полная таблица Топ-10 с лучшими атаками приведена на этой странице.`
+              : `The top 5 strongest released ${capitalizedType}-type raid attackers by Effective Rating (ER) and DPS are ${topNamesList}. See the full Top 10 table on this page for optimal Fast and Charged movesets.`,
+    },
+  ];
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -220,65 +263,166 @@ export default async function PokemonTypePage({ params }: PageProps) {
       },
       {
         '@type': 'FAQPage',
-        mainEntity: [
-          {
-            '@type': 'Question',
-            name: faqQuestionByLang[lang] || faqQuestionByLang.en,
-            acceptedAnswer: {
-              '@type': 'Answer',
-              text: faqAnswerByLang[lang] || faqAnswerByLang.en,
-            },
+        mainEntity: faqs.map((f) => ({
+          '@type': 'Question',
+          name: f.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: f.answer,
           },
-        ],
+        })),
       },
       {
         '@type': 'BreadcrumbList',
         itemListElement: [
           { '@type': 'ListItem', position: 1, name: getBreadcrumbLabel('home', lang), item: `https://pogoevents.app/${lang}` },
           { '@type': 'ListItem', position: 2, name: getBreadcrumbLabel('types', lang), item: `https://pogoevents.app/${lang}/rankings` },
-          { '@type': 'ListItem', position: 3, name: info.name, item: canonicalUrl }
-        ]
-      }
-    ]
+          { '@type': 'ListItem', position: 3, name: info.name, item: canonicalUrl },
+        ],
+      },
+    ],
   };
 
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+
+      {/* Type Mastery Guide Article */}
       <article
         className="seo-entity-summary card"
         style={{
-          marginBottom: '18px',
-          padding: '16px 20px',
+          padding: '20px 24px',
           borderRadius: '16px',
           border: '1px solid var(--border-color)',
           backgroundColor: 'var(--bg-card)',
         }}
       >
-        <h2 style={{ fontSize: '1.15rem', fontWeight: 800, margin: '0 0 6px 0' }}>{info.title}</h2>
-        <p style={{ margin: '0 0 8px 0', fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.55 }}>{info.desc}</p>
-        <p style={{ margin: '0 0 8px 0', fontSize: '0.86rem', color: 'var(--text-muted)', lineHeight: 1.55 }}>
-          <strong>{lang === 'cs' ? 'Slabosti (1.6× zranění):' : lang === 'ja' ? '弱点（1.6倍ダメージ）:' : lang === 'ru' ? 'Слабости (1.6× урона):' : 'Weaknesses (1.6x DMG):'}</strong>{' '}
-          {weaknesses.join(', ')} |{' '}
-          <strong>{lang === 'cs' ? 'Odolnosti (0.625× / 0.39×):' : lang === 'ja' ? '耐性:' : lang === 'ru' ? 'Сопротивления:' : 'Resistances:'}</strong>{' '}
-          {resistances.length > 0 ? resistances.join(', ') : '—'} |{' '}
-          <strong>{lang === 'cs' ? 'Silný v útoku proti:' : lang === 'ja' ? '攻撃で効果ばつぐん:' : lang === 'ru' ? 'Суперэффективен против:' : 'Super effective against:'}</strong>{' '}
-          {superEffectiveTargets.length > 0 ? superEffectiveTargets.join(', ') : '—'}
-        </p>
-        <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--text-secondary)', lineHeight: 1.55 }}>
+        {/* Quick Type Navigation Bar */}
+        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '14px' }}>
+          {POKEMON_TYPES.map((tSlug) => {
+            const tInfo = TYPE_TRANSLATIONS[tSlug]?.[lang] || TYPE_TRANSLATIONS[tSlug]?.en;
+            const active = tSlug === typeSlug;
+            return (
+              <Link
+                key={tSlug}
+                href={`/${lang}/types/${tSlug}`}
+                style={{
+                  padding: '4px 10px',
+                  borderRadius: '999px',
+                  fontSize: '0.75rem',
+                  fontWeight: 750,
+                  textDecoration: 'none',
+                  background: active ? 'var(--accent-gradient)' : 'rgba(255,255,255,0.03)',
+                  color: active ? '#ffffff' : 'var(--text-secondary)',
+                  border: active ? '1px solid rgba(168, 85, 247, 0.5)' : '1px solid var(--border-color)',
+                }}
+              >
+                {tInfo.name}
+              </Link>
+            );
+          })}
+        </div>
+
+        <h1 style={{ fontSize: '1.45rem', fontWeight: 850, margin: '0 0 8px 0' }}>{info.title}</h1>
+        <p style={{ margin: '0 0 12px 0', fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{info.desc}</p>
+
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '12px',
+            marginBottom: '16px',
+            alignItems: 'start',
+          }}
+        >
+          <div style={{ padding: '12px 14px', borderRadius: '12px', backgroundColor: 'rgba(239, 68, 68, 0.07)', border: '1px solid rgba(239, 68, 68, 0.25)' }}>
+            <strong style={{ display: 'block', fontSize: '0.8rem', color: '#f87171', marginBottom: '4px' }}>
+              {lang === 'cs' ? 'Slabosti (1.6× zranění):' : lang === 'ja' ? '弱点（1.6倍ダメージ）:' : lang === 'ru' ? 'Слабости (1.6× урона):' : 'Weaknesses (1.6x DMG):'}
+            </strong>
+            <span style={{ fontSize: '0.86rem', color: 'var(--text-primary)', fontWeight: 650 }}>
+              {weaknesses.join(', ')}
+            </span>
+          </div>
+
+          <div style={{ padding: '12px 14px', borderRadius: '12px', backgroundColor: 'rgba(34, 197, 94, 0.07)', border: '1px solid rgba(34, 197, 94, 0.25)' }}>
+            <strong style={{ display: 'block', fontSize: '0.8rem', color: '#4ade80', marginBottom: '4px' }}>
+              {lang === 'cs' ? 'Odolnosti (0.625× / 0.39×):' : lang === 'ja' ? '耐性（ダメージ軽減）:' : lang === 'ru' ? 'Сопротивления:' : 'Resistances (0.625x / 0.39x):'}
+            </strong>
+            <span style={{ fontSize: '0.86rem', color: 'var(--text-primary)', fontWeight: 650 }}>
+              {resistances.length > 0 ? resistances.join(', ') : '—'}
+            </span>
+          </div>
+
+          <div style={{ padding: '12px 14px', borderRadius: '12px', backgroundColor: 'rgba(56, 189, 248, 0.07)', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
+            <strong style={{ display: 'block', fontSize: '0.8rem', color: '#38bdf8', marginBottom: '4px' }}>
+              {lang === 'cs' ? 'Silný v útoku proti:' : lang === 'ja' ? '攻撃で効果ばつぐん:' : lang === 'ru' ? 'Суперэффективен против:' : 'Super effective against:'}
+            </strong>
+            <span style={{ fontSize: '0.86rem', color: 'var(--text-primary)', fontWeight: 650 }}>
+              {superEffectiveTargets.length > 0 ? superEffectiveTargets.join(', ') : '—'}
+            </span>
+          </div>
+        </div>
+
+        <p style={{ margin: '0 0 16px 0', fontSize: '0.86rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>
           {lang === 'cs'
-            ? `Při stavbě týmu do 5★ a Mega Raidů vybírejte útočníky s bonusem stejného typu útoku (STAB, +20 % poškození) a aktivní Mega evolucí, která v raidu posiluje všechny spojence o dalších 30 %. V tabulce níže najdete kompletní žebříček nejsilnějších Pokémonů typu ${info.name} seřazený podle efektivního hodnocení (ER) a DPS.`
+            ? `Při stavbě týmu do 5★ a Mega Raidů vybírejte útočníky s bonusem stejného typu útoku (STAB, +20 % poškození) a aktivní Mega evolucí, která v raidu posiluje všechny spojence o dalších 30 %. V přehledu níže najdete Top 10 nejsilnějších vydaných Pokémonů typu ${info.name} seřazených podle efektivního hodnocení (ER) a DPS.`
             : lang === 'ja'
-              ? `5つ星レイドやメガレイドの対策パーティを組む際は、タイプ一致ボーナス（STAB：威力1.2倍）と味方全体を強化するメガシンカ枠（同タイプ威力1.3倍）を活用しましょう。以下のランキングでは${info.name}タイプの最強アタッカーをER（総合火力指数）とDPS順で比較できます。`
+              ? `5つ星レイドやメガレイドの対策パーティを組む際は、タイプ一致ボーナス（STAB：威力1.2倍）と味方全体を強化するメガシンカ枠（同タイプ威力1.3倍）を活用しましょう。以下では${info.name}タイプの最強アタッカーTOP10と全ランキングをER（総合火力指数）・DPS順で比較できます。`
               : lang === 'ru'
-                ? `При сборке команды для 5★ и Мега-рейдов выбирайте покемонов с бонусом одного типа (STAB, +20% к урону) и активной Мега-эволюцией, усиливающей союзников на 30%. В таблице ниже представлен рейтинг лучших покемонов типа «${info.name}» по показателям ER и DPS.`
-                : `When building a team for 5-Star and Mega Raids, prioritize attackers that benefit from Same-Type Attack Bonus (STAB, 1.2x damage) alongside an active Mega Evolution to boost all allies' ${capitalizedType}-type attacks by 30%. The table below ranks the strongest ${capitalizedType}-type Pokémon by Effective Rating (ER) and DPS.`}
+                ? `При сборке команды для 5★ и Мега-рейдов выбирайте покемонов с бонусом одного типа (STAB, +20% к урону) и активной Мега-эволюцией, усиливающей союзников на 30%. Ниже представлены Топ-10 лучших доступных покемонов типа «${info.name}» по показателям ER и DPS.`
+                : `When building a team for 5-Star and Mega Raids, prioritize attackers that benefit from Same-Type Attack Bonus (STAB, 1.2x damage) alongside an active Mega Evolution to boost all allies' ${capitalizedType}-type attacks by 30%. Below are the Top 10 strongest released ${capitalizedType}-type attackers ranked by Effective Rating (ER) and DPS.`}
         </p>
+
+        {/* Server-rendered Top 10 Type Attackers Table */}
+        {topTypeAttackers.length > 0 && (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.83rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border-color)', textAlign: 'left', color: 'var(--text-muted)' }}>
+                  <th style={{ padding: '8px 10px' }}>#</th>
+                  <th style={{ padding: '8px 10px' }}>Pokémon</th>
+                  <th style={{ padding: '8px 10px' }}>Max CP (Lv50)</th>
+                  <th style={{ padding: '8px 10px' }}>Fast / Charged Move</th>
+                  <th style={{ padding: '8px 10px' }}>DPS / ER</th>
+                </tr>
+              </thead>
+              <tbody>
+                {topTypeAttackers.map((poke, idx) => {
+                  const dexEntry = getPokedexEntryById(poke.pokedexId);
+                  const slug = dexEntry?.slug || String(poke.pokedexId);
+                  return (
+                    <tr key={`${poke.pokedexId}-${poke.name}-${idx}`} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <td style={{ padding: '8px 10px', fontWeight: 800, color: idx < 3 ? '#facc15' : 'var(--text-muted)' }}>
+                        #{idx + 1}
+                      </td>
+                      <td style={{ padding: '8px 10px', fontWeight: 750 }}>
+                        <Link
+                          href={`/${lang}/pokedex/${slug}`}
+                          style={{ color: 'var(--cyan-accent)', textDecoration: 'none' }}
+                        >
+                          {getPokemonName(poke.name, lang)}
+                        </Link>
+                      </td>
+                      <td style={{ padding: '8px 10px', color: 'var(--text-secondary)' }}>{poke.maxCp} CP</td>
+                      <td style={{ padding: '8px 10px', color: 'var(--text-secondary)' }}>
+                        {poke.bestFastMove.name} + <strong>{poke.bestChargedMove.name}</strong>
+                      </td>
+                      <td style={{ padding: '8px 10px', color: '#4ade80', fontWeight: 700 }}>
+                        {poke.dps.toFixed(1)} DPS ({poke.pveScore} ER)
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </article>
+
       <PokemonRankingsView lang={lang} initialSelectedType={capitalizedType} />
-    </>
+    </div>
   );
 }

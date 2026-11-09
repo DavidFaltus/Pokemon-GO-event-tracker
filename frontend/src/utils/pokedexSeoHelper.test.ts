@@ -1,6 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { analyzeGreatLeague, analyzeUltraLeague, getEvolutionFamily } from './pokedexSeoHelper';
+import {
+  analyzeGreatLeague,
+  analyzeUltraLeague,
+  getEvolutionFamily,
+  isTopMetaPokedexEntry,
+  generatePokedexEditorialAnalysis,
+} from './pokedexSeoHelper';
 import { getPokemonByIdOrSlug } from '../data/pokemonRankings';
+import { getPokedexEntryBySlug } from '../data/pokedexCatalog';
 
 describe('pokedexSeoHelper', () => {
   it('analyzes Great League eligibility correctly for low and high CP Pokémon', () => {
@@ -48,6 +55,29 @@ describe('pokedexSeoHelper', () => {
       const fam = getEvolutionFamily(venusaur);
       expect(fam.megaVariants.length).toBeGreaterThan(0);
       expect(fam.megaVariants[0].name.toLowerCase()).toContain('mega');
+    }
+  });
+
+  it('curates top meta Pokédex entries and generates localized editorial analysis + FAQs', () => {
+    const mewtwo = getPokedexEntryBySlug('mewtwo');
+    const caterpie = getPokedexEntryBySlug('caterpie');
+    const pecharunt = getPokedexEntryBySlug('pecharunt');
+
+    expect(mewtwo).toBeDefined();
+    expect(caterpie).toBeDefined();
+    expect(pecharunt).toBeDefined();
+
+    if (mewtwo) {
+      expect(isTopMetaPokedexEntry(mewtwo)).toBe(true);
+      const editorial = generatePokedexEditorialAnalysis(mewtwo, 'cs');
+      expect(editorial.paragraphs.length).toBeGreaterThanOrEqual(3);
+      expect(editorial.faqs.length).toBeGreaterThanOrEqual(3);
+    }
+    if (caterpie) {
+      expect(isTopMetaPokedexEntry(caterpie)).toBe(false);
+    }
+    if (pecharunt) {
+      expect(isTopMetaPokedexEntry(pecharunt)).toBe(false);
     }
   });
 });

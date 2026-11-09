@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { FilterGeneratorView } from '@/components/FilterGeneratorView';
+import { SectionEditorialGuide } from '@/components/SectionEditorialGuide';
 import type { Language } from '@/data/translations';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
 
@@ -85,6 +86,7 @@ export default async function FilterPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <FilterGeneratorView lang={lang} />
+      <SectionEditorialGuide section="filter" lang={lang} />
     </>
   );
 }

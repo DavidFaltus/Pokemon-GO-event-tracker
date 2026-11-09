@@ -43,15 +43,15 @@ describe('sitemapGenerator', () => {
     expect(xml).toContain('<xhtml:link rel="alternate" hreflang="x-default" href="https://pogoevents.app/en"/>');
   });
 
-  it('generates pokedex sitemap containing all 1024 pokemon with clean localized alternates', () => {
+  it('generates curated pokedex sitemap containing top meta released pokemon and excluding unreleased entries', () => {
     const xml = getPokedexSitemapXml(new Date('2026-11-01T12:00:00.000Z'));
-    expect(xml).toContain('<loc>https://pogoevents.app/cs/pokedex/bulbasaur</loc>');
-    expect(xml).toContain('<loc>https://pogoevents.app/en/pokedex/bulbasaur</loc>');
-    expect(xml).toContain('<loc>https://pogoevents.app/ja/pokedex/bulbasaur</loc>');
-    expect(xml).toContain('<loc>https://pogoevents.app/ru/pokedex/bulbasaur</loc>');
-    expect(xml).toContain('<xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/pokedex/bulbasaur"/>');
-    expect(xml).toContain('<xhtml:link rel="alternate" hreflang="x-default" href="https://pogoevents.app/en/pokedex/bulbasaur"/>');
-    expect(xml).toContain('<loc>https://pogoevents.app/cs/pokedex/pecharunt</loc>');
+    expect(xml).toContain('<loc>https://pogoevents.app/cs/pokedex/venusaur</loc>');
+    expect(xml).toContain('<loc>https://pogoevents.app/en/pokedex/venusaur</loc>');
+    expect(xml).toContain('<loc>https://pogoevents.app/ja/pokedex/venusaur</loc>');
+    expect(xml).toContain('<loc>https://pogoevents.app/ru/pokedex/venusaur</loc>');
+    expect(xml).toContain('<xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/pokedex/venusaur"/>');
+    expect(xml).toContain('<xhtml:link rel="alternate" hreflang="x-default" href="https://pogoevents.app/en/pokedex/venusaur"/>');
+    expect(xml).not.toContain('<loc>https://pogoevents.app/cs/pokedex/pecharunt</loc>');
   });
 
   it('generates raids and rocket sitemap with ranking categories, type matchups, and rocket leaders', () => {

@@ -8,6 +8,7 @@ import {
 } from '@/data/pokedexCatalog';
 import { getPokemonName } from '@/utils/pokemonTranslator';
 import { buildAlternates } from '@/utils/seoHelper';
+import { isTopMetaPokedexEntry, generatePokedexEditorialAnalysis } from '@/utils/pokedexSeoHelper';
 import type { Language } from '@/data/translations';
 
 export const revalidate = 3600;
@@ -69,10 +70,12 @@ export async function generateMetadata({ params }: PokedexDetailPageProps): Prom
   const canonicalUrl = `https://pogoevents.app/${validLang}/pokedex/${entry.slug}`;
   const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${entry.dexId}.png`;
 
+  const shouldIndex = isTopMetaPokedexEntry(entry);
+
   return {
     title,
     description,
-    robots: { index: true, follow: true },
+    robots: shouldIndex ? { index: true, follow: true } : { index: false, follow: true },
     keywords: [
       entry.names.en,
       localizedName,
@@ -124,20 +127,37 @@ export default async function PokedexDetailPage({ params }: PokedexDetailPagePro
     notFound();
   }
 
+  const editorial = generatePokedexEditorialAnalysis(entry, validLang);
+
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'ItemPage',
-    name: entry.names[validLang] || entry.names.en,
-    description: `Complete Pokédex profile for ${entry.names.en} (#${entry.dexId}) in Pokémon GO with CP, stats, and movesets.`,
-    url: `https://pogoevents.app/${validLang}/pokedex/${entry.slug}`,
-    image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${entry.dexId}.png`,
-    mainEntity: {
-      '@type': 'Thing',
-      name: entry.names.en,
-      identifier: `#${entry.dexId}`,
-      alternateName: entry.names.ja,
-      description: `Pokémon #${entry.dexId} (${entry.types.join(', ')}) with Max CP ${entry.maxCp.lv50}.`
-    }
+    '@graph': [
+      {
+        '@type': 'ItemPage',
+        name: entry.names[validLang] || entry.names.en,
+        description: `Complete Pokédex profile for ${entry.names.en} (#${entry.dexId}) in Pokémon GO with CP, stats, and movesets.`,
+        url: `https://pogoevents.app/${validLang}/pokedex/${entry.slug}`,
+        image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${entry.dexId}.png`,
+        mainEntity: {
+          '@type': 'Thing',
+          name: entry.names.en,
+          identifier: `#${entry.dexId}`,
+          alternateName: entry.names.ja,
+          description: `Pokémon #${entry.dexId} (${entry.types.join(', ')}) with Max CP ${entry.maxCp.lv50}.`
+        }
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: editorial.faqs.map((f) => ({
+          '@type': 'Question',
+          name: f.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: f.answer,
+          },
+        })),
+      },
+    ]
   };
 
   return (

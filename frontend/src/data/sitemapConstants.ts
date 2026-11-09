@@ -7,7 +7,6 @@ export const CORE_SECTIONS = [
   { path: '/rocket', priority: 0.9, changeFrequency: 'daily' as const },
   { path: '/guides', priority: 0.88, changeFrequency: 'weekly' as const },
   { path: '/filter', priority: 0.8, changeFrequency: 'weekly' as const },
-  { path: '/download', priority: 0.7, changeFrequency: 'monthly' as const },
   { path: '/about', priority: 0.6, changeFrequency: 'monthly' as const },
   { path: '/privacy', priority: 0.5, changeFrequency: 'monthly' as const },
   { path: '/terms', priority: 0.5, changeFrequency: 'monthly' as const },
@@ -20,28 +19,11 @@ export const RANKING_CATEGORIES = [
   'ultra-league',
   'master-league',
   'little-cup',
+  'max-battles',
   'best-mega',
   'best-shadow',
   'max-cp',
   'best-gym-defenders',
-  'attackers-fire',
-  'attackers-water',
-  'attackers-grass',
-  'attackers-electric',
-  'attackers-dragon',
-  'attackers-ghost',
-  'attackers-dark',
-  'attackers-fairy',
-  'attackers-steel',
-  'attackers-fighting',
-  'attackers-ice',
-  'attackers-rock',
-  'attackers-ground',
-  'attackers-flying',
-  'attackers-psychic',
-  'attackers-poison',
-  'attackers-bug',
-  'attackers-normal',
 ] as const;
 
 export const POKEMON_TYPES = [
@@ -110,8 +92,6 @@ export const POPULAR_RAID_BOSSES = [
   'primal-kyogre',
   'zacian',
   'zamazenta',
-  'eternatus',
-  'urshifu',
 ] as const;
 
 export const ROCKET_LEADERS = ['giovanni', 'cliff', 'sierra', 'arlo', 'grunts'] as const;

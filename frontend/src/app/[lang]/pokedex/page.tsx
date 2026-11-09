@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { PokedexView } from '@/components/PokedexView';
+import { SectionEditorialGuide } from '@/components/SectionEditorialGuide';
 import { buildAlternates } from '@/utils/seoHelper';
 import type { Language } from '@/data/translations';
 
@@ -56,5 +57,10 @@ export async function generateMetadata({ params }: PokedexPageProps): Promise<Me
 export default async function PokedexPage({ params }: PokedexPageProps) {
   const { lang } = await params;
   const validLang: Language = ['cs', 'en', 'ja', 'ru'].includes(lang) ? lang : 'cs';
-  return <PokedexView lang={validLang} />;
+  return (
+    <>
+      <PokedexView lang={validLang} />
+      <SectionEditorialGuide section="pokedex" lang={validLang} />
+    </>
+  );
 }

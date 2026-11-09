@@ -3,6 +3,7 @@ import Script from 'next/script';
 import { Outfit } from 'next/font/google';
 import { NavigatorProvider } from '@/hooks/useAppNavigate';
 import { ThemeProvider } from '@/context/ThemeContext';
+import { AdSenseScript } from '@/components/AdSenseScript';
 import '../index.css';
 import '../App.css';
 import './globals.css';
@@ -47,6 +48,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
+        <meta name="google-adsense-account" content="ca-pub-8800056915088711" />
         <link rel="describedby" href="/llms.txt" type="text/plain" title="LLM Context & Agent API" />
         <link rel="alternate" type="text/markdown" href="https://pogoevents.app/api/agent/events.md" title="Pokémon GO Live Events (Markdown)" />
         {/* Preconnect & DNS prefetch for image CDNs to accelerate LCP & asset downloads */}
@@ -90,7 +92,8 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Google AdSense script removed/deactivated per monetization strategy */}
+        {/* Route-aware Google AdSense script (excludes utility/redirect screens) */}
+        <AdSenseScript />
 
         <div id="root">
           <NavigatorProvider>

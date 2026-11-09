@@ -9,15 +9,7 @@ export const revalidate = 3600;
 
 export async function generateStaticParams() {
   const languages: Language[] = ['cs', 'en', 'ja', 'ru'];
-  const params: { lang: Language; id: string }[] = [];
-
-  languages.forEach((lang) => {
-    ALL_POKEDEX_IDS.forEach((num) => {
-      params.push({ lang, id: num.toString() });
-    });
-  });
-
-  return params;
+  return languages.map((lang) => ({ lang, id: '1' }));
 }
 
 interface PokemonLegacyPageProps {

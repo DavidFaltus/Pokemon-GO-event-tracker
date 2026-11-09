@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { FriendFinderView } from '@/components/FriendFinderView';
+import { SectionEditorialGuide } from '@/components/SectionEditorialGuide';
 import type { Language } from '@/data/translations';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
 
@@ -94,6 +95,7 @@ export default async function FriendsPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <FriendFinderView lang={lang} />
+      <SectionEditorialGuide section="friends" lang={lang} />
     </>
   );
 }

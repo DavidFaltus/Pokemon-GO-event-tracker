@@ -7,6 +7,7 @@ import { pokemonRankings } from '@/data/pokemonRankings';
 import { getPokemonName } from '@/utils/pokemonTranslator';
 import { isPokemonReleasedInGo } from '@/utils/pokemonReleaseHelper';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
+import { getPokedexEntryById } from '@/data/pokedexCatalog';
 
 export const revalidate = 3600;
 
@@ -239,12 +240,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const canonicalUrl = `https://pogoevents.app/${lang}/rankings/${category}`;
+  const filterType = CATEGORY_NAMES[category]?.en?.filterType;
+  const canonicalPath = filterType ? `/types/${filterType.toLowerCase()}` : `/rankings/${category}`;
+  const canonicalUrl = `https://pogoevents.app/${lang}${canonicalPath}`;
 
   return {
     title: info.title,
     description: info.desc,
-    alternates: buildAlternates(lang, `/rankings/${category}`),
+    robots: filterType ? { index: false, follow: true } : { index: true, follow: true },
+    alternates: buildAlternates(lang, canonicalPath),
     openGraph: {
       title: info.title,
       description: info.desc,
@@ -284,7 +288,7 @@ function getCategoryTopPokemon(category: RankingCategory, filterType?: string) {
     list = [...list].sort((a, b) => (b.pveScore * 10 + b.dps * 0.5) - (a.pveScore * 10 + a.dps * 0.5));
   }
 
-  return list.slice(0, 10);
+  return list.slice(0, 15);
 }
 
 export default async function CategoryRankingsPage({ params }: PageProps) {
@@ -298,8 +302,10 @@ export default async function CategoryRankingsPage({ params }: PageProps) {
     notFound();
   }
 
-  const canonicalUrl = `https://pogoevents.app/${lang}/rankings/${category}`;
   const filterType = CATEGORY_NAMES[category]?.en?.filterType;
+  const canonicalUrl = filterType
+    ? `https://pogoevents.app/${lang}/types/${filterType.toLowerCase()}`
+    : `https://pogoevents.app/${lang}/rankings/${category}`;
   const topPokemon = getCategoryTopPokemon(category, filterType);
 
   const jsonLd = {
@@ -311,12 +317,15 @@ export default async function CategoryRankingsPage({ params }: PageProps) {
         description: info.desc,
         url: canonicalUrl,
         numberOfItems: topPokemon.length,
-        itemListElement: topPokemon.map((poke, idx) => ({
-          '@type': 'ListItem',
-          position: idx + 1,
-          name: `${getPokemonName(poke.name, lang)} (${poke.bestFastMove.name} + ${poke.bestChargedMove.name})`,
-          url: `https://pogoevents.app/${lang}/pokemon/${poke.pokedexId}`,
-        })),
+        itemListElement: topPokemon.map((poke, idx) => {
+          const slug = getPokedexEntryById(poke.pokedexId)?.slug || String(poke.pokedexId);
+          return {
+            '@type': 'ListItem',
+            position: idx + 1,
+            name: `${getPokemonName(poke.name, lang)} (${poke.bestFastMove.name} + ${poke.bestChargedMove.name})`,
+            url: `https://pogoevents.app/${lang}/pokedex/${slug}`,
+          };
+        }),
       },
       {
         '@type': 'BreadcrumbList',
@@ -339,33 +348,64 @@ export default async function CategoryRankingsPage({ params }: PageProps) {
         className="seo-entity-summary card"
         style={{
           marginBottom: '18px',
-          padding: '16px 20px',
+          padding: '20px 24px',
           borderRadius: '16px',
           border: '1px solid var(--border-color)',
           backgroundColor: 'var(--bg-card)',
         }}
       >
-        <h2 style={{ fontSize: '1.15rem', fontWeight: 800, margin: '0 0 6px 0' }}>{info.title}</h2>
-        <p style={{ margin: '0 0 10px 0', fontSize: '0.88rem', color: 'var(--text-secondary)' }}>{info.desc}</p>
+        <h2 style={{ fontSize: '1.35rem', fontWeight: 850, margin: '0 0 8px 0' }}>{info.title}</h2>
+        <p style={{ margin: '0 0 12px 0', fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{info.desc}</p>
+        <p style={{ margin: '0 0 14px 0', fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.6 }}>
+          {lang === 'cs'
+            ? 'Metodika hodnocení: Žebříček zohledňuje pouze reálně vydané Pokémony v Pokémon GO a kombinuje základní statistiky na Levelu 50, optimální kombinaci Fast + Charged útoků (včetně Elite TM a STAB bonusu +20 %), celkový výstup poškození (TDO) a přežitelnost v boji.'
+            : lang === 'ja'
+              ? '評価方法：本ランキングはPokémon GOに実装済みのポケモンのみを対象とし、PL50ステータス、最適技構成（すごいわざマシン対象技およびタイプ一致STAB補正1.2倍を含む）、DPS、総ダメージ量（TDO）、耐久力を総合的に算出しています。'
+              : lang === 'ru'
+                ? 'Методология рейтинга: учитываются только выпущенные в Pokémon GO покемоны на основе их базовых статов на 50-м уровне, оптимальной связки Fast и Charged атак (включая Elite TM и STAB +20%), DPS и общей живучести (TDO).'
+                : 'Ranking Methodology: This tier list evaluates released Pokémon in Pokémon GO based on Level 50 base stats, optimal Fast and Charged moveset combinations (including Elite TM moves and 1.2x STAB), Damage Per Second (DPS), and Total Damage Output (TDO).'}
+        </p>
         {topPokemon.length > 0 && (
-          <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-            <strong>TOP 5:</strong>{' '}
-            {topPokemon
-              .slice(0, 5)
-              .map((p, i) => (
-                <span key={p.pokedexId + '-' + i}>
-                  {i > 0 ? ' • ' : ''}
-                  #{i + 1}{' '}
-                  <Link
-                    href={`/${lang}/pokemon/${p.pokedexId}`}
-                    style={{ color: 'var(--cyan-accent)', textDecoration: 'none', fontWeight: 600 }}
-                  >
-                    {getPokemonName(p.name, lang)}
-                  </Link>{' '}
-                  ({p.maxCp} CP, {p.bestFastMove.name} + {p.bestChargedMove.name})
-                </span>
-              ))}
-          </p>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border-color)', textAlign: 'left', color: 'var(--text-muted)' }}>
+                  <th style={{ padding: '7px 10px' }}>#</th>
+                  <th style={{ padding: '7px 10px' }}>Pokémon</th>
+                  <th style={{ padding: '7px 10px' }}>Max CP (Lv50)</th>
+                  <th style={{ padding: '7px 10px' }}>Fast / Charged Move</th>
+                  <th style={{ padding: '7px 10px' }}>ATK / DEF / STA</th>
+                </tr>
+              </thead>
+              <tbody>
+                {topPokemon.map((p, i) => {
+                  const slug = getPokedexEntryById(p.pokedexId)?.slug || String(p.pokedexId);
+                  return (
+                    <tr key={`${p.pokedexId}-${p.name}-${i}`} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                      <td style={{ padding: '7px 10px', fontWeight: 800, color: i < 3 ? '#facc15' : 'var(--text-muted)' }}>
+                        #{i + 1}
+                      </td>
+                      <td style={{ padding: '7px 10px', fontWeight: 750 }}>
+                        <Link
+                          href={`/${lang}/pokedex/${slug}`}
+                          style={{ color: 'var(--cyan-accent)', textDecoration: 'none' }}
+                        >
+                          {getPokemonName(p.name, lang)}
+                        </Link>
+                      </td>
+                      <td style={{ padding: '7px 10px', color: 'var(--text-secondary)' }}>{p.maxCp} CP</td>
+                      <td style={{ padding: '7px 10px', color: 'var(--text-secondary)' }}>
+                        {p.bestFastMove.name} + <strong>{p.bestChargedMove.name}</strong>
+                      </td>
+                      <td style={{ padding: '7px 10px', color: 'var(--text-muted)' }}>
+                        {p.attack} / {p.defense} / {p.stamina}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </article>
       <PokemonRankingsView

@@ -2,6 +2,7 @@ import { API_BASE_URL } from '../config';
 import { GUIDES_DATA } from '../data/guidesData';
 import { POKEDEX_CATALOG } from '../data/pokedexCatalog';
 import { raidCountersDb } from '../data/raidCounters';
+import { isTopMetaPokedexEntry } from './pokedexSeoHelper';
 import {
   CORE_SECTIONS,
   RANKING_CATEGORIES,
@@ -149,15 +150,16 @@ export function getCoreSitemapXml(now: Date = new Date()): string {
 
 export function getPokedexSitemapXml(now: Date = new Date()): string {
   const entries: SitemapUrlEntry[] = [];
+  const curatedMetaPokedex = POKEDEX_CATALOG.filter(isTopMetaPokedexEntry);
 
   LANGUAGES.forEach((lang) => {
-    POKEDEX_CATALOG.forEach((poke) => {
+    curatedMetaPokedex.forEach((poke) => {
       const suffix = `/pokedex/${poke.slug}`;
       entries.push({
         url: `${BASE_URL}/${lang}${suffix}`,
         lastmod: now,
         changefreq: 'weekly',
-        priority: poke.isReleasedInGo ? 0.8 : 0.6,
+        priority: 0.85,
         alternates: buildSitemapAlternates(BASE_URL, suffix),
       });
     });

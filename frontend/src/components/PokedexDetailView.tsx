@@ -34,7 +34,7 @@ import { getPokemonName, getStatusTagName } from '../utils/pokemonTranslator';
 import { UnifiedTypeBadge, TYPE_COLORS } from '../utils/typeBadgeHelper';
 import { TYPE_CHART, getTopCountersForPokemon } from '../utils/pokemonCountersHelper';
 import { pokemonRankings, type PokemonRankData } from '../data/pokemonRankings';
-import { analyzeGreatLeague, analyzeUltraLeague } from '../utils/pokedexSeoHelper';
+import { analyzeGreatLeague, analyzeUltraLeague, generatePokedexEditorialAnalysis } from '../utils/pokedexSeoHelper';
 import { PokemonMetaRankingBadges } from './PokemonMetaRankingBadges';
 import './PokedexDetailView.css';
 
@@ -235,6 +235,7 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
   }, [rankMatch]);
 
   const totalBaseStats = currentStats.attack + currentStats.defense + currentStats.stamina;
+  const editorialReport = useMemo(() => generatePokedexEditorialAnalysis(entry, lang), [entry, lang]);
 
   return (
     <div className="pokedex-detail-container">
@@ -708,6 +709,72 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
               </div>
             </section>
           )}
+
+          {/* Deep Editorial Meta Analysis & FAQ */}
+          <section className="pokedex-detail-card" aria-label="Editorial Analysis & FAQ">
+            <h2 className="pokedex-detail-card-title">
+              <Sparkles size={18} style={{ color: 'var(--accent-color)' }} />
+              <span>
+                {lang === 'cs'
+                  ? `Hloubkový rozbor a herní strategie: ${getPokeTitle(entry)}`
+                  : lang === 'ja'
+                    ? `${getPokeTitle(entry)} の詳細攻略・メタ分析・よくある質問`
+                    : lang === 'ru'
+                      ? `Подробный разбор и стратегия: ${getPokeTitle(entry)}`
+                      : `In-Depth Meta Analysis & Strategy Guide: ${getPokeTitle(entry)}`}
+              </span>
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              {editorialReport.paragraphs.map((p, idx) => (
+                <div key={idx} style={{ lineHeight: 1.65 }}>
+                  <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 6px 0' }}>
+                    {p.heading}
+                  </h3>
+                  <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', margin: 0 }}>
+                    {p.text}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {editorialReport.faqs.length > 0 && (
+              <div style={{ marginTop: '18px', paddingTop: '16px', borderTop: '1px solid var(--border-color)' }}>
+                <h3 style={{ fontSize: '0.96rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 12px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <HelpCircle size={16} style={{ color: 'var(--cyan-accent)' }} />
+                  <span>
+                    {lang === 'cs'
+                      ? 'Často kladené otázky (FAQ)'
+                      : lang === 'ja'
+                        ? 'よくある質問 (FAQ)'
+                        : lang === 'ru'
+                          ? 'Часто задаваемые вопросы (FAQ)'
+                          : 'Frequently Asked Questions (FAQ)'}
+                  </span>
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {editorialReport.faqs.map((faq, idx) => (
+                    <div
+                      key={idx}
+                      style={{
+                        padding: '12px 14px',
+                        borderRadius: '12px',
+                        border: '1px solid var(--border-color)',
+                        backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                      }}
+                    >
+                      <h4 style={{ fontSize: '0.88rem', fontWeight: 750, color: 'var(--text-primary)', margin: '0 0 4px 0' }}>
+                        {faq.question}
+                      </h4>
+                      <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.55 }}>
+                        {faq.answer}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
         </div>
       </div>
     </div>

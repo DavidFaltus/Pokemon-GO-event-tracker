@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { PokemonRankingsView } from '@/components/PokemonRankingsView';
+import { SectionEditorialGuide } from '@/components/SectionEditorialGuide';
 import type { Language } from '@/data/translations';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
 
@@ -89,6 +90,7 @@ export default async function RankingsPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <PokemonRankingsView lang={lang} />
+      <SectionEditorialGuide section="rankings" lang={lang} />
     </>
   );
 }

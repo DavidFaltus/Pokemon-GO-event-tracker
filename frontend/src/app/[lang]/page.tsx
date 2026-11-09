@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import App from '@/App';
@@ -60,9 +62,27 @@ async function getInitialEvents() {
     const res = await apiFetch('/api/events', { next: { revalidate: 300 } });
     if (res.ok) {
       const data = await res.json();
-      return Array.isArray(data) ? data : data.events || [];
+      const list = Array.isArray(data) ? data : data.events || [];
+      if (list.length > 0) return list;
     }
   } catch (err) {}
+
+  try {
+    const cacheFile = path.resolve(process.cwd(), '../backend/events_list_cache.json');
+    const customFile = path.resolve(process.cwd(), '../backend/custom_events.json');
+    let merged: any[] = [];
+    if (fs.existsSync(cacheFile)) {
+      const raw = JSON.parse(fs.readFileSync(cacheFile, 'utf-8'));
+      const list = Array.isArray(raw) ? raw : raw.data || raw.events || [];
+      if (Array.isArray(list)) merged.push(...list);
+    }
+    if (fs.existsSync(customFile)) {
+      const custom = JSON.parse(fs.readFileSync(customFile, 'utf-8'));
+      if (Array.isArray(custom)) merged.push(...custom);
+    }
+    if (merged.length > 0) return merged;
+  } catch (e) {}
+
   return [];
 }
 

@@ -275,6 +275,8 @@ interface EventCardProps {
   defaultExpanded?: boolean;
   useInline?: boolean;
   priority?: boolean;
+  ssrSpecialDetails?: any;
+  hideStandaloneLink?: boolean;
   onOpenFilterGenerator?: (bossName?: string) => void;
   onToggleExpand?: (eventID: string, expanded: boolean) => void;
 }
@@ -286,6 +288,8 @@ export const EventCard: React.FC<EventCardProps> = ({
   defaultExpanded,
   useInline: propsUseInline,
   priority,
+  ssrSpecialDetails,
+  hideStandaloneLink,
   onOpenFilterGenerator,
   onToggleExpand
 }) => {
@@ -339,7 +343,7 @@ export const EventCard: React.FC<EventCardProps> = ({
   const t = translations[lang] || translations.cs;
 
   // Load special event guides (manual overlays/fallbacks)
-  const staticDetails = getSpecialEventDetails(event.eventID, event.name);
+  const staticDetails = getSpecialEventDetails(event.eventID, event.name) || ssrSpecialDetails;
   const { details: dynamicDetails, loading: dynamicLoading } = useDynamicEventDetails(event.eventID, event.link, isExpanded && !staticDetails, event.name);
   const specialDetails = staticDetails || dynamicDetails;
 
@@ -764,6 +768,30 @@ export const EventCard: React.FC<EventCardProps> = ({
           
           {/* Add to Calendar & Official Link Row */}
               <div className="expanded-row link-row">
+                {!hideStandaloneLink && (
+                  <a
+                    href={`/${lang}/events/${event.eventID}`}
+                    className="pogo-official-btn"
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      background: 'var(--accent-gradient)',
+                      color: '#ffffff',
+                      border: '1px solid rgba(168, 85, 247, 0.5)',
+                      fontWeight: 700,
+                    }}
+                  >
+                    <LayoutList size={14} />
+                    {lang === 'cs'
+                      ? 'Samostatná stránka & kompletní průvodce →'
+                      : lang === 'ja'
+                        ? 'イベント専用攻略ページを開く →'
+                        : lang === 'ru'
+                          ? 'Полная страница и гайд события →'
+                          : 'Open Full Event Guide Page →'}
+                  </a>
+                )}
                 {hasOfficial && (
                   <a 
                     href={officialTarget} 
@@ -938,7 +966,7 @@ export const EventCard: React.FC<EventCardProps> = ({
               {getEventTypeLabel(event.eventType)}
             </span>
             <h3 className="event-title">
-              {shouldDisableExternalLinks(event) ? (
+              {false ? (
                 <span style={{ color: 'inherit' }}>{event.name}</span>
               ) : (
                 <a 
@@ -999,7 +1027,7 @@ export const EventCard: React.FC<EventCardProps> = ({
                   {getEventTypeLabel(event.eventType)}
                 </span>
                 <h3 className="event-title">
-                  {shouldDisableExternalLinks(event) ? (
+                  {false ? (
                     <span style={{ color: 'inherit' }}>{event.name}</span>
                   ) : (
                     <a 

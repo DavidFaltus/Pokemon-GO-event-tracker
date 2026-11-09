@@ -84,6 +84,7 @@ interface RocketGuideProps {
   lang: Language;
   initialRocketData?: { giovanni: RocketMember; leaders: RocketMember[]; grunts: GruntData[] } | null;
   initialLeader?: string;
+  standaloneLeaderMode?: boolean;
   onOpenGuide?: (slug: string) => void;
 }
 
@@ -306,7 +307,36 @@ const HubRatingBadge: React.FC<{ rating: string; lang: Language }> = ({ rating, 
   );
 };
 
+const getLocalizedRewardReason = (memberName: string, rewardName: string, rawReason: string, lang: Language): string => {
+  const localPoke = getPokemonName(rewardName, lang);
+  const evoInfo = getEvolutionInfo(rewardName);
+  const localEvo = evoInfo ? getPokemonName(evoInfo.evolution, lang) : localPoke;
+  const cleanMember = memberName.toLowerCase();
+
+  if (lang === 'cs') {
+    return rawReason || `Shadow ${localPoke} je cenná odměna za poražení ${memberName} s +20 % bonusem k útoku.`;
+  }
+  if (lang === 'ja') {
+    if (cleanMember === 'giovanni') {
+      return `シャドウ${localPoke}は攻撃力1.2倍のシャドウボーナスを持ち、PvEレイドバトルでトップクラスの火力を発揮する伝説アタッカーです。`;
+    }
+    return `シャドウ${localPoke}（進化先：シャドウ${localEvo}）はPvEレイドやGOバトルリーグ（PvP）で非常に強力な性能を発揮するため、ロケットレーダーを使って周回する価値が高いポケモンです。`;
+  }
+  if (lang === 'ru') {
+    if (cleanMember === 'giovanni') {
+      return `Теневой ${localPoke} обладает бонусом +20% к атаке и входит в число сильнейших легендарных PvE-атакующих в Pokémon GO.`;
+    }
+    return `Теневой ${localPoke} (эволюционирует в Теневого ${localEvo}) — отличный мета-выбор для рейдов и PvP Лиги Боевых Тренеров с бонусом +20% к урону.`;
+  }
+  // English
+  if (cleanMember === 'giovanni') {
+    return `Shadow ${localPoke} benefits from the +20% Shadow Attack bonus and ranks among the strongest PvE raid attackers of its type in Pokémon GO.`;
+  }
+  return `Shadow ${localPoke} (evolves into Shadow ${localEvo}) is a top-tier meta pick for PvE raids and GO Battle League PvP thanks to its +20% Shadow damage boost.`;
+};
+
 const getGruntPhrase = (grunt: GruntData, lang: Language): string => {
+  const key = grunt.type.toLowerCase();
   if (lang === 'ja') {
     const jaPhrases: Record<string, string> = {
       "normal": "ノーマルタイプは よわくないぞ！",
@@ -328,13 +358,35 @@ const getGruntPhrase = (grunt: GruntData, lang: Language): string => {
       "fairy": "かわいいポケモンを みてくれ！",
       "dark": "ひかりがあれば かげもある。"
     };
-    const key = grunt.type.toLowerCase();
     return jaPhrases[key] || grunt.phraseEn;
+  }
+  if (lang === 'ru') {
+    const ruPhrases: Record<string, string> = {
+      "normal": "Нормальный не значит слабый!",
+      "fire": "Знаешь, насколько горячим бывает огненное дыхание покемона?",
+      "water": "Эти воды коварны!",
+      "grass": "Не связывайся с нами!",
+      "electric": "Готовься к удару током!",
+      "ice": "Ты замерзнешь на месте!",
+      "fighting": "Эта мускулатура не просто для красоты!",
+      "poison": "Готов к ядовитому броску!",
+      "ground": "Земля поглотит тебя!",
+      "flying": "Сразись с моими летающими покемонами!",
+      "psychic": "Боишься невидимой психической силы?",
+      "bug": "Вперед, мои супер-насекомые!",
+      "rock": "Давай зажжем по полной!",
+      "ghost": "Ке-ке-ке-ке-ке!",
+      "dragon": "РРР! ...Ну как прозвучало?",
+      "steel": "Тебе не сломить мою железную волю!",
+      "fairy": "Посмотри на моего милого покемона!",
+      "dark": "Где есть свет, там есть и тень."
+    };
+    return ruPhrases[key] || grunt.phraseEn;
   }
   return lang === 'cs' ? grunt.phraseCs : grunt.phraseEn;
 };
 
-export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, initialRocketData, initialLeader, onOpenGuide }) => {
+export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, initialRocketData, initialLeader, standaloneLeaderMode = false, onOpenGuide }) => {
   const normalizedLeader = (initialLeader || '').toLowerCase();
   const initialMode: ModeType = normalizedLeader === 'grunts' ? 'grunts' : 'leaders';
   const initialSelectedLeaderName =
@@ -520,59 +572,63 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, initialRocketDat
   return (
     <div className="rocket-guide">
       {/* Unified Header Card */}
-      <header className="rocket-header-card guides-header">
-        <div className="guides-title-badge">
-          <Zap size={16} />
-          {lang === 'cs' ? 'Team GO Rocket Databáze' : lang === 'ja' ? 'GOロケット団 対策ガイド' : lang === 'ru' ? 'База данных Team GO Rocket' : 'Team GO Rocket Hub'}
-        </div>
-        <h1 className="tab-seo-title">{t.tabs_rocket}</h1>
-        <p className="tab-seo-description">{(t as any).seo_rocket_desc}</p>
+      {!standaloneLeaderMode && (
+        <header className="rocket-header-card guides-header">
+          <div className="guides-title-badge">
+            <Zap size={16} />
+            {lang === 'cs' ? 'Team GO Rocket Databáze' : lang === 'ja' ? 'GOロケット団 対策ガイド' : lang === 'ru' ? 'База данных Team GO Rocket' : 'Team GO Rocket Hub'}
+          </div>
+          <h1 className="tab-seo-title">{t.tabs_rocket}</h1>
+          <p className="tab-seo-description">{(t as any).seo_rocket_desc}</p>
 
-        {/* Mode Switcher */}
-        <div className="mode-switcher">
-          <Link 
-            href={`/${lang}/rocket/giovanni`}
-            className={`mode-btn ${mode === 'leaders' ? 'active' : ''}`}
-            onClick={(e) => { e.preventDefault(); setMode('leaders'); }}
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
-          >
-            <Zap size={14} style={{ marginRight: '6px' }} /> {t.rocket_tab_leaders}
-          </Link>
-          <Link 
-            href={`/${lang}/rocket/grunts`}
-            className={`mode-btn ${mode === 'grunts' ? 'active' : ''}`}
-            onClick={(e) => { e.preventDefault(); setMode('grunts'); }}
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
-          >
-            <Users size={14} style={{ marginRight: '6px' }} /> {t.rocket_tab_grunts}
-          </Link>
-        </div>
-      </header>
+          {/* Mode Switcher */}
+          <div className="mode-switcher">
+            <Link 
+              href={`/${lang}/rocket/giovanni`}
+              className={`mode-btn ${mode === 'leaders' ? 'active' : ''}`}
+              onClick={(e) => { e.preventDefault(); setMode('leaders'); }}
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
+            >
+              <Zap size={14} style={{ marginRight: '6px' }} /> {t.rocket_tab_leaders}
+            </Link>
+            <Link 
+              href={`/${lang}/rocket/grunts`}
+              className={`mode-btn ${mode === 'grunts' ? 'active' : ''}`}
+              onClick={(e) => { e.preventDefault(); setMode('grunts'); }}
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' }}
+            >
+              <Users size={14} style={{ marginRight: '6px' }} /> {t.rocket_tab_grunts}
+            </Link>
+          </div>
+        </header>
+      )}
 
       {mode === 'leaders' ? (
         <>
           {/* Selector Tabs */}
-          <div className="rocket-tabs">
-            <Link
-               href={`/${lang}/rocket/giovanni`}
-               className={`rocket-tab-btn giovanni-btn ${selectedLeader === 'Giovanni' ? 'active' : ''}`}
-               onClick={(e) => { e.preventDefault(); setSelectedLeader('Giovanni'); }}
-               style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}
-             >
-                <span className="emoji" style={{ display: 'inline-flex' }}>{getLeaderIcon('Giovanni', 14)}</span> {getPokemonName('Giovanni', lang)}
-              </Link>
-            {rocketData.leaders.filter(leader => leader.name.toLowerCase() !== 'giovanni').map(leader => (
+          {!standaloneLeaderMode && (
+            <div className="rocket-tabs">
               <Link
-                key={leader.name}
-                href={`/${lang}/rocket/${leader.name.toLowerCase()}`}
-                className={`rocket-tab-btn leader-btn ${selectedLeader === leader.name ? 'active' : ''}`}
-                onClick={(e) => { e.preventDefault(); setSelectedLeader(leader.name); }}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}
-              >
-                <span className="emoji" style={{ display: 'inline-flex' }}>{getLeaderIcon(leader.name, 14)}</span> {getPokemonName(leader.name, lang)}
-              </Link>
-            ))}
-          </div>
+                 href={`/${lang}/rocket/giovanni`}
+                 className={`rocket-tab-btn giovanni-btn ${selectedLeader === 'Giovanni' ? 'active' : ''}`}
+                 onClick={(e) => { e.preventDefault(); setSelectedLeader('Giovanni'); }}
+                 style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}
+               >
+                  <span className="emoji" style={{ display: 'inline-flex' }}>{getLeaderIcon('Giovanni', 14)}</span> {getPokemonName('Giovanni', lang)}
+                </Link>
+              {rocketData.leaders.filter(leader => leader.name.toLowerCase() !== 'giovanni').map(leader => (
+                <Link
+                  key={leader.name}
+                  href={`/${lang}/rocket/${leader.name.toLowerCase()}`}
+                  className={`rocket-tab-btn leader-btn ${selectedLeader === leader.name ? 'active' : ''}`}
+                  onClick={(e) => { e.preventDefault(); setSelectedLeader(leader.name); }}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', textDecoration: 'none' }}
+                >
+                  <span className="emoji" style={{ display: 'inline-flex' }}>{getLeaderIcon(leader.name, 14)}</span> {getPokemonName(leader.name, lang)}
+                </Link>
+              ))}
+            </div>
+          )}
 
           {/* Main Info */}
           <div className="rocket-content-card">
@@ -641,7 +697,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, initialRocketDat
                        </span>
                      )}
                   </div>
-                  <p className="reward-reason">{currentMember.reward.reason}</p>
+                  <p className="reward-reason">{getLocalizedRewardReason(currentMember.name, activeRewardName, currentMember.reward.reason, lang)}</p>
                   {(() => {
                     const evoInfo = getEvolutionInfo(activeRewardName);
                     if (evoInfo && ['S', 'A+', 'A'].includes(evoInfo.rating) && activeRewardName.toLowerCase() !== evoInfo.evolution.toLowerCase()) {
@@ -770,7 +826,7 @@ export const RocketGuide: React.FC<RocketGuideProps> = ({ lang, initialRocketDat
                     </div>
                     <div className="focus-card-grunt">
                       <div className="focus-grunt-phrase">
-                        "{lang === 'cs' ? drop.gruntPhraseCs : lang === 'ja' ? getGruntPhrase({ phraseCs: drop.gruntPhraseCs, phraseEn: drop.gruntPhraseEn, type: drop.gruntType } as any, 'ja') : drop.gruntPhraseEn}"
+                        "{getGruntPhrase({ phraseCs: drop.gruntPhraseCs, phraseEn: drop.gruntPhraseEn, type: drop.gruntType } as any, lang)}"
                       </div>
                       <div className="focus-grunt-type">
                         <TypeBadge typeStr={drop.gruntType} lang={lang} />

@@ -54,7 +54,10 @@ function localizeHtmlLangInDir(dirPath, lang) {
 }
 
 if (fs.existsSync(outDir)) {
-  console.log('Copying Next.js out/ build to dist/...');
+  console.log('Cleaning stale generated directories in dist/ and copying Next.js out/ build to dist/...');
+  if (fs.existsSync(distDir)) {
+    fs.rmSync(distDir, { recursive: true, force: true });
+  }
   copyDirSync(outDir, distDir);
 }
 

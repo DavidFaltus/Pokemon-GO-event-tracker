@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { RaidView } from '@/components/RaidView';
+import { SectionEditorialGuide } from '@/components/SectionEditorialGuide';
 import type { Language } from '@/data/translations';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
 import { API_BASE_URL } from '@/config';
@@ -102,6 +103,7 @@ export default async function RaidsPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <RaidView lang={lang} initialBosses={initialBosses} />
+      <SectionEditorialGuide section="raids" lang={lang} />
     </>
   );
 }
