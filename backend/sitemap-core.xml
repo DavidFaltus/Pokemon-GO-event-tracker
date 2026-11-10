@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://pogoevents.app/cs</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs"/>
@@ -13,7 +13,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/cs/pokedex</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/pokedex"/>
@@ -24,7 +24,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/cs/friends</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/friends"/>
@@ -35,7 +35,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/cs/raids</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/raids"/>
@@ -46,7 +46,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/cs/rankings</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/rankings"/>
@@ -57,7 +57,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/cs/rocket</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/rocket"/>
@@ -68,7 +68,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/cs/guides</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/guides"/>
@@ -79,7 +79,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/cs/filter</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/filter"/>
@@ -90,7 +90,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/cs/about</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/about"/>
@@ -101,7 +101,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/cs/privacy</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/privacy"/>
@@ -112,7 +112,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/cs/terms</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/terms"/>
@@ -123,7 +123,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/cs/disclaimer</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/disclaimer"/>
@@ -134,7 +134,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/cs/contact</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/contact"/>
@@ -145,7 +145,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/en</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs"/>
@@ -156,7 +156,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/en/pokedex</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/pokedex"/>
@@ -167,7 +167,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/en/friends</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/friends"/>
@@ -178,7 +178,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/en/raids</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/raids"/>
@@ -189,7 +189,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/en/rankings</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/rankings"/>
@@ -200,7 +200,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/en/rocket</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/rocket"/>
@@ -211,7 +211,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/en/guides</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/guides"/>
@@ -222,7 +222,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/en/filter</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/filter"/>
@@ -233,7 +233,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/en/about</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/about"/>
@@ -244,7 +244,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/en/privacy</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/privacy"/>
@@ -255,7 +255,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/en/terms</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/terms"/>
@@ -266,7 +266,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/en/disclaimer</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/disclaimer"/>
@@ -277,7 +277,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/en/contact</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/contact"/>
@@ -288,7 +288,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ja</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs"/>
@@ -299,7 +299,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ja/pokedex</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/pokedex"/>
@@ -310,7 +310,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ja/friends</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/friends"/>
@@ -321,7 +321,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ja/raids</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/raids"/>
@@ -332,7 +332,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ja/rankings</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/rankings"/>
@@ -343,7 +343,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ja/rocket</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/rocket"/>
@@ -354,7 +354,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ja/guides</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/guides"/>
@@ -365,7 +365,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ja/filter</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/filter"/>
@@ -376,7 +376,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ja/about</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/about"/>
@@ -387,7 +387,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ja/privacy</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/privacy"/>
@@ -398,7 +398,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ja/terms</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/terms"/>
@@ -409,7 +409,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ja/disclaimer</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/disclaimer"/>
@@ -420,7 +420,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ja/contact</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/contact"/>
@@ -431,7 +431,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ru</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>hourly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs"/>
@@ -442,7 +442,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ru/pokedex</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/pokedex"/>
@@ -453,7 +453,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ru/friends</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/friends"/>
@@ -464,7 +464,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ru/raids</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/raids"/>
@@ -475,7 +475,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ru/rankings</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/rankings"/>
@@ -486,7 +486,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ru/rocket</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/rocket"/>
@@ -497,7 +497,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ru/guides</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/guides"/>
@@ -508,7 +508,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ru/filter</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/filter"/>
@@ -519,7 +519,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ru/about</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/about"/>
@@ -530,7 +530,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ru/privacy</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/privacy"/>
@@ -541,7 +541,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ru/terms</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/terms"/>
@@ -552,7 +552,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ru/disclaimer</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/disclaimer"/>
@@ -563,7 +563,7 @@
   </url>
   <url>
     <loc>https://pogoevents.app/ru/contact</loc>
-    <lastmod>2026-11-09T20:27:08.151Z</lastmod>
+    <lastmod>2026-11-10T21:32:19.036Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs/contact"/>

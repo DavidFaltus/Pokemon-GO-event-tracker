@@ -300,6 +300,53 @@
   box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
 }
 
+.pokedex-pill.variant-fusions.active {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #9333ea 100%);
+  border-color: #fbbf24;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+}
+
+.pokedex-card-header-pills {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pokedex-card-form-pill {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
+}
+
+.pokedex-card-form-pill.fusion {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%);
+  border-color: rgba(245, 158, 11, 0.45);
+  color: #fbbf24;
+}
+
+.pokedex-card-form-pill.battle_form {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+.pokedex-card-form-pill.alternate_form {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #38bdf8;
+}
+
+.pokedex-card.variant-fusion {
+  border-color: rgba(245, 158, 11, 0.35);
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.12);
+}
+
 /* ─── Type Filter Chips ─────────────────────────────────────────────────────── */
 
 .type-pill {

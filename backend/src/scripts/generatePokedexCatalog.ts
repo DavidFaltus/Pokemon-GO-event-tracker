@@ -203,6 +203,7 @@ const REGIONAL_POKEAPI_IDS: Record<string, number> = {
   'LINOONE_GALARIAN': 10175,
   'DARUMAKA_GALARIAN': 10176,
   'DARMANITAN_GALARIAN': 10177,
+  'DARMANITAN_GALARIAN_STANDARD': 10177,
   'YAMASK_GALARIAN': 10179,
   'STUNFISK_GALARIAN': 10180,
 
@@ -229,6 +230,301 @@ const REGIONAL_POKEAPI_IDS: Record<string, number> = {
   'TAUROS_PALDEA_COMBAT': 10250,
   'TAUROS_PALDEA_BLAZE': 10251,
   'TAUROS_PALDEA_AQUA': 10252
+};
+
+// ─── SPECIAL, FUSION, BATTLE & ALTERNATE FORMS ──────────────────────────────
+
+const SPECIAL_FORM_POKEAPI_IDS: Record<string, number> = {
+  // Rotom Formes (All 5 appliances)
+  'ROTOM_HEAT': 10008,
+  'ROTOM_WASH': 10009,
+  'ROTOM_FROST': 10010,
+  'ROTOM_FAN': 10011,
+  'ROTOM_MOW': 10012,
+
+  // Castform Formes (Weather forms)
+  'CASTFORM_SUNNY': 10013,
+  'CASTFORM_RAINY': 10014,
+  'CASTFORM_SNOWY': 10015,
+
+  // Deoxys Formes
+  'DEOXYS_ATTACK': 10001,
+  'DEOXYS_DEFENSE': 10002,
+  'DEOXYS_SPEED': 10003,
+
+  // Wormadam Cloaks
+  'WORMADAM_SANDY': 10004,
+  'WORMADAM_TRASH': 10005,
+
+  // Shaymin Sky
+  'SHAYMIN_SKY': 10006,
+
+  // Giratina Origin
+  'GIRATINA_ORIGIN': 10007,
+
+  // Basculin
+  'BASCULIN_BLUE_STRIPED': 10016,
+  'BASCULIN_WHITE_STRIPED': 10247,
+
+  // Darmanitan Zen Modes
+  'DARMANITAN_ZEN': 10017,
+  'DARMANITAN_GALARIAN_ZEN': 10178,
+
+  // Meloetta Pirouette
+  'MELOETTA_PIROUETTE': 10018,
+
+  // Therian Genies
+  'TORNADUS_THERIAN': 10019,
+  'THUNDURUS_THERIAN': 10020,
+  'LANDORUS_THERIAN': 10021,
+  'ENAMORUS_THERIAN': 10249,
+
+  // Kyurem Fusions
+  'KYUREM_BLACK': 10022,
+  'KYUREM_WHITE': 10023,
+
+  // Keldeo Resolute
+  'KELDEO_RESOLUTE': 10024,
+
+  // Aegislash Blade
+  'AEGISLASH_BLADE': 10026,
+
+  // Pumpkaboo & Gourgeist Sizes
+  'PUMPKABOO_SMALL': 10027,
+  'PUMPKABOO_LARGE': 10028,
+  'PUMPKABOO_SUPER': 10029,
+  'GOURGEIST_SMALL': 10030,
+  'GOURGEIST_LARGE': 10031,
+  'GOURGEIST_SUPER': 10032,
+
+  // Zygarde
+  'ZYGARDE_TEN_PERCENT': 10181,
+  'ZYGARDE_COMPLETE': 10120,
+  'ZYGARDE_COMPLETE_FIFTY_PERCENT': 10120,
+  'ZYGARDE_COMPLETE_TEN_PERCENT': 10181,
+
+  // Hoopa Unbound
+  'HOOPA_UNBOUND': 10086,
+
+  // Oricorio Styles
+  'ORICORIO_POMPOM': 10123,
+  'ORICORIO_PAU': 10124,
+  'ORICORIO_SENSU': 10125,
+
+  // Lycanroc Forms
+  'LYCANROC_MIDNIGHT': 10126,
+  'LYCANROC_DUSK': 10152,
+
+  // Wishiwashi School
+  'WISHIWASHI_SCHOOL': 10127,
+
+  // Necrozma Fusions & Ultra
+  'NECROZMA_DUSK_MANE': 10155,
+  'NECROZMA_DAWN_WINGS': 10156,
+  'NECROZMA_ULTRA': 10157,
+
+  // Toxtricity Low Key
+  'TOXTRICITY_LOW_KEY': 10184,
+
+  // Eiscue Noice Face
+  'EISCUE_NOICE': 10186,
+
+  // Morpeko Hangry
+  'MORPEKO_HANGRY': 10187,
+
+  // Zacian & Zamazenta Crowned Forms
+  'ZACIAN_CROWNED_SWORD': 10188,
+  'ZAMAZENTA_CROWNED_SHIELD': 10189,
+
+  // Eternatus
+  'ETERNATUS_ETERNAMAX': 10190,
+
+  // Urshifu Rapid Strike
+  'URSHIFU_RAPID_STRIKE': 10191,
+
+  // Calyrex Fusions
+  'CALYREX_ICE_RIDER': 10193,
+  'CALYREX_SHADOW_RIDER': 10194,
+
+  // Dialga & Palkia Origin
+  'DIALGA_ORIGIN': 10245,
+  'PALKIA_ORIGIN': 10246,
+
+  // Palafin Hero
+  'PALAFIN_HERO': 10256
+};
+
+// Fusion Keys Set
+const FUSION_KEYS = new Set<string>([
+  'NECROZMA_DUSK_MANE',
+  'NECROZMA_DAWN_WINGS',
+  'NECROZMA_ULTRA',
+  'KYUREM_BLACK',
+  'KYUREM_WHITE',
+  'CALYREX_ICE_RIDER',
+  'CALYREX_SHADOW_RIDER'
+]);
+
+// Battle Forms Set
+const BATTLE_FORM_KEYS = new Set<string>([
+  'ZACIAN_CROWNED_SWORD',
+  'ZACIAN_HERO',
+  'ZAMAZENTA_CROWNED_SHIELD',
+  'ZAMAZENTA_HERO',
+  'DIALGA_ORIGIN',
+  'PALKIA_ORIGIN',
+  'GIRATINA_ORIGIN',
+  'DEOXYS_ATTACK',
+  'DEOXYS_DEFENSE',
+  'DEOXYS_SPEED',
+  'SHAYMIN_SKY',
+  'TORNADUS_THERIAN',
+  'THUNDURUS_THERIAN',
+  'LANDORUS_THERIAN',
+  'ENAMORUS_THERIAN',
+  'URSHIFU_RAPID_STRIKE',
+  'URSHIFU_SINGLE_STRIKE',
+  'ZYGARDE_TEN_PERCENT',
+  'ZYGARDE_COMPLETE',
+  'ZYGARDE_COMPLETE_FIFTY_PERCENT',
+  'ZYGARDE_COMPLETE_TEN_PERCENT',
+  'HOOPA_UNBOUND',
+  'MELOETTA_PIROUETTE',
+  'DARMANITAN_ZEN',
+  'DARMANITAN_GALARIAN_ZEN',
+  'AEGISLASH_BLADE',
+  'WISHIWASHI_SCHOOL',
+  'PALAFIN_HERO',
+  'ETERNATUS_ETERNAMAX',
+  'KELDEO_RESOLUTE'
+]);
+
+// Fusion Metadata Dictionary
+const FUSION_METADATA: Record<string, {
+  partner: string;
+  energyType: string;
+  energyAmount: number;
+  candy1: string;
+  candy1Amount: number;
+  candy2?: string;
+  candy2Amount?: number;
+  signatureMove: { name: string; type: string; pvePower: number; pvpPower: number };
+  adventureEffect?: { cs: string; en: string; ja: string; ru: string };
+}> = {
+  'NECROZMA_DUSK_MANE': {
+    partner: 'Solgaleo',
+    energyType: 'Solar Fusion Energy',
+    energyAmount: 1000,
+    candy1: 'Necrozma Candy',
+    candy1Amount: 30,
+    candy2: 'Cosmog Candy',
+    candy2Amount: 30,
+    signatureMove: { name: 'Sunsteel Strike', type: 'Steel', pvePower: 230, pvpPower: 135 },
+    adventureEffect: {
+      cs: 'Aktivuje denní efekty na 10 minut: promění herní oblohu na den, umožňuje denní evoluce (např. Tyrantrum, Midday Lycanroc) a přitahuje denní Pokémony.',
+      en: 'Activates daytime in-game effects for 10 minutes: transforms skybox to day, enables daytime evolutions, and attracts daytime Pokémon spawns.',
+      ja: '10分間フィールドを昼状態にし、昼限定の進化を可能にし、昼に出現するポケモンを引き寄せます。',
+      ru: 'Активирует дневной эффект на 10 минут: меняет небо на день, позволяет дневные эволюции и привлекает дневных покемонов.'
+    }
+  },
+  'NECROZMA_DAWN_WINGS': {
+    partner: 'Lunala',
+    energyType: 'Lunar Fusion Energy',
+    energyAmount: 1000,
+    candy1: 'Necrozma Candy',
+    candy1Amount: 30,
+    candy2: 'Cosmog Candy',
+    candy2Amount: 30,
+    signatureMove: { name: 'Moongeist Beam', type: 'Ghost', pvePower: 230, pvpPower: 135 },
+    adventureEffect: {
+      cs: 'Aktivuje noční efekty na 10 minut: promění herní oblohu na noc, umožňuje noční evoluce (např. Aurorus, Midnight Lycanroc) a přitahuje noční Pokémony.',
+      en: 'Activates nighttime in-game effects for 10 minutes: transforms skybox to night, enables nighttime evolutions, and attracts nighttime Pokémon spawns.',
+      ja: '10分間フィールドを夜状態にし、夜限定の進化を可能にし、夜に出現するポケモンを引き寄せます。',
+      ru: 'Активирует ночной эффект на 10 минут: меняет небо на ночь, позволяет ночные эволюции и привлекает ночных покемонов.'
+    }
+  },
+  'NECROZMA_ULTRA': {
+    partner: 'Solgaleo / Lunala (Ultra Burst)',
+    energyType: 'Light Energy',
+    energyAmount: 0,
+    candy1: 'Necrozma Candy',
+    candy1Amount: 0,
+    signatureMove: { name: 'Light That Burns the Sky', type: 'Psychic', pvePower: 250, pvpPower: 150 }
+  },
+  'KYUREM_BLACK': {
+    partner: 'Zekrom',
+    energyType: 'DNA Splicers / Volt Energy',
+    energyAmount: 1000,
+    candy1: 'Kyurem Candy',
+    candy1Amount: 30,
+    candy2: 'Zekrom Candy',
+    candy2Amount: 30,
+    signatureMove: { name: 'Freeze Shock', type: 'Ice', pvePower: 140, pvpPower: 130 }
+  },
+  'KYUREM_WHITE': {
+    partner: 'Reshiram',
+    energyType: 'DNA Splicers / Flare Energy',
+    energyAmount: 1000,
+    candy1: 'Kyurem Candy',
+    candy1Amount: 30,
+    candy2: 'Reshiram Candy',
+    candy2Amount: 30,
+    signatureMove: { name: 'Ice Burn', type: 'Ice', pvePower: 140, pvpPower: 130 }
+  },
+  'CALYREX_ICE_RIDER': {
+    partner: 'Glastrier',
+    energyType: 'Reins of Unity',
+    energyAmount: 1,
+    candy1: 'Calyrex Candy',
+    candy1Amount: 30,
+    candy2: 'Glastrier Candy',
+    candy2Amount: 30,
+    signatureMove: { name: 'Glacial Lance', type: 'Ice', pvePower: 140, pvpPower: 130 }
+  },
+  'CALYREX_SHADOW_RIDER': {
+    partner: 'Spectrier',
+    energyType: 'Reins of Unity',
+    energyAmount: 1,
+    candy1: 'Calyrex Candy',
+    candy1Amount: 30,
+    candy2: 'Spectrier Candy',
+    candy2Amount: 30,
+    signatureMove: { name: 'Astral Barrage', type: 'Ghost', pvePower: 140, pvpPower: 130 }
+  }
+};
+
+// Signature Move & Adventure Effect Metadata for Battle / Origin Forms
+const SIGNATURE_FORM_METADATA: Record<string, {
+  signatureMove: { name: string; type: string; pvePower: number; pvpPower: number };
+  adventureEffect?: { cs: string; en: string; ja: string; ru: string };
+}> = {
+  'DIALGA_ORIGIN': {
+    signatureMove: { name: 'Roar of Time', type: 'Dragon', pvePower: 160, pvpPower: 150 },
+    adventureEffect: {
+      cs: 'Zastaví odpočítávání časovačů u předmětů jako Incense, Lucky Egg a Star Piece na dobu 6 minut až 24 hodin.',
+      en: 'Pauses the timer of in-game items such as Incense, Lucky Eggs, and Star Pieces for 6 minutes up to 24 hours.',
+      ja: 'おこう、しあわせタマゴ、ほしのかけら等の有効時間を6分〜最長24時間停止させます。',
+      ru: 'Останавливает таймеры предметов Incense, Lucky Egg и Star Piece на время от 6 минут до 24 часов.'
+    }
+  },
+  'PALKIA_ORIGIN': {
+    signatureMove: { name: 'Spacial Rend', type: 'Dragon', pvePower: 160, pvpPower: 105 },
+    adventureEffect: {
+      cs: 'Rozšiřuje dosah detekce divokých Pokémonů na mapě z 80 metrů na 160 metrů na dobu 10 minut až 24 hodin.',
+      en: 'Expands the map radius for encountering wild Pokémon from 80m to 160m for 10 minutes up to 24 hours.',
+      ja: '野生のポケモンと遭遇できるマップ上の範囲を80mから160mへ拡大します。',
+      ru: 'Увеличивает радиус обнаружения диких покемонов на карте с 80 до 160 метров на 10 минут до 24 часов.'
+    }
+  },
+  'GIRATINA_ORIGIN': {
+    signatureMove: { name: 'Shadow Force', type: 'Ghost', pvePower: 140, pvpPower: 120 }
+  },
+  'ZACIAN_CROWNED_SWORD': {
+    signatureMove: { name: 'Behemoth Blade', type: 'Steel', pvePower: 150, pvpPower: 130 }
+  },
+  'ZAMAZENTA_CROWNED_SHIELD': {
+    signatureMove: { name: 'Behemoth Bash', type: 'Steel', pvePower: 150, pvpPower: 130 }
+  }
 };
 
 const STARTER_DEX_IDS = new Set<number>([
@@ -295,6 +591,11 @@ const FORMS_EXCLUDED_FROM_SHADOW = new Set<string>([
   'OKIDOGI', 'MUNKIDORI', 'FEZANDIPITI'
 ]);
 
+// Shadow duplicates to skip from regionForms
+const SHADOW_DUPLICATE_KEYS = new Set<string>([
+  'RAIKOU_S', 'ENTEI_S', 'SUICUNE_S', 'LUGIA_S', 'HO_OH_S', 'LATIAS_S', 'LATIOS_S'
+]);
+
 // ─── HELPERS ────────────────────────────────────────────────────────────────
 
 function parseTypeName(apiType: string | undefined): string {
@@ -343,6 +644,68 @@ function getPurificationCost(dex: number, rarityClass: string): number {
   if (PURIFICATION_1000_IDS.has(dex)) return 1000;
   if (rarityClass === 'starter' || dex > 700) return 3000;
   return 3000;
+}
+
+function extractMoves(source: any): { quickMoves: any[]; cinematicMoves: any[] } {
+  const quickMoves: any[] = [];
+  const seenQuick = new Set<string>();
+  if (source.quickMoves && typeof source.quickMoves === 'object') {
+    for (const m of Object.values(source.quickMoves as Record<string, any>)) {
+      const name = m.names?.English || m.id;
+      if (!seenQuick.has(name)) {
+        seenQuick.add(name);
+        quickMoves.push({
+          name,
+          type: parseTypeName(m.type?.type),
+          isElite: false
+        });
+      }
+    }
+  }
+  if (source.eliteQuickMoves && typeof source.eliteQuickMoves === 'object') {
+    for (const m of Object.values(source.eliteQuickMoves as Record<string, any>)) {
+      const name = m.names?.English || m.id;
+      if (!seenQuick.has(name)) {
+        seenQuick.add(name);
+        quickMoves.push({
+          name,
+          type: parseTypeName(m.type?.type),
+          isElite: true
+        });
+      }
+    }
+  }
+
+  const cinematicMoves: any[] = [];
+  const seenCharged = new Set<string>();
+  if (source.cinematicMoves && typeof source.cinematicMoves === 'object') {
+    for (const m of Object.values(source.cinematicMoves as Record<string, any>)) {
+      const name = m.names?.English || m.id;
+      if (!seenCharged.has(name)) {
+        seenCharged.add(name);
+        cinematicMoves.push({
+          name,
+          type: parseTypeName(m.type?.type),
+          isElite: false
+        });
+      }
+    }
+  }
+  if (source.eliteCinematicMoves && typeof source.eliteCinematicMoves === 'object') {
+    for (const m of Object.values(source.eliteCinematicMoves as Record<string, any>)) {
+      const name = m.names?.English || m.id;
+      if (!seenCharged.has(name)) {
+        seenCharged.add(name);
+        cinematicMoves.push({
+          name,
+          type: parseTypeName(m.type?.type),
+          isElite: true
+        });
+      }
+    }
+  }
+
+  return { quickMoves, cinematicMoves };
 }
 
 // ─── MAIN BUILD PIPELINE ────────────────────────────────────────────────────
@@ -402,7 +765,15 @@ async function main() {
     const nameEn = p.names?.English || p.id;
     const nameJa = p.names?.Japanese || nameEn;
     const slug = formatSlug(nameEn);
-    const types = getTypes(p.primaryType, p.secondaryType);
+
+    // Canonical Base Types Correction (Zacian & Zamazenta Hero forms)
+    let types = getTypes(p.primaryType, p.secondaryType);
+    if (p.id === 'ZACIAN') {
+      types = ['Fairy'];
+    } else if (p.id === 'ZAMAZENTA') {
+      types = ['Fighting'];
+    }
+
     const stats = {
       attack: p.stats?.attack || 10,
       defense: p.stats?.defense || 10,
@@ -528,45 +899,167 @@ async function main() {
       });
     }
 
-    // E. Regional Forms
+    // E. Comprehensive RegionForms (Regional, Fusions, Battle Forms, Alternate Forms)
     let hasRegional = false;
+    let hasFusion = false;
+    let hasBattleForm = false;
+    let hasAlternateForm = false;
+
     if (p.regionForms && typeof p.regionForms === 'object' && !Array.isArray(p.regionForms)) {
       for (const [rfKey, rfVal] of Object.entries(p.regionForms as Record<string, any>)) {
-        if (REGIONAL_POKEAPI_IDS[rfKey]) {
+        if (SHADOW_DUPLICATE_KEYS.has(rfKey)) continue;
+        if (rfKey.startsWith('UNOWN_') || rfKey.startsWith('SPINDA_')) continue;
+        if (rfKey.includes('HALLOWEEN')) continue;
+
+        // Determine Classification
+        const isRegional = rfKey.includes('ALOLA') || rfKey.includes('GALAR') || rfKey.includes('HISUI') || rfKey.includes('PALDEA');
+        const isFusion = FUSION_KEYS.has(rfKey);
+        const isBattleForm = BATTLE_FORM_KEYS.has(rfKey);
+
+        let category: 'regional' | 'fusion' | 'battle_form' | 'alternate_form' = 'alternate_form';
+        if (isRegional) {
+          category = 'regional';
           hasRegional = true;
-          let region: 'alola' | 'galar' | 'hisui' | 'paldea' = 'alola';
-          if (rfKey.includes('GALARIAN')) region = 'galar';
-          else if (rfKey.includes('HISUIAN')) region = 'hisui';
-          else if (rfKey.includes('PALDEA')) region = 'paldea';
-
-          const rTypes = getTypes(rfVal.primaryType, rfVal.secondaryType);
-          const rStats = {
-            attack: rfVal.stats?.attack || stats.attack,
-            defense: rfVal.stats?.defense || stats.defense,
-            stamina: rfVal.stats?.stamina || stats.stamina
-          };
-          const rCp = calculateCp(rStats.attack, rStats.defense, rStats.stamina, CPM_LV50);
-          const pokeapiId = REGIONAL_POKEAPI_IDS[rfKey];
-
-          variants.push({
-            id: rfKey,
-            category: 'regional',
-            regionalRegion: region,
-            name: {
-              cs: rfVal.names?.English || rfKey,
-              en: rfVal.names?.English || rfKey,
-              ja: rfVal.names?.Japanese || `${nameJa} (${region})`,
-              ru: rfVal.names?.English || rfKey
-            },
-            types: rTypes,
-            stats: rStats,
-            maxCp: rCp,
-            spriteOverrides: {
-              officialArtwork: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokeapiId}.png`,
-              shinyArtwork: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${pokeapiId}.png`
-            }
-          });
+        } else if (isFusion) {
+          category = 'fusion';
+          hasFusion = true;
+        } else if (isBattleForm) {
+          category = 'battle_form';
+          hasBattleForm = true;
+        } else {
+          category = 'alternate_form';
+          hasAlternateForm = true;
         }
+
+        let region: 'alola' | 'galar' | 'hisui' | 'paldea' | undefined = undefined;
+        if (isRegional) {
+          if (rfKey.includes('GALARIAN') || rfKey.includes('GALAR')) region = 'galar';
+          else if (rfKey.includes('HISUIAN') || rfKey.includes('HISUI')) region = 'hisui';
+          else if (rfKey.includes('PALDEA')) region = 'paldea';
+          else region = 'alola';
+        }
+
+        const rTypes = getTypes(rfVal.primaryType, rfVal.secondaryType);
+        const rStats = {
+          attack: rfVal.stats?.attack || stats.attack,
+          defense: rfVal.stats?.defense || stats.defense,
+          stamina: rfVal.stats?.stamina || stats.stamina
+        };
+        const rCp = calculateCp(rStats.attack, rStats.defense, rStats.stamina, CPM_LV50);
+
+        // Sprite Resolution
+        const pokeapiId = SPECIAL_FORM_POKEAPI_IDS[rfKey] || REGIONAL_POKEAPI_IDS[rfKey];
+        let spriteOverrides: { officialArtwork?: string; shinyArtwork?: string; goAsset?: string } | undefined = undefined;
+
+        if (pokeapiId) {
+          spriteOverrides = {
+            officialArtwork: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokeapiId}.png`,
+            shinyArtwork: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${pokeapiId}.png`
+          };
+        } else if (rfVal.assets?.image) {
+          spriteOverrides = {
+            goAsset: rfVal.assets.image,
+            officialArtwork: rfVal.assets.image,
+            shinyArtwork: rfVal.assets.shinyImage || rfVal.assets.image
+          };
+        }
+
+        // Form Movesets
+        const { quickMoves: formQuick, cinematicMoves: formCinematic } = extractMoves(rfVal);
+
+        // Fusion & Signature Metadata
+        const fusionData = FUSION_METADATA[rfKey];
+        const signatureData = SIGNATURE_FORM_METADATA[rfKey];
+
+        const formVariant: any = {
+          id: rfKey,
+          category,
+          name: {
+            cs: rfVal.names?.English || rfKey,
+            en: rfVal.names?.English || rfKey,
+            ja: rfVal.names?.Japanese || (region ? `${nameJa} (${region})` : (rfVal.names?.English || rfKey)),
+            ru: rfVal.names?.English || rfKey
+          },
+          types: rTypes,
+          stats: rStats,
+          maxCp: rCp
+        };
+
+        if (region) formVariant.regionalRegion = region;
+        if (spriteOverrides) formVariant.spriteOverrides = spriteOverrides;
+        if (formQuick.length > 0) formVariant.quickMoves = formQuick;
+        if (formCinematic.length > 0) formVariant.cinematicMoves = formCinematic;
+
+        if (fusionData) {
+          formVariant.fusionPartner = fusionData.partner;
+          formVariant.fusionEnergyCost = {
+            energyType: fusionData.energyType,
+            energyAmount: fusionData.energyAmount,
+            candy1: fusionData.candy1,
+            candy1Amount: fusionData.candy1Amount,
+            candy2: fusionData.candy2,
+            candy2Amount: fusionData.candy2Amount
+          };
+          formVariant.signatureMove = fusionData.signatureMove;
+          if (fusionData.adventureEffect) formVariant.adventureEffect = fusionData.adventureEffect;
+        }
+
+        if (signatureData) {
+          formVariant.signatureMove = signatureData.signatureMove;
+          if (signatureData.adventureEffect) formVariant.adventureEffect = signatureData.adventureEffect;
+        }
+
+        variants.push(formVariant);
+      }
+    }
+
+    // F. Synthesize Missing Calyrex Shadow Rider (#898)
+    if (p.id === 'CALYREX') {
+      const hasShadowRider = variants.some(v => v.id === 'CALYREX_SHADOW_RIDER');
+      if (!hasShadowRider) {
+        hasFusion = true;
+        const shadowStats = { attack: 324, defense: 186, stamina: 205 };
+        variants.push({
+          id: 'CALYREX_SHADOW_RIDER',
+          category: 'fusion',
+          name: {
+            cs: 'Calyrex (Shadow Rider)',
+            en: 'Calyrex (Shadow Rider)',
+            ja: 'バドレックス (こくばじょうのすがた)',
+            ru: 'Calyrex (Shadow Rider)'
+          },
+          types: ['Psychic', 'Ghost'],
+          stats: shadowStats,
+          maxCp: calculateCp(shadowStats.attack, shadowStats.defense, shadowStats.stamina, CPM_LV50),
+          fusionPartner: 'Spectrier',
+          fusionEnergyCost: {
+            energyType: 'Reins of Unity',
+            energyAmount: 1,
+            candy1: 'Calyrex Candy',
+            candy1Amount: 30,
+            candy2: 'Spectrier Candy',
+            candy2Amount: 30
+          },
+          signatureMove: {
+            name: 'Astral Barrage',
+            type: 'Ghost',
+            pvePower: 140,
+            pvpPower: 130
+          },
+          spriteOverrides: {
+            officialArtwork: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10194.png',
+            shinyArtwork: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/10194.png'
+          },
+          quickMoves: [
+            { name: 'Confusion', type: 'Psychic', isElite: false },
+            { name: 'Hex', type: 'Ghost', isElite: false }
+          ],
+          cinematicMoves: [
+            { name: 'Shadow Ball', type: 'Ghost', isElite: false },
+            { name: 'Psychic', type: 'Psychic', isElite: false },
+            { name: 'Energy Ball', type: 'Grass', isElite: false }
+          ]
+        });
       }
     }
 
@@ -587,64 +1080,8 @@ async function main() {
       }
     }
 
-    // Movesets (Clean & compact)
-    const quickMoves: any[] = [];
-    const seenQuick = new Set<string>();
-    if (p.quickMoves && typeof p.quickMoves === 'object') {
-      for (const m of Object.values(p.quickMoves as Record<string, any>)) {
-        const name = m.names?.English || m.id;
-        if (!seenQuick.has(name)) {
-          seenQuick.add(name);
-          quickMoves.push({
-            name,
-            type: parseTypeName(m.type?.type),
-            isElite: false
-          });
-        }
-      }
-    }
-    if (p.eliteQuickMoves && typeof p.eliteQuickMoves === 'object') {
-      for (const m of Object.values(p.eliteQuickMoves as Record<string, any>)) {
-        const name = m.names?.English || m.id;
-        if (!seenQuick.has(name)) {
-          seenQuick.add(name);
-          quickMoves.push({
-            name,
-            type: parseTypeName(m.type?.type),
-            isElite: true
-          });
-        }
-      }
-    }
-
-    const cinematicMoves: any[] = [];
-    const seenCharged = new Set<string>();
-    if (p.cinematicMoves && typeof p.cinematicMoves === 'object') {
-      for (const m of Object.values(p.cinematicMoves as Record<string, any>)) {
-        const name = m.names?.English || m.id;
-        if (!seenCharged.has(name)) {
-          seenCharged.add(name);
-          cinematicMoves.push({
-            name,
-            type: parseTypeName(m.type?.type),
-            isElite: false
-          });
-        }
-      }
-    }
-    if (p.eliteCinematicMoves && typeof p.eliteCinematicMoves === 'object') {
-      for (const m of Object.values(p.eliteCinematicMoves as Record<string, any>)) {
-        const name = m.names?.English || m.id;
-        if (!seenCharged.has(name)) {
-          seenCharged.add(name);
-          cinematicMoves.push({
-            name,
-            type: parseTypeName(m.type?.type),
-            isElite: true
-          });
-        }
-      }
-    }
+    // Movesets (Clean & compact for base species)
+    const { quickMoves, cinematicMoves } = extractMoves(p);
 
     catalogEntries.push({
       dexId,
@@ -667,6 +1104,9 @@ async function main() {
       hasMega,
       hasShadow,
       hasRegionalVariants: hasRegional,
+      hasFusions: hasFusion,
+      hasBattleForms: hasBattleForm,
+      hasAlternateForms: hasAlternateForm,
       variants,
       evolutions,
       evolutionChainIds: getFamily(dexId),
@@ -698,9 +1138,25 @@ export type PokemonType =
   | 'Fighting' | 'Poison' | 'Ground' | 'Flying' | 'Psychic' | 'Bug'
   | 'Rock' | 'Ghost' | 'Dragon' | 'Dark' | 'Steel' | 'Fairy';
 
-export type VariantCategory = 'mega' | 'primal' | 'gigantamax' | 'dynamax' | 'shadow' | 'regional';
+export type VariantCategory =
+  | 'mega'
+  | 'primal'
+  | 'gigantamax'
+  | 'dynamax'
+  | 'shadow'
+  | 'regional'
+  | 'fusion'
+  | 'battle_form'
+  | 'alternate_form';
+
 export type RegionalRegion = 'alola' | 'galar' | 'hisui' | 'paldea';
 export type RarityClass = 'standard' | 'starter' | 'baby' | 'legendary' | 'mythical' | 'ultra_beast' | 'paradox';
+
+export interface PokedexMove {
+  name: string;
+  type: PokemonType;
+  isElite?: boolean;
+}
 
 export interface PokedexVariant {
   id: string;
@@ -717,6 +1173,30 @@ export interface PokedexVariant {
   gmaxMoveName?: string;
   megaEnergyFirstCost?: number;
   purificationStardust?: number;
+  // Fusion & Signature mechanics
+  fusionPartner?: string;
+  fusionEnergyCost?: {
+    energyType: string;
+    energyAmount: number;
+    candy1: string;
+    candy1Amount: number;
+    candy2?: string;
+    candy2Amount?: number;
+  };
+  signatureMove?: {
+    name: string;
+    type: PokemonType;
+    pvePower?: number;
+    pvpPower?: number;
+  };
+  adventureEffect?: {
+    cs: string;
+    en: string;
+    ja: string;
+    ru: string;
+  };
+  quickMoves?: PokedexMove[];
+  cinematicMoves?: PokedexMove[];
   spriteOverrides?: {
     officialArtwork?: string;
     shinyArtwork?: string;
@@ -730,12 +1210,6 @@ export interface EvolutionNode {
   candies: number;
   itemRequired?: string | null;
   questRequirement?: string | null;
-}
-
-export interface PokedexMove {
-  name: string;
-  type: PokemonType;
-  isElite?: boolean;
 }
 
 export interface PokedexCatalogEntry {
@@ -769,6 +1243,9 @@ export interface PokedexCatalogEntry {
   hasMega: boolean;
   hasShadow: boolean;
   hasRegionalVariants: boolean;
+  hasFusions?: boolean;
+  hasBattleForms?: boolean;
+  hasAlternateForms?: boolean;
   variants: PokedexVariant[];
   evolutions: EvolutionNode[];
   evolutionChainIds: number[];

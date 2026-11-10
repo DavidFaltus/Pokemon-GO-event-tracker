@@ -41,7 +41,7 @@ const GENERATION_NAMES: Record<number, { cs: string; en: string; ja: string; ru:
 };
 
 type SortOption = 'dex_asc' | 'dex_desc' | 'cp' | 'atk' | 'def' | 'sta' | 'name';
-type VariantFilter = 'all' | 'gigantamax' | 'dynamax' | 'mega' | 'shadow' | 'regional';
+type VariantFilter = 'all' | 'gigantamax' | 'dynamax' | 'mega' | 'shadow' | 'regional' | 'fusions_forms';
 
 interface PokedexViewProps {
   lang: Language;
@@ -127,7 +127,16 @@ export const PokedexView: React.FC<PokedexViewProps> = ({ lang }) => {
           const matchNameRu = poke.names.ru ? poke.names.ru.toLowerCase().includes(q) : false;
           const matchSlug = poke.slug.includes(q);
           const matchType = poke.types.some((t) => t.toLowerCase() === q);
-          if (!matchNameEn && !matchNameJa && !matchNameCs && !matchNameRu && !matchSlug && !matchType) return false;
+          const matchVariant = poke.variants.some((v) =>
+            v.id.toLowerCase().includes(q) ||
+            v.name.en.toLowerCase().includes(q) ||
+            (v.name.cs && v.name.cs.toLowerCase().includes(q)) ||
+            (v.name.ja && v.name.ja.toLowerCase().includes(q)) ||
+            (v.name.ru && v.name.ru.toLowerCase().includes(q)) ||
+            (v.fusionPartner && v.fusionPartner.toLowerCase().includes(q)) ||
+            (v.signatureMove && v.signatureMove.name.toLowerCase().includes(q))
+          );
+          if (!matchNameEn && !matchNameJa && !matchNameCs && !matchNameRu && !matchSlug && !matchType && !matchVariant) return false;
         }
       }
 
@@ -165,6 +174,16 @@ export const PokedexView: React.FC<PokedexViewProps> = ({ lang }) => {
             break;
           case 'regional':
             if (!poke.hasRegionalVariants) return false;
+            break;
+          case 'fusions_forms':
+            if (
+              !poke.hasFusions &&
+              !poke.hasBattleForms &&
+              !poke.hasAlternateForms &&
+              !poke.variants.some((v) => v.category === 'fusion' || v.category === 'battle_form' || v.category === 'alternate_form')
+            ) {
+              return false;
+            }
             break;
         }
       }
@@ -408,6 +427,13 @@ export const PokedexView: React.FC<PokedexViewProps> = ({ lang }) => {
           >
             {t.pokedex_filter_form_regional || '🌍 Regionální'}
           </button>
+          <button
+            type="button"
+            className={`pokedex-pill variant-fusions ${selectedVariant === 'fusions_forms' ? 'active' : ''}`}
+            onClick={() => setSelectedVariant(selectedVariant === 'fusions_forms' ? 'all' : 'fusions_forms')}
+          >
+            {t.pokedex_filter_form_fusions || '✨ Fúze & formy'}
+          </button>
         </div>
 
         {/* 3. Elemental Types Selector with Soft Glassmorphic Badges */}
@@ -484,7 +510,31 @@ export const PokedexView: React.FC<PokedexViewProps> = ({ lang }) => {
       ) : (
         <div className="pokedex-grid">
           {displayedPokemon.map((poke) => {
-            const activeVariantId = cardVariantOverrides[poke.dexId] || null;
+            let activeVariantId = cardVariantOverrides[poke.dexId] || null;
+
+            // Auto-preview variant if query matched or fusions_forms selected
+            if (!activeVariantId && searchQuery.trim().length >= 2) {
+              const cleanQ = searchQuery.trim().toLowerCase();
+              const matchedVar = poke.variants.find((v) =>
+                v.id.toLowerCase().includes(cleanQ) ||
+                v.name.en.toLowerCase().includes(cleanQ) ||
+                (v.name.cs && v.name.cs.toLowerCase().includes(cleanQ)) ||
+                (v.name.ja && v.name.ja.toLowerCase().includes(cleanQ)) ||
+                (v.name.ru && v.name.ru.toLowerCase().includes(cleanQ)) ||
+                (v.signatureMove && v.signatureMove.name.toLowerCase().includes(cleanQ))
+              );
+              if (matchedVar) {
+                activeVariantId = matchedVar.id;
+              }
+            } else if (!activeVariantId && selectedVariant === 'fusions_forms') {
+              const firstSpecial = poke.variants.find(
+                (v) => v.category === 'fusion' || v.category === 'battle_form' || v.category === 'alternate_form'
+              );
+              if (firstSpecial) {
+                activeVariantId = firstSpecial.id;
+              }
+            }
+
             const activeVariant = poke.variants.find((v) => v.id === activeVariantId) || null;
 
             // Determine active attributes based on variant
@@ -497,6 +547,7 @@ export const PokedexView: React.FC<PokedexViewProps> = ({ lang }) => {
             if (activeVariant?.category === 'shadow') variantClass = 'variant-shadow';
             else if (activeVariant?.category === 'dynamax') variantClass = 'variant-dynamax';
             else if (activeVariant?.category === 'gigantamax') variantClass = 'variant-gigantamax';
+            else if (activeVariant?.category === 'fusion') variantClass = 'variant-fusion';
 
             return (
               <Link
@@ -510,11 +561,24 @@ export const PokedexView: React.FC<PokedexViewProps> = ({ lang }) => {
                   <span className="pokedex-card-dex-badge">
                     #{String(poke.dexId).padStart(3, '0')}
                   </span>
-                  {poke.rarityClass !== 'standard' && (
-                    <span className={`pokedex-card-rarity-pill ${poke.rarityClass}`}>
-                      {poke.rarityClass.replace('_', ' ')}
-                    </span>
-                  )}
+                  <div className="pokedex-card-header-pills">
+                    {activeVariant && (
+                      <span className={`pokedex-card-form-pill ${activeVariant.category}`}>
+                        {activeVariant.category === 'fusion'
+                          ? '✨ Fúze'
+                          : activeVariant.category === 'battle_form'
+                          ? '⚔️ Forma'
+                          : activeVariant.category === 'alternate_form'
+                          ? '🔄 Forma'
+                          : activeVariant.category}
+                      </span>
+                    )}
+                    {poke.rarityClass !== 'standard' && (
+                      <span className={`pokedex-card-rarity-pill ${poke.rarityClass}`}>
+                        {poke.rarityClass.replace('_', ' ')}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* Sprite Render */}
@@ -580,6 +644,12 @@ export const PokedexView: React.FC<PokedexViewProps> = ({ lang }) => {
                         else if (v.category === 'dynamax') shortLabel = 'D-MAX';
                         else if (v.category === 'shadow') shortLabel = 'SHADOW';
                         else if (v.category === 'regional') shortLabel = (v.regionalRegion || 'REG').toUpperCase();
+                        else if (v.category === 'fusion') shortLabel = v.id.includes('DUSK') ? 'DUSK' : (v.id.includes('DAWN') ? 'DAWN' : (v.id.includes('BLACK') ? 'BLACK' : (v.id.includes('WHITE') ? 'WHITE' : (v.id.includes('ICE') ? 'ICE' : (v.id.includes('SHADOW') ? 'SHADOW' : 'FUSION')))));
+                        else if (v.category === 'battle_form') shortLabel = v.id.includes('CROWNED') ? 'CROWN' : (v.id.includes('ORIGIN') ? 'ORIGIN' : (v.id.includes('ATTACK') ? 'ATK' : (v.id.includes('DEFENSE') ? 'DEF' : (v.id.includes('SPEED') ? 'SPD' : (v.id.includes('THERIAN') ? 'THERIAN' : (v.id.includes('SKY') ? 'SKY' : 'FORM'))))));
+                        else if (v.category === 'alternate_form') {
+                          const parts = v.id.split('_');
+                          shortLabel = parts[parts.length - 1] || 'FORM';
+                        }
 
                         return (
                           <button

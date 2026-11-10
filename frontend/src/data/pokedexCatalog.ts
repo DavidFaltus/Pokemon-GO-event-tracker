@@ -11,9 +11,25 @@ export type PokemonType =
   | 'Fighting' | 'Poison' | 'Ground' | 'Flying' | 'Psychic' | 'Bug'
   | 'Rock' | 'Ghost' | 'Dragon' | 'Dark' | 'Steel' | 'Fairy';
 
-export type VariantCategory = 'mega' | 'primal' | 'gigantamax' | 'dynamax' | 'shadow' | 'regional';
+export type VariantCategory =
+  | 'mega'
+  | 'primal'
+  | 'gigantamax'
+  | 'dynamax'
+  | 'shadow'
+  | 'regional'
+  | 'fusion'
+  | 'battle_form'
+  | 'alternate_form';
+
 export type RegionalRegion = 'alola' | 'galar' | 'hisui' | 'paldea';
 export type RarityClass = 'standard' | 'starter' | 'baby' | 'legendary' | 'mythical' | 'ultra_beast' | 'paradox';
+
+export interface PokedexMove {
+  name: string;
+  type: PokemonType;
+  isElite?: boolean;
+}
 
 export interface PokedexVariant {
   id: string;
@@ -30,6 +46,30 @@ export interface PokedexVariant {
   gmaxMoveName?: string;
   megaEnergyFirstCost?: number;
   purificationStardust?: number;
+  // Fusion & Signature mechanics
+  fusionPartner?: string;
+  fusionEnergyCost?: {
+    energyType: string;
+    energyAmount: number;
+    candy1: string;
+    candy1Amount: number;
+    candy2?: string;
+    candy2Amount?: number;
+  };
+  signatureMove?: {
+    name: string;
+    type: PokemonType;
+    pvePower?: number;
+    pvpPower?: number;
+  };
+  adventureEffect?: {
+    cs: string;
+    en: string;
+    ja: string;
+    ru: string;
+  };
+  quickMoves?: PokedexMove[];
+  cinematicMoves?: PokedexMove[];
   spriteOverrides?: {
     officialArtwork?: string;
     shinyArtwork?: string;
@@ -43,12 +83,6 @@ export interface EvolutionNode {
   candies: number;
   itemRequired?: string | null;
   questRequirement?: string | null;
-}
-
-export interface PokedexMove {
-  name: string;
-  type: PokemonType;
-  isElite?: boolean;
 }
 
 export interface PokedexCatalogEntry {
@@ -82,6 +116,9 @@ export interface PokedexCatalogEntry {
   hasMega: boolean;
   hasShadow: boolean;
   hasRegionalVariants: boolean;
+  hasFusions?: boolean;
+  hasBattleForms?: boolean;
+  hasAlternateForms?: boolean;
   variants: PokedexVariant[];
   evolutions: EvolutionNode[];
   evolutionChainIds: number[];

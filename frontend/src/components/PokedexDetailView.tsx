@@ -115,6 +115,8 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
   const currentTypes = activeVariant ? activeVariant.types : entry.types;
   const currentStats = activeVariant ? activeVariant.stats : entry.stats;
   const currentCp = activeVariant ? activeVariant.maxCp : entry.maxCp.lv50;
+  const currentQuickMoves = activeVariant?.quickMoves && activeVariant.quickMoves.length > 0 ? activeVariant.quickMoves : entry.quickMoves;
+  const currentCinematicMoves = activeVariant?.cinematicMoves && activeVariant.cinematicMoves.length > 0 ? activeVariant.cinematicMoves : entry.cinematicMoves;
 
   // Prev & Next Pokémon
   const prevEntry = POKEDEX_MAP[entry.dexId - 1] || null;
@@ -431,6 +433,103 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
         </div>
       </header>
 
+      {/* ─── Fusion & Signature Form Infobox ─────────────────────────────────── */}
+      {activeVariant &&
+        (activeVariant.category === 'fusion' ||
+          Boolean(activeVariant.signatureMove) ||
+          Boolean(activeVariant.adventureEffect)) && (
+          <section className="pokedex-detail-card pokedex-fusion-hero-card" aria-label="Fusion Mechanics">
+            <h2 className="pokedex-detail-card-title">
+              <Sparkles size={18} style={{ color: '#fbbf24' }} />
+              <span>{t.pokedex_fusion_title || 'Fúzní mechanika & Adventure Effect'}</span>
+            </h2>
+
+            <div className="pokedex-fusion-content-grid">
+              {/* Fusion Partner & Requirements */}
+              {activeVariant.fusionPartner && (
+                <div className="pokedex-fusion-box-col">
+                  <div className="pokedex-fusion-metric-row">
+                    <span className="pokedex-fusion-metric-label">
+                      <Layers size={14} style={{ color: 'var(--accent-color)', marginRight: 6, verticalAlign: 'middle' }} />
+                      {t.pokedex_fusion_partner || 'Fúzní partner'}:
+                    </span>
+                    <span className="pokedex-fusion-metric-val highlight">{activeVariant.fusionPartner}</span>
+                  </div>
+
+                  {activeVariant.fusionEnergyCost && (
+                    <div className="pokedex-fusion-metric-row">
+                      <span className="pokedex-fusion-metric-label">
+                        <Zap size={14} style={{ color: '#fbbf24', marginRight: 6, verticalAlign: 'middle' }} />
+                        {t.pokedex_fusion_cost || 'Požadavky na fúzi'}:
+                      </span>
+                      <span className="pokedex-fusion-metric-val pills">
+                        {activeVariant.fusionEnergyCost.energyAmount > 0 && (
+                          <span className="cost-pill energy">
+                            {activeVariant.fusionEnergyCost.energyAmount}× {activeVariant.fusionEnergyCost.energyType}
+                          </span>
+                        )}
+                        <span className="cost-pill candy">
+                          {activeVariant.fusionEnergyCost.candy1Amount}× {activeVariant.fusionEnergyCost.candy1}
+                        </span>
+                        {activeVariant.fusionEnergyCost.candy2 && (
+                          <span className="cost-pill candy">
+                            {activeVariant.fusionEnergyCost.candy2Amount}× {activeVariant.fusionEnergyCost.candy2}
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  )}
+
+                  <p className="pokedex-fusion-unfuse-note">
+                    <CheckCircle2 size={13} style={{ color: '#22c55e', flexShrink: 0 }} />
+                    <span>
+                      {t.pokedex_fusion_unfuse ||
+                        'Oddělení (Unfuse): 0 Stardust / 0 Candy – partner se vrátí v původním stavu'}
+                    </span>
+                  </p>
+                </div>
+              )}
+
+              {/* Signature Move & Adventure Effect */}
+              {(activeVariant.signatureMove || activeVariant.adventureEffect) && (
+                <div className="pokedex-fusion-box-col">
+                  {activeVariant.signatureMove && (
+                    <div className="pokedex-fusion-metric-row">
+                      <span className="pokedex-fusion-metric-label">
+                        <Swords size={14} style={{ color: '#f87171', marginRight: 6, verticalAlign: 'middle' }} />
+                        {t.pokedex_signature_move || 'Charakteristický útok'}:
+                      </span>
+                      <div className="pokedex-signature-move-badge">
+                        <UnifiedTypeBadge type={activeVariant.signatureMove.type} lang={lang} size="xs" showIcon={true} />
+                        <span className="pokedex-sig-name">{activeVariant.signatureMove.name}</span>
+                        {activeVariant.signatureMove.pvePower && (
+                          <span className="pokedex-sig-power">
+                            PvE: {activeVariant.signatureMove.pvePower} | PvP: {activeVariant.signatureMove.pvpPower}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {activeVariant.adventureEffect && (
+                    <div className="pokedex-adventure-effect-box">
+                      <div className="pokedex-adventure-header">
+                        <Clock size={14} style={{ color: '#38bdf8' }} />
+                        <span className="pokedex-adventure-title">
+                          {t.pokedex_adventure_effect || 'Adventure Effect'}:
+                        </span>
+                      </div>
+                      <p className="pokedex-adventure-desc">
+                        {activeVariant.adventureEffect[lang] || activeVariant.adventureEffect.en}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
       {/* ─── Two-Column Analytical Layout ────────────────────────────────────── */}
       <div className="pokedex-detail-columns-grid">
         {/* Left Column: Type Effectiveness & 100% IV CP Table */}
@@ -539,10 +638,10 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
               <div className="pokedex-moves-column">
                 <h3 className="pokedex-moves-col-title">{t.pokedex_moves_fast || 'Rychlé útoky (Fast Moves)'}</h3>
                 <div className="pokedex-move-list">
-                  {entry.quickMoves.length === 0 ? (
+                  {currentQuickMoves.length === 0 ? (
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{t.pokedex_moves_fast_none || 'Žádné známé rychlé útoky.'}</p>
                   ) : (
-                    entry.quickMoves.map((m) => (
+                    currentQuickMoves.map((m) => (
                       <div key={m.name} className="pokedex-move-card-item">
                         <div className="pokedex-move-main-row">
                           <UnifiedTypeBadge type={m.type} lang={lang} size="xs" showIcon={true} />
@@ -563,10 +662,10 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
               <div className="pokedex-moves-column">
                 <h3 className="pokedex-moves-col-title">{t.pokedex_moves_charged || 'Nabíjecí útoky (Charged Moves)'}</h3>
                 <div className="pokedex-move-list">
-                  {entry.cinematicMoves.length === 0 ? (
+                  {currentCinematicMoves.length === 0 ? (
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{t.pokedex_moves_charged_none || 'Žádné známé nabíjecí útoky.'}</p>
                   ) : (
-                    entry.cinematicMoves.map((m) => (
+                    currentCinematicMoves.map((m) => (
                       <div key={m.name} className="pokedex-move-card-item">
                         <div className="pokedex-move-main-row">
                           <UnifiedTypeBadge type={m.type} lang={lang} size="xs" showIcon={true} />
