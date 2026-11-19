@@ -10,6 +10,7 @@ import {
   buildShareText,
   getSilhouetteZoomScale,
   getDailyPuzzleNumber,
+  computeBetterThanPercentile,
 } from './pokedleEngine';
 
 describe('PoGoDle Core Engine & Data Integrity', () => {
@@ -110,5 +111,16 @@ describe('PoGoDle Core Engine & Data Integrity', () => {
       expect(data['2'].text).not.toMatch(/ivysaur|айвизавр|フシギソウ/i);
       expect(data['6'].text).not.toMatch(/charizard|чаризард|リザードン/i);
     }
+  });
+
+  it('computes community percentile only when sample >= 10', () => {
+    expect(
+      computeBetterThanPercentile(2, { '1': 1, '2': 2, '3': 3, '4': 2, '5': 1, '6': 0, '7+': 0 })
+    ).toBeNull(); // total = 9
+
+    // total = 20, strictly > 2 is 3+4+5+6+7+ = 6+5+3+2+1 = 17 -> 85%
+    expect(
+      computeBetterThanPercentile(2, { '1': 1, '2': 2, '3': 6, '4': 5, '5': 3, '6': 2, '7+': 1 })
+    ).toBe(85);
   });
 });

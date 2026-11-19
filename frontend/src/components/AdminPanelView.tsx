@@ -8,8 +8,9 @@ import {
   Image, PackageOpen, ChevronDown, ChevronUp, X, FileJson, Zap,
   Star, Egg, Swords, Gift, Download, FileText, Sparkles, ExternalLink,
   Share2, Send, Copy, Check, Filter, Calendar, RotateCcw, Users,
-  BookOpen, Eye, ArrowUp, ArrowDown, Shield, Trophy, Globe, MapPin, Clock, Award, Target
+  BookOpen, Eye, ArrowUp, ArrowDown, Shield, Trophy, Globe, MapPin, Clock, Award, Target, Gamepad2
 } from 'lucide-react';
+import { AdminPokedleStatsTab } from './AdminPokedleStatsTab';
 import { GUIDES_DATA, type GuideArticle, type GuideSection } from '../data/guidesData';
 import { EventCard } from './EventCard';
 import type { EventData } from './EventCard';
@@ -535,7 +536,7 @@ const generateSocialCaption = (event: EventData, lang: Language): string => {
 // Main AdminPanelView component
 // ============================================================
 
-type AdminTab = 'events' | 'guides' | 'raids' | 'friends' | 'social' | 'icons' | 'scraper' | 'import' | 'cache';
+type AdminTab = 'events' | 'guides' | 'raids' | 'friends' | 'pokedle' | 'social' | 'icons' | 'scraper' | 'import' | 'cache';
 
 export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
@@ -2424,6 +2425,9 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
         </button>
         <button className={`admin-nav-btn ${adminTab === 'friends' ? 'active' : ''}`} onClick={() => setAdminTab('friends')}>
           <Users size={15} />{lang === 'cs' ? 'Friend Kódy' : 'Friend Codes'}
+        </button>
+        <button className={`admin-nav-btn ${adminTab === 'pokedle' ? 'active' : ''}`} onClick={() => setAdminTab('pokedle')}>
+          <Gamepad2 size={15} />{lang === 'cs' ? 'PoGoDle Statistiky' : 'PoGoDle Stats'}
         </button>
         <button className={`admin-nav-btn ${adminTab === 'social' ? 'active' : ''}`} onClick={() => setAdminTab('social')}>
           <Share2 size={15} />{lang === 'cs' ? 'TikTok & IG Hub' : 'TikTok & IG Hub'}
@@ -5081,6 +5085,11 @@ export const AdminPanelView: React.FC<AdminPanelViewProps> = ({ lang, onBack }) 
             </div>
           )}
         </div>
+      )}
+
+      {/* ===== TAB: POGODLE STATS ===== */}
+      {adminTab === 'pokedle' && (
+        <AdminPokedleStatsTab token={token} lang={lang} />
       )}
 
       {/* ===== TAB: CACHE ===== */}

@@ -374,3 +374,58 @@ export function getPreviousUtcDateKey(dateKey: string): string {
   const prev = new Date(Date.UTC(y, (m || 1) - 1, (d || 1) - 1));
   return getDailyUtcDateKey(prev);
 }
+
+export type PokedleAttemptBucket = '1' | '2' | '3' | '4' | '5' | '6' | '7+';
+
+export interface PokedlePublicModeSummary {
+  ready: boolean;
+  played: number;
+  won: number;
+  winRate: number;
+  avgAttempts: number;
+  attemptBuckets: Record<PokedleAttemptBucket, number>;
+}
+
+export interface PokedlePublicStats {
+  minSampleThreshold: number;
+  dateKey: string;
+  globalReady: boolean;
+  global: {
+    played: number;
+    won: number;
+    winRate: number;
+    avgAttempts: number;
+    attemptBuckets: Record<PokedleAttemptBucket, number>;
+  } | null;
+  today: Record<PokedleMode, PokedlePublicModeSummary | null>;
+}
+
+/**
+ * Computes percentage of winning players who needed strictly MORE attempts than the current player.
+ * Returns null if total sample is below 10.
+ */
+export function computeBetterThanPercentile(
+  attempts: number,
+  buckets: Record<PokedleAttemptBucket, number>
+): number | null {
+  const ordered: Array<{ bucket: PokedleAttemptBucket; minVal: number }> = [
+    { bucket: '1', minVal: 1 },
+    { bucket: '2', minVal: 2 },
+    { bucket: '3', minVal: 3 },
+    { bucket: '4', minVal: 4 },
+    { bucket: '5', minVal: 5 },
+    { bucket: '6', minVal: 6 },
+    { bucket: '7+', minVal: 7 },
+  ];
+  let total = 0;
+  let slower = 0;
+  for (const item of ordered) {
+    const cnt = buckets[item.bucket] || 0;
+    total += cnt;
+    if (item.minVal > attempts) {
+      slower += cnt;
+    }
+  }
+  if (total < 10) return null;
+  return Math.round((slower / total) * 100);
+}

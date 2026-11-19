@@ -134,7 +134,7 @@
   transform: translateY(-1px);
 }
 
-/* Daily vs Endless Row */
+/* Daily vs Endless Row — Unified Glassmorphic Buttons */
 .pokedle-playtype-row {
   display: flex;
   align-items: center;
@@ -144,46 +144,60 @@
 }
 
 .pokedle-segmented-toggle {
-  display: inline-flex;
-  padding: 3px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border-color);
-  gap: 4px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  flex-shrink: 0;
 }
 
 .pokedle-seg-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 13px;
-  border-radius: 9px;
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  font-weight: 750;
+  justify-content: center;
+  gap: 7px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 800;
+  white-space: nowrap;
   cursor: pointer;
   transition: all 0.18s ease;
 }
 
+.pokedle-seg-btn:hover {
+  border-color: rgba(168, 85, 247, 0.45);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
 .pokedle-seg-btn.active {
   background: var(--accent-gradient);
+  border-color: var(--accent-color);
   color: #ffffff;
-  box-shadow: 0 2px 10px rgba(170, 59, 255, 0.35);
+  box-shadow: 0 4px 14px rgba(170, 59, 255, 0.35);
 }
 
 .pokedle-new-round-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 7px 14px;
-  border-radius: 100px;
+  height: 38px;
+  padding: 0 13px;
+  border-radius: 12px;
   border: 1px solid rgba(56, 189, 248, 0.4);
   background: rgba(56, 189, 248, 0.12);
   color: #38bdf8;
   font-size: 0.8rem;
   font-weight: 750;
+  white-space: nowrap;
   cursor: pointer;
   transition: all 0.18s ease;
 }
@@ -193,48 +207,50 @@
   transform: translateY(-1px);
 }
 
-/* Endless Gen Pills */
-.pokedle-gen-pills {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+/* Endless Compact Controls (Gen Dropdown + Refresh) */
+.pokedle-endless-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.pokedle-gen-pill {
-  padding: 4px 11px;
-  border-radius: 100px;
+.pokedle-gen-select {
+  height: 38px;
+  padding: 0 28px 0 12px;
+  border-radius: 12px;
   border: 1px solid var(--border-color);
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--text-muted);
-  font-size: 0.74rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  font-size: 0.8rem;
   font-weight: 750;
   cursor: pointer;
-  transition: all 0.15s ease;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, #94a3b8 50%),
+    linear-gradient(135deg, #94a3b8 50%, transparent 50%);
+  background-position: calc(100% - 14px) 16px, calc(100% - 9px) 16px;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  transition: border-color 0.16s ease, background-color 0.16s ease;
 }
 
-.pokedle-gen-pill:hover {
-  border-color: rgba(168, 85, 247, 0.4);
-  color: var(--text-primary);
-}
-
-.pokedle-gen-pill.active {
-  background: var(--accent-color);
+.pokedle-gen-select:hover,
+.pokedle-gen-select:focus {
   border-color: var(--accent-color);
-  color: #ffffff;
 }
 
-/* 3 Mode Tabs */
+.pokedle-gen-select option {
+  background: #171921;
+  color: #f8fafc;
+}
+
+/* 3 Mode Tabs (Always 3 columns in 1 sleek horizontal row) */
 .pokedle-mode-tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   align-items: start;
-}
-
-@media (max-width: 600px) {
-  .pokedle-mode-tabs {
-    grid-template-columns: 1fr;
-  }
 }
 
 .pokedle-mode-tab {
@@ -513,12 +529,6 @@
   gap: 10px;
 }
 
-@media (max-width: 540px) {
-  .pokedle-search-bar-row {
-    flex-direction: column;
-  }
-}
-
 .pokedle-search-input-wrap {
   flex-grow: 1;
   display: flex;
@@ -761,6 +771,22 @@
   flex-shrink: 0;
 }
 
+.pokedle-dropdown-type-icon-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+}
+
+.pokedle-dropdown-type-svg {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+}
+
 /* ─── Victory / Share Card ────────────────────────────────────────────────── */
 
 .pokedle-result-wrapper {
@@ -887,8 +913,9 @@
 
 .pokedle-result-actions {
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .pokedle-action-btn {
@@ -904,6 +931,7 @@
   cursor: pointer;
   border: 1px solid var(--border-color);
   transition: all 0.18s ease;
+  white-space: nowrap;
 }
 
 .pokedle-action-btn.primary {
@@ -911,6 +939,13 @@
   border-color: var(--accent-color);
   color: #ffffff;
   box-shadow: 0 4px 14px rgba(170, 59, 255, 0.35);
+}
+
+.pokedle-action-btn.next-cta {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  border-color: rgba(74, 222, 128, 0.6);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
 }
 
 .pokedle-action-btn.secondary {
@@ -927,6 +962,39 @@
 .pokedle-action-btn.next-mode {
   background: rgba(34, 197, 94, 0.14);
   border-color: rgba(34, 197, 94, 0.4);
+  color: #4ade80;
+}
+
+.pokedle-share-icon-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.pokedle-action-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.pokedle-action-icon-btn:hover {
+  border-color: var(--accent-color);
+  color: var(--text-primary);
+  background: rgba(168, 85, 247, 0.16);
+}
+
+.pokedle-action-icon-btn.copied {
+  border-color: rgba(34, 197, 94, 0.55);
+  background: rgba(34, 197, 94, 0.18);
   color: #4ade80;
 }
 
@@ -1096,6 +1164,20 @@
   text-overflow: ellipsis;
 }
 
+.pokedle-grid-type-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: block;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.pokedle-type-none-dash {
+  font-size: 0.95rem;
+  font-weight: 800;
+  opacity: 0.65;
+}
+
 .pokedle-cell.state-exact {
   background: rgba(34, 197, 94, 0.22);
   border-color: rgba(34, 197, 94, 0.55);
@@ -1227,7 +1309,9 @@
 
 .pokedle-modal-card {
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
+  max-height: 90vh;
+  overflow-y: auto;
   background: #171921;
   border: 1px solid var(--border-color);
   border-radius: 18px;
@@ -1314,6 +1398,110 @@
   color: var(--text-secondary);
 }
 
+/* ─── Community Analytics Strip, Percentile & Histogram (>= 10 wins) ──────── */
+
+.pokedle-community-strip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 2px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  color: #bae6fd;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-align: center;
+  flex-wrap: wrap;
+}
+
+.pokedle-percentile-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.2) 0%, rgba(168, 85, 247, 0.24) 100%);
+  border: 1px solid rgba(250, 204, 21, 0.45);
+  color: #fde047;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.pokedle-community-modal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border-color);
+}
+
+.pokedle-community-modal-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.pokedle-stat-box.community strong {
+  color: #38bdf8;
+  font-size: 1.25rem;
+}
+
+.pokedle-community-histogram {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pokedle-histogram-heading {
+  font-size: 0.74rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.pokedle-hist-row {
+  display: grid;
+  grid-template-columns: 26px 1fr 34px;
+  align-items: center;
+  gap: 8px;
+}
+
+.pokedle-hist-label {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.pokedle-hist-bar-track {
+  height: 14px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.pokedle-hist-bar-fill {
+  height: 100%;
+  border-radius: 7px;
+  background: linear-gradient(90deg, #aa3bff 0%, #38bdf8 100%);
+  transition: width 0.35s ease;
+}
+
+.pokedle-hist-count {
+  font-size: 0.76rem;
+  font-weight: 750;
+  color: var(--text-muted);
+  text-align: left;
+}
+
 /* ─── Light Mode Overrides (AGENTS.md Standard) ───────────────────────────── */
 
 body.light-mode .pokedle-header-card,
@@ -1341,9 +1529,8 @@ body.light-mode .pokedle-metric-pill.streak {
   color: #b45309 !important;
 }
 
-body.light-mode .pokedle-segmented-toggle,
+body.light-mode .pokedle-seg-btn:not(.active),
 body.light-mode .pokedle-mode-tab:not(.active),
-body.light-mode .pokedle-gen-pill:not(.active),
 body.light-mode .pokedle-hint-box,
 body.light-mode .pokedle-cell.pokemon-cell,
 body.light-mode .pokedle-stat-box,
@@ -1472,4 +1659,565 @@ body.light-mode .pokedle-help-mode-item {
   background: #f8fafc !important;
   border-color: rgba(15, 23, 42, 0.14) !important;
   color: #334155 !important;
+}
+
+body.light-mode .pokedle-community-strip {
+  background: #f0f9ff !important;
+  border-color: rgba(2, 132, 199, 0.3) !important;
+  color: #0369a1 !important;
+}
+
+body.light-mode .pokedle-percentile-pill {
+  background: linear-gradient(135deg, #fef9c3 0%, #f3e8ff 100%) !important;
+  border-color: rgba(202, 138, 4, 0.45) !important;
+  color: #854d0e !important;
+}
+
+body.light-mode .pokedle-stat-box.community strong {
+  color: #0284c7 !important;
+}
+
+body.light-mode .pokedle-hist-bar-track {
+  background: #e2e8f0 !important;
+}
+
+body.light-mode .pokedle-gen-select,
+body.light-mode .pokedle-action-icon-btn {
+  background-color: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.16) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .pokedle-gen-select option {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+body.light-mode .pokedle-grid-type-icon {
+  filter: none;
+}
+
+/* ─── Mobile Zero-Scroll Responsive Layout (<= 640px) ─────────────────────── */
+
+@media (max-width: 640px) {
+  .pokedle-container {
+    gap: 10px;
+  }
+
+  /* Compact Header */
+  .pokedle-header-card {
+    padding: 10px 12px;
+    gap: 8px;
+    border-radius: 14px;
+  }
+
+  .pokedle-header-top {
+    gap: 6px;
+    flex-wrap: nowrap;
+  }
+
+  .pokedle-brand-group {
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .pokedle-brand-badge {
+    padding: 3px 8px;
+    font-size: 0.72rem;
+    gap: 4px;
+  }
+
+  .pokedle-title {
+    display: none;
+  }
+
+  .pokedle-subtitle {
+    display: none;
+  }
+
+  .pokedle-header-metrics {
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  .pokedle-metric-pill {
+    padding: 3px 7px;
+    font-size: 0.72rem;
+    gap: 3px;
+  }
+
+  .pokedle-icon-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+  }
+
+  .pokedle-help-pill-btn {
+    height: 30px;
+    padding: 0 9px;
+    font-size: 0.72rem;
+    border-radius: 8px;
+  }
+
+  /* Single-line Daily/Endless + Compact Gen Select + Refresh */
+  .pokedle-playtype-row {
+    gap: 6px;
+    flex-wrap: nowrap;
+  }
+
+  .pokedle-segmented-toggle {
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .pokedle-seg-btn {
+    height: 32px;
+    padding: 0 8px;
+    font-size: 0.74rem;
+    gap: 4px;
+    border-radius: 10px;
+  }
+
+  .pokedle-seg-btn svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+  }
+
+  .pokedle-endless-controls {
+    gap: 5px;
+    flex-shrink: 0;
+  }
+
+  .pokedle-gen-select {
+    height: 32px;
+    padding: 0 22px 0 8px;
+    font-size: 0.74rem;
+    border-radius: 10px;
+    background-position: calc(100% - 11px) 13px, calc(100% - 6px) 13px;
+  }
+
+  .pokedle-new-round-btn {
+    height: 32px;
+    padding: 0 9px;
+    font-size: 0.74rem;
+    border-radius: 10px;
+  }
+
+  .pokedle-new-round-label {
+    display: none;
+  }
+
+  /* 3 Mode Tabs always in 1 horizontal row */
+  .pokedle-mode-tabs {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .pokedle-mode-tab {
+    padding: 7px 5px;
+    font-size: 0.73rem;
+    gap: 4px;
+    border-radius: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pokedle-mode-tab svg {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+  }
+
+  .pokedle-community-strip {
+    padding: 5px 9px;
+    font-size: 0.7rem;
+  }
+
+  /* Compact Hero Guessing Card */
+  .pokedle-guess-hero-card {
+    padding: 10px 10px;
+    gap: 8px;
+    border-radius: 14px;
+  }
+
+  .pokedle-guess-hero-top {
+    gap: 6px;
+    justify-content: flex-end;
+  }
+
+  .pokedle-guess-hero-top:not(:has(.pokedle-giveup-btn)) {
+    display: none;
+  }
+
+  .pokedle-guess-title-group {
+    display: none;
+  }
+
+  .pokedle-giveup-btn {
+    padding: 4px 9px;
+    font-size: 0.7rem;
+  }
+
+  .pokedle-search-bar-row {
+    gap: 6px;
+  }
+
+  .pokedle-search-input-wrap {
+    padding: 3px 8px 3px 10px;
+    gap: 7px;
+    border-radius: 11px;
+  }
+
+  .pokedle-search-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .pokedle-search-input {
+    font-size: 0.88rem;
+    padding: 7px 0;
+  }
+
+  .pokedle-submit-guess-btn {
+    min-height: 38px;
+    padding: 0 13px;
+    font-size: 0.8rem;
+    gap: 5px;
+    border-radius: 11px;
+  }
+
+  .pokedle-quick-starters-row {
+    padding-top: 0;
+    gap: 0;
+    flex-wrap: nowrap;
+  }
+
+  .pokedle-quick-label {
+    display: none;
+  }
+
+  .pokedle-quick-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 5px;
+    width: 100%;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .pokedle-quick-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pokedle-quick-chip {
+    padding: 3px 8px 3px 5px;
+    font-size: 0.72rem;
+    gap: 4px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .pokedle-quick-chip.random {
+    padding: 4px 9px;
+  }
+
+  .pokedle-quick-img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .pokedle-dropdown-item {
+    padding: 7px 10px;
+    gap: 9px;
+  }
+
+  .pokedle-dropdown-sprite {
+    width: 30px;
+    height: 30px;
+  }
+
+  .pokedle-dropdown-name {
+    font-size: 0.84rem;
+  }
+
+  /* Compact Result Card (Instant Next CTA above the fold!) */
+  .pokedle-result-wrapper {
+    padding: 10px 10px;
+    gap: 9px;
+    border-radius: 14px;
+  }
+
+  .pokedle-share-card {
+    padding: 10px 12px;
+    gap: 6px;
+    border-radius: 11px;
+  }
+
+  .pokedle-result-hero {
+    gap: 10px;
+    flex-wrap: nowrap;
+  }
+
+  .pokedle-result-sprite {
+    width: 58px;
+    height: 58px;
+    flex-shrink: 0;
+  }
+
+  .pokedle-result-info {
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .pokedle-result-status {
+    font-size: 0.68rem;
+  }
+
+  .pokedle-result-name {
+    font-size: 1.12rem;
+    line-height: 1.15;
+  }
+
+  .pokedle-result-dex {
+    font-size: 0.82rem;
+  }
+
+  .pokedle-result-badges {
+    gap: 4px;
+  }
+
+  .pokedle-result-cp,
+  .pokedle-result-tries {
+    padding: 2px 6px;
+    font-size: 0.68rem;
+  }
+
+  .pokedle-percentile-pill {
+    padding: 2px 7px;
+    font-size: 0.66rem;
+  }
+
+  .pokedle-share-watermark {
+    display: none;
+  }
+
+  .pokedle-result-actions {
+    gap: 6px;
+    flex-wrap: nowrap;
+  }
+
+  .pokedle-action-btn {
+    padding: 8px 11px;
+    font-size: 0.78rem;
+    gap: 5px;
+    border-radius: 10px;
+  }
+
+  .pokedle-action-btn.next-cta {
+    flex: 1;
+  }
+
+  .pokedle-action-icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+  }
+
+  /* Zero-Horizontal-Scroll Classic 7-Column Grid */
+  .pokedle-grid-card {
+    padding: 9px 7px;
+    gap: 8px;
+    border-radius: 14px;
+  }
+
+  .pokedle-grid-scroll {
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
+
+  .pokedle-grid-header,
+  .pokedle-grid-row {
+    min-width: 0;
+    width: 100%;
+    grid-template-columns: 46px 1fr 1fr 0.85fr 0.72fr 1.25fr 0.76fr;
+    gap: 4px;
+  }
+
+  .pokedle-grid-header {
+    padding-bottom: 5px;
+    margin-bottom: 6px;
+  }
+
+  .pokedle-grid-header span {
+    font-size: 0.58rem;
+    letter-spacing: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pokedle-grid-header span:first-child {
+    padding-left: 0;
+    text-align: center;
+  }
+
+  .pokedle-grid-empty-placeholder {
+    min-width: 0;
+    padding: 14px 10px;
+    font-size: 0.76rem;
+  }
+
+  .pokedle-grid-rows {
+    gap: 5px;
+  }
+
+  .pokedle-cell {
+    min-height: 46px;
+    padding: 4px 2px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    gap: 2px;
+  }
+
+  .pokedle-cell.pokemon-cell {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1px;
+    padding: 3px 2px;
+    text-align: center;
+  }
+
+  .pokedle-row-sprite {
+    width: 29px;
+    height: 29px;
+  }
+
+  .pokedle-row-name {
+    font-size: 0.55rem;
+    line-height: 1.05;
+    max-width: 44px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pokedle-grid-type-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .pokedle-gen-prefix {
+    display: none;
+  }
+
+  .pokedle-cell.cp-cell {
+    flex-direction: column;
+    gap: 1px;
+    font-size: 0.68rem;
+    line-height: 1.05;
+  }
+
+  .pokedle-dir-arrow {
+    width: 11px;
+    height: 11px;
+  }
+
+  .pokedle-color-label {
+    display: none;
+  }
+
+  .pokedle-color-dot {
+    width: 16px;
+    height: 16px;
+    border-width: 1.5px;
+  }
+
+  .pokedle-legend {
+    gap: 8px;
+    font-size: 0.66rem;
+    padding-top: 6px;
+    justify-content: center;
+  }
+
+  /* Compact Lore & Silhouette Stage */
+  .pokedle-stage-card {
+    padding: 10px 12px;
+    gap: 10px;
+    border-radius: 14px;
+  }
+
+  .pokedle-stage-prompt {
+    font-size: 0.78rem;
+  }
+
+  .pokedle-lore-quote-panel {
+    padding: 11px 13px;
+    gap: 6px;
+  }
+
+  .pokedle-lore-text {
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
+  .pokedle-silhouette-stage,
+  .pokedle-silhouette-canvas {
+    width: 164px;
+    height: 164px;
+  }
+
+  .pokedle-hints-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+  }
+
+  .pokedle-hints-grid.two-cols {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pokedle-hint-box {
+    padding: 7px 7px;
+    gap: 3px;
+    border-radius: 9px;
+  }
+
+  .pokedle-hint-label {
+    font-size: 0.58rem;
+  }
+
+  .pokedle-hint-value,
+  .pokedle-hint-lock-msg {
+    font-size: 0.68rem;
+  }
+
+  .pokedle-guesses-strip {
+    padding: 9px 10px;
+    gap: 7px;
+  }
+
+  .pokedle-guess-chip {
+    padding: 3px 8px 3px 5px;
+    font-size: 0.72rem;
+  }
+
+  .pokedle-chip-sprite {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 400px) {
+  .pokedle-help-pill-btn span {
+    display: none;
+  }
+
+  .pokedle-help-pill-btn {
+    width: 30px;
+    padding: 0;
+    justify-content: center;
+  }
 }

@@ -39,6 +39,13 @@ import {
   CustomGuideArticle
 } from './storage';
 import { dataStore } from './dataStore';
+import {
+  validateRecordInput,
+  recordPokedleRound,
+  getPublicPokedleStats,
+  getAdminPokedleStats,
+  resetPokedleStats,
+} from './services/pokedleStatsService';
 import { generateBotHtml, generate404Html, RouteTarget, Language } from './ssr';
 import {
   generateEventsMarkdown,
@@ -1489,6 +1496,54 @@ app.get('/api/pokemon-icons', async (_req, res) => {
     res.json({ success: true, overrides });
   } catch (err: any) {
     res.json({ success: true, overrides: {} });
+  }
+});
+
+// ─── PoGoDle Community & Admin Analytics API ──────────────────────────────────
+
+app.get('/api/pokedle/stats', async (req, res) => {
+  try {
+    const rawDate = typeof req.query.date === 'string' ? req.query.date.trim() : '';
+    const now = new Date();
+    const fallbackDate = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}-${String(now.getUTCDate()).padStart(2, '0')}`;
+    const dateKey = /^\d{4}-\d{2}-\d{2}$/.test(rawDate) ? rawDate : fallbackDate;
+    const stats = await getPublicPokedleStats(dateKey);
+    res.setHeader('Cache-Control', 'no-cache');
+    res.json(stats);
+  } catch (err: any) {
+    res.status(500).json({ error: err?.message || 'Failed to load PoGoDle stats' });
+  }
+});
+
+app.post('/api/pokedle/record', rateLimit(60 * 1000, 30), express.json(), async (req, res) => {
+  try {
+    const validated = validateRecordInput(req.body);
+    if (!validated.valid) {
+      return res.status(400).json({ error: validated.error });
+    }
+    const updated = await recordPokedleRound(validated.data);
+    res.json({ success: true, stats: updated });
+  } catch (err: any) {
+    res.status(500).json({ error: err?.message || 'Failed to record PoGoDle round' });
+  }
+});
+
+app.get('/api/admin/pokedle/stats', requireAuth, async (_req, res) => {
+  try {
+    const stats = await getAdminPokedleStats();
+    res.json({ success: true, stats });
+  } catch (err: any) {
+    res.status(500).json({ error: err?.message || 'Failed to load admin PoGoDle stats' });
+  }
+});
+
+app.delete('/api/admin/pokedle/stats', requireAuth, async (_req, res) => {
+  try {
+    await resetPokedleStats();
+    const stats = await getAdminPokedleStats();
+    res.json({ success: true, stats });
+  } catch (err: any) {
+    res.status(500).json({ error: err?.message || 'Failed to reset PoGoDle stats' });
   }
 });
 

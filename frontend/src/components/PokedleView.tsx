@@ -11,9 +11,7 @@ import {
   Clock,
   Infinity as InfinityIcon,
   Calendar,
-  Copy,
   Check,
-  Download,
   ExternalLink,
   RefreshCw,
   HelpCircle,
@@ -28,9 +26,11 @@ import {
   ArrowRight,
   Dices,
   Send,
+  Users,
 } from 'lucide-react';
 import type { Language } from '../data/translations';
-import { UnifiedTypeBadge } from '../utils/typeBadgeHelper';
+import { apiFetch } from '../config';
+import { UnifiedTypeBadge, getTypeSvgUrl, TYPE_TRANSLATIONS, TYPE_COLORS } from '../utils/typeBadgeHelper';
 import { useTheme } from '../context/ThemeContext';
 import {
   POKEDLE_ALL,
@@ -43,17 +43,19 @@ import {
   getDailyTargetPokemon,
   pickRandomPokemon,
   evaluateClassicGuess,
-  buildShareText,
   formatCountdownToUtcMidnight,
   getDefaultStorageState,
   loadPokedleStorage,
   savePokedleStorage,
   getPreviousUtcDateKey,
   getSilhouetteZoomScale,
+  computeBetterThanPercentile,
   type PokedleMode,
   type PokedlePlayType,
   type PokedlePokemon,
   type PokedleStorageState,
+  type PokedlePublicStats,
+  type PokedleAttemptBucket,
 } from '../utils/pokedleEngine';
 import { PokedleSilhouetteCanvas } from './PokedleSilhouetteCanvas';
 import './PokedleView.css';
@@ -65,6 +67,38 @@ interface PokedleViewProps {
 type LoreMap = Record<string, { text: string; source: string }>;
 const LORE_CACHE: Partial<Record<Language, LoreMap>> = {};
 const QUICK_STARTER_IDS = [6, 25, 94, 448, 376]; // Charizard, Pikachu, Gengar, Lucario, Metagross
+const SUBMITTED_STORAGE_KEY = 'pogo_pokedle_submitted_v1';
+const ATTEMPT_BUCKETS: PokedleAttemptBucket[] = ['1', '2', '3', '4', '5', '6', '7+'];
+
+function hasSubmittedDaily(dateKey: string, mode: PokedleMode): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    const raw = localStorage.getItem(SUBMITTED_STORAGE_KEY);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw) as Record<string, boolean>;
+    return Boolean(parsed[`${dateKey}:${mode}`]);
+  } catch {
+    return false;
+  }
+}
+
+function markSubmittedDaily(dateKey: string, mode: PokedleMode): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const raw = localStorage.getItem(SUBMITTED_STORAGE_KEY);
+    const parsed: Record<string, boolean> = raw ? JSON.parse(raw) : {};
+    parsed[`${dateKey}:${mode}`] = true;
+    // Keep only the last 30 daily submissions to keep localStorage tiny
+    const keys = Object.keys(parsed).sort();
+    const trimmed: Record<string, boolean> = {};
+    for (const k of keys.slice(-30)) {
+      trimmed[k] = parsed[k];
+    }
+    localStorage.setItem(SUBMITTED_STORAGE_KEY, JSON.stringify(trimmed));
+  } catch {
+    // Ignore storage quota errors
+  }
+}
 
 const GEN_LABELS: Record<number, Record<Language, string>> = {
   1: { cs: 'Gen 1 (Kanto)', en: 'Gen 1 (Kanto)', ja: '第1世代 (カントー)', ru: 'Ген 1 (Канто)' },
@@ -146,13 +180,20 @@ const UI_TEXT: Record<
     statTotalWins: string;
     close: string;
     alreadyGuessed: string;
+    communityTodayLine: (won: number, winRate: number, avg: number) => string;
+    betterThanPct: (pct: number) => string;
+    communityStatsTitle: string;
+    communityTotalWon: string;
+    communityWinRate: string;
+    communityAvgTries: string;
+    communityDistribution: string;
   }
 > = {
   cs: {
     subtitle: 'Denní hádací hra pro trenéry Pokémon GO — 3 režimy každý den i nekonečný trénink.',
     daily: 'Denní výzva',
-    endless: 'Nekonečný režim',
-    allGens: 'Vše (Gen 1–9)',
+    endless: 'Nekonečný',
+    allGens: 'Vše',
     modeClassic: 'Klasický',
     modeLore: 'Pokédex Hláška',
     modeSilhouette: 'Silueta',
@@ -214,12 +255,20 @@ const UI_TEXT: Record<
     statTotalWins: 'Celkem výher',
     close: 'Zavřít',
     alreadyGuessed: 'Tipnuté pokusy',
+    communityTodayLine: (won, winRate, avg) =>
+      `Dnes uhodlo ${won} trenérů • Úspěšnost ${winRate} % • Průměr ${avg} pokusů`,
+    betterThanPct: (pct) => `Lepší než ${pct} % hráčů!`,
+    communityStatsTitle: 'Komunitní statistiky',
+    communityTotalWon: 'Celkem uhodnuto',
+    communityWinRate: 'Úspěšnost',
+    communityAvgTries: 'Průměr pokusů',
+    communityDistribution: 'Rozložení pokusů',
   },
   en: {
     subtitle: 'Daily Pokémon GO guessing game — 3 daily modes plus endless practice.',
-    daily: 'Daily Challenge',
-    endless: 'Endless Mode',
-    allGens: 'All (Gen 1–9)',
+    daily: 'Daily',
+    endless: 'Endless',
+    allGens: 'All',
     modeClassic: 'Classic',
     modeLore: 'Pokédex Entry',
     modeSilhouette: 'Silhouette',
@@ -281,12 +330,20 @@ const UI_TEXT: Record<
     statTotalWins: 'Total Wins',
     close: 'Close',
     alreadyGuessed: 'Your guesses',
+    communityTodayLine: (won, winRate, avg) =>
+      `Solved by ${won} trainers today • ${winRate}% win rate • Avg ${avg} tries`,
+    betterThanPct: (pct) => `Better than ${pct}% of players!`,
+    communityStatsTitle: 'Community Stats',
+    communityTotalWon: 'Total Solved',
+    communityWinRate: 'Win Rate',
+    communityAvgTries: 'Avg Tries',
+    communityDistribution: 'Guess Distribution',
   },
   ja: {
     subtitle: 'Pokémon GOトレーナー向け毎日クイズ — 3つのデイリーモード＋エンドレス練習。',
     daily: 'デイリー挑戦',
     endless: 'エンドレス',
-    allGens: '全世代 (1〜9)',
+    allGens: '全て',
     modeClassic: 'クラシック',
     modeLore: '図鑑説明',
     modeSilhouette: 'シルエット',
@@ -348,12 +405,20 @@ const UI_TEXT: Record<
     statTotalWins: '累計正解数',
     close: '閉じる',
     alreadyGuessed: '回答履歴',
+    communityTodayLine: (won, winRate, avg) =>
+      `本日の正解者 ${won}人 • 正解率 ${winRate}% • 平均 ${avg}回`,
+    betterThanPct: (pct) => `${pct}%のプレイヤーより好成績！`,
+    communityStatsTitle: 'コミュニティ統計',
+    communityTotalWon: '累計正解数',
+    communityWinRate: '正解率',
+    communityAvgTries: '平均回数',
+    communityDistribution: '回答回数の分布',
   },
   ru: {
     subtitle: 'Ежедневная игра-угадайка для тренеров Pokémon GO — 3 режима каждый день и бесконечная тренировка.',
-    daily: 'Ежедневный вызов',
+    daily: 'Дневной',
     endless: 'Бесконечный',
-    allGens: 'Все (Ген 1–9)',
+    allGens: 'Все',
     modeClassic: 'Классика',
     modeLore: 'Описание',
     modeSilhouette: 'Силуэт',
@@ -415,6 +480,14 @@ const UI_TEXT: Record<
     statTotalWins: 'Всего побед',
     close: 'Закрыть',
     alreadyGuessed: 'Ваши попытки',
+    communityTodayLine: (won, winRate, avg) =>
+      `Сегодня угадали ${won} трен. • Успех ${winRate}% • В среднем ${avg} поп.`,
+    betterThanPct: (pct) => `Лучше, чем ${pct}% игроков!`,
+    communityStatsTitle: 'Статистика сообщества',
+    communityTotalWon: 'Всего угадано',
+    communityWinRate: 'Успешность',
+    communityAvgTries: 'Ср. попыток',
+    communityDistribution: 'Распределение попыток',
   },
 };
 
@@ -453,12 +526,14 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
   const searchBoxRef = useRef<HTMLDivElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Share & modal state
-  const [copied, setCopied] = useState(false);
-  const [exportingPng, setExportingPng] = useState(false);
+  // Modal state
   const [showStatsModal, setShowStatsModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
-  const shareCardRef = useRef<HTMLDivElement | null>(null);
+
+  // Community analytics state (loaded post-hydration only; shown strictly when sample >= 10 wins)
+  const [hydrated, setHydrated] = useState(false);
+  const [communityStats, setCommunityStats] = useState<PokedlePublicStats | null>(null);
+  const inFlightRecordsRef = useRef<Set<string>>(new Set());
 
   // Sync localStorage & midnight countdown strictly on client mount (post-hydration)
   useEffect(() => {
@@ -467,6 +542,7 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
     setStorage(loadPokedleStorage());
     setCountdown(formatCountdownToUtcMidnight());
     setEndlessTarget(pickRandomPokemon(POKEDLE_ALL));
+    setHydrated(true);
 
     const timer = setInterval(() => {
       const now = new Date();
@@ -476,6 +552,25 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // Fetch public community stats after client hydration
+  useEffect(() => {
+    if (!hydrated) return;
+    let cancelled = false;
+    apiFetch(`/api/pokedle/stats?date=${encodeURIComponent(dateKey)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: PokedlePublicStats | null) => {
+        if (!cancelled && data && typeof data.minSampleThreshold === 'number') {
+          setCommunityStats(data);
+        }
+      })
+      .catch(() => {
+        // Silently ignore network/offline errors so game remains 100% playable offline
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrated, dateKey]);
 
   // Lazy-load masked Pokédex lore only when lore mode is active
   useEffect(() => {
@@ -532,7 +627,6 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
       setEndlessGaveUp(false);
       setQuery('');
       setDropdownOpen(false);
-      setCopied(false);
     },
     [endlessPool]
   );
@@ -542,7 +636,6 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
     setPlayType(nextType);
     setQuery('');
     setDropdownOpen(false);
-    setCopied(false);
     if (nextType === 'endless' && endlessGuessIds.length === 0 && !endlessWon && !endlessGaveUp) {
       setEndlessTarget(pickRandomPokemon(endlessPool));
     }
@@ -626,19 +719,93 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
     setHighlightIdx(0);
   }, [query]);
 
+  // Record completed round to backend analytics (deduplicated per daily dateKey+mode)
+  const recordCompletedRound = useCallback(
+    (params: {
+      roundDateKey: string;
+      roundMode: PokedleMode;
+      roundPlayType: PokedlePlayType;
+      roundWon: boolean;
+      finalGuessIds: number[];
+      pokemonId: number;
+    }) => {
+      const { roundDateKey, roundMode, roundPlayType, roundWon, finalGuessIds, pokemonId } = params;
+      if (finalGuessIds.length < 1) return;
+
+      if (roundPlayType === 'daily') {
+        const dedupKey = `${roundDateKey}:${roundMode}`;
+        if (hasSubmittedDaily(roundDateKey, roundMode) || inFlightRecordsRef.current.has(dedupKey)) {
+          return;
+        }
+        inFlightRecordsRef.current.add(dedupKey);
+        markSubmittedDaily(roundDateKey, roundMode);
+      }
+
+      apiFetch('/api/pokedle/record', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dateKey: roundDateKey,
+          mode: roundMode,
+          playType: roundPlayType,
+          won: roundWon,
+          attempts: finalGuessIds.length,
+          pokemonId,
+          firstGuessId: finalGuessIds[0],
+        }),
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((json: { success?: boolean; stats?: PokedlePublicStats } | null) => {
+          if (json?.stats && typeof json.stats.minSampleThreshold === 'number') {
+            setCommunityStats(json.stats);
+          }
+        })
+        .catch(() => {
+          // Silently ignore offline/network errors
+        })
+        .finally(() => {
+          if (roundPlayType === 'daily') {
+            inFlightRecordsRef.current.delete(`${roundDateKey}:${roundMode}`);
+          }
+        });
+    },
+    []
+  );
+
   // Submit guess
   const submitGuess = useCallback(
     (poke: PokedlePokemon) => {
       if (isFinished || guessedSet.has(poke.id)) return;
       const isWin = poke.id === target.id;
+      const finalGuessIds = [...guessIds, poke.id];
       setQuery('');
       setDropdownOpen(false);
-      setCopied(false);
 
       if (playType === 'endless') {
-        setEndlessGuessIds((prev) => [...prev, poke.id]);
-        if (isWin) setEndlessWon(true);
+        setEndlessGuessIds(finalGuessIds);
+        if (isWin) {
+          setEndlessWon(true);
+          recordCompletedRound({
+            roundDateKey: dateKey,
+            roundMode: mode,
+            roundPlayType: 'endless',
+            roundWon: true,
+            finalGuessIds,
+            pokemonId: target.id,
+          });
+        }
         return;
+      }
+
+      if (isWin) {
+        recordCompletedRound({
+          roundDateKey: dateKey,
+          roundMode: mode,
+          roundPlayType: 'daily',
+          roundWon: true,
+          finalGuessIds,
+          pokemonId: target.id,
+        });
       }
 
       setStorage((prev) => {
@@ -683,7 +850,7 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
         return nextState;
       });
     },
-    [isFinished, guessedSet, target.id, playType, dateKey, mode]
+    [isFinished, guessedSet, guessIds, target.id, playType, dateKey, mode, recordCompletedRound]
   );
 
   const handleGuessButtonClick = () => {
@@ -698,6 +865,16 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
 
   const handleGiveUp = () => {
     if (isFinished) return;
+    if (guessIds.length > 0) {
+      recordCompletedRound({
+        roundDateKey: dateKey,
+        roundMode: mode,
+        roundPlayType: playType,
+        roundWon: false,
+        finalGuessIds: guessIds,
+        pokemonId: target.id,
+      });
+    }
     if (playType === 'endless') {
       setEndlessGaveUp(true);
       return;
@@ -738,54 +915,6 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
     }
   };
 
-  const handleCopyShare = async () => {
-    const shareText = buildShareText({
-      mode,
-      dayNumber,
-      guesses,
-      target,
-      won,
-      streak: storage.stats.currentStreak,
-      lang,
-      isEndless: playType === 'endless',
-    });
-    try {
-      await navigator.clipboard.writeText(shareText);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    } catch {
-      const ta = document.createElement('textarea');
-      ta.value = shareText;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    }
-  };
-
-  const handleDownloadPng = async () => {
-    if (!shareCardRef.current || exportingPng) return;
-    setExportingPng(true);
-    try {
-      const { toPng } = await import('html-to-image');
-      const dataUrl = await toPng(shareCardRef.current, {
-        cacheBust: true,
-        pixelRatio: 2,
-        backgroundColor: isLightMode ? '#ffffff' : '#12141c',
-      });
-      const link = document.createElement('a');
-      link.download = `pogodle-${playType === 'daily' ? `day-${dayNumber}` : 'endless'}-${mode}.png`;
-      link.href = dataUrl;
-      link.click();
-    } catch (err) {
-      console.error('PoGoDle PNG export failed:', err);
-    } finally {
-      setExportingPng(false);
-    }
-  };
-
   // Next uncompleted daily mode helper
   const nextUnsolvedDailyMode: PokedleMode | null = useMemo(() => {
     if (playType !== 'daily') return null;
@@ -798,6 +927,32 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
   const targetName = getPokedleLocalizedName(target, lang);
   const currentLore = loreMap?.[String(target.id)];
   const currentZoom = getSilhouetteZoomScale(wrongGuessCount, isFinished);
+
+  // Public community stats — strictly gated on >= 10 guessed Pokémon (ready / globalReady)
+  const todayModeStats =
+    playType === 'daily' &&
+    communityStats?.today?.[mode]?.ready &&
+    (communityStats.today[mode]?.won ?? 0) >= 10
+      ? communityStats.today[mode]
+      : null;
+
+  const victoryPercentile = useMemo(() => {
+    if (!won || !communityStats) return null;
+    const buckets =
+      playType === 'daily' && communityStats.today?.[mode]?.ready
+        ? communityStats.today[mode]!.attemptBuckets
+        : communityStats.globalReady && communityStats.global
+          ? communityStats.global.attemptBuckets
+          : null;
+    if (!buckets) return null;
+    const pct = computeBetterThanPercentile(guesses.length, buckets);
+    return pct !== null && pct > 0 ? pct : null;
+  }, [won, communityStats, playType, mode, guesses.length]);
+
+  const globalCommunity =
+    communityStats?.globalReady && communityStats.global && communityStats.global.won >= 10
+      ? communityStats.global
+      : null;
 
   return (
     <div className="pokedle-container">
@@ -873,39 +1028,35 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
           </div>
 
           {playType === 'endless' && (
-            <button
-              type="button"
-              className="pokedle-new-round-btn"
-              onClick={() => startNewEndlessRound(endlessPool, target.id)}
-            >
-              <RefreshCw size={14} />
-              <span>{ui.newPokemon}</span>
-            </button>
+            <div className="pokedle-endless-controls">
+              <select
+                className="pokedle-gen-select"
+                aria-label={ui.colGen}
+                value={endlessGen === 'all' ? 'all' : String(endlessGen)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  handleSelectEndlessGen(val === 'all' ? 'all' : Number(val));
+                }}
+              >
+                <option value="all">{ui.allGens}</option>
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((g) => (
+                  <option key={g} value={String(g)}>
+                    Gen {g}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                className="pokedle-new-round-btn"
+                onClick={() => startNewEndlessRound(endlessPool, target.id)}
+                title={ui.newPokemon}
+              >
+                <RefreshCw size={14} />
+                <span className="pokedle-new-round-label">{ui.newPokemon}</span>
+              </button>
+            </div>
           )}
         </div>
-
-        {/* Endless Generation Filter */}
-        {playType === 'endless' && (
-          <div className="pokedle-gen-pills">
-            <button
-              type="button"
-              className={`pokedle-gen-pill ${endlessGen === 'all' ? 'active' : ''}`}
-              onClick={() => handleSelectEndlessGen('all')}
-            >
-              {ui.allGens}
-            </button>
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((g) => (
-              <button
-                key={g}
-                type="button"
-                className={`pokedle-gen-pill ${endlessGen === g ? 'active' : ''}`}
-                onClick={() => handleSelectEndlessGen(g)}
-              >
-                Gen {g}
-              </button>
-            ))}
-          </div>
-        )}
 
         {/* 3 Mode Tabs */}
         <div className="pokedle-mode-tabs" role="tablist" aria-label="PoGoDle modes">
@@ -928,7 +1079,6 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
                   setMode(tab.id);
                   setQuery('');
                   setDropdownOpen(false);
-                  setCopied(false);
                   if (playType === 'endless') {
                     startNewEndlessRound(endlessPool, target.id);
                   }
@@ -941,6 +1091,20 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
             );
           })}
         </div>
+
+        {/* Community daily stats line (strictly shown only once >= 10 trainers solved today's mode) */}
+        {todayModeStats && (
+          <div className="pokedle-community-strip">
+            <Users size={13} />
+            <span>
+              {ui.communityTodayLine(
+                todayModeStats.won,
+                todayModeStats.winRate,
+                todayModeStats.avgAttempts
+              )}
+            </span>
+          </div>
+        )}
       </header>
 
       {/* ─── Mode-Specific Prompt Stage (Lore & Silhouette) ──────────────────── */}
@@ -1167,10 +1331,25 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
                         )}
                       </div>
                       <div className="pokedle-dropdown-types">
-                        <UnifiedTypeBadge type={p.t1} lang={lang} size="sm" showIcon={false} />
-                        {p.t2 && (
-                          <UnifiedTypeBadge type={p.t2} lang={lang} size="sm" showIcon={false} />
-                        )}
+                        {[p.t1, p.t2].filter(Boolean).map((tp) => {
+                          const tStr = tp as string;
+                          const tLabel = TYPE_TRANSLATIONS[tStr]?.[lang] || tStr;
+                          const cfg = TYPE_COLORS[tStr] || TYPE_COLORS.Normal;
+                          return (
+                            <span
+                              key={tStr}
+                              className="pokedle-dropdown-type-icon-pill"
+                              title={tLabel}
+                              style={{ backgroundColor: cfg.bg, borderColor: cfg.border }}
+                            >
+                              <img
+                                src={getTypeSvgUrl(tStr, isLightMode)}
+                                alt={tLabel}
+                                className="pokedle-dropdown-type-svg"
+                              />
+                            </span>
+                          );
+                        })}
                       </div>
                     </button>
                   ))
@@ -1209,34 +1388,14 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
         </section>
       )}
 
-      {/* ─── Victory / Reveal Card (with PNG export & Pokédex Bridge) ────────── */}
+      {/* ─── Victory / Reveal Card (Streamlined for Instant Next Round) ──────── */}
       {isFinished && (
-        <section className={`pokedle-result-wrapper ${won ? 'won' : 'lost'}`}>
-          <div className="pokedle-share-card" ref={shareCardRef}>
-            <div className="pokedle-share-card-top">
-              <span className="pokedle-share-card-tag">
-                <Sparkles size={13} />
-                <span>
-                  PoGoDle {playType === 'daily' ? `#${dayNumber}` : '∞'} •{' '}
-                  {mode === 'classic'
-                    ? ui.modeClassic
-                    : mode === 'lore'
-                      ? ui.modeLore
-                      : ui.modeSilhouette}
-                </span>
-              </span>
-              {playType === 'daily' && storage.stats.currentStreak > 0 && (
-                <span className="pokedle-share-card-streak">
-                  🔥 {storage.stats.currentStreak}
-                </span>
-              )}
-            </div>
-
+        <section className={`pokedle-result-wrapper ${won ? 'won' : 'lost'} ${playType}`}>
+          <div className="pokedle-share-card">
             <div className="pokedle-result-hero">
               <img
                 src={getArtworkUrl(target.id)}
                 alt={target.names.en}
-                crossOrigin="anonymous"
                 className="pokedle-result-sprite"
               />
               <div className="pokedle-result-info">
@@ -1247,65 +1406,51 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
                   {targetName} <span className="pokedle-result-dex">#{target.id}</span>
                 </h2>
                 <div className="pokedle-result-badges">
-                  <UnifiedTypeBadge type={target.t1} lang={lang} size="sm" showIcon={true} />
-                  {target.t2 && <UnifiedTypeBadge type={target.t2} lang={lang} size="sm" showIcon={true} />}
-                  <span className="pokedle-result-cp">Max CP {target.cp}</span>
+                  <UnifiedTypeBadge type={target.t1} lang={lang} size="xs" showIcon={true} />
+                  {target.t2 && <UnifiedTypeBadge type={target.t2} lang={lang} size="xs" showIcon={true} />}
+                  <span className="pokedle-result-cp">CP {target.cp}</span>
                   <span className="pokedle-result-tries">{ui.attempts(guesses.length)}</span>
+                  {victoryPercentile !== null && (
+                    <span className="pokedle-percentile-pill">
+                      <Trophy size={11} />
+                      <span>{ui.betterThanPct(victoryPercentile)}</span>
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
-
-            <div className="pokedle-share-watermark">pogoevents.app/{lang}/pokedle</div>
           </div>
 
           <div className="pokedle-result-actions">
-            <button type="button" className="pokedle-action-btn primary" onClick={handleCopyShare}>
-              {copied ? <Check size={16} /> : <Copy size={16} />}
-              <span>{copied ? ui.copied : ui.copyResult}</span>
-            </button>
+            {playType === 'endless' && (
+              <button
+                type="button"
+                className="pokedle-action-btn primary next-cta"
+                onClick={() => startNewEndlessRound(endlessPool, target.id)}
+              >
+                <RefreshCw size={15} />
+                <span>{ui.playAgain}</span>
+              </button>
+            )}
 
-            <button
-              type="button"
-              className="pokedle-action-btn secondary"
-              onClick={handleDownloadPng}
-              disabled={exportingPng}
-            >
-              <Download size={16} />
-              <span>{exportingPng ? ui.downloading : ui.downloadPng}</span>
-            </button>
+            {playType === 'daily' && nextUnsolvedDailyMode && (
+              <button
+                type="button"
+                className="pokedle-action-btn primary next-cta"
+                onClick={() => setMode(nextUnsolvedDailyMode)}
+              >
+                <span>{ui.nextDailyMode}</span>
+                <ArrowRight size={15} />
+              </button>
+            )}
 
             <a
               href={`/${lang}/pokedex/${target.slug}`}
               className="pokedle-action-btn pokedex-bridge"
             >
-              <ExternalLink size={16} />
+              <ExternalLink size={14} />
               <span>{ui.openPokedex}</span>
             </a>
-
-            {nextUnsolvedDailyMode && (
-              <button
-                type="button"
-                className="pokedle-action-btn next-mode"
-                onClick={() => {
-                  setMode(nextUnsolvedDailyMode);
-                  setCopied(false);
-                }}
-              >
-                <span>{ui.nextDailyMode}</span>
-                <ArrowRight size={16} />
-              </button>
-            )}
-
-            {playType === 'endless' && (
-              <button
-                type="button"
-                className="pokedle-action-btn next-mode"
-                onClick={() => startNewEndlessRound(endlessPool, target.id)}
-              >
-                <RefreshCw size={16} />
-                <span>{ui.playAgain}</span>
-              </button>
-            )}
           </div>
         </section>
       )}
@@ -1333,49 +1478,92 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
                 {[...guesses].reverse().map((g) => {
                   const ev = evaluateClassicGuess(g, target);
                   const colMeta = COLOR_META[g.col];
+                  const t1Label = TYPE_TRANSLATIONS[g.t1]?.[lang] || g.t1;
+                  const t2Label = g.t2 ? (TYPE_TRANSLATIONS[g.t2]?.[lang] || g.t2) : ui.typeNone;
+                  const colorLabel = colMeta?.labels[lang] || g.col;
+                  const pokeLocName = getPokedleLocalizedName(g, lang);
                   return (
                     <div key={g.id} className="pokedle-grid-row">
-                      <div className="pokedle-cell pokemon-cell">
+                      <div className="pokedle-cell pokemon-cell" title={pokeLocName}>
                         <img
                           src={getArtworkUrl(g.id)}
                           alt={g.names.en}
                           className="pokedle-row-sprite"
                         />
-                        <span className="pokedle-row-name">{getPokedleLocalizedName(g, lang)}</span>
+                        <span className="pokedle-row-name">{pokeLocName}</span>
                       </div>
 
-                      <div className={`pokedle-cell state-${ev.type1}`}>
-                        <span>{g.t1}</span>
+                      <div
+                        className={`pokedle-cell type-icon-cell state-${ev.type1}`}
+                        title={t1Label}
+                        aria-label={t1Label}
+                      >
+                        <img
+                          src={getTypeSvgUrl(g.t1, isLightMode)}
+                          alt={t1Label}
+                          className="pokedle-grid-type-icon"
+                          onError={(e) => {
+                            const img = e.currentTarget;
+                            if (!img.src.includes('duiker101')) {
+                              img.src = `https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${g.t1.toLowerCase()}.svg`;
+                            }
+                          }}
+                        />
                       </div>
 
-                      <div className={`pokedle-cell state-${ev.type2}`}>
-                        <span>{g.t2 || ui.typeNone}</span>
+                      <div
+                        className={`pokedle-cell type-icon-cell state-${ev.type2}`}
+                        title={t2Label}
+                        aria-label={t2Label}
+                      >
+                        {g.t2 ? (
+                          <img
+                            src={getTypeSvgUrl(g.t2, isLightMode)}
+                            alt={t2Label}
+                            className="pokedle-grid-type-icon"
+                            onError={(e) => {
+                              const img = e.currentTarget;
+                              if (!img.src.includes('duiker101') && g.t2) {
+                                img.src = `https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${g.t2.toLowerCase()}.svg`;
+                              }
+                            }}
+                          />
+                        ) : (
+                          <span className="pokedle-type-none-dash">—</span>
+                        )}
                       </div>
 
-                      <div className={`pokedle-cell state-${ev.gen === 'exact' ? 'exact' : 'wrong'}`}>
-                        <span>Gen {g.gen}</span>
-                        {ev.gen === 'higher' && <ArrowUp size={14} className="pokedle-dir-arrow" />}
-                        {ev.gen === 'lower' && <ArrowDown size={14} className="pokedle-dir-arrow" />}
+                      <div className={`pokedle-cell numeric-cell state-${ev.gen === 'exact' ? 'exact' : 'wrong'}`}>
+                        <span>
+                          <span className="pokedle-gen-prefix">Gen </span>
+                          {g.gen}
+                        </span>
+                        {ev.gen === 'higher' && <ArrowUp size={13} className="pokedle-dir-arrow" />}
+                        {ev.gen === 'lower' && <ArrowDown size={13} className="pokedle-dir-arrow" />}
                       </div>
 
-                      <div className={`pokedle-cell state-${ev.evo === 'exact' ? 'exact' : 'wrong'}`}>
+                      <div className={`pokedle-cell numeric-cell state-${ev.evo === 'exact' ? 'exact' : 'wrong'}`}>
                         <span>{g.evo}</span>
-                        {ev.evo === 'higher' && <ArrowUp size={14} className="pokedle-dir-arrow" />}
-                        {ev.evo === 'lower' && <ArrowDown size={14} className="pokedle-dir-arrow" />}
+                        {ev.evo === 'higher' && <ArrowUp size={13} className="pokedle-dir-arrow" />}
+                        {ev.evo === 'lower' && <ArrowDown size={13} className="pokedle-dir-arrow" />}
                       </div>
 
-                      <div className={`pokedle-cell state-${ev.cp === 'exact' ? 'exact' : 'wrong'}`}>
+                      <div className={`pokedle-cell cp-cell state-${ev.cp === 'exact' ? 'exact' : 'wrong'}`}>
                         <span>{g.cp}</span>
-                        {ev.cp === 'higher' && <ArrowUp size={14} className="pokedle-dir-arrow" />}
-                        {ev.cp === 'lower' && <ArrowDown size={14} className="pokedle-dir-arrow" />}
+                        {ev.cp === 'higher' && <ArrowUp size={13} className="pokedle-dir-arrow" />}
+                        {ev.cp === 'lower' && <ArrowDown size={13} className="pokedle-dir-arrow" />}
                       </div>
 
-                      <div className={`pokedle-cell state-${ev.col}`}>
+                      <div
+                        className={`pokedle-cell color-cell state-${ev.col}`}
+                        title={colorLabel}
+                        aria-label={colorLabel}
+                      >
                         <span
                           className="pokedle-color-dot"
                           style={{ backgroundColor: colMeta?.hex || '#94a3b8' }}
                         />
-                        <span>{colMeta?.labels[lang] || g.col}</span>
+                        <span className="pokedle-color-label">{colorLabel}</span>
                       </div>
                     </div>
                   );
@@ -1544,6 +1732,56 @@ export const PokedleView: React.FC<PokedleViewProps> = ({ lang }) => {
                 <strong>{storage.stats.winsByMode.silhouette || 0}</strong>
               </div>
             </div>
+
+            {globalCommunity && (
+              <div className="pokedle-community-modal-section">
+                <div className="pokedle-community-modal-title">
+                  <Users size={15} />
+                  <span>{ui.communityStatsTitle}</span>
+                </div>
+
+                <div className="pokedle-stats-grid">
+                  <div className="pokedle-stat-box community">
+                    <strong>{globalCommunity.won}</strong>
+                    <span>{ui.communityTotalWon}</span>
+                  </div>
+                  <div className="pokedle-stat-box community">
+                    <strong>{globalCommunity.winRate}%</strong>
+                    <span>{ui.communityWinRate}</span>
+                  </div>
+                  <div className="pokedle-stat-box community">
+                    <strong>{globalCommunity.avgAttempts}</strong>
+                    <span>{ui.communityAvgTries}</span>
+                  </div>
+                </div>
+
+                <div className="pokedle-community-histogram">
+                  <span className="pokedle-histogram-heading">{ui.communityDistribution}</span>
+                  {(() => {
+                    const maxVal = Math.max(
+                      1,
+                      ...ATTEMPT_BUCKETS.map((b) => globalCommunity.attemptBuckets[b] || 0)
+                    );
+                    return ATTEMPT_BUCKETS.map((bucket) => {
+                      const count = globalCommunity.attemptBuckets[bucket] || 0;
+                      const pctWidth = Math.max(count > 0 ? 8 : 0, Math.round((count / maxVal) * 100));
+                      return (
+                        <div key={bucket} className="pokedle-hist-row">
+                          <span className="pokedle-hist-label">{bucket}</span>
+                          <div className="pokedle-hist-bar-track">
+                            <div
+                              className="pokedle-hist-bar-fill"
+                              style={{ width: `${pctWidth}%` }}
+                            />
+                          </div>
+                          <span className="pokedle-hist-count">{count}</span>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
