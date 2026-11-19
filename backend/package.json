@@ -11,7 +11,8 @@
     "start": "node dist/index.js",
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "generate:pokedex": "ts-node src/scripts/generatePokedexCatalog.ts",
-    "generate:pokedex-descriptions": "ts-node src/scripts/generatePokedexDescriptions.ts"
+    "generate:pokedex-descriptions": "ts-node src/scripts/generatePokedexDescriptions.ts",
+    "generate:pokedle": "ts-node src/scripts/generatePokedleData.ts"
   },
   "keywords": [],
   "author": "",

@@ -1,15 +1,15 @@
 'use client';
 
-import React from 'react';
-import Script from 'next/script';
+import React, { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 
 const ADSENSE_CLIENT_ID = 'ca-pub-8800056915088711';
+const ADSENSE_SCRIPT_ID = 'google-adsense-head-script';
 
 /**
  * Route-aware Google AdSense loader.
- * Prevents AdSense from executing on utility screens, admin panels,
- * settings pages, or thin redirect stubs (AdSense Policy: answer/10502938).
+ * Appends a native <script> tag to document.head without Next.js's `data-nscript`
+ * attribute (which triggers "AdSense head tag doesn't support data-nscript attribute").
  */
 export function isAdSenseEligiblePath(pathname: string | null): boolean {
   if (!pathname) return false;
@@ -38,17 +38,17 @@ export const AdSenseScript: React.FC = () => {
   const pathname = usePathname();
   const eligible = isAdSenseEligiblePath(pathname);
 
-  if (!eligible) {
-    return null;
-  }
+  useEffect(() => {
+    if (!eligible || typeof document === 'undefined') return;
+    if (document.getElementById(ADSENSE_SCRIPT_ID)) return;
 
-  return (
-    <Script
-      id="google-adsense"
-      async
-      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
-      crossOrigin="anonymous"
-      strategy="afterInteractive"
-    />
-  );
+    const script = document.createElement('script');
+    script.id = ADSENSE_SCRIPT_ID;
+    script.async = true;
+    script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`;
+    script.crossOrigin = 'anonymous';
+    document.head.appendChild(script);
+  }, [eligible]);
+
+  return null;
 };

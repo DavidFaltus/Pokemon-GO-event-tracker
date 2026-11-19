@@ -8,7 +8,8 @@ import {
   Sparkles,
   ArrowUpDown,
   Info,
-  RotateCcw
+  RotateCcw,
+  Gamepad2
 } from 'lucide-react';
 
 import {
@@ -302,16 +303,35 @@ export const PokedexView: React.FC<PokedexViewProps> = ({ lang }) => {
             </p>
           </div>
 
-          {/* Master 1-Click Shiny Toggle */}
-          <button
-            type="button"
-            className={`pokedex-shiny-master-btn ${isShinyMaster ? 'active' : ''}`}
-            onClick={handleToggleShinyMaster}
-            title="1-Click Shiny Preview for all Pokémon"
-          >
-            <Sparkles size={18} />
-            <span>{t.pokedex_shiny_toggle || 'Shiny režim'}</span>
-          </button>
+          {/* Daily PoGoDle CTA + Master 1-Click Shiny Toggle */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+            <Link
+              href={`/${lang}/pokedle`}
+              className="pokedex-pokedle-cta-btn"
+              title="PoGoDle"
+            >
+              <Gamepad2 size={17} />
+              <span>
+                {lang === 'cs'
+                  ? 'Denní PoGoDle'
+                  : lang === 'ja'
+                    ? '毎日PoGoDle'
+                    : lang === 'ru'
+                      ? 'Играть PoGoDle'
+                      : 'Play PoGoDle'}
+              </span>
+            </Link>
+
+            <button
+              type="button"
+              className={`pokedex-shiny-master-btn ${isShinyMaster ? 'active' : ''}`}
+              onClick={handleToggleShinyMaster}
+              title="1-Click Shiny Preview for all Pokémon"
+            >
+              <Sparkles size={18} />
+              <span>{t.pokedex_shiny_toggle || 'Shiny režim'}</span>
+            </button>
+          </div>
         </div>
 
         {/* ─── Search & Sort Bar ────────────────────────────────────────────── */}

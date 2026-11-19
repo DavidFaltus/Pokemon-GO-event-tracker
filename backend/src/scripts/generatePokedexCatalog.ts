@@ -621,10 +621,15 @@ function formatSlug(name: string): string {
     .replace(/^-|-$/g, '');
 }
 
+const MYTHICAL_DEX_IDS = new Set<number>([
+  151, 251, 385, 386, 489, 490, 491, 492, 493, 494,
+  647, 648, 649, 719, 720, 721, 801, 802, 807, 808, 809, 893, 1025
+]);
+
 function getRarityClass(p: any): string {
   const dex = p.dexNr;
+  if (p.pokemonClass === 'POKEMON_CLASS_MYTHIC' || p.pokemonClass === 'POKEMON_CLASS_MYTHICAL' || MYTHICAL_DEX_IDS.has(dex)) return 'mythical';
   if (p.pokemonClass === 'POKEMON_CLASS_LEGENDARY') return 'legendary';
-  if (p.pokemonClass === 'POKEMON_CLASS_MYTHICAL') return 'mythical';
   if (p.pokemonClass === 'POKEMON_CLASS_ULTRA_BEAST') return 'ultra_beast';
   if (PARADOX_DEX_IDS.has(dex)) return 'paradox';
   if (STARTER_DEX_IDS.has(dex)) return 'starter';
@@ -757,6 +762,19 @@ async function main() {
     return Array.from(visited).sort((a, b) => a - b);
   }
 
+  // Load official Cyrillic Russian names from PokeMiners i18n_russian.json cache if present
+  const ruI18nPath = path.resolve(__dirname, '../../.cache/pokedex_i18n/i18n_russian.json');
+  const ruNameMap = new Map<number, string>();
+  if (fs.existsSync(ruI18nPath)) {
+    const ruJson = JSON.parse(fs.readFileSync(ruI18nPath, 'utf-8')) as { data: string[] };
+    for (let i = 0; i < ruJson.data.length; i += 2) {
+      const m = ruJson.data[i].match(/^pokemon_name_(\d{4})$/);
+      if (m && /[А-Яа-яЁё]/.test(ruJson.data[i + 1])) {
+        ruNameMap.set(Number(m[1]), ruJson.data[i + 1].trim());
+      }
+    }
+  }
+
   // 2. Synthesize each species
   const catalogEntries: any[] = [];
 
@@ -764,6 +782,7 @@ async function main() {
     const dexId = p.dexNr;
     const nameEn = p.names?.English || p.id;
     const nameJa = p.names?.Japanese || nameEn;
+    const nameRu = ruNameMap.get(dexId) || nameEn;
     const slug = formatSlug(nameEn);
 
     // Canonical Base Types Correction (Zacian & Zamazenta Hero forms)
@@ -1091,7 +1110,7 @@ async function main() {
         cs: nameEn,
         en: nameEn,
         ja: nameJa,
-        ru: nameEn
+        ru: nameRu
       },
       types,
       stats,

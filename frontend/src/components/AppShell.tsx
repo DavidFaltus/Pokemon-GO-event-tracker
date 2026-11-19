@@ -7,11 +7,11 @@ import { translations, type Language } from '../data/translations';
 import { PokeballLogo } from './PokeballLogo';
 import { Footer } from './Footer';
 import { LegalModals, type LegalModalType } from './LegalModals';
-import { Calendar, Swords, Shield, Clock, Egg, Sparkles, Trophy, Filter, Settings, BookOpen, Download, Users, ScrollText, Zap, X, Search, ChevronRight, Sun, Moon } from 'lucide-react';
+import { Calendar, Swords, Shield, Clock, Egg, Sparkles, Trophy, Filter, Settings, BookOpen, Download, Users, ScrollText, Zap, X, Search, ChevronRight, Sun, Moon, Gamepad2 } from 'lucide-react';
 import { apiFetch } from '../config';
 import { useTheme } from '../context/ThemeContext';
 
-export type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'research' | 'ditto' | 'eggs' | 'ranking' | 'pokedex' | 'filter' | 'settings' | 'admin' | 'download' | 'types' | '404';
+export type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'research' | 'ditto' | 'eggs' | 'ranking' | 'pokedex' | 'pokedle' | 'filter' | 'settings' | 'admin' | 'download' | 'types' | '404';
 
 const InstagramLogo = ({ size = 15, color = '#ffffff' }: { size?: number; color?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, display: 'inline-block', verticalAlign: 'middle' }}>
@@ -74,6 +74,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
     if (cleanPath.includes('/research')) return 'research';
     if (cleanPath.includes('/ditto')) return 'ditto';
     if (cleanPath.includes('/eggs')) return 'eggs';
+    if (cleanPath.includes('/pokedle')) return 'pokedle';
     if (cleanPath.includes('/pokedex')) return 'pokedex';
     if (cleanPath.includes('/rankings') || cleanPath.includes('/pokemon')) return 'ranking';
     if (cleanPath.includes('/filter')) return 'filter';
@@ -97,6 +98,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
       case 'research': return `${prefix}/guides/field-research-tasks-guide`;
       case 'ranking': return `${prefix}/rankings`;
       case 'pokedex': return `${prefix}/pokedex`;
+      case 'pokedle': return `${prefix}/pokedle`;
       case 'ditto': return `${prefix}/guides/ditto-disguises-guide`;
       case 'eggs': return `${prefix}/guides/egg-hatching-guide`;
       case 'filter': return `${prefix}/filter`;
@@ -201,6 +203,14 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
       keywords: ['guides', 'průvodce', 'návody', 'infografiky', 'infographics', 'tips', 'гайды', 'ガイド', 'ditto', 'maskování', 'disguise', 'eggs', 'vejce', 'líhnutí', 'research', 'výzkum', 'úkoly', 'field', 'quest']
     },
     // Tools & More
+    {
+      tab: 'pokedle',
+      icon: <Gamepad2 size={20} style={{ color: '#a855f7' }} />,
+      title: (t as any).tabs_pokedle || 'PoGoDle',
+      description: lang === 'cs' ? 'Denní hádací hra (Klasický, Hláška, Silueta)' : (lang === 'ja' ? '毎日ポケモン当てクイズ（3モード）' : (lang === 'ru' ? 'Ежедневная угадайка покемонов' : 'Daily Pokémon GO guessing game')),
+      category: 'tools',
+      keywords: ['pokedle', 'pogodle', 'hra', 'kviz', 'kvíz', 'game', 'quiz', 'wordle', 'hádanka', 'silueta', 'クイズ', 'игра', 'викторина']
+    },
     {
       tab: 'filter',
       icon: <Filter size={20} style={{ color: '#06b6d4' }} />,
@@ -337,6 +347,11 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
           <Link href={getSectionPath(lang, 'pokedex')} className={`sidebar-nav-item ${activeTab === 'pokedex' ? 'active' : ''}`}>
             <BookOpen size={18} />
             <span>{t.tabs_pokedex || 'Pokédex'}</span>
+          </Link>
+
+          <Link href={getSectionPath(lang, 'pokedle')} className={`sidebar-nav-item ${activeTab === 'pokedle' ? 'active' : ''}`}>
+            <Gamepad2 size={18} />
+            <span>{(t as any).tabs_pokedle || 'PoGoDle'}</span>
           </Link>
 
           <Link href={getSectionPath(lang, 'ranking')} className={`sidebar-nav-item ${activeTab === 'ranking' ? 'active' : ''}`}>

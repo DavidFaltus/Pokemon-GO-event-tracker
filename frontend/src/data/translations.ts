@@ -3,6 +3,7 @@ export type Language = 'cs' | 'en' | 'ja' | 'ru';
 export const translations = {
   cs: {
     tabs_pokedex: "Pokédex",
+    tabs_pokedle: "PoGoDle",
     pokedex_title: "Kompletní Pokédex Pokémon GO",
     pokedex_subtitle: "Všech 1 024+ Pokémonů, Dynamax, Gigantamax, Mega evoluce & Shiny varianty",
     pokedex_search_placeholder: "Hledat Pokémona (jméno, #číslo nebo typ)...",
@@ -400,6 +401,7 @@ export const translations = {
   },
   en: {
     tabs_pokedex: "Pokédex",
+    tabs_pokedle: "PoGoDle",
     pokedex_title: "Complete Pokémon GO Pokédex",
     pokedex_subtitle: "All 1,024+ Pokémon, Dynamax, Gigantamax, Mega Evolutions & Shiny variants",
     pokedex_search_placeholder: "Search Pokémon (name, #dex or type)...",
@@ -798,6 +800,7 @@ export const translations = {
 
   ja: {
     tabs_pokedex: "ポケモン図鑑",
+    tabs_pokedle: "PoGoDle",
     pokedex_title: "ポケモンGO 完全図鑑",
     pokedex_subtitle: "全1024匹、ダイマックス、キョダイマックス、メガシンカ、色違い対応",
     pokedex_search_placeholder: "ポケモンを検索 (名前・図鑑No・タイプ)...",
@@ -1196,6 +1199,7 @@ export const translations = {
 
   ru: {
     tabs_pokedex: "Покедекс",
+    tabs_pokedle: "PoGoDle",
     pokedex_title: "Полный Покедекс Pokémon GO",
     pokedex_subtitle: "Все 1024+ покемонов, Динамакс, Гигантамакс, Мега-эволюции и шайни",
     pokedex_search_placeholder: "Поиск покемона (имя, #номер или тип)...",

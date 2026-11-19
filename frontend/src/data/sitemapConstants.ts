@@ -1,6 +1,7 @@
 export const CORE_SECTIONS = [
   { path: '', priority: 1.0, changeFrequency: 'hourly' as const },
   { path: '/pokedex', priority: 0.95, changeFrequency: 'daily' as const },
+  { path: '/pokedle', priority: 0.92, changeFrequency: 'daily' as const },
   { path: '/friends', priority: 0.92, changeFrequency: 'daily' as const },
   { path: '/raids', priority: 0.9, changeFrequency: 'daily' as const },
   { path: '/rankings', priority: 0.9, changeFrequency: 'daily' as const },
