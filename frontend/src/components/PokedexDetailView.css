@@ -329,8 +329,89 @@
 
 .pokedex-detail-variant-chips {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
+}
+
+.pokedex-variant-chip {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 13px;
+  border-radius: 100px;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 750;
+  line-height: 1.2;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.15s ease, box-shadow 0.18s ease;
+}
+
+.pokedex-variant-chip:hover {
+  background: rgba(168, 85, 247, 0.14);
+  border-color: rgba(168, 85, 247, 0.45);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.pokedex-variant-chip.active {
+  background: var(--accent-gradient);
+  border-color: var(--accent-color);
+  color: #ffffff;
+  box-shadow: 0 2px 12px rgba(170, 59, 255, 0.35);
+}
+
+.pokedex-variant-chip:focus-visible {
+  outline: 2px solid var(--cyan-accent);
+  outline-offset: 2px;
+}
+
+/* Official Pokédex Lore Quote Box */
+.pokedex-detail-lore-box {
+  margin: 2px 0 0 0;
+  padding: 12px 15px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(56, 189, 248, 0.04) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.22);
+  border-left: 3px solid var(--accent-color);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pokedex-detail-lore-text {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.pokedex-detail-lore-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+}
+
+.pokedex-detail-lore-meta svg {
+  color: var(--accent-color);
+  flex-shrink: 0;
+}
+
+.pokedex-detail-lore-cite {
+  font-style: normal;
+  color: var(--cyan-accent);
+  font-weight: 750;
 }
 
 /* Key Stats Strip */
@@ -1053,4 +1134,42 @@ body.light-mode .pokedex-adventure-effect-box {
 
 body.light-mode .pokedex-adventure-desc {
   color: #1e293b !important;
+}
+
+/* Light mode overrides for Variant Chips & Pokédex Lore Box */
+body.light-mode .pokedex-variant-chip {
+  background: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  color: #334155 !important;
+}
+
+body.light-mode .pokedex-variant-chip:hover {
+  background: rgba(126, 34, 206, 0.08) !important;
+  border-color: rgba(126, 34, 206, 0.35) !important;
+  color: #0f172a !important;
+}
+
+body.light-mode .pokedex-variant-chip.active {
+  background: var(--accent-gradient) !important;
+  border-color: #7e22ce !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 10px rgba(126, 34, 206, 0.25) !important;
+}
+
+body.light-mode .pokedex-detail-lore-box {
+  background: linear-gradient(135deg, #faf5ff 0%, #f0f9ff 100%) !important;
+  border-color: rgba(126, 34, 206, 0.2) !important;
+  border-left-color: #7e22ce !important;
+}
+
+body.light-mode .pokedex-detail-lore-text {
+  color: #1e293b !important;
+}
+
+body.light-mode .pokedex-detail-lore-meta {
+  color: #475569 !important;
+}
+
+body.light-mode .pokedex-detail-lore-cite {
+  color: #0369a1 !important;
 }

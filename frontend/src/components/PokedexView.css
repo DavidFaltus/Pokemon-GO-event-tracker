@@ -1018,6 +1018,12 @@ body.light-mode .pokedex-moves-box {
   color: #1e293b !important;
 }
 
+body.light-mode .pokedex-variant-chip.active {
+  background: var(--accent-gradient) !important;
+  border-color: #7e22ce !important;
+  color: #ffffff !important;
+}
+
 body.light-mode .pokedex-cp-table {
   background-color: #f8fafc !important;
   border-color: rgba(15, 23, 42, 0.12) !important;

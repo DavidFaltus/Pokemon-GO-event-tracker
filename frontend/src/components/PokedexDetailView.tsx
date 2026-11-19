@@ -20,7 +20,8 @@ import {
   CheckCircle2,
   Clock,
   Layers,
-  HelpCircle
+  HelpCircle,
+  BookOpen
 } from 'lucide-react';
 
 import {
@@ -29,6 +30,7 @@ import {
   type PokedexVariant,
   type PokemonType
 } from '../data/pokedexCatalog';
+import type { PokedexDescriptionEntry } from '../types/pokedexDescription';
 import { translations, type Language } from '../data/translations';
 import { getPokemonName, getStatusTagName } from '../utils/pokemonTranslator';
 import { UnifiedTypeBadge, TYPE_COLORS } from '../utils/typeBadgeHelper';
@@ -59,9 +61,10 @@ const ALL_TYPES: PokemonType[] = [
 interface PokedexDetailViewProps {
   entry: PokedexCatalogEntry;
   lang: Language;
+  description?: PokedexDescriptionEntry | null;
 }
 
-export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lang }) => {
+export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lang, description }) => {
   const t = translations[lang] || translations.en;
 
   const [activeVariantId, setActiveVariantId] = useState<string | null>(null);
@@ -80,13 +83,18 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
       const variantParam = urlParams.get('variant');
       if (variantParam && entry.variants && entry.variants.length > 0) {
         const lowerParam = variantParam.toLowerCase();
-        const found = entry.variants.find(
-          (v) =>
-            v.id.toLowerCase() === lowerParam ||
-            v.category.toLowerCase() === lowerParam ||
-            v.name.en.toLowerCase() === lowerParam ||
-            v.id.toLowerCase().replace(/_/g, '-') === lowerParam
-        );
+        const withoutShadow = lowerParam.replace(/_shadow$/, '');
+        const found =
+          entry.variants.find(
+            (v) =>
+              v.id.toLowerCase() === lowerParam ||
+              v.category.toLowerCase() === lowerParam ||
+              v.name.en.toLowerCase() === lowerParam ||
+              v.id.toLowerCase().replace(/_/g, '-') === lowerParam
+          ) ||
+          (withoutShadow !== lowerParam
+            ? entry.variants.find((v) => v.id.toLowerCase() === withoutShadow)
+            : undefined);
         if (found) {
           setActiveVariantId(found.id);
         }
@@ -117,6 +125,14 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
   const currentCp = activeVariant ? activeVariant.maxCp : entry.maxCp.lv50;
   const currentQuickMoves = activeVariant?.quickMoves && activeVariant.quickMoves.length > 0 ? activeVariant.quickMoves : entry.quickMoves;
   const currentCinematicMoves = activeVariant?.cinematicMoves && activeVariant.cinematicMoves.length > 0 ? activeVariant.cinematicMoves : entry.cinematicMoves;
+
+  const activeDescription = useMemo(() => {
+    if (!description) return null;
+    if (activeVariant && description.variants?.[activeVariant.id]) {
+      return description.variants[activeVariant.id];
+    }
+    return { text: description.text, source: description.source };
+  }, [description, activeVariant]);
 
   // Prev & Next Pokémon
   const prevEntry = POKEDEX_MAP[entry.dexId - 1] || null;
@@ -362,6 +378,21 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
               />
             ))}
           </div>
+
+          {/* Official Pokédex Description (syncs dynamically with active form/variant) */}
+          {activeDescription && activeDescription.text && (
+            <figure className="pokedex-detail-lore-box">
+              <blockquote className="pokedex-detail-lore-text">
+                {activeDescription.text}
+              </blockquote>
+              <figcaption className="pokedex-detail-lore-meta">
+                <BookOpen size={13} aria-hidden="true" />
+                <span>{(t as any).pokedex_detail_lore_label || 'Pokédex'}</span>
+                <span aria-hidden="true">•</span>
+                <cite className="pokedex-detail-lore-cite">{activeDescription.source}</cite>
+              </figcaption>
+            </figure>
+          )}
 
           {/* Form / Variant Switcher Pills */}
           {entry.variants.length > 0 && (

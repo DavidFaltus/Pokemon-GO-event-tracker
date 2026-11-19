@@ -89,6 +89,7 @@ export const translations = {
     pokedex_detail_pvp_title: "PvP GO Battle League hodnocení",
     pokedex_detail_counters_title: "Nejlepší Raid Counters & Protiútoky",
     pokedex_detail_variants_title: "Dostupné formy & varianty",
+    pokedex_detail_lore_label: "Pokédex záznam",
     pokedex_elite_move: "Elite TM",
     pokedex_base_form: "Základní forma",
     // Nav
@@ -485,6 +486,7 @@ export const translations = {
     pokedex_detail_pvp_title: "GO Battle League PvP Viability",
     pokedex_detail_counters_title: "Top Raid Counters & Matchups",
     pokedex_detail_variants_title: "Available Forms & Variants",
+    pokedex_detail_lore_label: "Pokédex Entry",
     pokedex_elite_move: "Elite TM",
     pokedex_base_form: "Base Form",
     // Nav
@@ -882,6 +884,7 @@ export const translations = {
     pokedex_detail_pvp_title: "GOバトルリーグ (PvP) 評価",
     pokedex_detail_counters_title: "おすすめレイド対策ポケモン",
     pokedex_detail_variants_title: "利用可能なフォルム & バリエーション",
+    pokedex_detail_lore_label: "ポケモン図鑑",
     pokedex_elite_move: "すごいわざマシン",
     pokedex_base_form: "通常フォルム",
     // Nav
@@ -1279,6 +1282,7 @@ export const translations = {
     pokedex_detail_pvp_title: "Оценка в GO Battle League (PvP)",
     pokedex_detail_counters_title: "Лучшие контр-пики для рейдов",
     pokedex_detail_variants_title: "Доступные формы и варианты",
+    pokedex_detail_lore_label: "Запись Покедекса",
     pokedex_elite_move: "Elite TM",
     pokedex_base_form: "Базовая форма",
     // Nav

@@ -49,14 +49,29 @@ describe('Pokedex Catalog Engine', () => {
     expect(galar?.types).toContain('Steel');
   });
 
-  it('retrieves Kyogre (#382) with Primal Reversion', () => {
+  it('retrieves Kyogre (#382), Groudon (#383), and Rayquaza (#384) with exact PokeAPI artwork IDs', () => {
     const kyogre = getPokedexEntryById(382);
     expect(kyogre).toBeDefined();
+    const primalKyogre = kyogre?.variants.find((v) => v.category === 'primal');
+    expect(primalKyogre).toBeDefined();
+    expect(primalKyogre?.name.ja).toContain('ゲンシ');
+    expect(primalKyogre?.spriteOverrides?.officialArtwork).toContain('10077.png');
 
-    const primal = kyogre?.variants.find((v) => v.category === 'primal');
-    expect(primal).toBeDefined();
-    expect(primal?.name.ja).toContain('ゲンシ');
-    expect(primal?.spriteOverrides?.officialArtwork).toContain('10075.png');
+    const groudon = getPokedexEntryById(383);
+    const primalGroudon = groudon?.variants.find((v) => v.category === 'primal');
+    expect(primalGroudon?.spriteOverrides?.officialArtwork).toContain('10078.png');
+
+    const rayquaza = getPokedexEntryById(384);
+    const megaRayquaza = rayquaza?.variants.find((v) => v.id === 'RAYQUAZA_MEGA');
+    expect(megaRayquaza?.spriteOverrides?.officialArtwork).toContain('10079.png');
+
+    const metagross = getPokedexEntryById(376);
+    const megaMetagross = metagross?.variants.find((v) => v.id === 'METAGROSS_MEGA');
+    expect(megaMetagross?.spriteOverrides?.officialArtwork).toContain('10076.png');
+
+    const eiscue = getPokedexEntryById(875);
+    const noice = eiscue?.variants.find((v) => v.id === 'EISCUE_NOICE');
+    expect(noice?.spriteOverrides?.officialArtwork).toContain('10185.png');
   });
 
   it('retrieves species by slug correctly', () => {

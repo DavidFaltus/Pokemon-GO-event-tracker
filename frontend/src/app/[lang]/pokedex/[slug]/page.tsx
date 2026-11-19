@@ -6,6 +6,7 @@ import {
   getPokedexEntryBySlug,
   getPokedexEntryById
 } from '@/data/pokedexCatalog';
+import { getPokedexDescription } from '@/data/pokedexDescriptions';
 import { getPokemonName } from '@/utils/pokemonTranslator';
 import { buildAlternates } from '@/utils/seoHelper';
 import { isTopMetaPokedexEntry, generatePokedexEditorialAnalysis } from '@/utils/pokedexSeoHelper';
@@ -128,6 +129,7 @@ export default async function PokedexDetailPage({ params }: PokedexDetailPagePro
   }
 
   const editorial = generatePokedexEditorialAnalysis(entry, validLang);
+  const description = getPokedexDescription(entry.dexId, validLang);
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -166,7 +168,7 @@ export default async function PokedexDetailPage({ params }: PokedexDetailPagePro
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <PokedexDetailView entry={entry} lang={validLang} />
+      <PokedexDetailView entry={entry} lang={validLang} description={description} />
     </>
   );
 }

@@ -158,23 +158,24 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
   const [rankingMode, setRankingMode] = useState<'er' | 'basic'>('er');
   const [onlyReleased, setOnlyReleased] = useState<boolean>(true);
   const [visibleCount, setVisibleCount] = useState(40);
-  const [rankingsData, setRankingsData] = useState<PokemonRankData[]>(pokemonRankings);
+  const [rankingsData] = useState<PokemonRankData[]>(pokemonRankings);
 
-  // Background SWR revalidation with backend /api/rankings endpoint
-  useEffect(() => {
-    let isMounted = true;
-    fetch('/api/rankings')
-      .then(res => {
-        if (res.ok) return res.json();
-        return null;
-      })
-      .then(freshData => {
-        if (isMounted && Array.isArray(freshData) && freshData.length > 0) {
-          setRankingsData(freshData);
-        }
-      })
-      .catch(() => {});
-    return () => { isMounted = false; };
+  const handleOpenPokemonDetail = useCallback((e: React.MouseEvent, url: string) => {
+    const target = e.target as HTMLElement | null;
+    if (target?.closest('a, button, .meta-ranking-badge')) {
+      return;
+    }
+    if (typeof window !== 'undefined') {
+      const selection = window.getSelection?.();
+      if (selection && selection.toString().trim().length > 0) {
+        return;
+      }
+      if (e.metaKey || e.ctrlKey) {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      } else {
+        window.location.assign(url);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -778,7 +779,7 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
               <div 
                 key={pokeKey} 
                 className={`ranking-pokemon-row ${!isExpanded ? 'collapsed' : ''} ${!isReleased ? 'unreleased-pokemon' : ''}`}
-                onClick={() => router.push(pokedexUrl)}
+                onClick={(e) => handleOpenPokemonDetail(e, pokedexUrl)}
                 style={{ cursor: 'pointer' }}
               >
                 <div className="ranking-row-top-main">
@@ -893,7 +894,12 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
                     </div>
                   )}
 
-                  <div className="ranking-poke-img-wrapper" style={{ position: 'relative' }}>
+                  <a
+                    href={pokedexUrl}
+                    className="ranking-poke-img-wrapper"
+                    style={{ position: 'relative', textDecoration: 'none' }}
+                    aria-label={getPokemonName(poke.name, lang)}
+                  >
                     <img 
                       src={resolveImage(undefined, undefined, poke.name, false)} 
                       alt={poke.name} 
@@ -929,18 +935,17 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
                         onError={(e) => handleMegaIconError(e.target as HTMLImageElement)}
                       />
                     )}
-                  </div>
+                  </a>
 
                   <div className="ranking-poke-main-info">
                     <div className="poke-title-flex">
-                      <Link
-                        href={`/${lang}/pokedex/${poke.slug || POKEDEX_MAP[poke.pokedexId]?.slug || poke.pokedexId}${poke.variantId ? `?variant=${encodeURIComponent(poke.variantId)}` : ''}`}
+                      <a
+                        href={pokedexUrl}
                         className="poke-name"
-                        onClick={(e) => e.stopPropagation()}
                         style={{ color: 'inherit', textDecoration: 'none' }}
                       >
                         {getPokemonName(poke.name, lang)}
-                      </Link>
+                      </a>
                       <span className="poke-dex-id">#{poke.pokedexId}</span>
                     </div>
                     <div className="poke-badges-flex">
@@ -1140,29 +1145,38 @@ export const PokemonRankingsView: React.FC<PokemonRankingsViewProps> = ({
                           <span className="counter-box-lbl" style={{ marginBottom: '4px' }}>
                             {t.ranking_top_counters}:
                           </span>
-                          {topCounters.map((cp, idx) => (
-                            <div key={idx} className="counter-poke-item">
-                              <span className="counter-poke-rank">#{idx + 1}</span>
-                              <img
-                                src={resolveImage(undefined, undefined, cp.pokemon.name)}
-                                alt={cp.pokemon.name}
-                                className="counter-poke-img"
-                                onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, cp.pokemon.name)}
-                              />
-                              <div className="counter-poke-info">
-                                <span className="counter-poke-name">{getPokemonName(cp.pokemon.name, lang)}</span>
-                                <span className="counter-poke-moves">
-                                  <MoveTypeBadgeWithIcon type={cp.pokemon.bestFastMove.type} />
-                                  <span className="counter-moves-text">
-                                    {cp.pokemon.bestFastMove.name} + {cp.pokemon.bestChargedMove.name}
+                          {topCounters.map((cp, idx) => {
+                            const counterSlug = cp.pokemon.slug || POKEDEX_MAP[cp.pokemon.pokedexId]?.slug || cp.pokemon.pokedexId;
+                            const counterHref = `/${lang}/pokedex/${counterSlug}${cp.pokemon.variantId ? `?variant=${encodeURIComponent(cp.pokemon.variantId)}` : ''}`;
+                            return (
+                              <a
+                                key={idx}
+                                href={counterHref}
+                                className="counter-poke-item"
+                                style={{ textDecoration: 'none', color: 'inherit' }}
+                              >
+                                <span className="counter-poke-rank">#{idx + 1}</span>
+                                <img
+                                  src={resolveImage(undefined, undefined, cp.pokemon.name)}
+                                  alt={cp.pokemon.name}
+                                  className="counter-poke-img"
+                                  onError={(e) => handlePokemonImageError(e.target as HTMLImageElement, cp.pokemon.name)}
+                                />
+                                <div className="counter-poke-info">
+                                  <span className="counter-poke-name">{getPokemonName(cp.pokemon.name, lang)}</span>
+                                  <span className="counter-poke-moves">
+                                    <MoveTypeBadgeWithIcon type={cp.pokemon.bestFastMove.type} />
+                                    <span className="counter-moves-text">
+                                      {cp.pokemon.bestFastMove.name} + {cp.pokemon.bestChargedMove.name}
+                                    </span>
                                   </span>
+                                </div>
+                                <span className="counter-score-pill">
+                                  {cp.counterRating} {t.ranking_points_short}
                                 </span>
-                              </div>
-                              <span className="counter-score-pill">
-                                {cp.counterRating} {t.ranking_points_short}
-                              </span>
-                            </div>
-                          ))}
+                              </a>
+                            );
+                          })}
                         </div>
                       </div>
                     </div>

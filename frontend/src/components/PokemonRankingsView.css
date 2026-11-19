@@ -515,6 +515,21 @@ subtle-glow {
   font-size: 1.05rem;
   font-weight: 800;
   color: var(--text-primary);
+  transition: color 0.15s ease;
+}
+
+.ranking-pokemon-row:hover .poke-name,
+a.poke-name:hover {
+  color: var(--cyan-accent);
+}
+
+.counter-poke-item {
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+a.counter-poke-item:hover {
+  border-color: rgba(56, 189, 248, 0.45);
+  transform: translateY(-1px);
 }
 
 .poke-dex-id {
