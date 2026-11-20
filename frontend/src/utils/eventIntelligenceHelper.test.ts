@@ -74,10 +74,14 @@ describe('eventIntelligenceHelper & AdSense route guard', () => {
     expect(intel.spawnBreakdowns[0].pvpFilterString).toContain('0-1attack');
   });
 
-  it('filters canceled and micro events from sitemap while localizing and paraphrasing event bonuses', () => {
+  it('filters canceled, spotlight, promo, and empty 2027 placeholder events from sitemap while localizing and paraphrasing event bonuses', () => {
     expect(isCanceledEvent({ name: '[Canceled] Max Monday', eventID: 'max-mondays-2026-11-16' })).toBe(true);
     expect(isSitemapWorthyEvent({ name: '[Canceled] Max Monday', eventID: 'max-mondays-2026-11-16' })).toBe(false);
     expect(isSitemapWorthyEvent({ name: 'GBL Great League', eventID: 'gbl-twilight-trails_great-league' })).toBe(false);
+    expect(isSitemapWorthyEvent({ name: 'Spotlight Hour', eventID: 'pokemonspotlighthour2026-11-19', eventType: 'pokemon-spotlight-hour' })).toBe(false);
+    expect(isSitemapWorthyEvent({ name: 'Pokémon x Adidas', eventID: 'pokemon-x-adidas-2026' })).toBe(false);
+    expect(isSitemapWorthyEvent({ name: 'Super Mega Raid Day', eventID: 'super-mega-raid-day-january-2027' })).toBe(false);
+    expect(isSitemapWorthyEvent({ name: 'Minior Showers', eventID: 'minior-showers-perseids-2027' })).toBe(false);
     expect(isSitemapWorthyEvent({ name: 'Twilight Trails Season', eventID: 'season-24-twilight-trails' })).toBe(true);
 
     const rawBonus = 'One guaranteed Candy XL when trading Pokémon for Trainers level 31 and above';
@@ -92,7 +96,8 @@ describe('eventIntelligenceHelper & AdSense route guard', () => {
     expect(localizeEventBonus('Some completely arbitrary unrecognized English promo sentence', 'cs')).toBeNull();
   });
 
-  it('uses strict editorial whitelist for AdSense script and blocks game/utility/noindex routes', () => {
+  it('uses strict editorial whitelist for AdSense script including root / and blocks game/utility/noindex/spotlight routes', () => {
+    expect(isAdSenseEligiblePath('/')).toBe(true);
     expect(isAdSenseEligiblePath('/cs')).toBe(true);
     expect(isAdSenseEligiblePath('/en/guides')).toBe(true);
     expect(isAdSenseEligiblePath('/cs/guides/galarian-birds-encounter-catch-guide')).toBe(true);
@@ -108,6 +113,7 @@ describe('eventIntelligenceHelper & AdSense route guard', () => {
     expect(isAdSenseEligiblePath('/cs/pokedex/mewtwo')).toBe(false);
     expect(isAdSenseEligiblePath('/cs/types/fire')).toBe(false);
     expect(isAdSenseEligiblePath('/cs/events/max-mondays-2026-11-16')).toBe(false);
+    expect(isAdSenseEligiblePath('/cs/events/pokemonspotlighthour2026-11-19')).toBe(false);
     expect(isAdSenseEligiblePath('/en/events/gbl-twilight-trails')).toBe(false);
     expect(isAdSenseEligiblePath('/cs/privacy')).toBe(false);
     expect(isAdSenseEligiblePath('/cs/settings')).toBe(false);

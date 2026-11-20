@@ -337,7 +337,7 @@ export function getBasePokemonNames(): string[] {
 }
 
 export function getBasePokemonName(name: string): string {
-  if (!name) return '';
+  if (!name || typeof name !== 'string') return '';
   let baseName = name.trim();
 
   // If title contains multiple pokemon names separated by comma, and, or &, pick the first item
@@ -766,6 +766,42 @@ export function resolveImage(url: string | undefined, eventType?: string, name?:
   }
 
   return url;
+}
+
+/**
+ * Recursively strips/rewrites external leekduck.com URLs from SSR event/raid payloads
+ * before serializing props into Next.js RSC HTML, ensuring zero hotlinks leak into static pages.
+ */
+export function sanitizeExternalMediaForSsr<T>(value: T): T {
+  const walk = (val: any): any => {
+    if (typeof val === 'string') {
+      if (val.includes('cdn.leekduck.com')) {
+        return resolveImage(val);
+      }
+      if (val.includes('leekduck.com')) {
+        return '';
+      }
+      return val;
+    }
+    if (Array.isArray(val)) return val.map(walk);
+    if (val && typeof val === 'object') {
+      const out: Record<string, any> = {};
+      for (const [k, v] of Object.entries(val)) {
+        if ((k === 'image' || k === 'icon') && typeof v === 'string' && v.includes('leekduck.com')) {
+          const safeType = typeof val.eventType === 'string' ? val.eventType : undefined;
+          const safeName = typeof val.name === 'string' ? val.name : (typeof val.name?.en === 'string' ? val.name.en : undefined);
+          out[k] = resolveImage(v, safeType, safeName);
+        } else if (k === 'link' && typeof v === 'string' && v.includes('leekduck.com')) {
+          out[k] = '';
+        } else {
+          out[k] = walk(v);
+        }
+      }
+      return out;
+    }
+    return val;
+  };
+  return walk(value);
 }
 
 /**

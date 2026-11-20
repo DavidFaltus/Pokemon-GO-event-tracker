@@ -736,7 +736,7 @@ export default async function RocketLeaderPage({ params }: PageProps) {
         description: info.desc,
         url: canonicalUrl,
         mainEntityOfPage: canonicalUrl,
-        author: { '@type': 'Organization', name: 'PoGo Events Tracker', url: 'https://pogoevents.app' },
+        author: { '@type': 'Person', name: 'David Faltus', url: `https://pogoevents.app/${lang}/about` },
         publisher: {
           '@type': 'Organization',
           name: 'PoGo Events Tracker',

@@ -82,7 +82,7 @@ const LEADERS_DATA: Record<'giovanni' | 'sierra' | 'cliff' | 'arlo', LeaderConfi
       ja: 'スーパーロケットレーダー',
       ru: 'Super Rocket Radar'
     },
-    radarIcon: 'https://cdn.leekduck.com/assets/img/items/Super%20Rocket%20Radar.png',
+    radarIcon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-radar.png',
     avatarColor: '#b91c1c',
     borderColor: 'rgba(239, 68, 68, 0.45)',
     quote: {
@@ -218,7 +218,7 @@ const LEADERS_DATA: Record<'giovanni' | 'sierra' | 'cliff' | 'arlo', LeaderConfi
       ja: 'ロケットレーダー',
       ru: 'Rocket Radar'
     },
-    radarIcon: 'https://cdn.leekduck.com/assets/img/items/Rocket%20Radar.png',
+    radarIcon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dowsing-machine.png',
     avatarColor: '#a855f7',
     borderColor: 'rgba(168, 85, 247, 0.45)',
     quote: {
@@ -351,7 +351,7 @@ const LEADERS_DATA: Record<'giovanni' | 'sierra' | 'cliff' | 'arlo', LeaderConfi
       ja: 'ロケットレーダー',
       ru: 'Rocket Radar'
     },
-    radarIcon: 'https://cdn.leekduck.com/assets/img/items/Rocket%20Radar.png',
+    radarIcon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dowsing-machine.png',
     avatarColor: '#0284c7',
     borderColor: 'rgba(56, 189, 248, 0.45)',
     quote: {
@@ -484,7 +484,7 @@ const LEADERS_DATA: Record<'giovanni' | 'sierra' | 'cliff' | 'arlo', LeaderConfi
       ja: 'ロケットレーダー',
       ru: 'Rocket Radar'
     },
-    radarIcon: 'https://cdn.leekduck.com/assets/img/items/Rocket%20Radar.png',
+    radarIcon: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dowsing-machine.png',
     avatarColor: '#ea580c',
     borderColor: 'rgba(249, 115, 22, 0.45)',
     quote: {

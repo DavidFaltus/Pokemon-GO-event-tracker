@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { EventCard, type EventData } from '@/components/EventCard';
-import { resolveImage } from '@/utils/imageResolver';
+import { resolveImage, sanitizeExternalMediaForSsr } from '@/utils/imageResolver';
 import type { Language } from '@/data/translations';
 import { getSpecialEventDetails } from '@/data/specialEvents';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
@@ -290,8 +290,18 @@ export default async function EventPage({ params }: EventPageProps) {
   const isExpired = event.end ? new Date(event.end).getTime() < Date.now() : false;
 
   const relatedEvents = allEvents
-    .filter((e) => e.eventID && e.eventID !== slug)
+    .filter((e) => e.eventID && e.eventID !== slug && isSitemapWorthyEvent(e))
     .slice(0, 6);
+
+  const sanitizedEventForCard = sanitizeExternalMediaForSsr(event);
+  const sanitizedDetailsForCard = sanitizeExternalMediaForSsr(mergedDetails);
+
+  const articleHeadlineByLang: Record<Language, string> = {
+    cs: `${title} – Strategický průvodce, bonusy a counters | Pokémon GO`,
+    en: `${title} – Pokémon GO Strategy Guide, Bonuses & Counters`,
+    ja: `${title} – Pokémon GO 攻略ガイド・ボーナス・対策`,
+    ru: `${title} – Гайд по событию, бонусы и контр-покемоны | Pokémon GO`,
+  };
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -311,16 +321,16 @@ export default async function EventPage({ params }: EventPageProps) {
         description: intel.editorialSections[0]?.paragraphs[0] || title,
         organizer: {
           '@type': 'Organization',
-          name: 'Niantic',
+          name: 'Niantic / Scopely',
           url: 'https://pokemongolive.com',
         },
       },
       {
         '@type': 'Article',
-        headline: `${title} – Pokémon GO Strategy Guide & Counters`,
+        headline: articleHeadlineByLang[validLang] || articleHeadlineByLang.en,
         description: intel.editorialSections[0]?.paragraphs[0] || title,
         url: canonicalUrl,
-        author: { '@type': 'Organization', name: 'PoGo Events Editorial Team', url: 'https://pogoevents.app' },
+        author: { '@type': 'Person', name: 'David Faltus', url: `https://pogoevents.app/${validLang}/about` },
         publisher: {
           '@type': 'Organization',
           name: 'PoGo Events Tracker',
@@ -870,12 +880,12 @@ export default async function EventPage({ params }: EventPageProps) {
       {/* Interactive Single-Event Infographic & Export Card */}
       <section aria-label="Interactive Event Infographic">
         <EventCard
-          event={event}
+          event={sanitizedEventForCard}
           lang={validLang}
           defaultExpanded={true}
           useInline={true}
           priority={true}
-          ssrSpecialDetails={mergedDetails}
+          ssrSpecialDetails={sanitizedDetailsForCard}
           hideStandaloneLink={true}
         />
       </section>

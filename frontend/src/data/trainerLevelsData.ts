@@ -50,7 +50,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Poke Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png",
         "title": {
           "cs": "Poké Ball",
           "en": "Poké Ball",
@@ -68,7 +68,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Poke Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png",
         "quantity": 50,
         "name": {
           "cs": "Poké Ball",
@@ -79,7 +79,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Incense.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luck-incense.png",
         "quantity": 2,
         "name": {
           "cs": "Incense kadidlo",
@@ -90,7 +90,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Camera.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lens-case.png",
         "quantity": 1,
         "name": {
           "cs": "Fotoaparát",
@@ -108,7 +108,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/icons/hatch_egg_icon_colored.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "title": {
           "cs": "Líhnutí vajec",
           "en": "Hatch Eggs",
@@ -123,7 +123,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
         }
       },
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "title": {
           "cs": "Nanab Berry",
           "en": "Nanab Berry",
@@ -141,7 +141,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Poke Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Poké Ball",
@@ -152,7 +152,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Nanab Berry",
@@ -163,7 +163,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Incubator Infinity.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 1,
         "name": {
           "cs": "Nekonečný inkubátor",
@@ -182,7 +182,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Poke Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Poké Ball",
@@ -193,7 +193,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Nanab Berry",
@@ -211,7 +211,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Daily Adventure Incense.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pure-incense.png",
         "title": {
           "cs": "Denní dobrodružné kadidlo",
           "en": "Daily Adventure Incense",
@@ -229,7 +229,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Poke Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Poké Ball",
@@ -240,7 +240,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Nanab Berry",
@@ -258,7 +258,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/icons/gym_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/vs-seeker.png",
         "title": {
           "cs": "Tělocvičny a stadiony Gyms",
           "en": "Gyms",
@@ -273,7 +273,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
         }
       },
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/icons/raid_icon_colored.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/eon-ticket.png",
         "title": {
           "cs": "Raidové bitvy",
           "en": "Raids",
@@ -288,7 +288,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
         }
       },
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/potion.png",
         "title": {
           "cs": "Potion",
           "en": "Potion",
@@ -303,7 +303,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
         }
       },
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/revive.png",
         "title": {
           "cs": "Revive",
           "en": "Revive",
@@ -321,7 +321,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Incense.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luck-incense.png",
         "quantity": 1,
         "name": {
           "cs": "Incense kadidlo",
@@ -332,7 +332,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/revive.png",
         "quantity": 5,
         "name": {
           "cs": "Revive",
@@ -343,7 +343,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Poke Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png",
         "quantity": 15,
         "name": {
           "cs": "Poké Ball",
@@ -354,7 +354,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/potion.png",
         "quantity": 10,
         "name": {
           "cs": "Potion",
@@ -372,7 +372,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lure Module.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lure-ball.png",
         "title": {
           "cs": "Lure Modul",
           "en": "Lure Module",
@@ -390,7 +390,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lure Module.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lure-ball.png",
         "quantity": 1,
         "name": {
           "cs": "Lure Modul",
@@ -401,7 +401,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/potion.png",
         "quantity": 5,
         "name": {
           "cs": "Potion",
@@ -412,7 +412,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Poke Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Poké Ball",
@@ -430,7 +430,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/icons/route_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/town-map.png",
         "title": {
           "cs": "Trasy a Zygarde buňky",
           "en": "Routes",
@@ -448,7 +448,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Poke Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Poké Ball",
@@ -459,7 +459,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Nanab Berry",
@@ -477,7 +477,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/icons/rocket_icon_colored.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-radar.png",
         "title": {
           "cs": "Team GO Rocket a Shadow Pokémoni",
           "en": "Team GO Rocket",
@@ -495,7 +495,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Poke Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Poké Ball",
@@ -506,7 +506,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/revive.png",
         "quantity": 5,
         "name": {
           "cs": "Revive",
@@ -524,7 +524,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "title": {
           "cs": "Razz Berry",
           "en": "Razz Berry",
@@ -542,7 +542,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Poke Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Poké Ball",
@@ -553,7 +553,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Razz Berry",
@@ -571,7 +571,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/icons/go_battle_league_icon_colored.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/vs-recorder.png",
         "title": {
           "cs": "GO Battle League PvP",
           "en": "GO Battle League",
@@ -586,7 +586,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
         }
       },
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/icons/trade_with_friends_icon_colored.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/friend-ball.png",
         "title": {
           "cs": "Výměny Pokémonů s přáteli",
           "en": "Trade with Friends",
@@ -604,7 +604,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Item Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/forage-bag.png",
         "quantity": 25,
         "name": {
           "cs": "Rozšíření batohu +50",
@@ -615,7 +615,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lucky Egg.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lucky-egg.png",
         "quantity": 1,
         "name": {
           "cs": "Šťastné vejce Lucky Egg",
@@ -626,7 +626,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 1,
         "name": {
           "cs": "Inkubátor vajec",
@@ -637,7 +637,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/revive.png",
         "quantity": 10,
         "name": {
           "cs": "Revive",
@@ -648,7 +648,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/potion.png",
         "quantity": 10,
         "name": {
           "cs": "Potion",
@@ -659,7 +659,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Poke Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Poké Ball",
@@ -670,7 +670,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 10,
         "name": {
           "cs": "Razz Berry",
@@ -689,7 +689,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/potion.png",
         "quantity": 5,
         "name": {
           "cs": "Potion",
@@ -700,7 +700,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Poke Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Poké Ball",
@@ -711,7 +711,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Nanab Berry",
@@ -730,7 +730,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/revive.png",
         "quantity": 5,
         "name": {
           "cs": "Revive",
@@ -741,7 +741,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Poke Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Poké Ball",
@@ -752,7 +752,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Razz Berry",
@@ -770,7 +770,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/icons/weekly_challenge_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/medal-box.png",
         "title": {
           "cs": "Týdenní týmové výzvy",
           "en": "Weekly Challenges",
@@ -785,7 +785,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
         }
       },
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Golden Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/golden-razz-berry.png",
         "title": {
           "cs": "Zlatá Razz Berry",
           "en": "Golden Razz Berry",
@@ -803,7 +803,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Golden Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/golden-razz-berry.png",
         "quantity": 1,
         "name": {
           "cs": "Zlatá Razz Berry",
@@ -814,7 +814,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/potion.png",
         "quantity": 5,
         "name": {
           "cs": "Potion",
@@ -825,7 +825,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Poke Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Poké Ball",
@@ -836,7 +836,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Nanab Berry",
@@ -854,7 +854,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/icons/tag_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/seal-case.png",
         "title": {
           "cs": "Štítky a organizace Pokémonů",
           "en": "Tag Pokémon",
@@ -869,7 +869,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
         }
       },
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Great Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png",
         "title": {
           "cs": "Great Ball",
           "en": "Great Ball",
@@ -887,7 +887,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Great Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Great Ball",
@@ -898,7 +898,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Razz Berry",
@@ -909,7 +909,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/revive.png",
         "quantity": 5,
         "name": {
           "cs": "Revive",
@@ -927,7 +927,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Daily Adventure Egg.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lucky-egg.png",
         "title": {
           "cs": "Denní vejce dobrodružství",
           "en": "Daily Adventure Egg",
@@ -945,7 +945,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Star Piece.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/star-piece.png",
         "quantity": 1,
         "name": {
           "cs": "Star Piece hvězdný úlomek",
@@ -956,7 +956,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lure Module.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lure-ball.png",
         "quantity": 1,
         "name": {
           "cs": "Lure Modul",
@@ -967,7 +967,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 1,
         "name": {
           "cs": "Inkubátor vajec",
@@ -978,7 +978,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/revive.png",
         "quantity": 5,
         "name": {
           "cs": "Revive",
@@ -989,7 +989,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/potion.png",
         "quantity": 10,
         "name": {
           "cs": "Potion",
@@ -1000,7 +1000,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Great Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png",
         "quantity": 15,
         "name": {
           "cs": "Great Ball",
@@ -1011,7 +1011,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Razz Berry",
@@ -1029,7 +1029,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Super Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/super-potion.png",
         "title": {
           "cs": "Super Potion",
           "en": "Super Potion",
@@ -1047,7 +1047,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Super Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/super-potion.png",
         "quantity": 10,
         "name": {
           "cs": "Super Potion",
@@ -1058,7 +1058,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Great Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Great Ball",
@@ -1069,7 +1069,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Razz Berry",
@@ -1087,7 +1087,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "title": {
           "cs": "Pinap Berry",
           "en": "Pinap Berry",
@@ -1105,7 +1105,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/revive.png",
         "quantity": 5,
         "name": {
           "cs": "Revive",
@@ -1116,7 +1116,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Great Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Great Ball",
@@ -1127,7 +1127,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Pinap Berry",
@@ -1145,7 +1145,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/icons/mega_evolution_icon_colored.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/mega-ring.png",
         "title": {
           "cs": "Mega Evoluce",
           "en": "Mega Evolution",
@@ -1163,7 +1163,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Super Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/super-potion.png",
         "quantity": 10,
         "name": {
           "cs": "Super Potion",
@@ -1174,7 +1174,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Great Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Great Ball",
@@ -1185,7 +1185,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Nanab Berry",
@@ -1203,7 +1203,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Fast TM.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/tm-normal.png",
         "title": {
           "cs": "Fast TM",
           "en": "Fast TM",
@@ -1221,7 +1221,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Fast TM.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/tm-normal.png",
         "quantity": 1,
         "name": {
           "cs": "Fast TM",
@@ -1232,7 +1232,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/revive.png",
         "quantity": 5,
         "name": {
           "cs": "Revive",
@@ -1243,7 +1243,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Great Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Great Ball",
@@ -1254,7 +1254,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Razz Berry",
@@ -1272,7 +1272,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/icons/max_battles_icon_colored.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dynamax-band.png",
         "title": {
           "cs": "Max Battles a Dynamax",
           "en": "Max Battles & Dynamax",
@@ -1287,7 +1287,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
         }
       },
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "title": {
           "cs": "Ultra Ball",
           "en": "Ultra Ball",
@@ -1305,7 +1305,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pokemon Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pokemon-box-link.png",
         "quantity": 25,
         "name": {
           "cs": "Rozšíření úložiště Pokémonů +50",
@@ -1316,7 +1316,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lucky Egg.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lucky-egg.png",
         "quantity": 1,
         "name": {
           "cs": "Šťastné vejce Lucky Egg",
@@ -1327,7 +1327,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Incense.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luck-incense.png",
         "quantity": 1,
         "name": {
           "cs": "Incense kadidlo",
@@ -1338,7 +1338,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 1,
         "name": {
           "cs": "Inkubátor vajec",
@@ -1349,7 +1349,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/revive.png",
         "quantity": 10,
         "name": {
           "cs": "Revive",
@@ -1360,7 +1360,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Super Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/super-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Super Potion",
@@ -1371,7 +1371,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -1382,7 +1382,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 10,
         "name": {
           "cs": "Pinap Berry",
@@ -1400,7 +1400,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/icons/party_play_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pal-pad.png",
         "title": {
           "cs": "Party Play týmová hra",
           "en": "Party Play",
@@ -1418,7 +1418,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/revive.png",
         "quantity": 5,
         "name": {
           "cs": "Revive",
@@ -1429,7 +1429,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Ultra Ball",
@@ -1440,7 +1440,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Nanab Berry",
@@ -1458,7 +1458,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Hyper Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/hyper-potion.png",
         "title": {
           "cs": "Hyper Potion",
           "en": "Hyper Potion",
@@ -1476,7 +1476,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Hyper Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/hyper-potion.png",
         "quantity": 10,
         "name": {
           "cs": "Hyper Potion",
@@ -1487,7 +1487,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Ultra Ball",
@@ -1498,7 +1498,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Razz Berry",
@@ -1516,7 +1516,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Charged TM.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/tm-electric.png",
         "title": {
           "cs": "Charged TM",
           "en": "Charged TM",
@@ -1534,7 +1534,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/revive.png",
         "quantity": 5,
         "name": {
           "cs": "Revive",
@@ -1545,7 +1545,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Ultra Ball",
@@ -1556,7 +1556,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Pinap Berry",
@@ -1574,7 +1574,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Silver Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/silver-pinap-berry.png",
         "title": {
           "cs": "Stříbrná Pinap Berry",
           "en": "Silver Pinap Berry",
@@ -1592,7 +1592,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Hyper Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/hyper-potion.png",
         "quantity": 10,
         "name": {
           "cs": "Hyper Potion",
@@ -1603,7 +1603,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Ultra Ball",
@@ -1614,7 +1614,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Nanab Berry",
@@ -1632,7 +1632,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "title": {
           "cs": "Max Potion",
           "en": "Max Potion",
@@ -1650,7 +1650,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "avatar",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/avatar_items/n_hat_pokeballitems-basic_0_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fashion-case.png",
         "quantity": 1,
         "name": {
           "cs": "Poké Ball Kšiltovka",
@@ -1661,7 +1661,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Item Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/forage-bag.png",
         "quantity": 25,
         "name": {
           "cs": "Rozšíření batohu +50",
@@ -1672,7 +1672,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Star Piece.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/star-piece.png",
         "quantity": 1,
         "name": {
           "cs": "Star Piece hvězdný úlomek",
@@ -1683,7 +1683,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lure Module.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lure-ball.png",
         "quantity": 1,
         "name": {
           "cs": "Lure Modul",
@@ -1694,7 +1694,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 1,
         "name": {
           "cs": "Inkubátor vajec",
@@ -1705,7 +1705,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -1716,7 +1716,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/revive.png",
         "quantity": 10,
         "name": {
           "cs": "Revive",
@@ -1727,7 +1727,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 15,
         "name": {
           "cs": "Ultra Ball",
@@ -1738,7 +1738,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 10,
         "name": {
           "cs": "Razz Berry",
@@ -1757,7 +1757,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 10,
         "name": {
           "cs": "Max Potion",
@@ -1768,7 +1768,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Ultra Ball",
@@ -1779,7 +1779,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Pinap Berry",
@@ -1798,7 +1798,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/revive.png",
         "quantity": 5,
         "name": {
           "cs": "Revive",
@@ -1809,7 +1809,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Ultra Ball",
@@ -1820,7 +1820,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Nanab Berry",
@@ -1839,7 +1839,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 10,
         "name": {
           "cs": "Max Potion",
@@ -1850,7 +1850,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Ultra Ball",
@@ -1861,7 +1861,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Razz Berry",
@@ -1880,7 +1880,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/revive.png",
         "quantity": 5,
         "name": {
           "cs": "Revive",
@@ -1891,7 +1891,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Ultra Ball",
@@ -1902,7 +1902,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Pinap Berry",
@@ -1920,7 +1920,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/icons/route_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/town-map.png",
         "title": {
           "cs": "Vytváření vlastních Tras",
           "en": "Create Routes",
@@ -1935,7 +1935,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
         }
       },
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "title": {
           "cs": "Max Revive",
           "en": "Max Revive",
@@ -1953,7 +1953,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "avatar",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/avatar_items/n_shoes_pokeballitems-basic_0_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fashion-case.png",
         "quantity": 1,
         "name": {
           "cs": "Poké Ball Boty",
@@ -1964,7 +1964,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Item Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/forage-bag.png",
         "quantity": 100,
         "name": {
           "cs": "Rozšíření batohu +50",
@@ -1975,7 +1975,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lucky Egg.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lucky-egg.png",
         "quantity": 2,
         "name": {
           "cs": "Šťastné vejce Lucky Egg",
@@ -1986,7 +1986,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Incense.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luck-incense.png",
         "quantity": 2,
         "name": {
           "cs": "Incense kadidlo",
@@ -1997,7 +1997,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 2,
         "name": {
           "cs": "Inkubátor vajec",
@@ -2008,7 +2008,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 15,
         "name": {
           "cs": "Max Revive",
@@ -2019,7 +2019,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 30,
         "name": {
           "cs": "Max Potion",
@@ -2030,7 +2030,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 30,
         "name": {
           "cs": "Ultra Ball",
@@ -2041,7 +2041,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 20,
         "name": {
           "cs": "Pinap Berry",
@@ -2059,7 +2059,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/icons/candy_xl_icon_colored.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/exp-candy-xl.png",
         "title": {
           "cs": "Candy XL systém",
           "en": "Candy XL System",
@@ -2077,7 +2077,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 10,
         "name": {
           "cs": "Max Potion",
@@ -2088,7 +2088,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Ultra Ball",
@@ -2099,7 +2099,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Nanab Berry",
@@ -2118,7 +2118,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 5,
         "name": {
           "cs": "Max Revive",
@@ -2129,7 +2129,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Ultra Ball",
@@ -2140,7 +2140,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Razz Berry",
@@ -2159,7 +2159,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 10,
         "name": {
           "cs": "Max Potion",
@@ -2170,7 +2170,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Ultra Ball",
@@ -2181,7 +2181,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Pinap Berry",
@@ -2200,7 +2200,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 5,
         "name": {
           "cs": "Max Revive",
@@ -2211,7 +2211,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Ultra Ball",
@@ -2222,7 +2222,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Nanab Berry",
@@ -2240,7 +2240,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier1",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/icons/pokestop_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/town-map.png",
         "title": {
           "cs": "Nominace nových PokéStopů Wayfarer",
           "en": "Nominate PokéStops",
@@ -2258,7 +2258,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "avatar",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/avatar_items/n_shirt_pokeballitems-basic_0_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fashion-case.png",
         "quantity": 1,
         "name": {
           "cs": "Poké Ball Bunda",
@@ -2269,7 +2269,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Item Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/forage-bag.png",
         "quantity": 50,
         "name": {
           "cs": "Rozšíření batohu +50",
@@ -2280,7 +2280,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Star Piece.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/star-piece.png",
         "quantity": 1,
         "name": {
           "cs": "Star Piece hvězdný úlomek",
@@ -2291,7 +2291,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lure Module.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lure-ball.png",
         "quantity": 1,
         "name": {
           "cs": "Lure Modul",
@@ -2302,7 +2302,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 1,
         "name": {
           "cs": "Inkubátor vajec",
@@ -2313,7 +2313,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -2324,7 +2324,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -2335,7 +2335,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 15,
         "name": {
           "cs": "Ultra Ball",
@@ -2346,7 +2346,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 10,
         "name": {
           "cs": "Razz Berry",
@@ -2365,7 +2365,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 10,
         "name": {
           "cs": "Max Potion",
@@ -2376,7 +2376,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Ultra Ball",
@@ -2387,7 +2387,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Pinap Berry",
@@ -2406,7 +2406,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 5,
         "name": {
           "cs": "Max Revive",
@@ -2417,7 +2417,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Ultra Ball",
@@ -2428,7 +2428,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Nanab Berry",
@@ -2447,7 +2447,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 10,
         "name": {
           "cs": "Max Potion",
@@ -2458,7 +2458,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Ultra Ball",
@@ -2469,7 +2469,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Razz Berry",
@@ -2488,7 +2488,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 5,
         "name": {
           "cs": "Max Revive",
@@ -2499,7 +2499,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 10,
         "name": {
           "cs": "Ultra Ball",
@@ -2510,7 +2510,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 5,
         "name": {
           "cs": "Pinap Berry",
@@ -2529,7 +2529,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "avatar",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/avatar_items/n_hat_pokeballitems-great_0_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fashion-case.png",
         "quantity": 1,
         "name": {
           "cs": "Great Ball Kšiltovka",
@@ -2540,7 +2540,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pokemon Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pokemon-box-link.png",
         "quantity": 50,
         "name": {
           "cs": "Rozšíření úložiště Pokémonů +50",
@@ -2551,7 +2551,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Item Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/forage-bag.png",
         "quantity": 75,
         "name": {
           "cs": "Rozšíření batohu +50",
@@ -2562,7 +2562,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Elite Fast TM.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/tm-dragon.png",
         "quantity": 1,
         "name": {
           "cs": "Elitní Fast TM",
@@ -2573,7 +2573,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lucky Egg.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lucky-egg.png",
         "quantity": 2,
         "name": {
           "cs": "Šťastné vejce Lucky Egg",
@@ -2584,7 +2584,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Incense.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luck-incense.png",
         "quantity": 2,
         "name": {
           "cs": "Incense kadidlo",
@@ -2595,7 +2595,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 2,
         "name": {
           "cs": "Inkubátor vajec",
@@ -2606,7 +2606,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 20,
         "name": {
           "cs": "Max Revive",
@@ -2617,7 +2617,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 40,
         "name": {
           "cs": "Max Potion",
@@ -2628,7 +2628,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 40,
         "name": {
           "cs": "Ultra Ball",
@@ -2639,7 +2639,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 30,
         "name": {
           "cs": "Pinap Berry",
@@ -2658,7 +2658,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lucky Egg.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lucky-egg.png",
         "quantity": 1,
         "name": {
           "cs": "Šťastné vejce Lucky Egg",
@@ -2669,7 +2669,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -2680,7 +2680,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 15,
         "name": {
           "cs": "Ultra Ball",
@@ -2691,7 +2691,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 10,
         "name": {
           "cs": "Nanab Berry",
@@ -2710,7 +2710,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 1,
         "name": {
           "cs": "Inkubátor vajec",
@@ -2721,7 +2721,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -2732,7 +2732,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 15,
         "name": {
           "cs": "Ultra Ball",
@@ -2743,7 +2743,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 10,
         "name": {
           "cs": "Razz Berry",
@@ -2762,7 +2762,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Gift Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/parcel.png",
         "quantity": 5,
         "name": {
           "cs": "Rozšíření dárků +5",
@@ -2773,7 +2773,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -2784,7 +2784,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 15,
         "name": {
           "cs": "Ultra Ball",
@@ -2795,7 +2795,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 10,
         "name": {
           "cs": "Pinap Berry",
@@ -2814,7 +2814,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Incense.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luck-incense.png",
         "quantity": 1,
         "name": {
           "cs": "Incense kadidlo",
@@ -2825,7 +2825,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -2836,7 +2836,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 15,
         "name": {
           "cs": "Ultra Ball",
@@ -2847,7 +2847,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 10,
         "name": {
           "cs": "Nanab Berry",
@@ -2866,7 +2866,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "avatar",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/avatar_items/n_shoes_pokeballitems-great_0_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fashion-case.png",
         "quantity": 1,
         "name": {
           "cs": "Great Ball Boty",
@@ -2877,7 +2877,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Item Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/forage-bag.png",
         "quantity": 50,
         "name": {
           "cs": "Rozšíření batohu +50",
@@ -2888,7 +2888,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Star Piece.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/star-piece.png",
         "quantity": 1,
         "name": {
           "cs": "Star Piece hvězdný úlomek",
@@ -2899,7 +2899,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lure Module.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lure-ball.png",
         "quantity": 1,
         "name": {
           "cs": "Lure Modul",
@@ -2910,7 +2910,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 1,
         "name": {
           "cs": "Inkubátor vajec",
@@ -2921,7 +2921,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 15,
         "name": {
           "cs": "Max Revive",
@@ -2932,7 +2932,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 30,
         "name": {
           "cs": "Max Potion",
@@ -2943,7 +2943,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 25,
         "name": {
           "cs": "Ultra Ball",
@@ -2954,7 +2954,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Razz Berry",
@@ -2973,7 +2973,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Star Piece.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/star-piece.png",
         "quantity": 1,
         "name": {
           "cs": "Star Piece hvězdný úlomek",
@@ -2984,7 +2984,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -2995,7 +2995,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 15,
         "name": {
           "cs": "Ultra Ball",
@@ -3006,7 +3006,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 10,
         "name": {
           "cs": "Pinap Berry",
@@ -3025,7 +3025,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Postcard Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/town-map.png",
         "quantity": 50,
         "name": {
           "cs": "Rozšíření alba pohlednic +50",
@@ -3036,7 +3036,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -3047,7 +3047,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 15,
         "name": {
           "cs": "Ultra Ball",
@@ -3058,7 +3058,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 10,
         "name": {
           "cs": "Nanab Berry",
@@ -3077,7 +3077,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 1,
         "name": {
           "cs": "Inkubátor vajec",
@@ -3088,7 +3088,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -3099,7 +3099,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 15,
         "name": {
           "cs": "Ultra Ball",
@@ -3110,7 +3110,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 10,
         "name": {
           "cs": "Razz Berry",
@@ -3129,7 +3129,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lure Module.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lure-ball.png",
         "quantity": 1,
         "name": {
           "cs": "Lure Modul",
@@ -3140,7 +3140,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -3151,7 +3151,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 15,
         "name": {
           "cs": "Ultra Ball",
@@ -3162,7 +3162,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 10,
         "name": {
           "cs": "Pinap Berry",
@@ -3181,7 +3181,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "avatar",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/avatar_items/n_shirt_pokeballitems-great_0_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fashion-case.png",
         "quantity": 1,
         "name": {
           "cs": "Great Ball Bunda",
@@ -3192,7 +3192,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Item Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/forage-bag.png",
         "quantity": 75,
         "name": {
           "cs": "Rozšíření batohu +50",
@@ -3203,7 +3203,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Elite Charged TM.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/tm-psychic.png",
         "quantity": 1,
         "name": {
           "cs": "Elitní Charged TM",
@@ -3214,7 +3214,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lucky Egg.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lucky-egg.png",
         "quantity": 3,
         "name": {
           "cs": "Šťastné vejce Lucky Egg",
@@ -3225,7 +3225,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Incense.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luck-incense.png",
         "quantity": 3,
         "name": {
           "cs": "Incense kadidlo",
@@ -3236,7 +3236,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 3,
         "name": {
           "cs": "Inkubátor vajec",
@@ -3247,7 +3247,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 25,
         "name": {
           "cs": "Max Revive",
@@ -3258,7 +3258,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 50,
         "name": {
           "cs": "Max Potion",
@@ -3269,7 +3269,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 50,
         "name": {
           "cs": "Ultra Ball",
@@ -3280,7 +3280,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 40,
         "name": {
           "cs": "Pinap Berry",
@@ -3299,7 +3299,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lucky Egg.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lucky-egg.png",
         "quantity": 1,
         "name": {
           "cs": "Šťastné vejce Lucky Egg",
@@ -3310,7 +3310,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -3321,7 +3321,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -3332,7 +3332,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Nanab Berry",
@@ -3351,7 +3351,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 1,
         "name": {
           "cs": "Inkubátor vajec",
@@ -3362,7 +3362,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -3373,7 +3373,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -3384,7 +3384,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Razz Berry",
@@ -3403,7 +3403,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Gift Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/parcel.png",
         "quantity": 5,
         "name": {
           "cs": "Rozšíření dárků +5",
@@ -3414,7 +3414,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -3425,7 +3425,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -3436,7 +3436,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Pinap Berry",
@@ -3455,7 +3455,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Incense.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luck-incense.png",
         "quantity": 1,
         "name": {
           "cs": "Incense kadidlo",
@@ -3466,7 +3466,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -3477,7 +3477,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -3488,7 +3488,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Nanab Berry",
@@ -3507,7 +3507,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "avatar",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/avatar_items/n_hat_pokeballitems-ultra_0_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fashion-case.png",
         "quantity": 1,
         "name": {
           "cs": "Ultra Ball Kšiltovka",
@@ -3518,7 +3518,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pokemon Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pokemon-box-link.png",
         "quantity": 25,
         "name": {
           "cs": "Rozšíření úložiště Pokémonů +50",
@@ -3529,7 +3529,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Item Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/forage-bag.png",
         "quantity": 50,
         "name": {
           "cs": "Rozšíření batohu +50",
@@ -3540,7 +3540,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Star Piece.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/star-piece.png",
         "quantity": 2,
         "name": {
           "cs": "Star Piece hvězdný úlomek",
@@ -3551,7 +3551,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lure Module.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lure-ball.png",
         "quantity": 2,
         "name": {
           "cs": "Lure Modul",
@@ -3562,7 +3562,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 2,
         "name": {
           "cs": "Inkubátor vajec",
@@ -3573,7 +3573,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 15,
         "name": {
           "cs": "Max Revive",
@@ -3584,7 +3584,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 30,
         "name": {
           "cs": "Max Potion",
@@ -3595,7 +3595,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 30,
         "name": {
           "cs": "Ultra Ball",
@@ -3606,7 +3606,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 20,
         "name": {
           "cs": "Razz Berry",
@@ -3625,7 +3625,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Star Piece.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/star-piece.png",
         "quantity": 1,
         "name": {
           "cs": "Star Piece hvězdný úlomek",
@@ -3636,7 +3636,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -3647,7 +3647,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -3658,7 +3658,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Pinap Berry",
@@ -3677,7 +3677,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Postcard Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/town-map.png",
         "quantity": 50,
         "name": {
           "cs": "Rozšíření alba pohlednic +50",
@@ -3688,7 +3688,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -3699,7 +3699,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -3710,7 +3710,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Nanab Berry",
@@ -3729,7 +3729,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 1,
         "name": {
           "cs": "Inkubátor vajec",
@@ -3740,7 +3740,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -3751,7 +3751,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -3762,7 +3762,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Razz Berry",
@@ -3781,7 +3781,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lure Module.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lure-ball.png",
         "quantity": 1,
         "name": {
           "cs": "Lure Modul",
@@ -3792,7 +3792,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -3803,7 +3803,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -3814,7 +3814,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Pinap Berry",
@@ -3833,7 +3833,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "avatar",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/avatar_items/n_shoes_pokeballitems-ultra_0_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fashion-case.png",
         "quantity": 1,
         "name": {
           "cs": "Ultra Ball Boty",
@@ -3844,7 +3844,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pokemon Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pokemon-box-link.png",
         "quantity": 50,
         "name": {
           "cs": "Rozšíření úložiště Pokémonů +50",
@@ -3855,7 +3855,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Item Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/forage-bag.png",
         "quantity": 75,
         "name": {
           "cs": "Rozšíření batohu +50",
@@ -3866,7 +3866,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lucky Egg.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lucky-egg.png",
         "quantity": 4,
         "name": {
           "cs": "Šťastné vejce Lucky Egg",
@@ -3877,7 +3877,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Incense.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luck-incense.png",
         "quantity": 4,
         "name": {
           "cs": "Incense kadidlo",
@@ -3888,7 +3888,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 4,
         "name": {
           "cs": "Inkubátor vajec",
@@ -3899,7 +3899,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 25,
         "name": {
           "cs": "Max Revive",
@@ -3910,7 +3910,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 50,
         "name": {
           "cs": "Max Potion",
@@ -3921,7 +3921,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 60,
         "name": {
           "cs": "Ultra Ball",
@@ -3932,7 +3932,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 50,
         "name": {
           "cs": "Pinap Berry",
@@ -3951,7 +3951,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lucky Egg.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lucky-egg.png",
         "quantity": 1,
         "name": {
           "cs": "Šťastné vejce Lucky Egg",
@@ -3962,7 +3962,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -3973,7 +3973,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -3984,7 +3984,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Nanab Berry",
@@ -4003,7 +4003,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 1,
         "name": {
           "cs": "Inkubátor vajec",
@@ -4014,7 +4014,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -4025,7 +4025,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -4036,7 +4036,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Razz Berry",
@@ -4055,7 +4055,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Gift Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/parcel.png",
         "quantity": 5,
         "name": {
           "cs": "Rozšíření dárků +5",
@@ -4066,7 +4066,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -4077,7 +4077,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -4088,7 +4088,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Pinap Berry",
@@ -4107,7 +4107,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Incense.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luck-incense.png",
         "quantity": 1,
         "name": {
           "cs": "Incense kadidlo",
@@ -4118,7 +4118,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -4129,7 +4129,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -4140,7 +4140,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Nanab Berry",
@@ -4159,7 +4159,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "avatar",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/avatar_items/n_shirt_pokeballitems-ultra_0_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fashion-case.png",
         "quantity": 1,
         "name": {
           "cs": "Ultra Ball Bunda",
@@ -4170,7 +4170,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Item Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/forage-bag.png",
         "quantity": 50,
         "name": {
           "cs": "Rozšíření batohu +50",
@@ -4181,7 +4181,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Star Piece.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/star-piece.png",
         "quantity": 3,
         "name": {
           "cs": "Star Piece hvězdný úlomek",
@@ -4192,7 +4192,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lure Module.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lure-ball.png",
         "quantity": 3,
         "name": {
           "cs": "Lure Modul",
@@ -4203,7 +4203,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 3,
         "name": {
           "cs": "Inkubátor vajec",
@@ -4214,7 +4214,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 15,
         "name": {
           "cs": "Max Revive",
@@ -4225,7 +4225,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 30,
         "name": {
           "cs": "Max Potion",
@@ -4236,7 +4236,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 30,
         "name": {
           "cs": "Ultra Ball",
@@ -4247,7 +4247,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Razz Berry",
@@ -4266,7 +4266,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Star Piece.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/star-piece.png",
         "quantity": 1,
         "name": {
           "cs": "Star Piece hvězdný úlomek",
@@ -4277,7 +4277,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -4288,7 +4288,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -4299,7 +4299,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Pinap Berry",
@@ -4318,7 +4318,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Postcard Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/town-map.png",
         "quantity": 50,
         "name": {
           "cs": "Rozšíření alba pohlednic +50",
@@ -4329,7 +4329,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -4340,7 +4340,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -4351,7 +4351,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Nanab Berry",
@@ -4370,7 +4370,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 1,
         "name": {
           "cs": "Inkubátor vajec",
@@ -4381,7 +4381,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -4392,7 +4392,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -4403,7 +4403,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Razz Berry",
@@ -4422,7 +4422,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lure Module.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lure-ball.png",
         "quantity": 1,
         "name": {
           "cs": "Lure Modul",
@@ -4433,7 +4433,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -4444,7 +4444,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 20,
         "name": {
           "cs": "Ultra Ball",
@@ -4455,7 +4455,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 15,
         "name": {
           "cs": "Pinap Berry",
@@ -4473,7 +4473,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "tier": "tier2",
     "unlocks": [
       {
-        "iconUrl": "https://cdn.leekduck.com/assets/img/icons/lucky_friend_chance_increase_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/soothe-bell.png",
         "title": {
           "cs": "Zvýšená šance na Lucky Friends",
           "en": "Lucky Friend Chance Increase",
@@ -4491,7 +4491,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Master Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png",
         "quantity": 1,
         "name": {
           "cs": "Master Ball",
@@ -4502,7 +4502,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Item Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/forage-bag.png",
         "quantity": 75,
         "name": {
           "cs": "Rozšíření batohu +50",
@@ -4513,7 +4513,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lucky Egg.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lucky-egg.png",
         "quantity": 6,
         "name": {
           "cs": "Šťastné vejce Lucky Egg",
@@ -4524,7 +4524,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Incense.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luck-incense.png",
         "quantity": 6,
         "name": {
           "cs": "Incense kadidlo",
@@ -4535,7 +4535,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Super Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/shiny-charm.png",
         "quantity": 3,
         "name": {
           "cs": "Super Inkubátor",
@@ -4546,7 +4546,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 25,
         "name": {
           "cs": "Max Revive",
@@ -4557,7 +4557,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 50,
         "name": {
           "cs": "Max Potion",
@@ -4568,7 +4568,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 70,
         "name": {
           "cs": "Ultra Ball",
@@ -4579,7 +4579,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 60,
         "name": {
           "cs": "Pinap Berry",
@@ -4598,7 +4598,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "avatar",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/avatar_items/n_shoes_lvl71-cyberkicks_0_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fashion-case.png",
         "quantity": 1,
         "name": {
           "cs": "Exkluzivní boty Level 71",
@@ -4609,7 +4609,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Rare Candy XL.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/exp-candy-xl.png",
         "quantity": 1,
         "name": {
           "cs": "Vzácné Candy XL",
@@ -4620,7 +4620,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Premium Battle Pass.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/eon-ticket.png",
         "quantity": 1,
         "name": {
           "cs": "Prémiový Battle Pass",
@@ -4631,7 +4631,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -4642,7 +4642,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 30,
         "name": {
           "cs": "Ultra Ball",
@@ -4653,7 +4653,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 25,
         "name": {
           "cs": "Nanab Berry",
@@ -4730,7 +4730,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Rare Candy XL.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/exp-candy-xl.png",
         "quantity": 1,
         "name": {
           "cs": "Vzácné Candy XL",
@@ -4741,7 +4741,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Premium Battle Pass.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/eon-ticket.png",
         "quantity": 1,
         "name": {
           "cs": "Prémiový Battle Pass",
@@ -4752,7 +4752,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lucky Egg.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lucky-egg.png",
         "quantity": 1,
         "name": {
           "cs": "Šťastné vejce Lucky Egg",
@@ -4763,7 +4763,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -4774,7 +4774,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 30,
         "name": {
           "cs": "Ultra Ball",
@@ -4785,7 +4785,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 25,
         "name": {
           "cs": "Razz Berry",
@@ -4862,7 +4862,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "avatar",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/avatar_items/n_glasses_lvl73-visorspecs_0_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fashion-case.png",
         "quantity": 1,
         "name": {
           "cs": "Sluneční brýle Level 73",
@@ -4873,7 +4873,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Gift Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/parcel.png",
         "quantity": 5,
         "name": {
           "cs": "Rozšíření dárků +5",
@@ -4884,7 +4884,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Rare Candy XL.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/exp-candy-xl.png",
         "quantity": 1,
         "name": {
           "cs": "Vzácné Candy XL",
@@ -4895,7 +4895,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Premium Battle Pass.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/eon-ticket.png",
         "quantity": 1,
         "name": {
           "cs": "Prémiový Battle Pass",
@@ -4906,7 +4906,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -4917,7 +4917,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 30,
         "name": {
           "cs": "Ultra Ball",
@@ -4928,7 +4928,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 25,
         "name": {
           "cs": "Pinap Berry",
@@ -5005,7 +5005,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Postcard Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/town-map.png",
         "quantity": 50,
         "name": {
           "cs": "Rozšíření alba pohlednic +50",
@@ -5016,7 +5016,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Rare Candy XL.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/exp-candy-xl.png",
         "quantity": 1,
         "name": {
           "cs": "Vzácné Candy XL",
@@ -5027,7 +5027,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Premium Battle Pass.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/eon-ticket.png",
         "quantity": 1,
         "name": {
           "cs": "Prémiový Battle Pass",
@@ -5038,7 +5038,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 1,
         "name": {
           "cs": "Inkubátor vajec",
@@ -5049,7 +5049,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -5060,7 +5060,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 30,
         "name": {
           "cs": "Ultra Ball",
@@ -5071,7 +5071,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 25,
         "name": {
           "cs": "Nanab Berry",
@@ -5148,7 +5148,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "avatar",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/avatar_items/n_pants_lvl75-techtrousers_0_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fashion-case.png",
         "quantity": 1,
         "name": {
           "cs": "Exkluzivní kalhoty Level 75",
@@ -5159,7 +5159,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pokemon Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pokemon-box-link.png",
         "quantity": 25,
         "name": {
           "cs": "Rozšíření úložiště Pokémonů +50",
@@ -5170,7 +5170,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Particle Pack.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/wishing-piece.png",
         "quantity": 1,
         "name": {
           "cs": "Balíček Max částic",
@@ -5181,7 +5181,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Star Piece.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/star-piece.png",
         "quantity": 5,
         "name": {
           "cs": "Star Piece hvězdný úlomek",
@@ -5192,7 +5192,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lure Module.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lure-ball.png",
         "quantity": 5,
         "name": {
           "cs": "Lure Modul",
@@ -5203,7 +5203,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Super Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/shiny-charm.png",
         "quantity": 2,
         "name": {
           "cs": "Super Inkubátor",
@@ -5214,7 +5214,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 15,
         "name": {
           "cs": "Max Revive",
@@ -5225,7 +5225,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 50,
         "name": {
           "cs": "Ultra Ball",
@@ -5236,7 +5236,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 30,
         "name": {
           "cs": "Max Potion",
@@ -5247,7 +5247,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 35,
         "name": {
           "cs": "Razz Berry",
@@ -5324,7 +5324,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Rare Candy XL.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/exp-candy-xl.png",
         "quantity": 1,
         "name": {
           "cs": "Vzácné Candy XL",
@@ -5335,7 +5335,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Premium Battle Pass.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/eon-ticket.png",
         "quantity": 1,
         "name": {
           "cs": "Prémiový Battle Pass",
@@ -5346,7 +5346,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lucky Egg.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lucky-egg.png",
         "quantity": 1,
         "name": {
           "cs": "Šťastné vejce Lucky Egg",
@@ -5357,7 +5357,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -5368,7 +5368,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 30,
         "name": {
           "cs": "Ultra Ball",
@@ -5379,7 +5379,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 25,
         "name": {
           "cs": "Pinap Berry",
@@ -5456,7 +5456,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "avatar",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/avatar_items/n_pose_lvl77_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fashion-case.png",
         "quantity": 1,
         "name": {
           "cs": "Exkluzivní póza avatara Level 77",
@@ -5467,7 +5467,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Postcard Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/town-map.png",
         "quantity": 50,
         "name": {
           "cs": "Rozšíření alba pohlednic +50",
@@ -5478,7 +5478,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Rare Candy XL.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/exp-candy-xl.png",
         "quantity": 1,
         "name": {
           "cs": "Vzácné Candy XL",
@@ -5489,7 +5489,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Premium Battle Pass.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/eon-ticket.png",
         "quantity": 1,
         "name": {
           "cs": "Prémiový Battle Pass",
@@ -5500,7 +5500,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Egg Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/oval-charm.png",
         "quantity": 1,
         "name": {
           "cs": "Inkubátor vajec",
@@ -5511,7 +5511,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -5522,7 +5522,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 30,
         "name": {
           "cs": "Ultra Ball",
@@ -5533,7 +5533,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Nanab Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/nanab-berry.png",
         "quantity": 25,
         "name": {
           "cs": "Nanab Berry",
@@ -5610,7 +5610,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pokemon Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pokemon-box-link.png",
         "quantity": 75,
         "name": {
           "cs": "Rozšíření úložiště Pokémonů +50",
@@ -5621,7 +5621,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Rare Candy XL.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/exp-candy-xl.png",
         "quantity": 1,
         "name": {
           "cs": "Vzácné Candy XL",
@@ -5632,7 +5632,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Premium Battle Pass.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/eon-ticket.png",
         "quantity": 1,
         "name": {
           "cs": "Prémiový Battle Pass",
@@ -5643,7 +5643,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 20,
         "name": {
           "cs": "Max Potion",
@@ -5654,7 +5654,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 30,
         "name": {
           "cs": "Ultra Ball",
@@ -5665,7 +5665,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Razz Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/razz-berry.png",
         "quantity": 25,
         "name": {
           "cs": "Razz Berry",
@@ -5742,7 +5742,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "avatar",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/avatar_items/n_hair_lvl79-synthfade_0_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fashion-case.png",
         "quantity": 1,
         "name": {
           "cs": "Krátký účes Level 79",
@@ -5753,7 +5753,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "avatar",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/avatar_items/n_hair_lvl79-urbanphantom_0_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fashion-case.png",
         "quantity": 1,
         "name": {
           "cs": "Dlouhý účes Level 79",
@@ -5764,7 +5764,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Rare Candy XL.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/exp-candy-xl.png",
         "quantity": 1,
         "name": {
           "cs": "Vzácné Candy XL",
@@ -5775,7 +5775,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Premium Battle Pass.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/eon-ticket.png",
         "quantity": 1,
         "name": {
           "cs": "Prémiový Battle Pass",
@@ -5786,7 +5786,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 10,
         "name": {
           "cs": "Max Revive",
@@ -5797,7 +5797,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 30,
         "name": {
           "cs": "Ultra Ball",
@@ -5808,7 +5808,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 25,
         "name": {
           "cs": "Pinap Berry",
@@ -5885,7 +5885,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
     "rewards": [
       {
         "type": "avatar",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/avatar_items/n_shirt_lvl80-circuitjacket_0_icon.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/fashion-case.png",
         "quantity": 1,
         "name": {
           "cs": "Bunda Level 80 Circuit Master",
@@ -5896,7 +5896,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pokemon Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pokemon-box-link.png",
         "quantity": 100,
         "name": {
           "cs": "Rozšíření úložiště Pokémonů +50",
@@ -5907,7 +5907,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "upgrade",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Item Storage.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/forage-bag.png",
         "quantity": 100,
         "name": {
           "cs": "Rozšíření batohu +50",
@@ -5918,7 +5918,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Mushroom.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-mushrooms.png",
         "quantity": 1,
         "name": {
           "cs": "Max Mushroom",
@@ -5929,7 +5929,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Lucky Egg.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lucky-egg.png",
         "quantity": 7,
         "name": {
           "cs": "Šťastné vejce Lucky Egg",
@@ -5940,7 +5940,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Incense.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luck-incense.png",
         "quantity": 7,
         "name": {
           "cs": "Incense kadidlo",
@@ -5951,7 +5951,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Super Incubator.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/shiny-charm.png",
         "quantity": 5,
         "name": {
           "cs": "Super Inkubátor",
@@ -5962,7 +5962,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Revive.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-revive.png",
         "quantity": 25,
         "name": {
           "cs": "Max Revive",
@@ -5973,7 +5973,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Max Potion.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/max-potion.png",
         "quantity": 50,
         "name": {
           "cs": "Max Potion",
@@ -5984,7 +5984,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Ultra Ball.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png",
         "quantity": 80,
         "name": {
           "cs": "Ultra Ball",
@@ -5995,7 +5995,7 @@ export const TRAINER_LEVELS_DATA: TrainerLevelItem[] = [
       },
       {
         "type": "item",
-        "iconUrl": "https://cdn.leekduck.com/assets/img/items/Pinap Berry.png",
+        "iconUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pinap-berry.png",
         "quantity": 70,
         "name": {
           "cs": "Pinap Berry",

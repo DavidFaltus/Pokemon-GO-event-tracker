@@ -3,11 +3,15 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { PokemonRankingsView } from '@/components/PokemonRankingsView';
 import type { Language } from '@/data/translations';
-import { pokemonRankings } from '@/data/pokemonRankings';
+import { pokemonRankings, type PokemonRankData } from '@/data/pokemonRankings';
 import { getPokemonName } from '@/utils/pokemonTranslator';
 import { isPokemonReleasedInGo } from '@/utils/pokemonReleaseHelper';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
-import { getPokedexEntryById } from '@/data/pokedexCatalog';
+import { getPokedexEntryById, POKEDEX_MAP } from '@/data/pokedexCatalog';
+import metaIndexData from '@/data/pokedexMetaIndex.json';
+
+const META_INDEX = metaIndexData as Record<string, any>;
+const NON_GYM_RARITIES = new Set(['legendary', 'mythical', 'ultra_beast', 'paradox']);
 
 export const revalidate = 3600;
 
@@ -258,37 +262,131 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-function getCategoryTopPokemon(category: RankingCategory, filterType?: string) {
-  let list = pokemonRankings.filter(isPokemonReleasedInGo);
+function deduplicateByPokemonName(list: PokemonRankData[]): PokemonRankData[] {
+  const bestByName = new Map<string, PokemonRankData>();
+  for (const p of list) {
+    const key = p.name.toLowerCase().trim();
+    const existing = bestByName.get(key);
+    if (!existing || p.pveScore * 10 + p.dps > existing.pveScore * 10 + existing.dps) {
+      bestByName.set(key, p);
+    }
+  }
+  return Array.from(bestByName.values());
+}
+
+function getCategoryTopPokemon(category: RankingCategory, filterType?: string): PokemonRankData[] {
+  const released = pokemonRankings.filter(isPokemonReleasedInGo);
+
   if (filterType) {
-    list = list.filter((p) => p.types.includes(filterType) || p.bestChargedMove?.type === filterType);
-  } else if (category === 'best-mega') {
-    list = list.filter((p) => p.isMega || p.isPrimal);
-  } else if (category === 'best-shadow') {
-    list = list.filter((p) => p.isShadow);
-  } else if (category === 'best-gym-defenders') {
-    list = list.filter((p) => !p.isMega && !p.isPrimal && !p.isShadow && p.maxCp <= 4200);
-  } else if (category === 'great-league') {
-    list = list.filter((p) => !p.isMega && !p.isPrimal && p.maxCp >= 1350 && p.maxCp <= 3200);
-  } else if (category === 'ultra-league') {
-    list = list.filter((p) => !p.isMega && !p.isPrimal && p.maxCp >= 2200 && p.maxCp <= 4000);
-  } else if (category === 'master-league') {
-    list = list.filter((p) => !p.isMega && !p.isPrimal && p.maxCp >= 3500);
-  } else if (category === 'little-cup') {
-    list = list.filter((p) => !p.isMega && !p.isPrimal && p.maxCp <= 1800);
-  } else if (category === 'max-battles') {
-    list = list.filter((p) => !p.isMega && !p.isPrimal && p.maxCp >= 2800);
+    const filtered = deduplicateByPokemonName(
+      released.filter((p) => p.types.includes(filterType) || p.bestChargedMove?.type === filterType)
+    );
+    return filtered
+      .sort((a, b) => (b.pveScore * 10 + b.dps * 0.5) - (a.pveScore * 10 + a.dps * 0.5))
+      .slice(0, 15);
   }
 
-  if (category === 'max-cp' || category === 'master-league') {
-    list = [...list].sort((a, b) => b.maxCp - a.maxCp || b.pveScore - a.pveScore);
-  } else if (category === 'best-gym-defenders' || category === 'great-league' || category === 'ultra-league' || category === 'little-cup') {
-    list = [...list].sort((a, b) => (b.defense * b.stamina) - (a.defense * a.stamina) || b.pveScore - a.pveScore);
-  } else {
-    list = [...list].sort((a, b) => (b.pveScore * 10 + b.dps * 0.5) - (a.pveScore * 10 + a.dps * 0.5));
+  // PvP Leagues backed by real PvPoke rankings in pokedexMetaIndex.json
+  if (category === 'great-league' || category === 'ultra-league' || category === 'master-league') {
+    const leagueKey = category === 'great-league' ? 'great' : category === 'ultra-league' ? 'ultra' : 'master';
+    const baseCandidates = deduplicateByPokemonName(
+      released.filter((p) => !p.isMega && !p.isPrimal && !p.isShadow)
+    );
+    const ranked = baseCandidates
+      .map((p) => {
+        const entry = POKEDEX_MAP[p.pokedexId];
+        const meta = entry ? META_INDEX[entry.slug] : undefined;
+        const pvpInfo = meta?.pvp?.[leagueKey];
+        return { p, rank: pvpInfo?.rank ?? 99999, score: pvpInfo?.score ?? 0 };
+      })
+      .filter((item) => item.rank < 99999)
+      .sort((a, b) => a.rank - b.rank || b.score - a.score);
+
+    // Deduplicate by pokedexId so only one form per species occupies a PvP table row
+    const seenIds = new Set<number>();
+    const uniqueSpecies: PokemonRankData[] = [];
+    for (const item of ranked) {
+      if (!seenIds.has(item.p.pokedexId)) {
+        seenIds.add(item.p.pokedexId);
+        uniqueSpecies.push(item.p);
+      }
+      if (uniqueSpecies.length >= 15) break;
+    }
+    return uniqueSpecies;
   }
 
-  return list.slice(0, 15);
+  if (category === 'little-cup') {
+    const baseCandidates = deduplicateByPokemonName(
+      released.filter((p) => {
+        if (p.isMega || p.isPrimal || p.isShadow) return false;
+        const entry = POKEDEX_MAP[p.pokedexId];
+        if (!entry || NON_GYM_RARITIES.has(entry.rarityClass)) return false;
+        // Little Cup uses unevolved / low-CP base species (exclude Chansey/Blissey/Shuckle)
+        if ([113, 213, 242].includes(p.pokedexId)) return false;
+        return p.maxCp >= 500 && p.maxCp <= 1350;
+      })
+    );
+    return baseCandidates
+      .sort((a, b) => (b.defense * b.stamina + b.attack * 50) - (a.defense * a.stamina + a.attack * 50))
+      .slice(0, 15);
+  }
+
+  if (category === 'max-battles') {
+    const maxCandidates = deduplicateByPokemonName(
+      released.filter((p) => {
+        if (p.isMega || p.isPrimal || p.isShadow) return false;
+        const entry = POKEDEX_MAP[p.pokedexId];
+        return Boolean(entry && (entry.hasDynamax || entry.hasGigantamax));
+      })
+    );
+    const seenIds = new Set<number>();
+    return maxCandidates
+      .sort((a, b) => {
+        const entryA = POKEDEX_MAP[a.pokedexId];
+        const entryB = POKEDEX_MAP[b.pokedexId];
+        const gmaxBonusA = entryA?.hasGigantamax ? 15 : 0;
+        const gmaxBonusB = entryB?.hasGigantamax ? 15 : 0;
+        return (b.pveScore + gmaxBonusB) - (a.pveScore + gmaxBonusA) || b.dps - a.dps;
+      })
+      .filter((p) => {
+        if (seenIds.has(p.pokedexId)) return false;
+        seenIds.add(p.pokedexId);
+        return true;
+      })
+      .slice(0, 15);
+  }
+
+  if (category === 'best-mega') {
+    return deduplicateByPokemonName(released.filter((p) => p.isMega || p.isPrimal))
+      .sort((a, b) => (b.pveScore * 10 + b.dps * 0.5) - (a.pveScore * 10 + a.dps * 0.5))
+      .slice(0, 15);
+  }
+
+  if (category === 'best-shadow') {
+    return deduplicateByPokemonName(released.filter((p) => p.isShadow))
+      .sort((a, b) => (b.pveScore * 10 + b.dps * 0.5) - (a.pveScore * 10 + a.dps * 0.5))
+      .slice(0, 15);
+  }
+
+  if (category === 'best-gym-defenders') {
+    // Legendaries, Mythicals, Ultra Beasts, Megas, and Shadows cannot defend Gyms
+    const gymEligible = deduplicateByPokemonName(
+      released.filter((p) => {
+        if (p.isMega || p.isPrimal || p.isShadow) return false;
+        const entry = POKEDEX_MAP[p.pokedexId];
+        if (entry && NON_GYM_RARITIES.has(entry.rarityClass)) return false;
+        return p.maxCp >= 1100;
+      })
+    );
+    return gymEligible
+      .sort((a, b) => (b.defense * b.stamina) - (a.defense * a.stamina) || b.maxCp - a.maxCp)
+      .slice(0, 15);
+  }
+
+  // max-cp default
+  return deduplicateByPokemonName(released)
+    .sort((a, b) => b.maxCp - a.maxCp || b.pveScore - a.pveScore)
+    .slice(0, 15);
 }
 
 export default async function CategoryRankingsPage({ params }: PageProps) {

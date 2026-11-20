@@ -87,13 +87,21 @@ export const LegalPageView: React.FC<LegalPageViewProps> = ({ pageType, lang }) 
     }
   };
 
+  const formatLastUpdated = (isoDate: string) => {
+    const parsed = new Date(`${isoDate}T12:00:00Z`);
+    if (isNaN(parsed.getTime())) return isoDate;
+    const locale = isCzech ? 'cs-CZ' : isJapanese ? 'ja-JP' : isRussian ? 'ru-RU' : 'en-US';
+    return parsed.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+  };
+
+  const formattedDate = formatLastUpdated(pageData.lastUpdated || '2026-11-20');
   const lastUpdatedLabel = isCzech
-    ? 'Aktualizováno: 27. září 2026'
+    ? `Aktualizováno: ${formattedDate}`
     : isJapanese
-    ? '最終更新: 2026年9月27日'
+    ? `最終更新: ${formattedDate}`
     : isRussian
-    ? 'Обновлено: 27 сентября 2026'
-    : 'Last Updated: September 27, 2026';
+    ? `Обновлено: ${formattedDate}`
+    : `Last Updated: ${formattedDate}`;
 
   const backHomeLabel = isCzech
     ? 'Zpět na přehled událostí'
@@ -163,7 +171,15 @@ export const LegalPageView: React.FC<LegalPageViewProps> = ({ pageType, lang }) 
             <div className="legal-contact-box">
               <Mail size={20} color="var(--accent-color)" />
               <div>
-                <span>{isCzech ? 'Oficiální e-mail podpory: ' : 'Official Support Email: '}</span>
+                <span>
+                  {isCzech
+                    ? 'Oficiální e-mail podpory: '
+                    : isJapanese
+                      ? '公式サポートメール: '
+                      : isRussian
+                        ? 'Официальная почта поддержки: '
+                        : 'Official Support Email: '}
+                </span>
                 <a href="mailto:support@pogoevents.app" className="legal-contact-email">
                   support@pogoevents.app
                 </a>

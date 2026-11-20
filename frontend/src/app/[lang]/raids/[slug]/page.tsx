@@ -270,18 +270,25 @@ export default async function RaidBossCounterPage({ params }: PageProps) {
       : `Для надежной победы над ${bossName} рекомендуется группа из 3–5 тренеров с контр-покемонами 35–45 уровня.`,
   };
 
-  const relatedBosses = ALL_RAID_SLUGS.filter((b) => b !== baseBossSlug).slice(0, 8);
+  const relatedBosses = FEATURED_SITEMAP_RAID_BOSSES.filter((b) => b !== baseBossSlug).slice(0, 8);
+
+  const headlineByLang: Record<Language, string> = {
+    cs: `${localizedName} – Raid Counters, Slabosti & 100% IV CP | Pokémon GO`,
+    en: `${bossName} – Raid Guide, Weaknesses & Top Counters | Pokémon GO`,
+    ja: `${localizedName} – レイド対策・弱点・最強カウンター | Pokémon GO`,
+    ru: `${localizedName} – Гайд по рейду, слабости и лучшие контр-покемоны | Pokémon GO`,
+  };
 
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'Article',
-        headline: `${localizedName} – Raid Guide, Weaknesses & Top Counters | Pokémon GO`,
+        headline: headlineByLang[lang] || headlineByLang.en,
         description: faqA1ByLang[lang] || faqA1ByLang.en,
         url: canonicalUrl,
         mainEntityOfPage: canonicalUrl,
-        author: { '@type': 'Organization', name: 'PoGo Events Editorial Team', url: 'https://pogoevents.app' },
+        author: { '@type': 'Person', name: 'David Faltus', url: `https://pogoevents.app/${lang}/about` },
         publisher: {
           '@type': 'Organization',
           name: 'PoGo Events Tracker',
@@ -387,7 +394,11 @@ export default async function RaidBossCounterPage({ params }: PageProps) {
           )}
           <div style={{ flex: 1, minWidth: '240px' }}>
             <div style={{ fontSize: '0.76rem', fontWeight: 800, color: '#f87171', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '4px' }}>
-              {isShadowRaid ? 'Shadow Raid Boss Guide' : isMegaOrPrimal ? 'Mega / Primal Raid Boss Guide' : '5-Star Legendary Raid Guide'}
+              {isShadowRaid
+                ? lang === 'cs' ? 'Shadow Raid Boss Průvodce' : lang === 'ja' ? 'シャドウレイド対策ガイド' : lang === 'ru' ? 'Гайд по Теневому рейду' : 'Shadow Raid Boss Guide'
+                : isMegaOrPrimal
+                  ? lang === 'cs' ? 'Mega / Primal Raid Průvodce' : lang === 'ja' ? 'メガ・ゲンシレイド対策ガイド' : lang === 'ru' ? 'Гайд по Мега / Праймал рейду' : 'Mega / Primal Raid Boss Guide'
+                  : lang === 'cs' ? '5★ Legendární Raid Průvodce' : lang === 'ja' ? '星5伝説レイド対策ガイド' : lang === 'ru' ? 'Гайд по 5★ легендарному рейду' : '5-Star Legendary Raid Guide'}
             </div>
             <h1 style={{ fontSize: '1.55rem', fontWeight: 850, margin: '0 0 8px 0', color: 'var(--text-primary)' }}>
               {lang === 'cs'
@@ -395,7 +406,7 @@ export default async function RaidBossCounterPage({ params }: PageProps) {
                 : lang === 'ja'
                   ? `${localizedName} レイド対策・弱点・100% IV CP・最強カウンター一覧`
                   : lang === 'ru'
-                    ? `${bossName} – Контр-покемоны, слабости и таблица 100% IV CP`
+                    ? `${localizedName} – Контр-покемоны, слабости и таблица 100% IV CP`
                     : `${bossName} Raid Guide – Best Counters, Weaknesses & 100% IV CP`}
             </h1>
             <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.55 }}>

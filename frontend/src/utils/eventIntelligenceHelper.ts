@@ -57,33 +57,89 @@ export function isCanceledEvent(event: { name?: string | { en?: string; cs?: str
 
 /**
  * Determines whether an event is substantial enough to include in sitemap-events.xml.
- * Excludes canceled events, bare GBL sub-rotations, and thin recurring micro-events (Max Monday, Spotlight/Raid Hour).
+ * Excludes canceled events, bare GBL sub-rotations, Spotlight/Raid/Max Hours, brand promo stubs,
+ * expired events, and empty far-future "save the date" placeholders with zero announced Pokémon/bonuses.
  */
 export function isSitemapWorthyEvent(event: {
   name?: string | { en?: string; cs?: string };
   eventID?: string;
   id?: string;
   eventType?: string;
+  start?: string;
   end?: string;
+  bonuses?: any[];
+  spawns?: any[];
+  extraData?: any;
 }): boolean {
   if (isCanceledEvent(event)) return false;
 
   const slug = (event.eventID || event.id || '').toLowerCase();
   const type = (event.eventType || '').toLowerCase();
+  const rawName = (
+    typeof event.name === 'string'
+      ? event.name
+      : `${event.name?.en || ''} ${event.name?.cs || ''}`
+  ).toLowerCase();
 
   if (!slug || slug === 'default-event') return false;
 
-  // Exclude repetitive GBL rotation boilerplate and 1-hour micro-event stubs
+  // Exclude repetitive GBL rotation boilerplate and 1-hour micro-event stubs (with or without hyphens)
   if (
     slug.startsWith('gbl-') ||
     slug.startsWith('max-mondays-') ||
-    slug.startsWith('pokemon-spotlight-hour-') ||
+    slug.includes('spotlight') ||
     slug.startsWith('raid-hour-') ||
+    slug.includes('raidhour') ||
     type === 'go-battle-league' ||
     type === 'max-mondays' ||
-    type === 'spotlight-hour' ||
+    type.includes('spotlight') ||
     type === 'raid-hour'
   ) {
+    return false;
+  }
+
+  // Exclude thin third-party brand promotional stubs
+  if (/\b(adidas|duolingo|amazon|prime-gaming|verizon|starbucks|mcdonalds)\b/i.test(slug) || /\b(adidas|duolingo)\b/i.test(rawName)) {
+    return false;
+  }
+
+  // Exclude already-expired events (older than 24 hours)
+  if (event.end) {
+    const endTs = new Date(event.end).getTime();
+    if (!isNaN(endTs) && endTs < Date.now() - 24 * 60 * 60 * 1000) {
+      return false;
+    }
+  }
+
+  // Exclude empty far-future "Save the Date" placeholders (> 30 days ahead without concrete spawns/bosses/bonuses)
+  const hasExplicitExtraData = Boolean(
+    (Array.isArray(event.bonuses) && event.bonuses.length > 0) ||
+    (Array.isArray(event.spawns) && event.spawns.length > 0) ||
+    (Array.isArray(event.extraData?.bonuses) && event.extraData.bonuses.length > 0) ||
+    (Array.isArray(event.extraData?.spawns) && event.extraData.spawns.length > 0) ||
+    (Array.isArray(event.extraData?.raidbattles?.bosses) && event.extraData.raidbattles.bosses.length > 0) ||
+    (Array.isArray(event.extraData?.communityday?.spawns) && event.extraData.communityday.spawns.length > 0) ||
+    (Array.isArray(event.extraData?.communityday?.bonuses) && event.extraData.communityday.bonuses.length > 0) ||
+    event.extraData?.generic?.hasSpawns ||
+    event.extraData?.generic?.hasFieldResearchTasks
+  );
+
+  if (event.start) {
+    const startTs = new Date(event.start).getTime();
+    const thirtyDaysAhead = Date.now() + 30 * 24 * 60 * 60 * 1000;
+    if (!isNaN(startTs) && startTs > thirtyDaysAhead && !hasExplicitExtraData) {
+      return false;
+    }
+  }
+
+  // Exclude unannounced generic recurring date placeholders (e.g. "january-communityday2027", "raid-day-december-2026", "minior-showers-*-2027")
+  const isGenericDatePlaceholder =
+    /^(january|february|march|april|may|june|july|august|september|october|november|december)-communityday/i.test(slug) ||
+    /^(super-mega-)?raid-day-(january|february|march|april|may|june|july|august|september|october|november|december)/i.test(slug) ||
+    /^(max-battle|hatch)-day-(january|february|march|april|may|june|july|august|september|october|november|december)/i.test(slug) ||
+    /^minior-showers-.*-202[789]$/i.test(slug);
+
+  if (isGenericDatePlaceholder && !hasExplicitExtraData) {
     return false;
   }
 

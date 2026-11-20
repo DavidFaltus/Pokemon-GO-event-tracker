@@ -7,7 +7,8 @@ const ADSENSE_CLIENT_ID = 'ca-pub-8800056915088711';
 const ADSENSE_SCRIPT_ID = 'google-adsense-head-script';
 
 const ALLOWED_ADSENSE_PATTERNS: RegExp[] = [
-  // Language homepages
+  // Root apex URL & language homepages
+  /^\/$/,
   /^\/(cs|en|ja|ru)\/?$/,
   // Original editorial guides hub & individual articles
   /^\/(cs|en|ja|ru)\/guides(\/[^/]+)?\/?$/,
@@ -26,7 +27,8 @@ const EXCLUDED_EVENT_SLUG_PATTERNS: RegExp[] = [
   /\/events\/gbl-/i,
   /\/events\/max-mondays-/i,
   /\/events\/raid-hour-/i,
-  /\/events\/pokemon-spotlight-hour-/i,
+  /\/events\/pokemon-?spotlight-?hour/i,
+  /\/events\/.*spotlight/i,
 ];
 
 /**

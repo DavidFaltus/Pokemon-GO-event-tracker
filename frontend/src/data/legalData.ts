@@ -36,7 +36,7 @@ export const LEGAL_PAGES_DATA: Record<LegalPageType, LegalPageInfo> = {
       ru: 'Информация о том, как pogoevents.app соблюдает конфиденциальность и обрабатывает данные.',
     },
     icon: 'ShieldCheck',
-    lastUpdated: '2026-09-27',
+    lastUpdated: '2026-11-20',
     sections: [
       {
         id: 'no-personal-data',
@@ -124,7 +124,7 @@ export const LEGAL_PAGES_DATA: Record<LegalPageType, LegalPageInfo> = {
         content: {
           cs: 'Pro financování provozu a rozvoje webu využíváme reklamní systém Google AdSense poskytovaný společností Google Ireland Limited / Google LLC. Společnost Google a její certifikovaní partneři využívají soubory cookie (včetně reklamního souboru cookie DoubleClick DART) k zobrazování reklam na základě vašich předchozích návštěv tohoto webu nebo jiných webových stránek na internetu. Uživatelé z Evropského hospodářského prostoru (EHP), Spojeného království a Švýcarska mohou svůj souhlas s personalizovanými reklamami kdykoliv udělit, upravit nebo odvolat prostřednictvím certifikované lišty pro správu souhlasu (CMP) podle standardu IAB TCF v2.2. Používání souborů cookie pro personalizované reklamy můžete rovněž kdykoliv vypnout v Nastavení reklam Google na adrese https://adssettings.google.com nebo na stránce https://www.aboutads.info.',
           en: 'To support the hosting and ongoing development of this website, we use Google AdSense, an advertising service provided by Google Ireland Limited / Google LLC. Google and its certified third-party vendors use cookies (including the DoubleClick DART cookie) to serve ads based on a user\'s prior visits to this website or other websites on the internet. Visitors from the European Economic Area (EEA), the UK, and Switzerland can manage or withdraw their consent for personalized advertising at any time via our Google-certified Consent Management Platform (CMP) compliant with IAB TCF v2.2. Users may also opt out of personalized advertising at any time by visiting Google Ads Settings at https://adssettings.google.com or https://www.aboutads.info.',
-          ja: '当サイトでは、サイトの運営および開発を維持するために、Google LLCが提供する第三者配信の広告サービス「Google AdSense（グーグル・アドセンス）」を利用しています。Googleおよび認定パートナーは、Cookie（DoubleClick DART Cookieを含む）を使用して、ユーザーが当サイトや他のウェブサイトに過去にアクセスした際の情報に基づいて広告を配信します。ユーザーはGoogleの広告設定ページ（https://adssettings.google.com）または https://www.aboutads.info にアクセスすることで、パーソナライズド広告の掲載に使用されるCookieをいつでも無効にすることができます。',
+          ja: '当サイトでは、サイトの運営および開発を維持するために、Google LLCが提供する第三者配信の広告サービス「Google AdSense（グーグル・アドセンス）」を利用しています。Googleおよび認定パートナーは、Cookie（DoubleClick DART Cookieを含む）を使用して、ユーザーが当サイトや他のウェブサイトに過去にアクセスした際の情報に基づいて広告を配信します。EEA・英国・スイスのユーザーは、IAB TCF v2.2準拠のGoogle認定同意管理プラットフォーム（CMP）を通じていつでも同意を管理・撤回できます。また、Googleの広告設定ページ（https://adssettings.google.com）または https://www.aboutads.info からパーソナライズ広告を無効にすることも可能です。',
           ru: 'Для поддержки работы и развития сайта мы используем рекламный сервис Google AdSense (Google Ireland Limited / Google LLC). Компания Google и ее сертифицированные партнеры используют файлы cookie (включая файлы cookie DoubleClick DART) для показа объявлений на основе предыдущих посещений пользователями нашего или других сайтов. Пользователи из ЕЭЗ и Великобритании могут управлять согласием через сертифицированную платформу управления согласием (CMP) по стандарту IAB TCF v2.2, а также отключить персонализированную рекламу в Настройках рекламных предпочтений Google по адресу https://adssettings.google.com или на сайте https://www.aboutads.info.',
         },
       },
@@ -241,7 +241,7 @@ export const LEGAL_PAGES_DATA: Record<LegalPageType, LegalPageInfo> = {
       ru: 'Правила использования веб-сервиса и ограничение ответственности за точность данных.',
     },
     icon: 'FileText',
-    lastUpdated: '2026-09-27',
+    lastUpdated: '2026-11-20',
     sections: [
       {
         id: 'acceptance',
@@ -267,10 +267,10 @@ export const LEGAL_PAGES_DATA: Record<LegalPageType, LegalPageInfo> = {
           ru: '2. Информационный характер и точность данных',
         },
         content: {
-          cs: 'Veškerá data o herních událostech, časech raidů, slabostech, doporučených counterech a 100% IV hodnotách jsou poskytována výhradně pro informační a vzdělávací účely ve stavu „tak, jak jsou“ (as is). Přestože usilujeme o maximální přesnost a okamžitou synchronizaci, neručíme za případné neohlášené změny rozvrhů, technické výpadky nebo zásahy do herních mechanik ze strany vývojáře hry Niantic, Inc.',
-          en: 'All event schedules, raid timers, type effectiveness charts, counter recommendations, and 100% IV appraisal figures are provided strictly for informational and reference purposes on an "as is" basis. While we strive for absolute accuracy, we cannot guarantee against unannounced schedule shifts, game bugs, or server disruptions by Niantic, Inc.',
-          ja: 'イベント日程、レイド時間、タイプ相性、対策ポケモン、100%個体値データは、すべて参考情報として「現状有姿（as is）」で提供されます。正確性の維持に努めていますが、Niantic, Inc.による予告のない仕様変更や変更について一切の保証はいたしかねます。',
-          ru: 'Все данные об ивентах, рейдах, слабостях и 100% IV предоставляются исключительно в информационных целях по принципу «как есть». Мы не несем ответственности за внезапные изменения в игре разработчиками Niantic, Inc.',
+          cs: 'Veškerá data o herních událostech, časech raidů, slabostech, doporučených counterech a 100% IV hodnotách jsou poskytována výhradně pro informační a vzdělávací účely ve stavu „tak, jak jsou“ (as is). Přestože usilujeme o maximální přesnost a okamžitou synchronizaci, neručíme za případné neohlášené změny rozvrhů, technické výpadky nebo zásahy do herních mechanik ze strany vývojářů hry Niantic, Inc. / Scopely, Inc.',
+          en: 'All event schedules, raid timers, type effectiveness charts, counter recommendations, and 100% IV appraisal figures are provided strictly for informational and reference purposes on an "as is" basis. While we strive for absolute accuracy, we cannot guarantee against unannounced schedule shifts, game bugs, or server disruptions by Niantic, Inc. / Scopely, Inc.',
+          ja: 'イベント日程、レイド時間、タイプ相性、対策ポケモン、100%個体値データは、すべて参考情報として「現状有姿（as is）」で提供されます。正確性の維持に努めていますが、Niantic, Inc. / Scopely, Inc.による予告のない仕様変更や変更について一切の保証はいたしかねます。',
+          ru: 'Все данные об ивентах, рейдах, слабостях и 100% IV предоставляются исключительно в информационных целях по принципу «как есть». Мы не несем ответственности за внезапные изменения в игре разработчиками Niantic, Inc. / Scopely, Inc.',
         },
       },
       {
@@ -369,10 +369,10 @@ export const LEGAL_PAGES_DATA: Record<LegalPageType, LegalPageInfo> = {
           ru: 'Благодарности сообществу',
         },
         content: {
-          cs: 'Velké uznání a poděkování patří komunitním projektům Leek Duck (leekduck.com), ScrapedDuck a PokeAPI za jejich neúnavnou práci při shromažďování a strukturování otevřených dat pro celou komunitu Pokémon GO.',
-          en: 'Special thanks and full attribution go to community resources including Leek Duck (leekduck.com), ScrapedDuck, and PokeAPI for their tireless efforts in cataloging open game data for trainers globally.',
-          ja: 'オープンデータの収集と整理にご尽力いただいているLeek Duck（leekduck.com）、ScrapedDuck、PokeAPIなどのコミュニティプロジェクトに心より感謝申し上げます。',
-          ru: 'Особая благодарность проектам Leek Duck (leekduck.com), ScrapedDuck и PokeAPI за огромную работу по сбору и систематизации данных для игроков Pokémon GO.',
+          cs: 'Velké uznání patří otevřeným komunitním projektům (včetně PokeAPI a otevřeného herního Game Masteru) za zpřístupnění veřejných referenčních dat a statistik pro celou komunitu trenérů Pokémon GO.',
+          en: 'Special thanks go to open-source community projects (including PokeAPI and open Pokémon GO Game Master datasets) for maintaining public reference metadata for trainers worldwide.',
+          ja: 'オープンソースのコミュニティプロジェクト（PokeAPIおよび公開ゲームマスターデータ）の継続的な貢献に感謝いたします。',
+          ru: 'Благодарность открытым проектам сообщества (включая PokeAPI и открытые данные Game Master) за поддержку справочной базы для тренеров по всему миру.',
         },
       },
     ],
@@ -393,7 +393,7 @@ export const LEGAL_PAGES_DATA: Record<LegalPageType, LegalPageInfo> = {
       ru: 'Есть вопрос, предложение по улучшению или отчет об ошибке? Свяжитесь с нами.',
     },
     icon: 'Mail',
-    lastUpdated: '2026-09-27',
+    lastUpdated: '2026-11-20',
     sections: [
       {
         id: 'direct-contact',

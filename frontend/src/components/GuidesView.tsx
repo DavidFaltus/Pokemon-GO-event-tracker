@@ -649,7 +649,7 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
               title={lang === 'cs' ? 'Zkopírovat odkaz na článek' : 'Copy link to article'}
             >
               {copiedLink ? <Check size={14} /> : <Share2 size={14} />}
-              <span>{copiedLink ? (lang === 'cs' ? 'Zkopírováno!' : 'Copied!') : (lang === 'cs' ? 'Sdílet odkaz' : 'Share link')}</span>
+              <span>{copiedLink ? (lang === 'cs' ? 'Zkopírováno!' : lang === 'ja' ? 'コピーしました！' : lang === 'ru' ? 'Скопировано!' : 'Copied!') : (lang === 'cs' ? 'Sdílet odkaz' : lang === 'ja' ? 'リンクを共有' : lang === 'ru' ? 'Поделиться' : 'Share link')}</span>
             </button>
           </div>
 
@@ -687,7 +687,7 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
             </div>
           </header>
 
-          <main style={{ marginTop: '28px' }}>
+          <div className="article-body-content" style={{ marginTop: '28px' }}>
             {renderVisualArticleWidget(selectedArticle.slug)}
 
             {selectedArticle.sections.map((section) => (
@@ -696,7 +696,7 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
 
                 {section.pokemon && section.pokemon.length > 0 && (
                   <div className="guide-section-pokemon-deck">
-                    <span className="deck-label">{lang === 'cs' ? 'Pokémoni v této sekci:' : 'Featured Pokémon in this section:'}</span>
+                    <span className="deck-label">{lang === 'cs' ? 'Pokémoni v této sekci:' : lang === 'ja' ? 'このセクションの注目ポケモン:' : lang === 'ru' ? 'Покемоны в этом разделе:' : 'Featured Pokémon in this section:'}</span>
                     <div className="guide-pokemon-chips">
                       {section.pokemon.map(p => renderPokemonChip(p))}
                     </div>
@@ -722,7 +722,7 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
                             <img src={url} alt={alt} loading="lazy" />
                             <div className="guide-inline-image-overlay">
                               <ZoomIn size={15} />
-                              <span>{lang === 'cs' ? 'Zvětšit' : 'Enlarge'}</span>
+                              <span>{lang === 'cs' ? 'Zvětšit' : lang === 'ja' ? '拡大' : lang === 'ru' ? 'Увеличить' : 'Enlarge'}</span>
                             </div>
                           </div>
                           {alt && <div className="guide-inline-image-caption">{alt}</div>}
@@ -779,7 +779,7 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
                 )}
               </section>
             ))}
-          </main>
+          </div>
 
           {/* Lightbox Image Preview Modal (Rendered via Portal directly to body for fixed viewport positioning) */}
           {isMounted && typeof document !== 'undefined' && lightboxGallery && createPortal(

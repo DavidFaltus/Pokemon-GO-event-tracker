@@ -113,7 +113,6 @@ if (sourceHtml) {
   const sitemapFiles = [
     'sitemap.xml',
     'sitemap-core.xml',
-    'sitemap-pokedex.xml',
     'sitemap-guides.xml',
     'sitemap-events.xml',
     'sitemap-raids-rocket.xml',

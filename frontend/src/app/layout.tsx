@@ -3,7 +3,6 @@ import Script from 'next/script';
 import { Outfit } from 'next/font/google';
 import { NavigatorProvider } from '@/hooks/useAppNavigate';
 import { ThemeProvider } from '@/context/ThemeContext';
-import { AdSenseScript } from '@/components/AdSenseScript';
 import '../index.css';
 import '../App.css';
 import './globals.css';
@@ -20,7 +19,7 @@ export const metadata: Metadata = {
   title: 'Pokémon GO Event Tracker - Live Události, Raid Bossi & Rakeťáci',
   description: 'Sledujte aktivní a nadcházející Pokémon GO události, raid bossy, sestavy Team GO Rocket, líhnutí z vajec a bonusy v reálném čase.',
   keywords: ['Pokémon GO', 'events', 'raid boss', 'Team GO Rocket', 'pogo guides', 'pogo tracker', 'pokemongo'],
-  authors: [{ name: 'Pokémon GO Community' }],
+  authors: [{ name: 'David Faltus', url: 'https://pogoevents.app/cs/about' }],
   icons: {
     icon: [
       { url: '/favicon.svg', type: 'image/svg+xml' },
@@ -70,11 +69,17 @@ export default function RootLayout({
                 ad_personalization: 'denied',
                 analytics_storage: 'denied',
                 region: ['AT','BE','BG','CH','CY','CZ','DE','DK','EE','ES','FI','FR','GB','GR','HR','HU','IE','IS','IT','LI','LT','LU','LV','MT','NL','NO','PL','PT','RO','SE','SI','SK'],
-                wait_for_update: 500
+                wait_for_update: 1500
               });
               gtag('set', 'ads_data_redaction', true);
             `,
           }}
+        />
+        {/* Standard static Google AdSense tag in <head> for reliable site verification & Google GDPR CMP (IAB TCF v2.2) across all routes including root / and /privacy */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8800056915088711"
+          crossOrigin="anonymous"
         />
         <Script
           id="theme-init"
@@ -110,9 +115,6 @@ export default function RootLayout({
             gtag('config', 'G-MKGYZSS7GK');
           `}
         </Script>
-
-        {/* Route-aware Google AdSense script (excludes utility/redirect screens) */}
-        <AdSenseScript />
 
         <div id="root">
           <NavigatorProvider>

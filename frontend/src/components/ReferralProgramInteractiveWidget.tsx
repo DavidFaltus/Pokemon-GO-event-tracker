@@ -71,11 +71,11 @@ const MILESTONES_DATA: MilestoneItem[] = [
     refereeReward: {
       title: { cs: 'Poké Ball', en: 'Poké Ball', ja: 'モンスターボール', ru: 'Poké Ball' },
       amount: '100×',
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Poke%20Ball.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png'
     },
     referrerReward: {
       title: { cs: 'Přátelství & Odemykání milníků', en: 'Friendship & Milestone Tracker', ja: 'フレンド成立＆タスク開始', ru: 'Дружба и квесты' },
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Lucky%20Egg.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/lucky-egg.png'
     }
   },
   {
@@ -120,7 +120,7 @@ const MILESTONES_DATA: MilestoneItem[] = [
     refereeReward: {
       title: { cs: 'Premium Battle Pass', en: 'Premium Battle Pass', ja: 'プレミアムバトルパス', ru: 'Premium Battle Pass' },
       amount: '1×',
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Premium%20Battle%20Pass.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/eon-ticket.png'
     },
     referrerReward: {
       title: { cs: 'Bagon', en: 'Bagon', ja: 'タツベイ', ru: 'Bagon' },
@@ -150,7 +150,7 @@ const MILESTONES_DATA: MilestoneItem[] = [
     referrerReward: {
       title: { cs: 'Premium Battle Pass', en: 'Premium Battle Pass', ja: 'プレミアムバトルパス', ru: 'Premium Battle Pass' },
       amount: '1×',
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Premium%20Battle%20Pass.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/eon-ticket.png'
     }
   },
   {
@@ -170,12 +170,12 @@ const MILESTONES_DATA: MilestoneItem[] = [
     refereeReward: {
       title: { cs: 'Super Incubator', en: 'Super Incubator', ja: 'スーパーふかそうち', ru: 'Super Incubator' },
       amount: '3×',
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Super%20Incubator.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/shiny-charm.png'
     },
     referrerReward: {
       title: { cs: 'Super Incubator', en: 'Super Incubator', ja: 'スーパーふかそうち', ru: 'Super Incubator' },
       amount: '5×',
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Super%20Incubator.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/shiny-charm.png'
     }
   },
   {
@@ -195,7 +195,7 @@ const MILESTONES_DATA: MilestoneItem[] = [
     refereeReward: {
       title: { cs: 'Super Incubator', en: 'Super Incubator', ja: 'スーパーふかそうち', ru: 'Super Incubator' },
       amount: '1×',
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Super%20Incubator.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/shiny-charm.png'
     },
     referrerReward: {
       title: { cs: 'Darumaka', en: 'Darumaka', ja: 'ダルマッカ', ru: 'Darumaka' },
@@ -225,7 +225,7 @@ const MILESTONES_DATA: MilestoneItem[] = [
     referrerReward: {
       title: { cs: 'Rare Candy', en: 'Rare Candy', ja: 'ふしぎなアメ', ru: 'Rare Candy' },
       amount: '1×',
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Rare%20Candy.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/rare-candy.png'
     }
   },
   {
@@ -270,7 +270,7 @@ const MILESTONES_DATA: MilestoneItem[] = [
     refereeReward: {
       title: { cs: 'Rare Candy', en: 'Rare Candy', ja: 'ふしぎなアメ', ru: 'Rare Candy' },
       amount: '5×',
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Rare%20Candy.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/rare-candy.png'
     },
     referrerReward: {
       title: { cs: 'Gible', en: 'Gible', ja: 'フカマル', ru: 'Gible' },
@@ -300,7 +300,7 @@ const MILESTONES_DATA: MilestoneItem[] = [
     referrerReward: {
       title: { cs: 'Rare Candy', en: 'Rare Candy', ja: 'ふしぎなアメ', ru: 'Rare Candy' },
       amount: '3×',
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Rare%20Candy.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/rare-candy.png'
     }
   },
   {
@@ -325,7 +325,7 @@ const MILESTONES_DATA: MilestoneItem[] = [
     referrerReward: {
       title: { cs: 'Super Incubator', en: 'Super Incubator', ja: 'スーパーふかそうち', ru: 'Super Incubator' },
       amount: '2×',
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Super%20Incubator.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/shiny-charm.png'
     }
   },
   {
@@ -345,7 +345,7 @@ const MILESTONES_DATA: MilestoneItem[] = [
     refereeReward: {
       title: { cs: 'Rare Candy', en: 'Rare Candy', ja: 'ふしぎなアメ', ru: 'Rare Candy' },
       amount: '1×',
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Rare%20Candy.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/rare-candy.png'
     },
     referrerReward: {
       title: { cs: 'Charizard', en: 'Charizard', ja: 'リザードン', ru: 'Charizard' },
@@ -370,12 +370,12 @@ const MILESTONES_DATA: MilestoneItem[] = [
     refereeReward: {
       title: { cs: 'Premium Battle Pass', en: 'Premium Battle Pass', ja: 'プレミアムバトルパス', ru: 'Premium Battle Pass' },
       amount: '5×',
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Premium%20Battle%20Pass.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/eon-ticket.png'
     },
     referrerReward: {
       title: { cs: 'Rare Candy', en: 'Rare Candy', ja: 'ふしぎなアメ', ru: 'Rare Candy' },
       amount: '30×',
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Rare%20Candy.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/rare-candy.png'
     }
   },
   {
@@ -395,12 +395,12 @@ const MILESTONES_DATA: MilestoneItem[] = [
     refereeReward: {
       title: { cs: 'Charizard Mega Energy', en: 'Charizard Mega Energy', ja: 'リザードンメガエナジー', ru: 'Mega Energy Charizard' },
       amount: '50×',
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Mega%20Energy.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/mega-ring.png'
     },
     referrerReward: {
       title: { cs: 'Charizard Mega Energy', en: 'Charizard Mega Energy', ja: 'リザードンメガエナジー', ru: 'Mega Energy Charizard' },
       amount: '50×',
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Mega%20Energy.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/mega-ring.png'
     }
   },
   {
@@ -450,7 +450,7 @@ const MILESTONES_DATA: MilestoneItem[] = [
     referrerReward: {
       title: { cs: 'Pidgeot Mega Energy', en: 'Pidgeot Mega Energy', ja: 'ピジョットメガエナジー', ru: 'Mega Energy Pidgeot' },
       amount: '10×',
-      imageUrl: 'https://cdn.leekduck.com/assets/img/items/Mega%20Energy.png'
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/mega-ring.png'
     }
   },
   {

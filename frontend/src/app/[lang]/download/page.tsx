@@ -38,6 +38,7 @@ export async function generateMetadata({ params }: DownloadPageProps): Promise<M
   return {
     title: titles[lang] || titles.en,
     description: descriptions[lang] || descriptions.en,
+    robots: { index: false, follow: true },
     alternates: buildAlternates(lang, '/download'),
     openGraph: {
       title: titles[lang] || titles.en,

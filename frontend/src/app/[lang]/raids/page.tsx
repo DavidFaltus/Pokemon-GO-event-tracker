@@ -3,6 +3,7 @@ import { RaidView } from '@/components/RaidView';
 import { SectionEditorialGuide } from '@/components/SectionEditorialGuide';
 import type { Language } from '@/data/translations';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
+import { sanitizeExternalMediaForSsr } from '@/utils/imageResolver';
 import { API_BASE_URL } from '@/config';
 
 export const revalidate = 300;
@@ -58,7 +59,7 @@ async function getInitialRaidBosses() {
     const res = await fetch(`${API_BASE_URL}/api/raids`, { next: { revalidate: 300 } });
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) return data;
+      if (Array.isArray(data) && data.length > 0) return sanitizeExternalMediaForSsr(data);
     }
   } catch (err) {}
   return undefined;
