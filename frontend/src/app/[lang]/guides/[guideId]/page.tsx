@@ -1,41 +1,51 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import App from '@/App';
+import { GuidesView } from '@/components/GuidesView';
 import type { Language } from '@/data/translations';
-import { GUIDES_DATA } from '@/data/guidesData';
+import { GUIDES_DATA, type GuideArticle } from '@/data/guidesData';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
 import { API_BASE_URL } from '@/config';
 
 export const revalidate = 3600;
 
-async function getGuide(guideId: string) {
+async function getGuide(guideId: string): Promise<GuideArticle | undefined> {
+  const localMatch = GUIDES_DATA.find((g) => g.slug === guideId);
   try {
     const res = await fetch(`${API_BASE_URL}/api/guides/${guideId}`, { next: { revalidate: 300 } });
     if (res.ok) {
-      return await res.json();
+      const remote = await res.json();
+      if (remote && remote.slug) {
+        return localMatch ? { ...remote, ...localMatch } : remote;
+      }
     }
   } catch {
-    // fallback
+    // fallback to local
   }
-  return GUIDES_DATA.find((g) => g.slug === guideId);
+  return localMatch;
 }
 
 export async function generateStaticParams() {
   const languages: Language[] = ['cs', 'en', 'ja', 'ru'];
-  let allGuides = GUIDES_DATA;
+  const mergedMap = new Map<string, GuideArticle>();
+  GUIDES_DATA.forEach((g) => mergedMap.set(g.slug, g));
 
   try {
     const res = await fetch(`${API_BASE_URL}/api/guides`, { next: { revalidate: 3600 } });
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
-        allGuides = data;
+        data.forEach((g: GuideArticle) => {
+          if (g && g.slug && !mergedMap.has(g.slug)) {
+            mergedMap.set(g.slug, g);
+          }
+        });
       }
     }
   } catch {
     // Offline build fallback
   }
 
+  const allGuides = Array.from(mergedMap.values());
   const params: { lang: Language; guideId: string }[] = [];
   languages.forEach((lang) => {
     allGuides.forEach((guide) => {
@@ -145,9 +155,9 @@ export default async function IndividualGuidePage({ params }: PageProps) {
         dateModified: isoDate,
         inLanguage: lang,
         author: {
-          '@type': 'Organization',
-          name: 'Pokémon GO Event Tracker',
-          url: 'https://pogoevents.app'
+          '@type': 'Person',
+          name: guide.author || 'David Faltus',
+          url: `https://pogoevents.app/${lang}/about`,
         },
         publisher: {
           '@type': 'Organization',
@@ -195,7 +205,7 @@ export default async function IndividualGuidePage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdGraph) }}
       />
-      <App initialLang={lang} initialTab="guides" initialArticleSlug={guideId} />
+      <GuidesView lang={lang} initialArticleSlug={guideId} />
     </>
   );
 }

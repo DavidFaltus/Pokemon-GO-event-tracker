@@ -9,7 +9,7 @@ import {
 import { getPokedexDescription } from '@/data/pokedexDescriptions';
 import { getPokemonName } from '@/utils/pokemonTranslator';
 import { buildAlternates } from '@/utils/seoHelper';
-import { isTopMetaPokedexEntry, generatePokedexEditorialAnalysis } from '@/utils/pokedexSeoHelper';
+import { generatePokedexEditorialAnalysis } from '@/utils/pokedexSeoHelper';
 import type { Language } from '@/data/translations';
 
 export const revalidate = 3600;
@@ -71,12 +71,11 @@ export async function generateMetadata({ params }: PokedexDetailPageProps): Prom
   const canonicalUrl = `https://pogoevents.app/${validLang}/pokedex/${entry.slug}`;
   const imageUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${entry.dexId}.png`;
 
-  const shouldIndex = isTopMetaPokedexEntry(entry);
-
   return {
     title,
     description,
-    robots: shouldIndex ? { index: true, follow: true } : { index: false, follow: true },
+    // Kept noindex during AdSense editorial quality consolidation so programmatic stat cards do not dilute domain ratio
+    robots: { index: false, follow: true },
     keywords: [
       entry.names.en,
       localizedName,

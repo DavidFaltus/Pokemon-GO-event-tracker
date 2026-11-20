@@ -25,7 +25,6 @@ Disallow: /api/private/
 
 Sitemap: https://pogoevents.app/sitemap.xml
 Sitemap: https://pogoevents.app/sitemap-core.xml
-Sitemap: https://pogoevents.app/sitemap-pokedex.xml
 Sitemap: https://pogoevents.app/sitemap-guides.xml
 Sitemap: https://pogoevents.app/sitemap-events.xml
 Sitemap: https://pogoevents.app/sitemap-raids-rocket.xml

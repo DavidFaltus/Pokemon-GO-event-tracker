@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { PokemonRankingsView } from '@/components/PokemonRankingsView';
 import type { Language } from '@/data/translations';
 import { TYPE_CHART, getCounterTypes } from '@/utils/pokemonCountersHelper';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
@@ -169,6 +168,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: info.title,
     description: info.desc,
+    robots: { index: false, follow: true },
     alternates: buildAlternates(lang, `/types/${typeSlug}`),
     openGraph: {
       title: info.title,
@@ -421,8 +421,6 @@ export default async function PokemonTypePage({ params }: PageProps) {
           </div>
         )}
       </article>
-
-      <PokemonRankingsView lang={lang} initialSelectedType={capitalizedType} />
     </div>
   );
 }

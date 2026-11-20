@@ -9,11 +9,13 @@ import { getPokemonName } from '@/utils/pokemonTranslator';
 import { getCounterTypes, getTopCountersForPokemon } from '@/utils/pokemonCountersHelper';
 import { localizeTypeName } from '@/utils/eventIntelligenceHelper';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
-import { POPULAR_RAID_BOSSES } from '@/data/sitemapConstants';
+import { POPULAR_RAID_BOSSES, FEATURED_SITEMAP_RAID_BOSSES } from '@/data/sitemapConstants';
 
 export const revalidate = 3600;
 
 export { POPULAR_RAID_BOSSES };
+
+const FEATURED_SITEMAP_RAID_SET = new Set<string>(FEATURED_SITEMAP_RAID_BOSSES);
 
 const UNRELEASED_BOSS_SLUGS = new Set([
   'eternatus',
@@ -64,9 +66,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const lang: Language = validLanguages.includes(unwrapped.lang as Language) ? (unwrapped.lang as Language) : 'cs';
   const rawSlug = unwrapped.slug.toLowerCase();
   const isCanonicalCountersSlug = rawSlug.endsWith('-counters');
+  const baseBossSlug = rawSlug.replace(/-counters$/i, '');
   const normalizedSlug = isCanonicalCountersSlug ? rawSlug : `${rawSlug}-counters`;
   const bossName = cleanBossName(rawSlug);
-  const matched = getPokemonByIdOrSlug(bossName.replace(/shadow|mega|primal/gi, '').trim());
+  const matched =
+    getPokemonByIdOrSlug(baseBossSlug) ||
+    getPokemonByIdOrSlug(bossName) ||
+    getPokemonByIdOrSlug(bossName.replace(/shadow|mega|primal/gi, '').trim());
+  const shouldIndex = isCanonicalCountersSlug && FEATURED_SITEMAP_RAID_SET.has(baseBossSlug);
 
   const localizedName = matched ? getPokemonName(matched.name, lang) : bossName;
   const canonicalUrl = `https://pogoevents.app/${lang}/raids/${normalizedSlug}`;
@@ -88,7 +95,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: titleByLang[lang] || titleByLang.en,
     description: descByLang[lang] || descByLang.en,
-    robots: isCanonicalCountersSlug ? { index: true, follow: true } : { index: false, follow: true },
+    robots: shouldIndex ? { index: true, follow: true } : { index: false, follow: true },
     keywords: [
       `${bossName} counters`,
       `${bossName} raid guide`,
@@ -114,7 +121,10 @@ export default async function RaidBossCounterPage({ params }: PageProps) {
   const baseBossSlug = rawSlug.replace(/-counters$/i, '');
   const normalizedSlug = `${baseBossSlug}-counters`;
   const bossName = cleanBossName(rawSlug);
-  const matched = getPokemonByIdOrSlug(bossName.replace(/shadow|mega|primal/gi, '').trim());
+  const matched =
+    getPokemonByIdOrSlug(baseBossSlug) ||
+    getPokemonByIdOrSlug(bossName) ||
+    getPokemonByIdOrSlug(bossName.replace(/shadow|mega|primal/gi, '').trim());
   const dbKey = Object.keys(raidCountersDb).find(
     (k) => k.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') === baseBossSlug
   );
@@ -192,7 +202,7 @@ export default async function RaidBossCounterPage({ params }: PageProps) {
             10
         )
       : 2625);
-  const lv50MaxCp = dexEntry?.maxCp.lv50 ?? matched?.maxCp ?? 4000;
+  const lv50MaxCp = matched?.maxCp ?? dexEntry?.maxCp.lv50 ?? 4000;
 
   const lv20MinCp = Math.floor(lv20MaxCp * 0.945);
   const lv25MinCp = Math.floor(lv25MaxCp * 0.945);
@@ -350,7 +360,7 @@ export default async function RaidBossCounterPage({ params }: PageProps) {
               fontSize: '0.84rem',
             }}
           >
-            📖 {lang === 'cs' ? `Kompletní profil ${localizedName} v Pokédexu →` : `View ${bossName} in Pokédex →`}
+            📖 {lang === 'cs' ? `Kompletní profil ${localizedName} v Pokédexu →` : lang === 'ja' ? `${localizedName}の図鑑詳細を見る →` : lang === 'ru' ? `Полный профиль ${bossName} в Покедексе →` : `View ${bossName} in Pokédex →`}
           </Link>
         )}
       </nav>
@@ -407,31 +417,63 @@ export default async function RaidBossCounterPage({ params }: PageProps) {
         >
           <div style={{ padding: '12px 14px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'rgba(255,255,255,0.02)' }}>
             <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', fontWeight: 700 }}>
-              {lang === 'cs' ? '100% IV Hundo (Level 20 – Bez počasí)' : '100% IV Hundo (Level 20 Regular)'}
+              {lang === 'cs'
+                ? '100% IV Hundo (Level 20 – Bez počasí)'
+                : lang === 'ja'
+                  ? '個体値100% CP（PL20・通常時）'
+                  : lang === 'ru'
+                    ? '100% IV Hundo (Ур. 20 – без погоды)'
+                    : '100% IV Hundo (Level 20 Regular)'}
             </div>
             <div className="gold-hundo-text" style={{ fontSize: '1.25rem', fontWeight: 850, marginTop: '2px' }}>
               {lv20MaxCp} CP
             </div>
             <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>
-              {lang === 'cs' ? `Rozsah (10/10/10–15/15/15):` : 'CP Range:'} {lv20MinCp} – {lv20MaxCp} CP
+              {lang === 'cs'
+                ? 'Rozsah (10/10/10–15/15/15):'
+                : lang === 'ja'
+                  ? '捕獲CP範囲:'
+                  : lang === 'ru'
+                    ? 'Диапазон CP:'
+                    : 'CP Range:'}{' '}
+              {lv20MinCp} – {lv20MaxCp} CP
             </div>
           </div>
 
           <div style={{ padding: '12px 14px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'rgba(255,255,255,0.02)' }}>
             <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', fontWeight: 700 }}>
-              {lang === 'cs' ? '100% IV Weather Boost (Level 25)' : '100% IV Weather Boosted (Level 25)'}
+              {lang === 'cs'
+                ? '100% IV Weather Boost (Level 25)'
+                : lang === 'ja'
+                  ? '個体値100% CP（PL25・天候ブースト）'
+                  : lang === 'ru'
+                    ? '100% IV с погодой (Ур. 25)'
+                    : '100% IV Weather Boosted (Level 25)'}
             </div>
             <div className="gold-hundo-text" style={{ fontSize: '1.25rem', fontWeight: 850, marginTop: '2px' }}>
               {lv25MaxCp} CP
             </div>
             <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)' }}>
-              {lang === 'cs' ? `Rozsah s počasím:` : 'Boosted Range:'} {lv25MinCp} – {lv25MaxCp} CP
+              {lang === 'cs'
+                ? 'Rozsah s počasím:'
+                : lang === 'ja'
+                  ? 'ブースト時範囲:'
+                  : lang === 'ru'
+                    ? 'С погодным бустом:'
+                    : 'Boosted Range:'}{' '}
+              {lv25MinCp} – {lv25MaxCp} CP
             </div>
           </div>
 
           <div style={{ padding: '12px 14px', borderRadius: '12px', border: '1px solid var(--border-color)', backgroundColor: 'rgba(255,255,255,0.02)' }}>
             <div style={{ fontSize: '0.76rem', color: 'var(--text-muted)', fontWeight: 700 }}>
-              {lang === 'cs' ? 'Maximální CP (Level 50) & Statistiky' : 'Max CP (Level 50) & Base Stats'}
+              {lang === 'cs'
+                ? 'Maximální CP (Level 50) & Statistiky'
+                : lang === 'ja'
+                  ? '最大CP（PL50）＆種族値'
+                  : lang === 'ru'
+                    ? 'Макс. CP (Ур. 50) и характеристики'
+                    : 'Max CP (Level 50) & Base Stats'}
             </div>
             <div style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '2px' }}>
               {lv50MaxCp} CP
@@ -521,7 +563,14 @@ export default async function RaidBossCounterPage({ params }: PageProps) {
         }}
       >
         <h2 style={{ fontSize: '1.18rem', fontWeight: 800, margin: '0 0 14px 0' }}>
-          ❓ {lang === 'cs' ? `Časté dotazy (FAQ): Raid Boss ${localizedName}` : `Frequently Asked Questions: ${bossName} Raid`}
+          ❓{' '}
+          {lang === 'cs'
+            ? `Časté dotazy (FAQ): Raid Boss ${localizedName}`
+            : lang === 'ja'
+              ? `よくある質問（FAQ）：${localizedName}レイド`
+              : lang === 'ru'
+                ? `Частые вопросы (FAQ): Рейд-босс ${bossName}`
+                : `Frequently Asked Questions: ${bossName} Raid`}
         </h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {[
@@ -560,7 +609,13 @@ export default async function RaidBossCounterPage({ params }: PageProps) {
             ⚔️ {lang === 'cs' ? 'Další populární Raid Boss průvodci' : lang === 'ja' ? 'その他の人気レイドボス対策' : lang === 'ru' ? 'Другие гайды по рейд-боссам' : 'More Popular Raid Boss Counter Guides'}
           </h2>
           <Link href={`/${lang}/raids`} style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--accent-color)', textDecoration: 'none' }}>
-            {lang === 'cs' ? 'Zobrazit živou rotaci raidů →' : 'View Live Raid Rotation →'}
+            {lang === 'cs'
+              ? 'Zobrazit živou rotaci raidů →'
+              : lang === 'ja'
+                ? '開催中のレイド一覧を見る →'
+                : lang === 'ru'
+                  ? 'Текущая ротация рейдов →'
+                  : 'View Live Raid Rotation →'}
           </Link>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '10px', alignItems: 'start' }}>

@@ -43,6 +43,301 @@ export function localizeTypeName(type: string, lang: Language): string {
   return base;
 }
 
+/**
+ * Detects canceled events (e.g., "[Canceled] Max Monday") that must never be indexed.
+ */
+export function isCanceledEvent(event: { name?: string | { en?: string; cs?: string }; eventID?: string; id?: string }): boolean {
+  const rawName =
+    typeof event.name === 'string'
+      ? event.name
+      : `${event.name?.en || ''} ${event.name?.cs || ''}`;
+  const slug = event.eventID || event.id || '';
+  return /\bcancell?ed\b/i.test(rawName) || /\bcancell?ed\b/i.test(slug);
+}
+
+/**
+ * Determines whether an event is substantial enough to include in sitemap-events.xml.
+ * Excludes canceled events, bare GBL sub-rotations, and thin recurring micro-events (Max Monday, Spotlight/Raid Hour).
+ */
+export function isSitemapWorthyEvent(event: {
+  name?: string | { en?: string; cs?: string };
+  eventID?: string;
+  id?: string;
+  eventType?: string;
+  end?: string;
+}): boolean {
+  if (isCanceledEvent(event)) return false;
+
+  const slug = (event.eventID || event.id || '').toLowerCase();
+  const type = (event.eventType || '').toLowerCase();
+
+  if (!slug || slug === 'default-event') return false;
+
+  // Exclude repetitive GBL rotation boilerplate and 1-hour micro-event stubs
+  if (
+    slug.startsWith('gbl-') ||
+    slug.startsWith('max-mondays-') ||
+    slug.startsWith('pokemon-spotlight-hour-') ||
+    slug.startsWith('raid-hour-') ||
+    type === 'go-battle-league' ||
+    type === 'max-mondays' ||
+    type === 'spotlight-hour' ||
+    type === 'raid-hour'
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+interface BonusRule {
+  test: RegExp;
+  render: (match: RegExpMatchArray) => Record<Language, string>;
+}
+
+const EVENT_BONUS_RULES: BonusRule[] = [
+  {
+    test: /one guaranteed candy xl when trading|guaranteed candy xl.*trad/i,
+    render: () => ({
+      cs: 'Garantovaný 1× Candy XL z každé výměny Pokémonů (pro trenéry od úrovně 31+).',
+      en: 'Guaranteed 1× Candy XL from every Pokémon trade (Trainers level 31+).',
+      ja: 'ポケモン交換でアメXLが1個確定ドロップ（トレーナーレベル31以上）。',
+      ru: 'Гарантированная 1× XL конфета при каждом обмене покемонами (с 31 уровня тренера).',
+    }),
+  },
+  {
+    test: /increased.*candy xl|bonus candy xl|extra candy xl/i,
+    render: () => ({
+      cs: 'Zvýšená šance na zisk Candy XL při chytání a vývoji Pokémonů (úroveň 31+).',
+      en: 'Boosted Candy XL drop rate from catches and evolutions (Trainers level 31+).',
+      ja: 'ポケモン捕獲・進化時のアメXL獲得確率アップ（TL31以上）。',
+      ru: 'Повышенный шанс получения XL конфет за поимку и эволюцию (уровень 31+).',
+    }),
+  },
+  {
+    test: /increased limits? on opening gifts|open up to (\d+) gifts|gift.*limit/i,
+    render: () => ({
+      cs: 'Navýšený denní limit otevírání, sběru z PokéStopů a ukládání dárků (Gifts) v batohu.',
+      en: 'Expanded daily capacity for opening, collecting from PokéStops, and holding Gifts.',
+      ja: 'ギフトの1日開封上限・所持上限・ポケストップ獲得数が拡大。',
+      ru: 'Увеличенный дневной лимит открытия, получения с Покестопов и хранения подарков.',
+    }),
+  },
+  {
+    test: /(\d+)\s*[×x]\s*(?:catch\s+)?stardust|stardust.*(\d+)\s*[×x]/i,
+    render: (m) => {
+      const mult = m[1] || m[2] || '2';
+      return {
+        cs: `${mult}× Stardust za chytání Pokémonů (lze kombinovat se Star Piece).`,
+        en: `${mult}× Catch Stardust multiplier (stacks with Star Piece).`,
+        ja: `ポケモン捕獲時のほしのすな${mult}倍（ほしのかけら併用可）。`,
+        ru: `${mult}× звёздной пыли за поимку покемонов (суммируется со Star Piece).`,
+      };
+    },
+  },
+  {
+    test: /(\d+)\s*[×x]\s*(?:catch\s+)?xp|xp.*(\d+)\s*[×x]/i,
+    render: (m) => {
+      const mult = m[1] || m[2] || '2';
+      return {
+        cs: `${mult}× XP za chytání Pokémonů (lze kombinovat s Lucky Egg).`,
+        en: `${mult}× Catch XP multiplier (stacks with Lucky Egg).`,
+        ja: `ポケモン捕獲時のXPが${mult}倍（しあわせタマゴ併用可）。`,
+        ru: `${mult}× опыта (XP) за поимку покемонов (суммируется с Lucky Egg).`,
+      };
+    },
+  },
+  {
+    test: /(\d+)\s*[×x]\s*(?:catch\s+)?candy|candy.*(\d+)\s*[×x]/i,
+    render: (m) => {
+      const mult = m[1] || m[2] || '2';
+      return {
+        cs: `${mult}× Candy za chytání Pokémonů (navíc k bonusu Pinap Berry a Mega evoluce).`,
+        en: `${mult}× Catch Candy bonus (stacks with Pinap Berries and active Mega boost).`,
+        ja: `ポケモン捕獲時のアメが${mult}倍（パイルのみ・メガボーナス併用可）。`,
+        ru: `${mult}× конфет за поимку покемонов (суммируется с ягодой Pinap и Мега-бонусом).`,
+      };
+    },
+  },
+  {
+    test: /transfer.*candy|candy.*transfer/i,
+    render: () => ({
+      cs: 'Bonusové Candy za posílání (Transfer) Pokémonů profesorovi.',
+      en: 'Extra Candy earned when transferring Pokémon to Professor Willow.',
+      ja: 'ポケモンを博士に送った際にもらえるアメが増加。',
+      ru: 'Дополнительные конфеты за отправку (Transfer) покемонов профессору.',
+    }),
+  },
+  {
+    test: /(1\/4|1\/2|half|quarter).*hatch|hatch\s*distance/i,
+    render: (m) => {
+      const frac = /1\/4|quarter/i.test(m[0]) ? '1/4' : '1/2';
+      return {
+        cs: `Zkrácená vzdálenost pro líhnutí vajec na ${frac} u vajec vložených do inkubátoru během události.`,
+        en: `Reduced ${frac} Egg Hatch Distance for Eggs placed into Incubators during the event.`,
+        ja: `イベント期間中にふかそうちに入れたタマゴの孵化距離が${frac}に短縮。`,
+        ru: `Сокращённая дистанция вылупления яиц (${frac}) для яиц, помещённых в инкубатор во время события.`,
+      };
+    },
+  },
+  {
+    test: /lure\s*module/i,
+    render: () => ({
+      cs: 'Prodloužená doba trvání Lure Modulů aktivovaných na PokéStopech během události.',
+      en: 'Extended active duration for Lure Modules deployed during the event window.',
+      ja: `イベント期間中に使用したルアーモジュールの効果時間が延長。`,
+      ru: 'Увеличенная длительность работы Lure-модулей во время события.',
+    }),
+  },
+  {
+    test: /incense/i,
+    render: () => ({
+      cs: 'Prodloužená doba trvání Incense (vyjma Daily Adventure Incense) po dobu akce.',
+      en: 'Extended active duration for standard Incense (excluding Daily Adventure Incense).',
+      ja: 'おこう（おさんぽおこうを除く）の効果時間が延長。',
+      ru: 'Продлённое время действия Incense (кроме Daily Adventure Incense).',
+    }),
+  },
+  {
+    test: /special\s*trade/i,
+    render: () => ({
+      cs: 'Navýšený denní limit Speciálních výměn (Special Trades) mezi trenéry.',
+      en: 'Additional Special Trades allowed per day during the event.',
+      ja: '期間中の特別な交換の1日上限回数が追加。',
+      ru: 'Дополнительные особые обмены (Special Trades) в день на время события.',
+    }),
+  },
+  {
+    test: /stardust.*trad|trad.*stardust|less stardust/i,
+    render: () => ({
+      cs: 'Snížená cena Stardustu při výměnách (Trades) mezi trenéry.',
+      en: 'Discounted Stardust cost for Pokémon trades.',
+      ja: 'ポケモン交換に必要なほしのすなが割引。',
+      ru: 'Сниженная стоимость обмена покемонами в звёздной пыли.',
+    }),
+  },
+  {
+    test: /raid\s*pass/i,
+    render: () => ({
+      cs: 'Extra bezplatné Raid Passy denně při protočení Photo Discu na Gymech.',
+      en: 'Extra free daily Raid Passes obtainable by spinning Gym Photo Discs.',
+      ja: 'ジムのフォトディスクを回すことで追加の無料レイドパスを入手可能。',
+      ru: 'Дополнительные бесплатные Raid Pass при вращении фотодисков в Гимах.',
+    }),
+  },
+  {
+    test: /remote\s*raid/i,
+    render: () => ({
+      cs: 'Navýšený denní limit účasti v Remote Raidech.',
+      en: 'Raised daily participation cap for Remote Raids.',
+      ja: 'リモートレイドの1日参加上限が引き上げ。',
+      ru: 'Повышенный дневной лимит участия в Remote-рейдах.',
+    }),
+  },
+  {
+    test: /max\s*particle|power\s*spot/i,
+    render: () => ({
+      cs: 'Bonusový limit a zvýšený zisk Max Particles z Power Spotů a průzkumu.',
+      en: 'Boosted Max Particle collection limits and rewards from Power Spots.',
+      ja: 'パワースポットからのマックス粒子獲得量・上限がアップ。',
+      ru: 'Увеличенный лимит и бонусный сбор Max Particles с Power Spots.',
+    }),
+  },
+  {
+    test: /frustration|team\s*go\s*rocket|charged\s*tm/i,
+    render: () => ({
+      cs: 'Možnost odstranit útok Frustration u Shadow Pokémonů pomocí Charged TM a častější výskyt Team GO Rocket.',
+      en: 'Use Charged TMs to remove Frustration from Shadow Pokémon alongside more frequent Team GO Rocket encounters.',
+      ja: 'わざマシンスペシャルでシャドウポケモンの「やつあたり」を消去可能＆GOロケット団の出現率アップ。',
+      ru: 'Возможность убрать атаку Frustration у Теневых покемонов с помощью Charged TM и более частые встречи с Командой GO Rocket.',
+    }),
+  },
+  {
+    test: /shiny/i,
+    render: () => ({
+      cs: 'Zvýšená šance na setkání s vybranými Shiny Pokémony během události.',
+      en: 'Boosted Shiny encounter rate for featured event Pokémon.',
+      ja: 'イベント注目ポケモンの色違い出現率がアップ。',
+      ru: 'Повышенный шанс встретить блестящих (Shiny) покемонов события.',
+    }),
+  },
+  {
+    test: /snapshot/i,
+    render: () => ({
+      cs: 'Překvapení při focení GO Snapshot (bonusová setkání s eventovým Pokémonem).',
+      en: 'Bonus GO Snapshot photobomb encounters during the event.',
+      ja: 'GOスナップショット撮影でイベントポケモンのサプライズ出現。',
+      ru: 'Сюрприз-встречи с покемонами события при съёмке GO Snapshot.',
+    }),
+  },
+  {
+    test: /friendship|buddy/i,
+    render: () => ({
+      cs: 'Zrychlený postup přátelství (Friendship) nebo bonusové výhody pro vašeho Buddy Pokémona.',
+      en: 'Accelerated Friendship level progression or Buddy Pokémon adventure bonuses.',
+      ja: 'フレンドの仲良し度アップ加速または相棒ポケモンのボーナス発動。',
+      ru: 'Ускоренное повышение уровня дружбы или бонусы для покемона-напарника (Buddy).',
+    }),
+  },
+  {
+    test: /pokéstop\s*showcase|showcase/i,
+    render: () => ({
+      cs: 'Speciální soutěže PokéStop Showcases pro hlavní Pokémony události.',
+      en: 'Featured PokéStop Showcases highlighting event Pokémon.',
+      ja: 'イベント注目ポケモンを対象としたポケストップおひろめ開催。',
+      ru: 'Специальные конкурсы PokéStop Showcases для покемонов события.',
+    }),
+  },
+  {
+    test: /timed\s*research|field\s*research|special\s*research/i,
+    render: () => ({
+      cs: 'Exkluzivní tematické úkoly Field / Timed Research s odměnami a setkáními.',
+      en: 'Event-exclusive Field and Timed Research tasks awarding items and encounters.',
+      ja: 'イベント限定のフィールドリサーチ・タイムチャレンジが登場。',
+      ru: 'Тематические задания Field и Timed Research с наградами и встречами.',
+    }),
+  },
+  {
+    test: /go\s*battle\s*league|gbl|battle\s*set/i,
+    render: () => ({
+      cs: 'Bonusové odměny Stardustu a navýšený limit sad v GO Battle League.',
+      en: 'Extra Stardust win rewards and expanded daily battle sets in GO Battle League.',
+      ja: 'GOバトルリーグの勝利報酬ほしのすなアップ・1日のセット上限拡大。',
+      ru: 'Дополнительная звёздная пыль и увеличенный лимит боёв в GO Battle League.',
+    }),
+  },
+];
+
+/**
+ * Translates and editorially paraphrases raw ScrapedDuck/LeekDuck event bonus strings
+ * so (1) English pages never copy verbatim LeekDuck phrasing and (2) CS/JA/RU pages never
+ * leak raw untranslated English sentences under localized headings.
+ */
+export function localizeEventBonus(rawText: string, lang: Language): string | null {
+  const trimmed = (rawText || '').trim();
+  if (!trimmed) return null;
+
+  // If the string already contains target-script localized characters (ignoring "Pokémon"/"PokéStop" acute é), keep it as-is
+  const withoutBrandAccents = trimmed.replace(/pok[eé](?:mon|stop|ball|dex)s?/gi, '');
+  if (lang === 'cs' && /[áčďéěíňóřšťúůýžÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]/.test(withoutBrandAccents)) return trimmed;
+  if (lang === 'ja' && /[\u3040-\u30ff\u4e00-\u9faf]/.test(trimmed)) return trimmed;
+  if (lang === 'ru' && /[\u0400-\u04ff]/.test(trimmed)) return trimmed;
+
+  for (const rule of EVENT_BONUS_RULES) {
+    const match = trimmed.match(rule.test);
+    if (match) {
+      return rule.render(match)[lang];
+    }
+  }
+
+  // On English, return concise original fallback if unmatched; on CS/JA/RU avoid leaking raw EN ScrapedDuck copy
+  if (lang === 'en') {
+    return trimmed;
+  }
+
+  return null;
+}
+
 const RECOMMENDED_MEGA_BY_TYPE: Record<PokemonType, string[]> = {
   Normal: ['Mega Lopunny', 'Mega Pidgeot', 'Mega Kangaskhan'],
   Fire: ['Mega Charizard Y', 'Primal Groudon', 'Mega Blaziken'],

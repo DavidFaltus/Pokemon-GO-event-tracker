@@ -132,10 +132,10 @@ export const Footer: React.FC<FooterProps> = ({ lang, onOpenTab, onOpenLegalModa
         ru: "Создано с любовью для тренеров по всему миру."
       },
       copyrightNotice: {
-        cs: "© 2026 PoGo Events. Neoficiální fanouškovská komunitní aplikace. Všechna práva k ochranným známkám Pokémon náleží společnostem Nintendo, Game Freak & Niantic, Inc.",
-        en: "© 2026 PoGo Events. Unofficial fan application. Pokémon and Pokémon character names are trademarks of Nintendo, Game Freak & Niantic, Inc.",
-        ja: "© 2026 PoGo Events. 非公式ファンアプリケーション。Pokémonおよびポケモンキャラクター名は任天堂、ゲームフリーク、Niantic, Inc.の商標です。",
-        ru: "© 2026 PoGo Events. Неофициальное фан-приложение. Торговые марки Pokémon принадлежат Nintendo, Game Freak и Niantic, Inc."
+        cs: "© 2026 PoGo Events. Neoficiální fanouškovská komunitní aplikace. Všechna práva k ochranným známkám Pokémon náleží společnostem Nintendo, Game Freak, The Pokémon Company & Niantic / Scopely.",
+        en: "© 2026 PoGo Events. Unofficial fan application. Pokémon and Pokémon character names are trademarks of Nintendo, Game Freak, The Pokémon Company & Niantic / Scopely.",
+        ja: "© 2026 PoGo Events. 非公式ファンアプリケーション。Pokémonおよびポケモンキャラクター名は任天堂、ゲームフリーク、株式会社ポケモン、Niantic / Scopelyの商標です。",
+        ru: "© 2026 PoGo Events. Неофициальное фан-приложение. Торговые марки Pokémon принадлежат Nintendo, Game Freak, The Pokémon Company и Niantic / Scopely."
       }
     };
     return labels[key]?.[lang] || labels[key]?.en || '';

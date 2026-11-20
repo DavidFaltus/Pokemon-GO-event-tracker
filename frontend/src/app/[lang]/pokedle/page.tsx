@@ -86,6 +86,7 @@ export async function generateMetadata({ params }: PokedlePageProps): Promise<Me
   return {
     title: meta.title,
     description: meta.description,
+    robots: { index: false, follow: true },
     keywords: meta.keywords,
     alternates: buildAlternates(validLang, '/pokedle'),
     openGraph: {

@@ -1,13 +1,10 @@
 export const CORE_SECTIONS = [
   { path: '', priority: 1.0, changeFrequency: 'hourly' as const },
-  { path: '/pokedex', priority: 0.95, changeFrequency: 'daily' as const },
-  { path: '/pokedle', priority: 0.92, changeFrequency: 'daily' as const },
-  { path: '/friends', priority: 0.92, changeFrequency: 'daily' as const },
+  { path: '/pokedex', priority: 0.9, changeFrequency: 'daily' as const },
   { path: '/raids', priority: 0.9, changeFrequency: 'daily' as const },
   { path: '/rankings', priority: 0.9, changeFrequency: 'daily' as const },
   { path: '/rocket', priority: 0.9, changeFrequency: 'daily' as const },
-  { path: '/guides', priority: 0.88, changeFrequency: 'weekly' as const },
-  { path: '/filter', priority: 0.8, changeFrequency: 'weekly' as const },
+  { path: '/guides', priority: 0.95, changeFrequency: 'weekly' as const },
   { path: '/about', priority: 0.6, changeFrequency: 'monthly' as const },
   { path: '/privacy', priority: 0.5, changeFrequency: 'monthly' as const },
   { path: '/terms', priority: 0.5, changeFrequency: 'monthly' as const },
@@ -93,6 +90,29 @@ export const POPULAR_RAID_BOSSES = [
   'primal-kyogre',
   'zacian',
   'zamazenta',
+] as const;
+
+export const FEATURED_SITEMAP_RAID_BOSSES = [
+  'kyurem',
+  'mewtwo',
+  'rayquaza',
+  'mega-rayquaza',
+  'primal-groudon',
+  'primal-kyogre',
+  'mega-lucario',
+  'necrozma',
+  'dialga',
+  'palkia',
+  'giratina',
+  'zekrom',
+  'reshiram',
+  'groudon',
+  'kyogre',
+  'zacian',
+  'zamazenta',
+  'shadow-mewtwo',
+  'mega-garchomp',
+  'mega-tyranitar',
 ] as const;
 
 export const ROCKET_LEADERS = ['giovanni', 'cliff', 'sierra', 'arlo', 'grunts'] as const;

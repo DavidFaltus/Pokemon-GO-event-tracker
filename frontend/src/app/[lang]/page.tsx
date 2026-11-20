@@ -6,6 +6,7 @@ import App from '@/App';
 import type { Language } from '@/data/translations';
 import { GUIDES_DATA } from '@/data/guidesData';
 import { buildAlternates } from '@/utils/seoHelper';
+import { resolveImage } from '@/utils/imageResolver';
 import { apiFetch } from '@/config';
 
 export const revalidate = 300;
@@ -57,13 +58,49 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+function sanitizeEventMediaForSsr(events: any[]): any[] {
+  const sanitizeNested = (val: any): any => {
+    if (typeof val === 'string') {
+      if (val.includes('cdn.leekduck.com')) {
+        return resolveImage(val);
+      }
+      if (val.includes('leekduck.com')) {
+        return '';
+      }
+      return val;
+    }
+    if (Array.isArray(val)) return val.map(sanitizeNested);
+    if (val && typeof val === 'object') {
+      const out: Record<string, any> = {};
+      for (const [k, v] of Object.entries(val)) {
+        if (k === 'image' && typeof v === 'string' && v.includes('leekduck.com')) {
+          out[k] = resolveImage(v, val.eventType, val.name);
+        } else {
+          out[k] = sanitizeNested(v);
+        }
+      }
+      return out;
+    }
+    return val;
+  };
+
+  return events.map((ev) => {
+    const clean = sanitizeNested(ev);
+    clean.image = resolveImage(ev.image, ev.eventType, ev.name);
+    if (typeof clean.link === 'string' && clean.link.includes('leekduck.com')) {
+      clean.link = '';
+    }
+    return clean;
+  });
+}
+
 async function getInitialEvents() {
   try {
     const res = await apiFetch('/api/events', { next: { revalidate: 300 } });
     if (res.ok) {
       const data = await res.json();
       const list = Array.isArray(data) ? data : data.events || [];
-      if (list.length > 0) return list;
+      if (list.length > 0) return sanitizeEventMediaForSsr(list);
     }
   } catch (err) {}
 
@@ -80,7 +117,7 @@ async function getInitialEvents() {
       const custom = JSON.parse(fs.readFileSync(customFile, 'utf-8'));
       if (Array.isArray(custom)) merged.push(...custom);
     }
-    if (merged.length > 0) return merged;
+    if (merged.length > 0) return sanitizeEventMediaForSsr(merged);
   } catch (e) {}
 
   return [];
@@ -92,7 +129,7 @@ export default async function HomePage({ params }: PageProps) {
   const validLanguages: Language[] = ['cs', 'en', 'ja', 'ru'];
   const lang: Language = validLanguages.includes(rawLang as Language) ? (rawLang as Language) : 'cs';
   const initialEvents = await getInitialEvents();
-  const featuredGuides = GUIDES_DATA.slice(0, 6);
+  const featuredGuides = GUIDES_DATA.filter((g) => g.featured).slice(0, 8);
   const canonicalUrl = `https://pogoevents.app/${lang}`;
 
   const jsonLd = {
@@ -127,11 +164,6 @@ export default async function HomePage({ params }: PageProps) {
           '@type': 'Offer',
           price: '0',
           priceCurrency: 'USD',
-        },
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: '4.9',
-          ratingCount: '1250',
         },
       },
     ],
@@ -169,12 +201,12 @@ export default async function HomePage({ params }: PageProps) {
             style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--accent-color)', textDecoration: 'none' }}
           >
             {lang === 'cs'
-              ? 'Zobrazit všech 17 průvodců →'
+              ? `Zobrazit všech ${GUIDES_DATA.length} průvodců →`
               : lang === 'ja'
-                ? 'すべての攻略ガイドを見る →'
+                ? `全${GUIDES_DATA.length}件の攻略ガイドを見る →`
                 : lang === 'ru'
-                  ? 'Смотреть все руководства →'
-                  : 'View all 17 strategy guides →'}
+                  ? `Смотреть все ${GUIDES_DATA.length} руководств →`
+                  : `View all ${GUIDES_DATA.length} strategy guides →`}
           </Link>
         </div>
         <p style={{ margin: '0 0 18px 0', fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.6 }}>

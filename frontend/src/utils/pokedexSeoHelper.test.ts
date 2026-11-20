@@ -80,4 +80,39 @@ describe('pokedexSeoHelper', () => {
       expect(isTopMetaPokedexEntry(pecharunt)).toBe(false);
     }
   });
+
+  it('never leaks Czech "skóre", Polish typos, or untranslated types across locales', () => {
+    const venusaur = getPokedexEntryBySlug('venusaur');
+    expect(venusaur).toBeDefined();
+    if (!venusaur) return;
+
+    const csReport = generatePokedexEditorialAnalysis(venusaur, 'cs');
+    const csText = [...csReport.paragraphs.map((p) => p.text), ...csReport.faqs.map((f) => f.answer)].join(' ');
+    expect(csText).not.toContain('zadań');
+    expect(csText).toContain('Z úkolů Field Research');
+    expect(csText).toContain('Travní');
+
+    for (const lang of ['en', 'ja', 'ru'] as const) {
+      const report = generatePokedexEditorialAnalysis(venusaur, lang);
+      const fullText = report.paragraphs.map((p) => p.text).join(' ');
+      expect(fullText).not.toContain('skóre');
+    }
+
+    const jaReport = generatePokedexEditorialAnalysis(venusaur, 'ja');
+    expect(jaReport.paragraphs[0].text).toContain('くさ');
+    expect(jaReport.paragraphs[2].text).not.toContain('Grass');
+  });
+
+  it('resolves exact base forms for kyurem and zekrom instead of Black Kyurem or Shadow Zekrom', () => {
+    const kyurem = getPokemonByIdOrSlug('kyurem');
+    expect(kyurem?.name).toBe('Kyurem');
+    expect(kyurem?.maxCp).toBe(4041);
+
+    const zekrom = getPokemonByIdOrSlug('zekrom');
+    expect(zekrom?.name).toBe('Zekrom');
+    expect(zekrom?.isShadow).toBeFalsy();
+
+    const blackKyurem = getPokemonByIdOrSlug('black-kyurem');
+    expect(blackKyurem?.name).toBe('Black Kyurem');
+  });
 });

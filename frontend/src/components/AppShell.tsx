@@ -412,23 +412,14 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
             <span>{t.tabs_download || 'Stáhnout aplikaci'}</span>
           </Link>
           <p style={{ fontSize: '10px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.4' }}>
-            {lang === 'cs' 
-              ? 'Tato aplikace je neoficiální fanouškovský projekt. Nemá žádné přidružení ke společnostmi Niantic, Nintendo nebo The Pokémon Company.' 
-              : 'This app is an unofficial fan project and has no affiliation with Niantic, Nintendo, or The Pokémon Company.'
+            {lang === 'cs'
+              ? 'Neoficiální komunitní průvodce pro Pokémon GO. Nemá žádné přidružení ke společnostem Niantic, Scopely, Nintendo ani The Pokémon Company.'
+              : lang === 'ja'
+                ? 'Pokémon GOの非公式ファンコミュニティガイドです。Niantic、Scopely、任天堂、株式会社ポケモンとは一切関係ありません。'
+                : lang === 'ru'
+                  ? 'Неофициальный фанатский проект по Pokémon GO. Не связан с Niantic, Scopely, Nintendo или The Pokémon Company.'
+                  : 'Unofficial Pokémon GO fan guide and tracker. Not affiliated with Niantic, Scopely, Nintendo, or The Pokémon Company.'
             }
-          </p>
-          <p style={{ fontSize: '10px', color: 'var(--text-muted)', margin: 0, lineHeight: '1.4' }}>
-            {lang === 'cs' ? 'Data událostí poskytuje ' : 'Event data powered by '}{' '}
-            <a 
-              href="https://leekduck.com" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              style={{ color: 'var(--accent-color)', fontWeight: 'bold', textDecoration: 'none' }}
-              onMouseOver={(e) => (e.currentTarget.style.textDecoration = 'underline')}
-              onMouseOut={(e) => (e.currentTarget.style.textDecoration = 'none')}
-            >
-              Leek Duck
-            </a>.
           </p>
           <div className="sidebar-social-flex" style={{ display: 'flex', gap: '10px', marginTop: '8px', justifyContent: 'center', alignItems: 'center' }}>
             <a 

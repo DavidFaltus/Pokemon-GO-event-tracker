@@ -8,7 +8,11 @@ import { resolveImage } from '@/utils/imageResolver';
 import type { Language } from '@/data/translations';
 import { getSpecialEventDetails } from '@/data/specialEvents';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
-import { buildEventIntelligence, localizeTypeName } from '@/utils/eventIntelligenceHelper';
+import {
+  buildEventIntelligence,
+  isSitemapWorthyEvent,
+  localizeEventBonus,
+} from '@/utils/eventIntelligenceHelper';
 import { apiFetch } from '@/config';
 
 function extractLocalizedText(value: any, lang: Language): string {
@@ -186,6 +190,13 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
   const canonicalUrl = `https://pogoevents.app/${validLang}/events/${slug}`;
   const bannerImage = resolveImage(event.image, event.eventType, event.name);
 
+  const titleByLang: Record<Language, string> = {
+    cs: `${title} – Průvodce, Bonusy & Counters | Pokémon GO`,
+    en: `${title} – Event Guide, Bonuses & Counters | Pokémon GO`,
+    ja: `${title} – イベント攻略・ボーナス・対策まとめ | Pokémon GO`,
+    ru: `${title} – Гайд по событию, бонусы и контр-покемоны | Pokémon GO`,
+  };
+
   const descByLang: Record<Language, string> = {
     cs: `Kompletní strategický průvodce událostí ${title} v Pokémon GO (${event.start?.slice(0, 10) || ''} – ${event.end?.slice(0, 10) || ''}). Aktivní bonusy, divoké spawny, raid counters, 100% IV CP tabulka a doporučené Mega evoluce.`,
     en: `Complete strategy guide for ${title} in Pokémon GO (${event.start?.slice(0, 10) || ''} – ${event.end?.slice(0, 10) || ''}). Event schedule, active bonuses, raid boss counters, 100% IV CP chart, and wild spawns.`,
@@ -193,9 +204,12 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
     ru: `Полный гайд по событию ${title} в Pokémon GO (${event.start?.slice(0, 10) || ''} – ${event.end?.slice(0, 10) || ''}). Расписание, бонусы, контр-покемоны для рейдов, 100% IV CP и спавны.`,
   };
 
+  const shouldIndex = isSitemapWorthyEvent(event);
+
   return {
-    title: `${title} – Průvodce, Bonusy & Counters | Pokémon GO`,
+    title: titleByLang[validLang] || titleByLang.en,
     description: descByLang[validLang] || descByLang.en,
+    robots: shouldIndex ? { index: true, follow: true } : { index: false, follow: true },
     alternates: buildAlternates(validLang, `/events/${slug}`, `https://pogoevents.app/api/agent/events/${slug}.md`),
     openGraph: {
       title: `${title} | Pokémon GO Event Tracker`,
@@ -236,9 +250,16 @@ export default async function EventPage({ params }: EventPageProps) {
     (event as any).extraData?.communityday?.bonuses ||
     mergedDetails?.bonuses ||
     [];
-  const bonuses: string[] = rawBonuses
-    .map((b) => (typeof b === 'string' ? b : extractLocalizedText(b?.text || b, validLang)))
-    .filter(Boolean);
+  const bonuses: string[] = Array.from(
+    new Set(
+      rawBonuses
+        .map((b) => {
+          const raw = typeof b === 'string' ? b : extractLocalizedText(b?.text || b, validLang);
+          return localizeEventBonus(raw, validLang);
+        })
+        .filter((b): b is string => Boolean(b))
+    )
+  );
 
   const rawSpawns: any[] =
     (event as any).spawns ||
@@ -620,8 +641,10 @@ export default async function EventPage({ params }: EventPageProps) {
                         </Link>
                       </h3>
                       <div style={{ fontSize: '0.83rem', color: 'var(--text-muted)' }}>
-                        {validLang === 'cs' ? 'Typ:' : 'Type:'} <strong>{boss.localizedTypes.join(' / ')}</strong> •{' '}
-                        {validLang === 'cs' ? 'Doporučený tým:' : 'Lobby size:'} <strong>{boss.recommendedTrainers}</strong>
+                        {validLang === 'cs' ? 'Typ:' : validLang === 'ja' ? 'タイプ:' : validLang === 'ru' ? 'Тип:' : 'Type:'}{' '}
+                        <strong>{boss.localizedTypes.join(' / ')}</strong> •{' '}
+                        {validLang === 'cs' ? 'Doporučený tým:' : validLang === 'ja' ? '推奨人数:' : validLang === 'ru' ? 'Тренеров:' : 'Lobby size:'}{' '}
+                        <strong>{boss.recommendedTrainers}</strong>
                       </div>
                     </div>
                   </div>
@@ -634,7 +657,13 @@ export default async function EventPage({ params }: EventPageProps) {
                       textDecoration: 'none',
                     }}
                   >
-                    {validLang === 'cs' ? 'Otevřít v Pokédexu →' : 'View in Pokédex →'}
+                    {validLang === 'cs'
+                      ? 'Otevřít v Pokédexu →'
+                      : validLang === 'ja'
+                        ? '図鑑で詳しく見る →'
+                        : validLang === 'ru'
+                          ? 'Открыть в Покедексе →'
+                          : 'View in Pokédex →'}
                   </Link>
                 </div>
 
@@ -652,9 +681,9 @@ export default async function EventPage({ params }: EventPageProps) {
                       <thead>
                         <tr style={{ borderBottom: '1px solid var(--border-color)', textAlign: 'left', color: 'var(--text-muted)' }}>
                           <th style={{ padding: '6px 8px' }}>#</th>
-                          <th style={{ padding: '6px 8px' }}>{validLang === 'cs' ? 'Doporučený Counter' : 'Top Counter'}</th>
-                          <th style={{ padding: '6px 8px' }}>{validLang === 'cs' ? 'Rychlý útok (Fast)' : 'Fast Move'}</th>
-                          <th style={{ padding: '6px 8px' }}>{validLang === 'cs' ? 'Nabíjecí útok (Charged)' : 'Charged Move'}</th>
+                          <th style={{ padding: '6px 8px' }}>{validLang === 'cs' ? 'Doporučený Counter' : validLang === 'ja' ? '対策ポケモン' : validLang === 'ru' ? 'Контр-покемон' : 'Top Counter'}</th>
+                          <th style={{ padding: '6px 8px' }}>{validLang === 'cs' ? 'Rychlý útok (Fast)' : validLang === 'ja' ? 'ノーマルアタック' : validLang === 'ru' ? 'Быстрая атака' : 'Fast Move'}</th>
+                          <th style={{ padding: '6px 8px' }}>{validLang === 'cs' ? 'Nabíjecí útok (Charged)' : validLang === 'ja' ? 'スペシャルアタック' : validLang === 'ru' ? 'Заряженная атака' : 'Charged Move'}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -749,7 +778,15 @@ export default async function EventPage({ params }: EventPageProps) {
                     <strong>PvP Meta:</strong> {sp.pvpSummary}
                   </div>
                   <div>
-                    <strong>{validLang === 'cs' ? 'Doporučená Mega evoluce pro extra Candy:' : 'Best Mega for Bonus Candy:'}</strong>{' '}
+                    <strong>
+                      {validLang === 'cs'
+                        ? 'Doporučená Mega evoluce pro extra Candy:'
+                        : validLang === 'ja'
+                          ? 'アメ追加のおすすめメガシンカ:'
+                          : validLang === 'ru'
+                            ? 'Лучшая Мега для бонусных конфет:'
+                            : 'Best Mega for Bonus Candy:'}
+                    </strong>{' '}
                     <span style={{ color: 'var(--accent-color)', fontWeight: 700 }}>{sp.recommendedMegas.join(', ')}</span>
                   </div>
                   <div style={{ marginTop: '4px', padding: '8px 10px', borderRadius: '8px', backgroundColor: 'rgba(0,0,0,0.25)', fontFamily: 'monospace', fontSize: '0.78rem' }}>

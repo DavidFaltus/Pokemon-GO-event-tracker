@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { createPortal } from 'react-dom';
@@ -102,7 +104,14 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
           if (contentType.includes('application/json')) {
             const data = await res.json();
             if (Array.isArray(data) && data.length > 0 && isMounted) {
-              setArticles(data);
+              const mergedMap = new Map<string, GuideArticle>();
+              GUIDES_DATA.forEach((g) => mergedMap.set(g.slug, g));
+              data.forEach((g: GuideArticle) => {
+                if (g && g.slug && !mergedMap.has(g.slug)) {
+                  mergedMap.set(g.slug, g);
+                }
+              });
+              setArticles(Array.from(mergedMap.values()));
               return;
             }
           }
@@ -659,7 +668,7 @@ export const GuidesView: React.FC<GuidesViewProps> = ({
                 </p>
 
                 <div className="guide-card-meta">
-                  <span><User size={14} /> {selectedArticle.author}</span>
+                  <Link href={`/${lang}/about`} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: 'inherit', textDecoration: 'none', fontWeight: 700 }}><User size={14} /> {selectedArticle.author}</Link>
                   <span><Clock size={14} /> {selectedArticle.readTime}</span>
                   <span>{selectedArticle.updatedAt}</span>
                 </div>

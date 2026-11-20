@@ -755,6 +755,14 @@ export function resolveImage(url: string | undefined, eventType?: string, name?:
     if (lowerUrl.includes('events-default-img') || lowerUrl.includes('default')) {
       return 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600&auto=format&fit=crop'; // Colorful abstract design
     }
+
+    // Catch-all: never hotlink any remaining cdn.leekduck.com event/article images
+    return getFallbackImage(eventType, name, isShiny);
+  }
+
+  // Catch-all for any other cdn.leekduck.com asset (items, icons, eggs, banners)
+  if (url.includes('cdn.leekduck.com')) {
+    return getFallbackImage(eventType, name, isShiny);
   }
 
   return url;

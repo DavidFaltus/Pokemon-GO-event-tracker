@@ -43,6 +43,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: titles[lang] || titles.en,
     description: descriptions[lang] || descriptions.en,
+    robots: { index: false, follow: true },
     alternates: buildAlternates(lang, '/friends'),
     openGraph: {
       title: titles[lang] || titles.en,

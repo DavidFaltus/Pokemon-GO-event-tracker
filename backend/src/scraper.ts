@@ -1991,8 +1991,8 @@ async function scrapeLeekDuckEventDetails(eventID: string, link: string): Promis
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:132.0) Gecko/20100101 Firefox/132.0',
-    'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
-    'Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)'
+    'PoGoEventsBot/1.1 (+https://pogoevents.app)',
+    'PoGoEventsBot/1.1 (+https://pogoevents.app)'
   ];
 
   const userAgent = browserUserAgents[Math.floor(Math.random() * browserUserAgents.length)];
@@ -2095,7 +2095,7 @@ export async function scrapeNianticNewsListing(): Promise<NianticArticle[]> {
   for (const url of urls) {
     try {
       const response = await axios.get(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)' },
+        headers: { 'User-Agent': 'PoGoEventsBot/1.1 (+https://pogoevents.app)' },
         timeout: 12000
       });
       const parsed = parseNianticNewsHtml(response.data);
@@ -2179,7 +2179,7 @@ export async function scrapePoGOHubEventDetails(eventName: string): Promise<Spec
     const wpApiUrl = `https://pokemongohub.net/wp-json/wp/v2/posts?search=${encodeURIComponent(cleanSearch)}&per_page=1`;
     const apiRes = await axios.get(wpApiUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+        'User-Agent': 'PoGoEventsBot/1.1 (+https://pogoevents.app)'
       },
       timeout: 6000
     });
@@ -2203,7 +2203,7 @@ export async function scrapePoGOHubEventDetails(eventName: string): Promise<Spec
     const searchUrl = `https://pokemongohub.net/?s=${encodeURIComponent(cleanSearch)}`;
     const searchRes = await axios.get(searchUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)'
+        'User-Agent': 'PoGoEventsBot/1.1 (+https://pogoevents.app)'
       },
       timeout: 8000
     });
@@ -2217,7 +2217,7 @@ export async function scrapePoGOHubEventDetails(eventName: string): Promise<Spec
 
     const articleRes = await axios.get(articleLink, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)'
+        'User-Agent': 'PoGoEventsBot/1.1 (+https://pogoevents.app)'
       },
       timeout: 8000
     });
@@ -2423,11 +2423,11 @@ function getPokemonIconUrl(name: string, isShiny: boolean = false): string {
 }
 
 export async function scrapePoGOHubRaidBosses(): Promise<ScrapedRaidBoss[]> {
-  // Method 1: Fast HTTP GET via Axios with Bingbot User-Agent (bypasses Cloudflare on Cloud Run without Puppeteer)
+  // Method 1: Fast HTTP GET via Axios with honest PoGoEventsBot User-Agent
   try {
     const response = await axios.get('https://pokemongohub.net/post/guide/current-go-raids/', {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; Bingbot/2.0; +http://www.bing.com/bingbot.htm)',
+        'User-Agent': 'PoGoEventsBot/1.1 (+https://pogoevents.app)',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
       },
       timeout: 10000
@@ -2493,7 +2493,7 @@ export async function scrapePoGOHubRaidBosses(): Promise<ScrapedRaidBoss[]> {
       }
 
       if (bosses.length >= 5) {
-        console.log(`[scrapePoGOHubRaidBosses] Successfully scraped ${bosses.length} live raid bosses via HTTP (Bingbot Header)`);
+        console.log(`[scrapePoGOHubRaidBosses] Successfully scraped ${bosses.length} live raid bosses via HTTP`);
         return bosses;
       }
     }

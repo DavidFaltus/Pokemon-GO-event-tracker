@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import App from '@/App';
+import { GuidesView } from '@/components/GuidesView';
 import type { Language } from '@/data/translations';
 import { GUIDES_DATA } from '@/data/guidesData';
 import { buildAlternates, getBreadcrumbLabel } from '@/utils/seoHelper';
@@ -89,7 +89,7 @@ export default async function GuidesPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <App initialLang={lang} initialTab="guides" />
+      <GuidesView lang={lang} />
     </>
   );
 }

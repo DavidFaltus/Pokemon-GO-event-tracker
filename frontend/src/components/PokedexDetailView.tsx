@@ -331,7 +331,16 @@ export const PokedexDetailView: React.FC<PokedexDetailViewProps> = ({ entry, lan
             </span>
             {entry.rarityClass !== 'standard' && (
               <span className={`pokedex-detail-rarity-pill ${entry.rarityClass}`}>
-                {entry.rarityClass.replace('_', ' ')}
+                {(
+                  {
+                    starter: { cs: 'Startovní', en: 'Starter', ja: '御三家', ru: 'Стартовый' },
+                    baby: { cs: 'Baby Pokémon', en: 'Baby', ja: 'ベイビィ', ru: 'Бэби-покемон' },
+                    legendary: { cs: 'Legendární', en: 'Legendary', ja: '伝説', ru: 'Легендарный' },
+                    mythical: { cs: 'Mýtický', en: 'Mythical', ja: '幻', ru: 'Мифический' },
+                    ultra_beast: { cs: 'Ultra Beast', en: 'Ultra Beast', ja: 'ウルトラビースト', ru: 'Ультра-зверь' },
+                    paradox: { cs: 'Paradox', en: 'Paradox', ja: 'パラドックス', ru: 'Парадокс' },
+                  } as Record<string, Record<Language, string>>
+                )[entry.rarityClass]?.[lang] || entry.rarityClass.replace('_', ' ')}
               </span>
             )}
             {entry.isReleasedInGo ? (

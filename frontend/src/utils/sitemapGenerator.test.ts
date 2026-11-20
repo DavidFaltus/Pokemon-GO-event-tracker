@@ -19,12 +19,12 @@ describe('sitemapGenerator', () => {
     );
   });
 
-  it('generates a valid XML Sitemap Index referencing all 5 sub-sitemaps', () => {
+  it('generates a valid XML Sitemap Index referencing the 4 high-value sub-sitemaps without pokedex bloat', () => {
     const xml = getSitemapIndexXml(new Date('2026-11-01T12:00:00Z'));
     expect(xml).toContain('<?xml version="1.0" encoding="UTF-8"?>');
     expect(xml).toContain('<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
     expect(xml).toContain('<loc>https://pogoevents.app/sitemap-core.xml</loc>');
-    expect(xml).toContain('<loc>https://pogoevents.app/sitemap-pokedex.xml</loc>');
+    expect(xml).not.toContain('<loc>https://pogoevents.app/sitemap-pokedex.xml</loc>');
     expect(xml).toContain('<loc>https://pogoevents.app/sitemap-guides.xml</loc>');
     expect(xml).toContain('<loc>https://pogoevents.app/sitemap-events.xml</loc>');
     expect(xml).toContain('<loc>https://pogoevents.app/sitemap-raids-rocket.xml</loc>');
@@ -41,6 +41,9 @@ describe('sitemapGenerator', () => {
     expect(xml).toContain('<xhtml:link rel="alternate" hreflang="cs" href="https://pogoevents.app/cs"/>');
     expect(xml).toContain('<xhtml:link rel="alternate" hreflang="en" href="https://pogoevents.app/en"/>');
     expect(xml).toContain('<xhtml:link rel="alternate" hreflang="x-default" href="https://pogoevents.app/en"/>');
+    expect(xml).not.toContain('/pokedle</loc>');
+    expect(xml).not.toContain('/filter</loc>');
+    expect(xml).not.toContain('/friends</loc>');
   });
 
   it('generates curated pokedex sitemap containing top meta released pokemon and excluding unreleased entries', () => {
@@ -54,12 +57,12 @@ describe('sitemapGenerator', () => {
     expect(xml).not.toContain('<loc>https://pogoevents.app/cs/pokedex/pecharunt</loc>');
   });
 
-  it('generates raids and rocket sitemap with ranking categories, type matchups, and rocket leaders', () => {
+  it('generates raids and rocket sitemap with ranking categories, featured raid bosses, rocket leaders, and no duplicate types', () => {
     const xml = getRaidsRocketSitemapXml(new Date('2026-11-01T12:00:00.000Z'));
     expect(xml).toContain('rankings/great-league');
-    expect(xml).toContain('types/fire');
+    expect(xml).not.toContain('types/fire');
     expect(xml).toContain('rocket/giovanni');
-    expect(xml).toContain('raids/');
+    expect(xml).toContain('raids/kyurem-counters');
   });
 
   it('generates guides sitemap with valid entries', async () => {

@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { buildEventIntelligence, localizeTypeName, matchFeaturedPokemonForEvent } from './eventIntelligenceHelper';
+import {
+  buildEventIntelligence,
+  isCanceledEvent,
+  isSitemapWorthyEvent,
+  localizeEventBonus,
+  localizeTypeName,
+  matchFeaturedPokemonForEvent,
+} from './eventIntelligenceHelper';
 import { isAdSenseEligiblePath } from '../components/AdSenseScript';
 
 describe('eventIntelligenceHelper & AdSense route guard', () => {
@@ -67,11 +74,42 @@ describe('eventIntelligenceHelper & AdSense route guard', () => {
     expect(intel.spawnBreakdowns[0].pvpFilterString).toContain('0-1attack');
   });
 
-  it('blocks AdSense script on utility, admin, and redirect routes while allowing content routes', () => {
+  it('filters canceled and micro events from sitemap while localizing and paraphrasing event bonuses', () => {
+    expect(isCanceledEvent({ name: '[Canceled] Max Monday', eventID: 'max-mondays-2026-11-16' })).toBe(true);
+    expect(isSitemapWorthyEvent({ name: '[Canceled] Max Monday', eventID: 'max-mondays-2026-11-16' })).toBe(false);
+    expect(isSitemapWorthyEvent({ name: 'GBL Great League', eventID: 'gbl-twilight-trails_great-league' })).toBe(false);
+    expect(isSitemapWorthyEvent({ name: 'Twilight Trails Season', eventID: 'season-24-twilight-trails' })).toBe(true);
+
+    const rawBonus = 'One guaranteed Candy XL when trading Pokémon for Trainers level 31 and above';
+    expect(localizeEventBonus(rawBonus, 'cs')).toContain('Garantovaný');
+    expect(localizeEventBonus(rawBonus, 'ja')).toContain('アメXL');
+    expect(localizeEventBonus(rawBonus, 'ru')).toContain('Гарантированная');
+    expect(localizeEventBonus(rawBonus, 'en')).not.toBe(rawBonus);
+
+    // Unmatched raw English bonus must not leak onto non-EN pages
+    expect(localizeEventBonus('Some completely arbitrary unrecognized English promo sentence', 'ja')).toBeNull();
+    expect(localizeEventBonus('Some completely arbitrary unrecognized English promo sentence', 'ru')).toBeNull();
+    expect(localizeEventBonus('Some completely arbitrary unrecognized English promo sentence', 'cs')).toBeNull();
+  });
+
+  it('uses strict editorial whitelist for AdSense script and blocks game/utility/noindex routes', () => {
     expect(isAdSenseEligiblePath('/cs')).toBe(true);
+    expect(isAdSenseEligiblePath('/en/guides')).toBe(true);
+    expect(isAdSenseEligiblePath('/cs/guides/galarian-birds-encounter-catch-guide')).toBe(true);
     expect(isAdSenseEligiblePath('/en/events/tinkatink-community-day')).toBe(true);
-    expect(isAdSenseEligiblePath('/cs/pokedex/mewtwo')).toBe(true);
     expect(isAdSenseEligiblePath('/cs/raids/mewtwo-counters')).toBe(true);
+    expect(isAdSenseEligiblePath('/en/rocket/giovanni')).toBe(true);
+    expect(isAdSenseEligiblePath('/cs/rankings/great-league')).toBe(true);
+
+    // Explicitly blocked utility, game, noindex, legal, and micro-event paths
+    expect(isAdSenseEligiblePath('/cs/pokedle')).toBe(false);
+    expect(isAdSenseEligiblePath('/en/filter')).toBe(false);
+    expect(isAdSenseEligiblePath('/cs/friends')).toBe(false);
+    expect(isAdSenseEligiblePath('/cs/pokedex/mewtwo')).toBe(false);
+    expect(isAdSenseEligiblePath('/cs/types/fire')).toBe(false);
+    expect(isAdSenseEligiblePath('/cs/events/max-mondays-2026-11-16')).toBe(false);
+    expect(isAdSenseEligiblePath('/en/events/gbl-twilight-trails')).toBe(false);
+    expect(isAdSenseEligiblePath('/cs/privacy')).toBe(false);
     expect(isAdSenseEligiblePath('/cs/settings')).toBe(false);
     expect(isAdSenseEligiblePath('/en/admin')).toBe(false);
     expect(isAdSenseEligiblePath('/cs/download')).toBe(false);

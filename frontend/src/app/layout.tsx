@@ -19,7 +19,7 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: 'Pokémon GO Event Tracker - Live Události, Raid Bossi & Rakeťáci',
   description: 'Sledujte aktivní a nadcházející Pokémon GO události, raid bossy, sestavy Team GO Rocket, líhnutí z vajec a bonusy v reálném čase.',
-  keywords: ['Pokémon GO', 'events', 'raid boss', 'Team GO Rocket', 'leek duck', 'pogo tracker', 'pokemongo'],
+  keywords: ['Pokémon GO', 'events', 'raid boss', 'Team GO Rocket', 'pogo guides', 'pogo tracker', 'pokemongo'],
   authors: [{ name: 'Pokémon GO Community' }],
   icons: {
     icon: [
@@ -56,7 +56,26 @@ export default function RootLayout({
         <link rel="preconnect" href="https://raw.githubusercontent.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://img.pokemondb.net" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fastly.jsdelivr.net" />
-        <link rel="dns-prefetch" href="https://cdn.leekduck.com" />
+        {/* Google Consent Mode v2 defaults for EEA/UK/CH prior to Google tags and IAB TCF v2.2 CMP */}
+        <Script
+          id="google-consent-mode-v2"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('consent', 'default', {
+                ad_storage: 'denied',
+                ad_user_data: 'denied',
+                ad_personalization: 'denied',
+                analytics_storage: 'denied',
+                region: ['AT','BE','BG','CH','CY','CZ','DE','DK','EE','ES','FI','FR','GB','GR','HR','HU','IE','IS','IT','LI','LT','LU','LV','MT','NL','NO','PL','PT','RO','SE','SI','SK'],
+                wait_for_update: 500
+              });
+              gtag('set', 'ads_data_redaction', true);
+            `,
+          }}
+        />
         <Script
           id="theme-init"
           strategy="beforeInteractive"

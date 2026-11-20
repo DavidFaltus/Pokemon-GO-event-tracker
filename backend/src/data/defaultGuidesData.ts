@@ -1,3 +1,6 @@
+import { EDITORIAL_GUIDES_PART_1 } from './editorialGuidesExpansionPart1';
+import { EDITORIAL_GUIDES_PART_2 } from './editorialGuidesExpansionPart2';
+
 export interface GuideSection {
   id: string;
   heading: {
@@ -58,7 +61,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     "iconName": "Target",
     "imageUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/10169.png",
     "featured": true,
-    "author": "PoGo Events Team",
+    "author": "David Faltus",
     "readTime": "11 min",
     "updatedAt": "2026-10-23",
     "category": {
@@ -277,9 +280,9 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "weekly-hidden-mini-events-guide",
     slug: "weekly-hidden-mini-events-guide",
     iconName: "Calendar",
-    imageUrl: "https://cdn.leekduck.com/assets/img/icons/weekly_challenge_icon.png",
+    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png",
     featured: true,
-    author: "PoGo Events Team",
+    author: "David Faltus",
     readTime: "9 min",
     updatedAt: "2026-08-15",
     category: {
@@ -509,9 +512,9 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "rocket-leaders-giovanni-guide",
     slug: "rocket-leaders-giovanni-guide",
     iconName: "Shield",
-    imageUrl: "https://cdn.leekduck.com/assets/img/items/Rocket%20Radar.png",
+    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/53.png",
     featured: false,
-    author: "PoGo Events Team",
+    author: "David Faltus",
     readTime: "8 min",
     updatedAt: "2026-08-15",
     category: {
@@ -735,9 +738,9 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "raid-battles-counter-guide",
     slug: "raid-battles-counter-guide",
     iconName: "Swords",
-    imageUrl: "https://cdn.leekduck.com/assets/img/items/Premium%20Battle%20Pass.png",
+    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/384.png",
     featured: false,
-    author: "PoGo Events Team",
+    author: "David Faltus",
     readTime: "8 min",
     updatedAt: "2026-08-15",
     category: {
@@ -959,9 +962,9 @@ export const GUIDES_DATA: GuideArticle[] = [
     "id": "spotlight-community-day-guide",
     "slug": "spotlight-community-day-guide",
     "iconName": "Calendar",
-    "imageUrl": "https://cdn.leekduck.com/assets/img/items/Lure%20Module.png",
+    "imageUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/133.png",
     "featured": false,
-    "author": "PoGo Events Team",
+    "author": "David Faltus",
     "readTime": "9 min",
     "updatedAt": "2026-10-31",
     "category": {
@@ -1206,7 +1209,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     "iconName": "Sparkles",
     "imageUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png",
     "featured": false,
-    "author": "PoGo Events Team",
+    "author": "David Faltus",
     "readTime": "9 min",
     "updatedAt": "2026-10-31",
     "category": {
@@ -1451,7 +1454,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     "iconName": "Trophy",
     "imageUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/384.png",
     "featured": false,
-    "author": "PoGo Events Team",
+    "author": "David Faltus",
     "readTime": "10 min",
     "updatedAt": "2026-10-31",
     "category": {
@@ -1693,8 +1696,8 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "pokemon-evolution-quests-guide",
     slug: "pokemon-evolution-quests-guide",
     iconName: "Sparkles",
-    imageUrl: "https://cdn.leekduck.com/assets/img/items/Sinnoh%20Stone.png",
-    author: "PoGo Events Team",
+    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/464.png",
+    author: "David Faltus",
     readTime: "12 min",
     updatedAt: "2026-08-23",
     category: {
@@ -1861,7 +1864,7 @@ export const GUIDES_DATA: GuideArticle[] = [
       "slug": "vivillon-patterns-postcard-guide",
       "iconName": "BookOpen",
       "imageUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/666.png",
-      "author": "PoGo Events Team",
+      "author": "David Faltus",
       "readTime": "11 min",
       "updatedAt": "2026-08-23",
       "category": {
@@ -2075,7 +2078,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     slug: "regional-pokemon-world-guide",
     iconName: "Globe",
     imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/122.png",
-    author: "PoGo Events Team",
+    author: "David Faltus",
     readTime: "15 min",
     updatedAt: "2026-08-24",
     category: {
@@ -2233,9 +2236,9 @@ export const GUIDES_DATA: GuideArticle[] = [
     id: "adventure-effects-master-guide",
     slug: "adventure-effects-master-guide",
     iconName: "Sparkles",
-    imageUrl: "https://cdn.leekduck.com/assets/img/items/Rare%20Candy%20XL.png",
+    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/149.png",
     featured: true,
-    author: "PoGo Events Team",
+    author: "David Faltus",
     readTime: "11 min",
     updatedAt: "2026-09-24",
     category: {
@@ -2469,7 +2472,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     iconName: "MapPin",
     imageUrl: "https://local.pokemon.jp/img/p/manhole/dd60987af1dda49a37486a2cbcb4d407_l.png",
     featured: false,
-    author: "PoGo Events Team",
+    author: "David Faltus",
     readTime: "10 min",
     updatedAt: "2026-09-24",
     category: {
@@ -2676,7 +2679,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     iconName: "Sparkles",
     imageUrl: "https://pogoevents.app/backgrounds/ultra-space-wormhole.png",
     featured: true,
-    author: "PoGo Events Team",
+    author: "David Faltus",
     readTime: "12 min",
     updatedAt: "2026-09-27",
     category: {
@@ -2950,7 +2953,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     "iconName": "Award",
     "imageUrl": "/icons/trainer-xp-badge.svg",
     "featured": true,
-    "author": "PoGo Events Team",
+    "author": "David Faltus",
     "readTime": "16 min",
     "updatedAt": "2026-10-17",
     "category": {
@@ -3128,7 +3131,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     "iconName": "Sparkles",
     "imageUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/132.png",
     "featured": false,
-    "author": "PoGo Events Team",
+    "author": "David Faltus",
     "readTime": "9 min",
     "updatedAt": "2026-10-31",
     "category": {
@@ -3372,7 +3375,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     "iconName": "Clock",
     "imageUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/757.png",
     "featured": false,
-    "author": "PoGo Events Team",
+    "author": "David Faltus",
     "readTime": "10 min",
     "updatedAt": "2026-10-31",
     "category": {
@@ -3617,7 +3620,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     "iconName": "Target",
     "imageUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/327.png",
     "featured": false,
-    "author": "PoGo Events Team",
+    "author": "David Faltus",
     "readTime": "9 min",
     "updatedAt": "2026-10-31",
     "category": {
@@ -3862,7 +3865,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     "iconName": "Sparkles",
     "imageUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/531.png",
     "featured": false,
-    "author": "PoGo Events Team",
+    "author": "David Faltus",
     "readTime": "9 min",
     "updatedAt": "2026-10-31",
     "category": {
@@ -4107,7 +4110,7 @@ export const GUIDES_DATA: GuideArticle[] = [
     "iconName": "Award",
     "imageUrl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/6.png",
     "featured": true,
-    "author": "PoGo Events Team",
+    "author": "David Faltus",
     "readTime": "8 min",
     "updatedAt": "2026-11-01",
     "category": {
@@ -4297,4 +4300,7 @@ export const GUIDES_DATA: GuideArticle[] = [
       }
     ]
   }
+,
+  ...EDITORIAL_GUIDES_PART_1,
+  ...EDITORIAL_GUIDES_PART_2,
 ];

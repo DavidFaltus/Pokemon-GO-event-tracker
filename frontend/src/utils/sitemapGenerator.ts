@@ -1,20 +1,28 @@
 import { API_BASE_URL } from '../config';
 import { GUIDES_DATA } from '../data/guidesData';
 import { POKEDEX_CATALOG } from '../data/pokedexCatalog';
-import { raidCountersDb } from '../data/raidCounters';
 import { isTopMetaPokedexEntry } from './pokedexSeoHelper';
+import { isSitemapWorthyEvent } from './eventIntelligenceHelper';
 import {
   CORE_SECTIONS,
   RANKING_CATEGORIES,
   POKEMON_TYPES,
   POPULAR_RAID_BOSSES,
+  FEATURED_SITEMAP_RAID_BOSSES,
   ROCKET_LEADERS,
 } from '../data/sitemapConstants';
 
 export const BASE_URL = 'https://pogoevents.app';
 export const LANGUAGES = ['cs', 'en', 'ja', 'ru'] as const;
 
-export { CORE_SECTIONS, RANKING_CATEGORIES, POKEMON_TYPES, POPULAR_RAID_BOSSES, ROCKET_LEADERS };
+export {
+  CORE_SECTIONS,
+  RANKING_CATEGORIES,
+  POKEMON_TYPES,
+  POPULAR_RAID_BOSSES,
+  FEATURED_SITEMAP_RAID_BOSSES,
+  ROCKET_LEADERS,
+};
 
 export interface SitemapUrlEntry {
   url: string;
@@ -34,6 +42,8 @@ export interface SubSitemapInfo {
 interface SimpleEvent {
   eventID?: string;
   id?: string;
+  eventType?: string;
+  end?: string;
   name?: { cs?: string; en?: string } | string;
 }
 
@@ -123,7 +133,6 @@ ${subSitemaps
 export function getSitemapIndexXml(lastmod: Date = new Date()): string {
   return renderSitemapIndexXml([
     { loc: `${BASE_URL}/sitemap-core.xml`, lastmod },
-    { loc: `${BASE_URL}/sitemap-pokedex.xml`, lastmod },
     { loc: `${BASE_URL}/sitemap-guides.xml`, lastmod },
     { loc: `${BASE_URL}/sitemap-events.xml`, lastmod },
     { loc: `${BASE_URL}/sitemap-raids-rocket.xml`, lastmod },
@@ -169,19 +178,26 @@ export function getPokedexSitemapXml(now: Date = new Date()): string {
 }
 
 export async function getGuidesSitemapXml(now: Date = new Date()): Promise<string> {
-  let allGuides = GUIDES_DATA;
+  const mergedMap = new Map<string, { slug: string; updatedAt?: string }>();
+  GUIDES_DATA.forEach((g) => mergedMap.set(g.slug, g));
 
   try {
     const guidesRes = await fetch(`${API_BASE_URL}/api/guides`, { next: { revalidate: 3600 } });
     if (guidesRes.ok) {
       const gData = await guidesRes.json();
       if (Array.isArray(gData) && gData.length > 0) {
-        allGuides = gData;
+        gData.forEach((g: { slug?: string; updatedAt?: string }) => {
+          if (g && g.slug && !mergedMap.has(g.slug)) {
+            mergedMap.set(g.slug, { slug: g.slug, updatedAt: g.updatedAt });
+          }
+        });
       }
     }
   } catch {
     // fallback to GUIDES_DATA
   }
+
+  const allGuides = Array.from(mergedMap.values());
 
   const entries: SitemapUrlEntry[] = [];
 
@@ -218,7 +234,10 @@ export async function getEventsSitemapXml(now: Date = new Date()): Promise<strin
       if (res.ok) {
         const data = await res.json();
         const events: SimpleEvent[] = data.events || data || [];
-        const foundSlugs = events.map((e) => e.eventID || e.id || '').filter(Boolean);
+        const foundSlugs = events
+          .filter(isSitemapWorthyEvent)
+          .map((e) => e.eventID || e.id || '')
+          .filter(Boolean);
         if (foundSlugs.length > 0) {
           eventSlugs = Array.from(new Set(foundSlugs));
           break;
@@ -248,15 +267,6 @@ export async function getEventsSitemapXml(now: Date = new Date()): Promise<strin
 }
 
 export function getRaidsRocketSitemapXml(now: Date = new Date()): string {
-  const ALL_RAID_SLUGS = Array.from(
-    new Set([
-      ...POPULAR_RAID_BOSSES,
-      ...Object.keys(raidCountersDb).map((name) =>
-        name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-      ),
-    ])
-  );
-
   const entries: SitemapUrlEntry[] = [];
 
   LANGUAGES.forEach((lang) => {
@@ -272,20 +282,8 @@ export function getRaidsRocketSitemapXml(now: Date = new Date()): string {
       });
     });
 
-    // 2. Type Matchup Subpages
-    POKEMON_TYPES.forEach((type) => {
-      const suffix = `/types/${type}`;
-      entries.push({
-        url: `${BASE_URL}/${lang}${suffix}`,
-        lastmod: now,
-        changefreq: 'monthly',
-        priority: 0.75,
-        alternates: buildSitemapAlternates(BASE_URL, suffix),
-      });
-    });
-
-    // 3. Raid Boss Counter Subpages
-    ALL_RAID_SLUGS.forEach((boss) => {
+    // 2. Curated Featured Raid Boss Counter Subpages (keeps programmatic URL ratio disciplined)
+    FEATURED_SITEMAP_RAID_BOSSES.forEach((boss) => {
       const suffix = `/raids/${boss}-counters`;
       entries.push({
         url: `${BASE_URL}/${lang}${suffix}`,
@@ -296,7 +294,7 @@ export function getRaidsRocketSitemapXml(now: Date = new Date()): string {
       });
     });
 
-    // 4. Rocket Leader Subpages
+    // 3. Rocket Leader Subpages
     ROCKET_LEADERS.forEach((leader) => {
       const suffix = `/rocket/${leader}`;
       entries.push({

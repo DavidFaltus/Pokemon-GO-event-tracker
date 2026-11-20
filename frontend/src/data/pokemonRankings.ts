@@ -65,22 +65,49 @@ export function getPokemonByIdOrSlug(idOrSlug: string | number): PokemonRankData
   const str = String(idOrSlug).trim().toLowerCase();
   const num = parseInt(str, 10);
 
-  if (!isNaN(num)) {
+  if (!isNaN(num) && /^\d+$/.test(str)) {
     const matches = pokemonRankings.filter((p) => p.pokedexId === num);
     if (matches.length > 0) {
+      const exactBase = matches.find(
+        (p) => !p.isShadow && !p.isMega && !p.isPrimal && (!p.variantSlug || p.variantSlug === p.slug)
+      );
+      if (exactBase) return exactBase;
       const base = matches.find((p) => !p.isShadow && !p.isMega && !p.isPrimal);
       return base || matches[0];
     }
   }
 
-  const directMatch = pokemonRankings.find(
-    (p) =>
-      p.name.toLowerCase() === str ||
-      (p.slug && p.slug.toLowerCase() === str) ||
-      (p.variantSlug && p.variantSlug.toLowerCase() === str)
-  );
-  if (directMatch) return directMatch;
-
   const unhyphenated = str.replace(/-/g, ' ');
-  return pokemonRankings.find((p) => p.name.toLowerCase() === unhyphenated);
+
+  // 1. Exact full name match (e.g. "kyurem" -> "Kyurem", "black kyurem" -> "Black Kyurem", "shadow mewtwo" -> "Shadow Mewtwo")
+  const exactNameMatch = pokemonRankings.find(
+    (p) => p.name.toLowerCase() === str || p.name.toLowerCase() === unhyphenated
+  );
+  if (exactNameMatch) return exactNameMatch;
+
+  // 2. Exact variantSlug match (e.g. "kyurem-kyurem-black", "zekrom-shadow", "kyurem")
+  const exactVariantMatch = pokemonRankings.find(
+    (p) => p.variantSlug && p.variantSlug.toLowerCase() === str
+  );
+  if (exactVariantMatch) return exactVariantMatch;
+
+  // 3. Base non-shadow/non-mega/non-fusion form sharing the same species slug
+  const baseSlugMatch = pokemonRankings.find(
+    (p) =>
+      p.slug &&
+      p.slug.toLowerCase() === str &&
+      !p.isShadow &&
+      !p.isMega &&
+      !p.isPrimal &&
+      (!p.variantSlug || p.variantSlug === p.slug)
+  );
+  if (baseSlugMatch) return baseSlugMatch;
+
+  // 4. Fallback to any non-shadow/non-mega entry with matching slug, then any slug match
+  const nonVariantSlugMatch = pokemonRankings.find(
+    (p) => p.slug && p.slug.toLowerCase() === str && !p.isShadow && !p.isMega && !p.isPrimal
+  );
+  if (nonVariantSlugMatch) return nonVariantSlugMatch;
+
+  return pokemonRankings.find((p) => p.slug && p.slug.toLowerCase() === str);
 }

@@ -3,6 +3,7 @@ import type { PokedexCatalogEntry } from '../data/pokedexCatalog';
 import metaIndexData from '../data/pokedexMetaIndex.json';
 import { getPokemonName } from './pokemonTranslator';
 import { TYPE_CHART } from './pokemonCountersHelper';
+import { localizeTypeName } from './eventIntelligenceHelper';
 import type { Language } from '../data/translations';
 
 const META_INDEX = metaIndexData as Record<string, any>;
@@ -181,7 +182,7 @@ export function generatePokedexEditorialAnalysis(
   lang: Language
 ): PokedexEditorialReport {
   const localName = lang === 'ja' ? entry.names.ja : getPokemonName(entry.names.en, lang);
-  const typesStr = entry.types.join(' / ');
+  const typesStr = entry.types.map((t) => localizeTypeName(t, lang)).join(' / ');
   const meta = META_INDEX[entry.slug];
   const { attack, defense, stamina } = entry.stats;
   const statTotal = attack + defense + stamina;
@@ -195,20 +196,28 @@ export function generatePokedexEditorialAnalysis(
       const m = TYPE_CHART[atkType]?.[defType];
       if (m !== undefined) mult *= m;
     });
-    if (mult > 1.05) weakList.push(`${atkType} (${mult >= 2.0 ? '2.56×' : '1.6×'})`);
-    if (mult < 0.95) resistList.push(atkType);
+    if (mult > 1.05) weakList.push(`${localizeTypeName(atkType, lang)} (${mult >= 2.0 ? '2.56×' : '1.6×'})`);
+    if (mult < 0.95) resistList.push(localizeTypeName(atkType, lang));
   });
 
   const bestFast = meta?.pve?.bestMoveset?.fast || entry.quickMoves[0]?.name || 'Tackle';
   const bestCharged = meta?.pve?.bestMoveset?.charged || entry.cinematicMoves[0]?.name || 'Struggle';
   const pveDps = meta?.pve?.dps ? `${meta.pve.dps} DPS` : '';
   const pveTypeRank = meta?.pve?.typeRank
-    ? `#${meta.pve.typeRank.rank} (${meta.pve.typeRank.type})`
+    ? `#${meta.pve.typeRank.rank} (${localizeTypeName(meta.pve.typeRank.type, lang)})`
     : null;
 
-  const glRank = meta?.pvp?.great?.rank ? `#${meta.pvp.great.rank} (skóre ${meta.pvp.great.score})` : null;
-  const ulRank = meta?.pvp?.ultra?.rank ? `#${meta.pvp.ultra.rank} (skóre ${meta.pvp.ultra.score})` : null;
-  const mlRank = meta?.pvp?.master?.rank ? `#${meta.pvp.master.rank} (skóre ${meta.pvp.master.score})` : null;
+  const scoreLabelByLang: Record<Language, string> = {
+    cs: 'skóre',
+    en: 'score',
+    ja: 'スコア',
+    ru: 'очков',
+  };
+  const scoreLabel = scoreLabelByLang[lang] || 'score';
+
+  const glRank = meta?.pvp?.great?.rank ? `#${meta.pvp.great.rank} (${scoreLabel} ${meta.pvp.great.score})` : null;
+  const ulRank = meta?.pvp?.ultra?.rank ? `#${meta.pvp.ultra.rank} (${scoreLabel} ${meta.pvp.ultra.score})` : null;
+  const mlRank = meta?.pvp?.master?.rank ? `#${meta.pvp.master.rank} (${scoreLabel} ${meta.pvp.master.score})` : null;
 
   const paragraphs: { heading: string; text: string }[] = [];
   const faqs: { question: string; answer: string }[] = [];
@@ -240,7 +249,7 @@ export function generatePokedexEditorialAnalysis(
       },
       {
         question: `Jaké je 100% IV (Hundo) CP pro ${localName}?`,
-        answer: `100% IV ${localName} má maximálně ${entry.maxCp.lv50} CP na úrovni 50 (${entry.maxCp.lv40} CP na úrovni 40). Z raidů má 100% IV hodnotu ${entry.maxCp.lv20} CP (Level 20) a ${entry.maxCp.lv25} CP při Weather Boostu (Level 25). Ze zadań Field Research (Level 15) je 100% IV přesně ${entry.maxCp.lv15} CP.`,
+        answer: `100% IV ${localName} má maximálně ${entry.maxCp.lv50} CP na úrovni 50 (${entry.maxCp.lv40} CP na úrovni 40). Z raidů má 100% IV hodnotu ${entry.maxCp.lv20} CP (Level 20) a ${entry.maxCp.lv25} CP při Weather Boostu (Level 25). Z úkolů Field Research (Level 15) je 100% IV přesně ${entry.maxCp.lv15} CP.`,
       }
     );
   } else if (lang === 'ja') {
