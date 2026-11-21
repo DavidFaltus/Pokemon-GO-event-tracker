@@ -109,6 +109,19 @@ if (sourceHtml) {
     fs.copyFileSync(adminHtml, adminIndexHtml);
   }
 
+  // Ensure hidden /cs/soutez and /cs/soutez/admin work cleanly with or without trailing slash
+  for (const relBase of ['cs/soutez', 'cs/soutez/admin']) {
+    const htmlFile = path.join(distDir, `${relBase}.html`);
+    const dirPath = path.join(distDir, relBase);
+    const idxFile = path.join(dirPath, 'index.html');
+    if (fs.existsSync(htmlFile)) {
+      if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+      }
+      fs.copyFileSync(htmlFile, idxFile);
+    }
+  }
+
   // Copy all sitemap XML files & robots.txt to public/, backend root and backend/dist
   const sitemapFiles = [
     'sitemap.xml',

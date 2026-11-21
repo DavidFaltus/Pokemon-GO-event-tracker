@@ -11,7 +11,7 @@ import { Calendar, Swords, Shield, Clock, Egg, Sparkles, Trophy, Filter, Setting
 import { apiFetch } from '../config';
 import { useTheme } from '../context/ThemeContext';
 
-export type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'research' | 'ditto' | 'eggs' | 'ranking' | 'pokedex' | 'pokedle' | 'filter' | 'settings' | 'admin' | 'download' | 'types' | '404';
+export type TabType = 'events' | 'guides' | 'friends' | 'raid' | 'rocket' | 'research' | 'ditto' | 'eggs' | 'ranking' | 'pokedex' | 'pokedle' | 'filter' | 'settings' | 'admin' | 'download' | 'types' | 'soutez' | '404';
 
 const InstagramLogo = ({ size = 15, color = '#ffffff' }: { size?: number; color?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, display: 'inline-block', verticalAlign: 'middle' }}>
@@ -66,6 +66,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
   // Determine current active section from pathname
   const getActiveTab = (): TabType => {
     const cleanPath = pathname.toLowerCase();
+    if (cleanPath.includes('/soutez')) return 'soutez';
     if (cleanPath.includes('/admin')) return 'admin';
     if (cleanPath.includes('/guides')) return 'guides';
     if (cleanPath.includes('/friends')) return 'friends';
@@ -114,6 +115,9 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
   const getLanguageSwitchPath = (targetLang: Language): string => {
     if (!pathname || pathname === '/') return `/${targetLang}`;
     if (pathname.startsWith('/admin')) return '/admin';
+    if (pathname.toLowerCase().includes('/soutez')) {
+      return targetLang === 'cs' ? pathname : `/${targetLang}`;
+    }
     const replaced = pathname.replace(/^\/(cs|en|ja|ru)(?=\/|$)/, `/${targetLang}`);
     if (replaced.startsWith(`/${targetLang}`)) {
       return replaced;
@@ -538,7 +542,7 @@ export const AppShell: React.FC<AppShellProps> = ({ children, lang }) => {
           <button
             type="button"
             className={`nav-item nav-hub-trigger ${isHubOpen ? 'hub-active' : ''} ${
-              !['events', 'pokedex', 'ranking', 'friends', 'admin'].includes(activeTab) ? 'subpage-active' : ''
+              !['events', 'pokedex', 'ranking', 'friends', 'admin', 'soutez'].includes(activeTab) ? 'subpage-active' : ''
             }`}
             onClick={() => setIsHubOpen(prev => !prev)}
             aria-label={t.tabs_menu || 'Menu'}

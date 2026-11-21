@@ -1,0 +1,1533 @@
+/* ===============================================================
+   Dedicated Contest Admin Panel (/cs/soutez/admin)
+   =============================================================== */
+
+.cadmin-login-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 66vh;
+  padding: 16px 0;
+}
+
+.cadmin-login-card {
+  width: 100%;
+  max-width: 430px;
+  background: linear-gradient(135deg, rgba(28, 20, 48, 0.94), rgba(14, 16, 26, 0.96));
+  border: 1px solid rgba(168, 85, 247, 0.34);
+  border-radius: 22px;
+  padding: 34px 28px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.42);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.cadmin-login-icon-badge {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  background: var(--accent-gradient);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(168, 85, 247, 0.4);
+}
+
+.cadmin-login-card h2 {
+  margin: 4px 0 0;
+  font-size: 1.45rem;
+  font-weight: 850;
+  color: var(--text-primary);
+}
+
+.cadmin-login-sub {
+  margin: 0 0 8px;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.cadmin-login-sub code {
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: rgba(168, 85, 247, 0.16);
+  color: #d8b4fe;
+  font-size: 0.8rem;
+}
+
+.cadmin-login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+}
+
+.cadmin-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cadmin-input-group label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.cadmin-input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(6, 7, 9, 0.55);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 0 12px;
+  gap: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.cadmin-input-with-icon:focus-within {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.18);
+}
+
+.cadmin-input-with-icon svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.cadmin-input-with-icon input {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 12px 0;
+  color: var(--text-primary);
+  font-size: 0.92rem;
+  font-family: var(--font-sans);
+  min-width: 0;
+}
+
+.cadmin-input-with-icon input:focus {
+  outline: none;
+}
+
+.cadmin-eye-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* DASHBOARD ROOT */
+.cadmin-root {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cadmin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 18px 22px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(28, 20, 48, 0.9), rgba(16, 18, 28, 0.92));
+  border: 1px solid rgba(168, 85, 247, 0.26);
+}
+
+.cadmin-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.cadmin-header-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: var(--accent-gradient);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cadmin-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cadmin-title-row h1 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 850;
+  color: var(--text-primary);
+}
+
+.cadmin-user-pill {
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.16);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #7dd3fc;
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.cadmin-header-sub {
+  margin: 3px 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.cadmin-header-sub code {
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #d8b4fe;
+}
+
+.cadmin-header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* BUTTONS */
+.cadmin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 15px;
+  border-radius: 11px;
+  font-size: 0.84rem;
+  font-weight: 750;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cadmin-btn.full {
+  width: 100%;
+}
+
+.cadmin-btn.primary {
+  background: var(--accent-gradient);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.3);
+}
+
+.cadmin-btn.primary:hover {
+  transform: translateY(-1px);
+}
+
+.cadmin-btn.success {
+  background: linear-gradient(135deg, #22c55e, #15803d);
+  color: #ffffff;
+}
+
+.cadmin-btn.secondary {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+.cadmin-btn.secondary:hover {
+  border-color: rgba(168, 85, 247, 0.45);
+  color: var(--text-primary);
+}
+
+.cadmin-btn.danger-outline {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.32);
+  color: #fca5a5;
+}
+
+.cadmin-btn.danger-outline:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.cadmin-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ALERTS */
+.cadmin-alert {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 15px;
+  border-radius: 12px;
+  font-size: 0.84rem;
+  font-weight: 650;
+}
+
+.cadmin-alert.success {
+  background: rgba(34, 197, 94, 0.14);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  color: #4ade80;
+}
+
+.cadmin-alert.error {
+  background: rgba(239, 68, 68, 0.14);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+}
+
+/* TABS */
+.cadmin-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  overflow-x: auto;
+}
+
+.cadmin-tab-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  font-weight: 750;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.cadmin-tab-btn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.cadmin-tab-btn.active {
+  background: var(--accent-gradient);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(168, 85, 247, 0.3);
+}
+
+/* SPLIT LAYOUT */
+.cadmin-split-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+@media (min-width: 960px) {
+  .cadmin-split-layout {
+    grid-template-columns: 310px 1fr;
+  }
+}
+
+.cadmin-sidebar,
+.cadmin-editor-panel,
+.cadmin-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16);
+}
+
+.cadmin-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cadmin-filter-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cadmin-mini-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+.cadmin-mini-pill.active {
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(168, 85, 247, 0.5);
+  color: #e9d5ff;
+}
+
+.cadmin-contest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 68vh;
+  overflow-y: auto;
+}
+
+.cadmin-contest-item {
+  width: 100%;
+  text-align: left;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.cadmin-contest-item:hover {
+  border-color: rgba(168, 85, 247, 0.4);
+  background: var(--bg-card-hover);
+}
+
+.cadmin-contest-item.selected {
+  border-color: var(--accent-color);
+  background: rgba(168, 85, 247, 0.12);
+}
+
+.cadmin-item-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.cadmin-status-tag {
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.cadmin-status-tag.active {
+  background: rgba(34, 197, 94, 0.18);
+  color: #4ade80;
+}
+
+.cadmin-status-tag.upcoming {
+  background: rgba(56, 189, 248, 0.18);
+  color: #7dd3fc;
+}
+
+.cadmin-status-tag.finished {
+  background: rgba(250, 204, 21, 0.18);
+  color: #fde047;
+}
+
+.cadmin-status-tag.draft {
+  background: rgba(148, 163, 184, 0.18);
+  color: #cbd5e1;
+}
+
+.cadmin-pin-tag {
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  background: rgba(250, 204, 21, 0.15);
+  color: #fde047;
+}
+
+.cadmin-count-tag {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.cadmin-item-title {
+  font-size: 0.88rem;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.cadmin-item-winners {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.73rem;
+  color: #facc15;
+  font-weight: 700;
+}
+
+.cadmin-empty-list {
+  padding: 24px 14px;
+  text-align: center;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+/* FORM EDITOR */
+.cadmin-placeholder {
+  min-height: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+  color: var(--text-muted);
+  padding: 20px;
+}
+
+.cadmin-placeholder h3 {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.cadmin-placeholder p {
+  margin: 0;
+  max-width: 420px;
+  font-size: 0.86rem;
+}
+
+.cadmin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cadmin-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cadmin-form-header h3 {
+  margin: 0;
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.cadmin-form-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.cadmin-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+@media (min-width: 680px) {
+  .cadmin-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cadmin-field.span-2,
+  .cadmin-checkbox.span-2 {
+    grid-column: span 2;
+  }
+}
+
+.cadmin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cadmin-field label {
+  font-size: 0.78rem;
+  font-weight: 750;
+  color: var(--text-secondary);
+}
+
+.cadmin-field input[type='text'],
+.cadmin-field input[type='url'],
+.cadmin-field input[type='number'],
+.cadmin-field input[type='datetime-local'],
+.cadmin-field select,
+.cadmin-field textarea,
+.cadmin-row-input input,
+.cadmin-winner-edit-row input,
+.cadmin-manual-entry-form input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 0.86rem;
+  font-family: var(--font-sans);
+  box-sizing: border-box;
+}
+
+.cadmin-field input:focus,
+.cadmin-field select:focus,
+.cadmin-field textarea:focus,
+.cadmin-row-input input:focus,
+.cadmin-winner-edit-row input:focus,
+.cadmin-manual-entry-form input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.cadmin-checkbox,
+.cadmin-checkbox-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.83rem;
+  font-weight: 650;
+  color: var(--text-secondary);
+}
+
+.cadmin-section-box {
+  padding: 15px;
+  border-radius: 14px;
+  background: rgba(6, 7, 9, 0.35);
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cadmin-section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cadmin-section-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.cadmin-small-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: rgba(168, 85, 247, 0.16);
+  border: 1px solid rgba(168, 85, 247, 0.34);
+  color: #e9d5ff;
+  font-size: 0.74rem;
+  font-weight: 750;
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+/* MOTIF PICKER */
+.cadmin-motif-toggle {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cadmin-motif-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+@media (min-width: 640px) {
+  .cadmin-motif-body {
+    grid-template-columns: 140px 1fr;
+  }
+}
+
+.cadmin-motif-preview {
+  width: 140px;
+  height: 140px;
+  border-radius: 14px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.22), rgba(6, 7, 9, 0.8));
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: var(--text-muted);
+}
+
+.cadmin-motif-preview .preview-poke {
+  width: 118px;
+  height: 118px;
+  object-fit: contain;
+}
+
+.cadmin-motif-preview .preview-banner {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cadmin-motif-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cadmin-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 11px;
+  border-radius: 10px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  width: 100%;
+}
+
+.cadmin-search-wrap svg {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.cadmin-search-wrap input {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 9px 0;
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  font-family: var(--font-sans);
+  min-width: 0;
+}
+
+.cadmin-search-wrap input:focus {
+  outline: none;
+}
+
+.cadmin-poke-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.cadmin-poke-chip {
+  padding: 4px 9px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 650;
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+.cadmin-poke-chip span {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+.cadmin-poke-chip.active {
+  background: var(--accent-gradient);
+  border-color: transparent;
+  color: #ffffff;
+}
+
+.cadmin-poke-chip.active span {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.cadmin-upload-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* LIST INPUTS */
+.cadmin-list-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cadmin-row-input {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.cadmin-row-num {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #facc15;
+  min-width: 20px;
+}
+
+.cadmin-winner-edit-row {
+  display: grid;
+  grid-template-columns: 64px 1fr 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.cadmin-icon-remove {
+  padding: 8px;
+  border-radius: 9px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cadmin-muted-note {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* RAFFLE & ENTRIES TAB */
+.cadmin-raffle-layout .cadmin-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.cadmin-raffle-top {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cadmin-raffle-box {
+  padding: 18px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.14), rgba(250, 204, 21, 0.08));
+  border: 1px solid rgba(168, 85, 247, 0.36);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cadmin-raffle-box-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cadmin-raffle-box-header svg {
+  color: #c084fc;
+}
+
+.cadmin-raffle-box-header h3 {
+  margin: 0;
+  font-size: 1.04rem;
+  font-weight: 800;
+}
+
+.cadmin-raffle-box-header p {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.cadmin-raffle-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.cadmin-raffle-controls .cadmin-field {
+  width: 180px;
+}
+
+.cadmin-raffle-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cadmin-drawn-result {
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(6, 7, 9, 0.55);
+  border: 1px solid rgba(250, 204, 21, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cadmin-drawn-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #fde047;
+}
+
+.cadmin-drawn-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cadmin-drawn-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: rgba(250, 204, 21, 0.14);
+  border: 1px solid rgba(250, 204, 21, 0.36);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+}
+
+.drawn-place {
+  font-weight: 900;
+  color: #facc15;
+}
+
+.drawn-prize {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.cadmin-manual-entry-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+@media (min-width: 680px) {
+  .cadmin-manual-entry-form {
+    grid-template-columns: 1fr 1fr auto;
+  }
+}
+
+.cadmin-entries-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cadmin-entries-header h4 {
+  margin: 0;
+  font-size: 0.96rem;
+  font-weight: 800;
+}
+
+.cadmin-entries-table-wrap {
+  overflow-x: auto;
+}
+
+.cadmin-entries-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.cadmin-entries-table th,
+.cadmin-entries-table td {
+  text-align: left;
+  padding: 10px 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cadmin-entries-table th {
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.cadmin-mini-tag {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: rgba(56, 189, 248, 0.16);
+  color: #7dd3fc;
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+
+/* QR TAB */
+.cadmin-qr-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+@media (min-width: 860px) {
+  .cadmin-qr-layout {
+    grid-template-columns: 1.2fr 0.8fr;
+  }
+}
+
+.cadmin-qr-config {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cadmin-qr-config h3 {
+  margin: 0;
+  font-size: 1.12rem;
+  font-weight: 800;
+}
+
+.cadmin-url-copy-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(6, 7, 9, 0.5);
+  border: 1px solid rgba(168, 85, 247, 0.34);
+  flex-wrap: wrap;
+}
+
+.cadmin-url-copy-box code {
+  font-size: 0.84rem;
+  color: #d8b4fe;
+  word-break: break-all;
+}
+
+.cadmin-qr-download-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cadmin-qr-preview-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.cadmin-qr-frame {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.cadmin-qr-img {
+  width: 240px;
+  height: 240px;
+  display: block;
+}
+
+.cadmin-qr-caption {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cadmin-qr-caption strong {
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.cadmin-qr-caption span {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.cadmin-gcs-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  color: #7dd3fc;
+  font-size: 0.8rem;
+}
+
+.cadmin-spin {
+  animation: cadminSpin 1s linear infinite;
+}
+
+@keyframes cadminSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* LIGHT MODE OVERRIDES */
+[data-theme='light'] .cadmin-login-card,
+body.light-mode .cadmin-login-card,
+[data-theme='light'] .cadmin-header,
+body.light-mode .cadmin-header,
+[data-theme='light'] .cadmin-sidebar,
+body.light-mode .cadmin-sidebar,
+[data-theme='light'] .cadmin-editor-panel,
+body.light-mode .cadmin-editor-panel,
+[data-theme='light'] .cadmin-card,
+body.light-mode .cadmin-card,
+[data-theme='light'] .cadmin-tabs,
+body.light-mode .cadmin-tabs {
+  background: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06) !important;
+}
+
+[data-theme='light'] .cadmin-section-box,
+body.light-mode .cadmin-section-box,
+[data-theme='light'] .cadmin-input-with-icon,
+body.light-mode .cadmin-input-with-icon,
+[data-theme='light'] .cadmin-url-copy-box,
+body.light-mode .cadmin-url-copy-box {
+  background: #f8fafc !important;
+  border-color: rgba(15, 23, 42, 0.14) !important;
+}
+
+[data-theme='light'] .cadmin-login-sub code,
+body.light-mode .cadmin-login-sub code,
+[data-theme='light'] .cadmin-header-sub code,
+body.light-mode .cadmin-header-sub code,
+[data-theme='light'] .cadmin-url-copy-box code,
+body.light-mode .cadmin-url-copy-box code {
+  color: #6b21a8 !important;
+  background: rgba(126, 34, 206, 0.08) !important;
+}
+
+[data-theme='light'] .cadmin-small-add,
+body.light-mode .cadmin-small-add,
+[data-theme='light'] .cadmin-mini-pill.active,
+body.light-mode .cadmin-mini-pill.active {
+  color: #6b21a8 !important;
+  background: rgba(126, 34, 206, 0.1) !important;
+}
+
+[data-theme='light'] .cadmin-gcs-strip,
+body.light-mode .cadmin-gcs-strip,
+[data-theme='light'] .cadmin-user-pill,
+body.light-mode .cadmin-user-pill {
+  color: #0369a1 !important;
+  background: rgba(2, 132, 199, 0.08) !important;
+}
+
+/* TEMPLATE CREATOR, METRICS EDITOR & VERIFICATION TABLE */
+.cadmin-btn.cyan {
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
+}
+
+.cadmin-btn.cyan:hover {
+  transform: translateY(-1px);
+}
+
+.cadmin-ocr-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(168, 85, 247, 0.16);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  color: #e9d5ff;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.cadmin-template-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.cadmin-placeholder-btns {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.cadmin-type-tag {
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 0.66rem;
+  font-weight: 800;
+  background: rgba(168, 85, 247, 0.2);
+  color: #e9d5ff;
+}
+
+.cadmin-type-tag.stats {
+  background: rgba(56, 189, 248, 0.2);
+  color: #bae6fd;
+}
+
+.cadmin-section-box.template-box {
+  border-color: rgba(168, 85, 247, 0.4);
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.08), rgba(6, 7, 9, 0.42));
+}
+
+.cadmin-section-box.template-box.stats-box {
+  border-color: rgba(56, 189, 248, 0.38);
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(6, 7, 9, 0.42));
+}
+
+.cadmin-req-poke-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 8px;
+  background: rgba(168, 85, 247, 0.2);
+  border: 1px solid rgba(168, 85, 247, 0.42);
+  color: #f3e8ff;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.cadmin-req-poke-tag button {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  padding: 0;
+}
+
+.cadmin-sub-label {
+  font-size: 0.78rem;
+  font-weight: 750;
+  color: var(--text-secondary);
+}
+
+.cadmin-metrics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cadmin-metric-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-color);
+  opacity: 0.72;
+}
+
+.cadmin-metric-row.enabled {
+  opacity: 1;
+  border-color: rgba(56, 189, 248, 0.42);
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.cadmin-metric-threshold {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.cadmin-metric-threshold input {
+  width: 92px !important;
+  padding: 6px 8px !important;
+  border-radius: 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+}
+
+.cadmin-metric-unit {
+  min-width: 24px;
+  font-weight: 700;
+  color: #7dd3fc;
+}
+
+.cadmin-custom-metric-adder {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border-color);
+}
+
+.cadmin-custom-metric-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+@media (min-width: 680px) {
+  .cadmin-custom-metric-grid {
+    grid-template-columns: 1.6fr 0.7fr 0.7fr auto;
+  }
+}
+
+.cadmin-custom-metric-grid input {
+  padding: 8px 10px;
+  border-radius: 9px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-family: var(--font-sans);
+}
+
+.cadmin-entry-trainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cadmin-entry-sub {
+  font-size: 0.73rem;
+  color: var(--text-muted);
+}
+
+.cadmin-entry-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.cadmin-entry-status.approved {
+  background: rgba(34, 197, 94, 0.16);
+  color: #4ade80;
+}
+
+.cadmin-entry-status.pending_review {
+  background: rgba(250, 204, 21, 0.16);
+  color: #fde047;
+}
+
+.cadmin-entry-status.rejected {
+  background: rgba(239, 68, 68, 0.16);
+  color: #fca5a5;
+}
+
+.cadmin-entry-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cadmin-entry-reason {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.cadmin-ocr-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.cadmin-thumb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px 4px 4px;
+  border-radius: 9px;
+  background: rgba(168, 85, 247, 0.12);
+  border: 1px solid rgba(168, 85, 247, 0.32);
+  color: #e9d5ff;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: fit-content;
+  font-family: var(--font-sans);
+}
+
+.cadmin-thumb-btn img {
+  width: 34px;
+  height: 34px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.cadmin-stats-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.cadmin-stat-chip {
+  padding: 3px 8px;
+  border-radius: 7px;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.cadmin-stat-chip.ok {
+  background: rgba(34, 197, 94, 0.16);
+  color: #86efac;
+}
+
+.cadmin-stat-chip.fail {
+  background: rgba(239, 68, 68, 0.16);
+  color: #fca5a5;
+}
+
+.cadmin-stat-chip.pending {
+  background: rgba(250, 204, 21, 0.14);
+  color: #fde047;
+}
+
+.cadmin-row-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cadmin-action-chip {
+  padding: 7px;
+  border-radius: 9px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+}
+
+.cadmin-action-chip.approve {
+  background: rgba(34, 197, 94, 0.16);
+  border-color: rgba(34, 197, 94, 0.36);
+  color: #4ade80;
+}
+
+.cadmin-action-chip.reject {
+  background: rgba(250, 204, 21, 0.14);
+  border-color: rgba(250, 204, 21, 0.35);
+  color: #fde047;
+}
+
+/* LIGHTBOX MODAL */
+.cadmin-lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.cadmin-lightbox-content {
+  position: relative;
+  max-width: 92vw;
+  max-height: 90vh;
+  background: #0f1015;
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.cadmin-lightbox-content img {
+  max-width: 86vw;
+  max-height: 82vh;
+  object-fit: contain;
+  display: block;
+  border-radius: 10px;
+}
+
+.cadmin-lightbox-close {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-theme='light'] .cadmin-ocr-pill,
+body.light-mode .cadmin-ocr-pill {
+  color: #6b21a8 !important;
+  background: rgba(126, 34, 206, 0.1) !important;
+}
+
+[data-theme='light'] .cadmin-metric-row.enabled,
+body.light-mode .cadmin-metric-row.enabled {
+  background: rgba(2, 132, 199, 0.06) !important;
+}
+
+[data-theme='light'] .cadmin-metric-unit,
+body.light-mode .cadmin-metric-unit {
+  color: #0369a1 !important;
+}

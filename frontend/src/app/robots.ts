@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/api/private/'],
+        disallow: ['/admin', '/api/private/', '/cs/soutez', '/cs/soutez/'],
       },
       {
         userAgent: [
@@ -27,7 +27,7 @@ export default function robots(): MetadataRoute.Robots {
           'Mediapartners-Google',
         ],
         allow: ['/', '/api/agent/', '/llms.txt', '/llms-full.txt'],
-        disallow: ['/admin', '/api/private/'],
+        disallow: ['/admin', '/api/private/', '/cs/soutez', '/cs/soutez/'],
       },
     ],
     sitemap: [

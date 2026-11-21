@@ -1,3 +1,4 @@
+import './loadEnv';
 import express from 'express';
 import cors from 'cors';
 import fs from 'fs';
@@ -59,6 +60,7 @@ import {
 } from './agent/markdownGenerator';
 import { checkAndSyncPvPokeGamemaster } from './services/pvpokeGamemasterService';
 import { generateRankings } from './scripts/generateRankings';
+import { createContestRouter } from './routes/contestRoutes';
 
 // Simple in-memory rate limiter
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -121,7 +123,7 @@ app.use(cors({
   },
   credentials: true
 }));
-app.use(express.json());
+app.use(express.json({ limit: '2mb' }));
 
 // Apply rate limiting:
 // 1) Login route (prevent brute-force): max 30 requests / min
@@ -130,6 +132,9 @@ app.use('/api/admin/login', rateLimit(60 * 1000, 30));
 app.use('/api/admin', rateLimit(60 * 1000, 600));
 // 3) General public API routes: max 300 requests / min
 app.use('/api', rateLimit(60 * 1000, 300));
+
+// Dedicated local community contests API (/api/contests/*)
+app.use('/api/contests', createContestRouter(rateLimit));
 
 // Serve sitemaps (index and sub-sitemaps) directly with fast streaming
 app.get(['/sitemap.xml', '/sitemap-:sub.xml'], (req, res) => {
@@ -164,7 +169,7 @@ app.get('/robots.txt', (req, res) => {
       return res.sendFile(path.resolve(p));
     }
   }
-  return res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: https://pogoevents.app/sitemap.xml\n');
+  return res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /cs/soutez\nSitemap: https://pogoevents.app/sitemap.xml\n');
 });
 
 // Serve BingSiteAuth.xml directly for Bing Webmaster Tools verification

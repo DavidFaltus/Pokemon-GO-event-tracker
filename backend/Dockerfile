@@ -17,6 +17,7 @@ COPY package*.json ./
 RUN npm ci --only=production && npm cache clean --force
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/app.html ./dist/app.html
+COPY --from=builder /app/data/pokedexMetaIndex.json ./data/pokedexMetaIndex.json
 
 # Ensure cache directory exists and set ownership for appuser
 RUN mkdir -p /app/.cache /app/dist && chown -R appuser:appgroup /app

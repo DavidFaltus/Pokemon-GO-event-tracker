@@ -2,6 +2,8 @@ User-Agent: *
 Allow: /
 Disallow: /admin
 Disallow: /api/private/
+Disallow: /cs/soutez
+Disallow: /cs/soutez/
 
 User-Agent: OAI-SearchBot
 User-Agent: ChatGPT-User
@@ -22,6 +24,8 @@ Allow: /llms.txt
 Allow: /llms-full.txt
 Disallow: /admin
 Disallow: /api/private/
+Disallow: /cs/soutez
+Disallow: /cs/soutez/
 
 Sitemap: https://pogoevents.app/sitemap.xml
 Sitemap: https://pogoevents.app/sitemap-core.xml

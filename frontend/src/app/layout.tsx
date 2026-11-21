@@ -44,7 +44,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" data-theme="dark" className={outfit.variable} suppressHydrationWarning>
-      <head>
+      <head suppressHydrationWarning>
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
         <meta name="google-adsense-account" content="ca-pub-8800056915088711" />
@@ -75,11 +75,13 @@ export default function RootLayout({
             `,
           }}
         />
-        {/* Standard static Google AdSense tag in <head> for reliable site verification & Google GDPR CMP (IAB TCF v2.2) across all routes including root / and /privacy */}
-        <script
+        {/* Load Google AdSense after hydration so show_ads_impl.js never mutates <head> child order during React 19 hydration */}
+        <Script
+          id="google-adsense"
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8800056915088711"
           crossOrigin="anonymous"
+          strategy="afterInteractive"
         />
         <Script
           id="theme-init"
