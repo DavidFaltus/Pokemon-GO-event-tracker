@@ -1464,27 +1464,57 @@ export const ContestHubView: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Optional Public Qualified Trainers List */}
+                  {/* Optional Public Participants List (all trainers with current status) */}
                   {contest.showQualifiedList &&
-                    contest.qualifiedTrainers &&
-                    contest.qualifiedTrainers.length > 0 && (
-                      <div className="contest-info-box qualified-box">
-                        <div className="contest-info-box-title">
-                          <Users size={15} />
-                          <span>
-                            Kvalifikovaní do slosování · {contest.qualifiedTrainers.length}
-                          </span>
+                    (() => {
+                      const participantList =
+                        contest.participants && contest.participants.length > 0
+                          ? contest.participants
+                          : (contest.qualifiedTrainers || []).map((name) => ({
+                              trainerName: name,
+                              status: 'approved' as const,
+                              statsPhase: undefined,
+                            }));
+                      if (participantList.length === 0) return null;
+                      return (
+                        <div className="contest-info-box qualified-box">
+                          <div className="contest-info-box-title">
+                            <Users size={15} />
+                            <span>Zapojení trenéři · {participantList.length}</span>
+                          </div>
+                          <div className="contest-qualified-chips">
+                            {participantList.map((p, idx) => {
+                              const stateLabel =
+                                p.status === 'approved'
+                                  ? contest.contestType === 'registration'
+                                    ? 'Přihlášen'
+                                    : 'Splněno'
+                                  : p.status === 'pending_review'
+                                    ? p.statsPhase === 'baseline_only'
+                                      ? 'Zapsán start'
+                                      : 'Ke kontrole'
+                                    : 'Nesplněno';
+                              return (
+                                <span
+                                  key={`${p.trainerName}-${idx}`}
+                                  className={`contest-qualified-chip status-${p.status}`}
+                                >
+                                  {p.status === 'approved' ? (
+                                    <CheckCircle2 size={12} />
+                                  ) : p.status === 'pending_review' ? (
+                                    <Hourglass size={12} />
+                                  ) : (
+                                    <XCircle size={12} />
+                                  )}
+                                  <span>{p.trainerName}</span>
+                                  <span className="contest-participant-state">· {stateLabel}</span>
+                                </span>
+                              );
+                            })}
+                          </div>
                         </div>
-                        <div className="contest-qualified-chips">
-                          {contest.qualifiedTrainers.map((name, idx) => (
-                            <span key={idx} className="contest-qualified-chip">
-                              <CheckCircle2 size={12} />
-                              <span>{name}</span>
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                      );
+                    })()}
 
                   {/* Announced Winners Showcase */}
                   {contest.winners && contest.winners.length > 0 && (

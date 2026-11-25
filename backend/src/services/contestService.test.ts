@@ -246,6 +246,13 @@ describe('Contest Service', () => {
       expect(draw.totalEligible).toBe(1);
       expect(draw.drawn[0].trainerName).toBe('AshKetchum');
 
+      // Public participants list exposes ALL entries with their current status sorted approved -> rejected
+      const pubBeforeOverride = await getPublicContestsData();
+      expect(pubBeforeOverride.contests[0].participants).toEqual([
+        { trainerName: 'AshKetchum', status: 'approved', statsPhase: 'completed' },
+        { trainerName: 'Misty', status: 'rejected', statsPhase: 'completed' },
+      ]);
+
       // Admin manual override can approve Misty
       const overridden = await updateContestEntryStatus(contest.id, mistyFinal.id, 'approved');
       expect(overridden?.status).toBe('approved');

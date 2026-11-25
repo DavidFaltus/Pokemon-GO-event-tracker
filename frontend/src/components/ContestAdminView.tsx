@@ -1320,7 +1320,7 @@ export const ContestAdminView: React.FC = () => {
                         setDraft((p) => ({ ...p, showQualifiedList: e.target.checked }))
                       }
                     />
-                    <span>Zobrazit na /cs/soutez seznam kvalifikovaných trenérů</span>
+                    <span>Zobrazit seznam trenérů</span>
                   </label>
                 </div>
 

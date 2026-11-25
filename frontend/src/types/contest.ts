@@ -54,6 +54,12 @@ export interface ContestWinner {
   entryId?: string;
 }
 
+export interface PublicContestParticipant {
+  trainerName: string;
+  status: ContestEntryStatus;
+  statsPhase?: 'baseline_only' | 'completed';
+}
+
 export interface ContestItem {
   id: string;
   slug: string;
@@ -86,6 +92,7 @@ export interface ContestItem {
   entryCount?: number;
   qualifiedCount?: number;
   qualifiedTrainers?: string[];
+  participants?: PublicContestParticipant[];
 }
 
 export interface ContestEntryOcrMeta {

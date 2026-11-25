@@ -587,26 +587,48 @@ export async function saveContestStore(state: ContestStoreState): Promise<boolea
   return await dataStore.set(CONTESTS_STORE_KEY, state);
 }
 
+export interface PublicContestParticipant {
+  trainerName: string;
+  status: ContestEntryStatus;
+  statsPhase?: 'baseline_only' | 'completed';
+}
+
 export async function getPublicContestsData(): Promise<{
   settings: ContestHubSettings;
   contests: (ContestItem & {
     entryCount: number;
     qualifiedCount: number;
     qualifiedTrainers?: string[];
+    participants?: PublicContestParticipant[];
   })[];
 }> {
   const state = await loadContestStore({ forceCloud: false });
   const entryCounts = new Map<string, number>();
   const qualifiedMap = new Map<string, string[]>();
+  const participantsMap = new Map<string, PublicContestParticipant[]>();
 
   for (const entry of state.entries) {
     entryCounts.set(entry.contestId, (entryCounts.get(entry.contestId) || 0) + 1);
+    const pList = participantsMap.get(entry.contestId) || [];
+    pList.push({
+      trainerName: entry.trainerName,
+      status: entry.status,
+      statsPhase: entry.statsPhase,
+    });
+    participantsMap.set(entry.contestId, pList);
+
     if (entry.status === 'approved') {
       const list = qualifiedMap.get(entry.contestId) || [];
       list.push(entry.trainerName);
       qualifiedMap.set(entry.contestId, list);
     }
   }
+
+  const entryStatusRank: Record<ContestEntryStatus, number> = {
+    approved: 0,
+    pending_review: 1,
+    rejected: 2,
+  };
 
   const visibleContests = state.contests
     .filter((c) => c.status !== 'draft')
@@ -625,11 +647,15 @@ export async function getPublicContestsData(): Promise<{
     })
     .map((contest) => {
       const qualified = qualifiedMap.get(contest.id) || [];
+      const participants = (participantsMap.get(contest.id) || []).sort(
+        (a, b) => entryStatusRank[a.status] - entryStatusRank[b.status]
+      );
       return {
         ...contest,
         entryCount: entryCounts.get(contest.id) || 0,
         qualifiedCount: qualified.length,
         qualifiedTrainers: contest.showQualifiedList ? qualified : undefined,
+        participants: contest.showQualifiedList ? participants : undefined,
       };
     });
 
