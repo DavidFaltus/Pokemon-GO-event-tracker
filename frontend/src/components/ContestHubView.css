@@ -495,6 +495,71 @@
   gap: 14px;
 }
 
+.contest-card-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.contest-card-title-block {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.contest-header-time-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 750;
+  white-space: nowrap;
+  flex-shrink: 0;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+  background: rgba(168, 85, 247, 0.16);
+  color: #e9d5ff;
+}
+
+.contest-header-time-badge.tone-phase1 {
+  background: rgba(56, 189, 248, 0.14);
+  border-color: rgba(56, 189, 248, 0.4);
+  color: #bae6fd;
+}
+
+.contest-header-time-badge.tone-upcoming {
+  background: rgba(250, 204, 21, 0.14);
+  border-color: rgba(250, 204, 21, 0.38);
+  color: #fde68a;
+}
+
+.contest-header-time-badge.tone-ended {
+  background: rgba(148, 163, 184, 0.14);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: var(--text-muted);
+}
+
+.contest-locked-window-box {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: rgba(250, 204, 21, 0.1);
+  border: 1px solid rgba(250, 204, 21, 0.32);
+  color: #fde68a;
+  font-size: 0.86rem;
+  font-weight: 650;
+}
+
+.contest-locked-window-box.ended {
+  background: rgba(148, 163, 184, 0.1);
+  border-color: rgba(148, 163, 184, 0.28);
+  color: var(--text-muted);
+}
+
 .contest-card-title {
   margin: 0;
   font-size: 1.22rem;
@@ -957,9 +1022,37 @@ body.light-mode .contest-card-subtitle {
 }
 
 [data-theme='light'] .contest-meta-pill.highlight,
-body.light-mode .contest-meta-pill.highlight {
+body.light-mode .contest-meta-pill.highlight,
+[data-theme='light'] .contest-header-time-badge,
+body.light-mode .contest-header-time-badge {
   background: rgba(126, 34, 206, 0.1) !important;
   color: #6b21a8 !important;
+  border-color: rgba(126, 34, 206, 0.3) !important;
+}
+
+[data-theme='light'] .contest-header-time-badge.tone-phase1,
+body.light-mode .contest-header-time-badge.tone-phase1 {
+  background: rgba(2, 132, 199, 0.1) !important;
+  color: #0369a1 !important;
+  border-color: rgba(2, 132, 199, 0.32) !important;
+}
+
+[data-theme='light'] .contest-header-time-badge.tone-upcoming,
+body.light-mode .contest-header-time-badge.tone-upcoming,
+[data-theme='light'] .contest-locked-window-box,
+body.light-mode .contest-locked-window-box {
+  background: rgba(217, 119, 6, 0.1) !important;
+  color: #92400e !important;
+  border-color: rgba(217, 119, 6, 0.32) !important;
+}
+
+[data-theme='light'] .contest-header-time-badge.tone-ended,
+body.light-mode .contest-header-time-badge.tone-ended,
+[data-theme='light'] .contest-locked-window-box.ended,
+body.light-mode .contest-locked-window-box.ended {
+  background: rgba(15, 23, 42, 0.06) !important;
+  color: #475569 !important;
+  border-color: rgba(15, 23, 42, 0.16) !important;
 }
 
 [data-theme='light'] .contest-community-link,

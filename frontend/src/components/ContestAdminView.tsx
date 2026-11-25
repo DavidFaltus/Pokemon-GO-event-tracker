@@ -35,7 +35,6 @@ import {
   XCircle,
   Hourglass,
   X,
-  FlaskConical,
 } from 'lucide-react';
 import { apiFetch } from '../config';
 import { POKEDEX_CATALOG } from '../data/pokedexCatalog';
@@ -122,14 +121,12 @@ function createTemplateContest(template: 'registration' | 'inventory_combo' | 's
       prizes: ['1. místo: ', '2. místo: '],
       status: 'draft',
       contestType: 'stats_delta',
-      startDate: toLocalDatetimeInput(now),
+      startDate: toLocalDatetimeInput(in24h),
       endDate: toLocalDatetimeInput(nextWeek),
       registrationEnabled: true,
       showQualifiedList: false,
       motif: { mode: 'pokemon', pokemonDexId: 448, pokemonName: 'Lucario', shiny: false },
       statsDeltaConfig: {
-        baselineDeadline: toLocalDatetimeInput(in24h),
-        finalOpenAt: toLocalDatetimeInput(in24h),
         matchMode: 'all',
         minMetricsRequired: 2,
         metrics: DEFAULT_STATS_METRICS.map((m) => ({ ...m })),
@@ -242,7 +239,6 @@ export const ContestAdminView: React.FC = () => {
   const [pokemonQuery, setPokemonQuery] = useState<string>('');
   const [requiredPokeInput, setRequiredPokeInput] = useState<string>('');
   const [uploadingImage, setUploadingImage] = useState<boolean>(false);
-  const [seedingSamples, setSeedingSamples] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Custom metric adder & raw threshold inputs for Stats Delta (no browser number validation)
@@ -457,13 +453,11 @@ export const ContestAdminView: React.FC = () => {
       statsDeltaConfig: contest.statsDeltaConfig
         ? {
             ...contest.statsDeltaConfig,
-            baselineDeadline: isoToDatetimeLocal(contest.statsDeltaConfig.baselineDeadline),
-            finalOpenAt: isoToDatetimeLocal(contest.statsDeltaConfig.finalOpenAt),
+            baselineDeadline: undefined,
+            finalOpenAt: undefined,
             metrics,
           }
         : {
-            baselineDeadline: '',
-            finalOpenAt: '',
             matchMode: 'all',
             minMetricsRequired: 2,
             metrics,
@@ -481,29 +475,6 @@ export const ContestAdminView: React.FC = () => {
     setDraft(created);
   };
 
-  const handleSeedSamples = async () => {
-    setSeedingSamples(true);
-    try {
-      const res = await apiFetch('/api/contests/admin/seed-samples', {
-        method: 'POST',
-        headers: authHeaders(),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.error || 'Vytvoření ukázek selhalo.');
-      await loadAdminState();
-      showToast(
-        'success',
-        data.createdCount > 0
-          ? `Vytvořeno ${data.createdCount} testovacích soutěží!`
-          : 'Obě testovací soutěže už existují.'
-      );
-    } catch (err: any) {
-      showToast('error', err?.message || 'Chyba při vytváření testovacích soutěží.');
-    } finally {
-      setSeedingSamples(false);
-    }
-  };
-
   const handleSaveContest = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!draft.title?.trim()) {
@@ -516,12 +487,8 @@ export const ContestAdminView: React.FC = () => {
         draft.contestType === 'stats_delta' && draft.statsDeltaConfig
           ? {
               ...draft.statsDeltaConfig,
-              baselineDeadline: draft.statsDeltaConfig.baselineDeadline
-                ? new Date(draft.statsDeltaConfig.baselineDeadline).toISOString()
-                : undefined,
-              finalOpenAt: draft.statsDeltaConfig.finalOpenAt
-                ? new Date(draft.statsDeltaConfig.finalOpenAt).toISOString()
-                : undefined,
+              baselineDeadline: undefined,
+              finalOpenAt: undefined,
               metrics: draft.statsDeltaConfig.metrics.map((m) => {
                 const rawStr = thresholdInputs[m.id];
                 if (rawStr === undefined) return m;
@@ -1088,17 +1055,6 @@ export const ContestAdminView: React.FC = () => {
                 <Plus size={15} />
                 <span>+ Klasická soutěž</span>
               </button>
-              <button
-                type="button"
-                className="cadmin-btn secondary full"
-                onClick={handleSeedSamples}
-                disabled={seedingSamples}
-              >
-                <FlaskConical size={14} />
-                <span>
-                  {seedingSamples ? 'Vytvářím...' : 'Vytvořit 2 testovací soutěže'}
-                </span>
-              </button>
             </div>
 
             <div className="cadmin-filter-pills">
@@ -1296,8 +1252,6 @@ export const ContestAdminView: React.FC = () => {
                           statsDeltaConfig:
                             nextType === 'stats_delta'
                               ? p.statsDeltaConfig || {
-                                  baselineDeadline: p.endDate || '',
-                                  finalOpenAt: p.startDate || '',
                                   matchMode: 'all',
                                   minMetricsRequired: 2,
                                   metrics: DEFAULT_STATS_METRICS.map((m) => ({ ...m })),
@@ -1314,7 +1268,11 @@ export const ContestAdminView: React.FC = () => {
                   </div>
 
                   <div className="cadmin-field">
-                    <label>Začátek soutěže</label>
+                    <label>
+                      {draft.contestType === 'stats_delta'
+                        ? 'První fáze (do kdy zadat start)'
+                        : 'Začátek soutěže'}
+                    </label>
                     <input
                       type="datetime-local"
                       value={draft.startDate || ''}
@@ -1323,7 +1281,11 @@ export const ContestAdminView: React.FC = () => {
                   </div>
 
                   <div className="cadmin-field">
-                    <label>Konec soutěže</label>
+                    <label>
+                      {draft.contestType === 'stats_delta'
+                        ? 'Druhá fáze (do kdy odeslat cíl)'
+                        : 'Konec soutěže'}
+                    </label>
                     <input
                       type="datetime-local"
                       value={draft.endDate || ''}
@@ -1544,40 +1506,6 @@ export const ContestAdminView: React.FC = () => {
                     </div>
 
                     <div className="cadmin-grid-2">
-                      <div className="cadmin-field">
-                        <label>1. fáze – start, uzávěrka do</label>
-                        <input
-                          type="datetime-local"
-                          value={draft.statsDeltaConfig.baselineDeadline || ''}
-                          onChange={(e) =>
-                            setDraft((p) => ({
-                              ...p,
-                              statsDeltaConfig: {
-                                ...p.statsDeltaConfig!,
-                                baselineDeadline: e.target.value,
-                              },
-                            }))
-                          }
-                        />
-                      </div>
-
-                      <div className="cadmin-field">
-                        <label>2. fáze – finální stav, otevřít od</label>
-                        <input
-                          type="datetime-local"
-                          value={draft.statsDeltaConfig.finalOpenAt || ''}
-                          onChange={(e) =>
-                            setDraft((p) => ({
-                              ...p,
-                              statsDeltaConfig: {
-                                ...p.statsDeltaConfig!,
-                                finalOpenAt: e.target.value,
-                              },
-                            }))
-                          }
-                        />
-                      </div>
-
                       <div className="cadmin-field">
                         <label>Podmínka zařazení do slosování</label>
                         <select

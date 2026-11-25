@@ -91,6 +91,71 @@ function formatCzDate(iso?: string): string {
   });
 }
 
+function formatDurationCz(diffMs: number): string {
+  const safeMs = Math.max(0, diffMs);
+  const totalSecs = Math.floor(safeMs / 1000);
+  const days = Math.floor(totalSecs / 86400);
+  const hours = Math.floor((totalSecs % 86400) / 3600);
+  const mins = Math.floor((totalSecs % 3600) / 60);
+  const secs = totalSecs % 60;
+  if (days > 0) return `${days} d ${hours} h ${mins} min`;
+  if (hours > 0) return `${hours} h ${mins} min`;
+  if (mins > 0) return `${mins} min ${secs} s`;
+  return `${secs} s`;
+}
+
+function getHeaderTimeBadge(
+  contest: ContestItem,
+  nowMs: number
+): { label: string; tone: 'phase1' | 'countdown' | 'upcoming' | 'ended' } | null {
+  if (contest.status === 'finished') {
+    return { label: 'Soutěž ukončena', tone: 'ended' };
+  }
+
+  if (contest.contestType === 'stats_delta') {
+    const phase1Str = contest.startDate || contest.statsDeltaConfig?.baselineDeadline;
+    const phase1Ms = phase1Str ? Date.parse(phase1Str) : NaN;
+    const phase2Ms = contest.endDate ? Date.parse(contest.endDate) : NaN;
+
+    if (!isNaN(phase1Ms) && nowMs <= phase1Ms) {
+      return {
+        label: `První fáze do ${formatCzDate(phase1Str)}`,
+        tone: 'phase1',
+      };
+    }
+    if (!isNaN(phase2Ms) && nowMs <= phase2Ms) {
+      return {
+        label: `Soutěž končí za ${formatDurationCz(phase2Ms - nowMs)}`,
+        tone: 'countdown',
+      };
+    }
+    if (!isNaN(phase2Ms) && nowMs > phase2Ms) {
+      return { label: 'Soutěž ukončena', tone: 'ended' };
+    }
+    return null;
+  }
+
+  const startMs = contest.startDate ? Date.parse(contest.startDate) : NaN;
+  const endMs = contest.endDate ? Date.parse(contest.endDate) : NaN;
+
+  if (!isNaN(startMs) && nowMs < startMs) {
+    return {
+      label: `Začíná za ${formatDurationCz(startMs - nowMs)}`,
+      tone: 'upcoming',
+    };
+  }
+  if (!isNaN(endMs) && nowMs <= endMs) {
+    return {
+      label: `Soutěž končí za ${formatDurationCz(endMs - nowMs)}`,
+      tone: 'countdown',
+    };
+  }
+  if (!isNaN(endMs) && nowMs > endMs) {
+    return { label: 'Soutěž ukončena', tone: 'ended' };
+  }
+  return null;
+}
+
 function getCountdownLabel(endDate?: string, startDate?: string, status?: string): string | null {
   const now = Date.now();
   if (status === 'upcoming' && startDate) {
@@ -174,6 +239,14 @@ export const ContestHubView: React.FC = () => {
   const [submittedMap, setSubmittedMap] = useState<Record<string, SavedSubmissionRecord>>({});
   const [openFormId, setOpenFormId] = useState<string | null>(null);
   const [forms, setForms] = useState<Record<string, EntryFormState>>({});
+  const [nowMs, setNowMs] = useState<number>(() => Date.now());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setNowMs(Date.now());
+    }, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const fetchContests = useCallback(async () => {
     setLoading(true);
@@ -221,7 +294,7 @@ export const ContestHubView: React.FC = () => {
     }
   }, [contests]);
 
-  const getForm = (contestId: string): EntryFormState =>
+  const getForm = (contestId: string, defaultPhaseTab?: 'phase1' | 'phase2'): EntryFormState =>
     forms[contestId] || {
       trainerName: submittedMap[contestId]?.trainerName || '',
       trainerCode: '',
@@ -229,7 +302,8 @@ export const ContestHubView: React.FC = () => {
       contact: '',
       screenshotDataUrl: '',
       statsPhaseTab:
-        submittedMap[contestId]?.statsPhase === 'baseline_only' ? 'phase2' : 'phase1',
+        defaultPhaseTab ||
+        (submittedMap[contestId]?.statsPhase === 'baseline_only' ? 'phase2' : 'phase1'),
       statsValues: {},
       lookedUpBaseline: submittedMap[contestId]?.baselineValues,
       submitting: false,
@@ -592,22 +666,35 @@ export const ContestHubView: React.FC = () => {
             const motifImg = getContestMotifImageUrl(contest.motif);
             const isPokemonMotif = contest.motif?.mode === 'pokemon';
             const countdown = getCountdownLabel(contest.endDate, contest.startDate, contest.status);
+            const headerTimeBadge = getHeaderTimeBadge(contest, nowMs);
             const savedRecord = submittedMap[contest.id];
-            const form = getForm(contest.id);
             const isFormOpen = openFormId === contest.id;
             const enabledStatsMetrics = (contest.statsDeltaConfig?.metrics || []).filter(
               (m) => m.enabled
             );
 
-            const nowMs = Date.now();
-            const baselineClosed =
-              contest.statsDeltaConfig?.baselineDeadline &&
-              !isNaN(Date.parse(contest.statsDeltaConfig.baselineDeadline)) &&
-              nowMs > Date.parse(contest.statsDeltaConfig.baselineDeadline);
-            const finalNotOpenYet =
-              contest.statsDeltaConfig?.finalOpenAt &&
-              !isNaN(Date.parse(contest.statsDeltaConfig.finalOpenAt)) &&
-              nowMs < Date.parse(contest.statsDeltaConfig.finalOpenAt);
+            const phase1DeadlineStr =
+              contest.startDate || contest.statsDeltaConfig?.baselineDeadline;
+            const baselineClosed = Boolean(
+              phase1DeadlineStr &&
+                !isNaN(Date.parse(phase1DeadlineStr)) &&
+                nowMs > Date.parse(phase1DeadlineStr)
+            );
+            const statsEnded = Boolean(
+              contest.endDate &&
+                !isNaN(Date.parse(contest.endDate)) &&
+                nowMs > Date.parse(contest.endDate)
+            );
+
+            const startMs = contest.startDate ? Date.parse(contest.startDate) : NaN;
+            const endMs = contest.endDate ? Date.parse(contest.endDate) : NaN;
+            const invNotStarted = Boolean(!isNaN(startMs) && nowMs < startMs);
+            const invEnded = Boolean(!isNaN(endMs) && nowMs > endMs);
+
+            const form = getForm(
+              contest.id,
+              contest.contestType === 'stats_delta' && baselineClosed ? 'phase2' : undefined
+            );
 
             return (
               <article
@@ -690,10 +777,18 @@ export const ContestHubView: React.FC = () => {
 
                 {/* Card Content */}
                 <div className="contest-card-body">
-                  <div className="contest-card-title-block">
-                    <h2 className="contest-card-title">{contest.title}</h2>
-                    {contest.subtitle && (
-                      <p className="contest-card-subtitle">{contest.subtitle}</p>
+                  <div className="contest-card-title-row">
+                    <div className="contest-card-title-block">
+                      <h2 className="contest-card-title">{contest.title}</h2>
+                      {contest.subtitle && (
+                        <p className="contest-card-subtitle">{contest.subtitle}</p>
+                      )}
+                    </div>
+                    {headerTimeBadge && (
+                      <span className={`contest-header-time-badge tone-${headerTimeBadge.tone}`}>
+                        <Clock size={13} />
+                        <span>{headerTimeBadge.label}</span>
+                      </span>
                     )}
                   </div>
 
@@ -752,7 +847,20 @@ export const ContestHubView: React.FC = () => {
 
                       {/* Template 1: INVENTORY COMBO FORM */}
                       {contest.contestType === 'inventory_combo' && !savedRecord && (
-                        !isFormOpen ? (
+                        invNotStarted ? (
+                          <div className="contest-locked-window-box">
+                            <Clock size={16} />
+                            <span>
+                              Nahrávání screenshotů se otevře {formatCzDate(contest.startDate)} (za{' '}
+                              {formatDurationCz(startMs - nowMs)}).
+                            </span>
+                          </div>
+                        ) : invEnded ? (
+                          <div className="contest-locked-window-box ended">
+                            <Clock size={16} />
+                            <span>Čas pro odevzdání screenshotů již vypršel.</span>
+                          </div>
+                        ) : !isFormOpen ? (
                           <button
                             type="button"
                             className="contest-primary-cta"
@@ -867,7 +975,12 @@ export const ContestHubView: React.FC = () => {
                       {/* Template 2: STATS DELTA 2-PHASE FORM (NO screenshots!) */}
                       {contest.contestType === 'stats_delta' &&
                         savedRecord?.statsPhase !== 'completed' && (
-                          !isFormOpen ? (
+                          statsEnded ? (
+                            <div className="contest-locked-window-box ended">
+                              <Clock size={16} />
+                              <span>Čas pro odevzdání statistik již vypršel.</span>
+                            </div>
+                          ) : !isFormOpen ? (
                             <div className="contest-stats-cta-wrap">
                               {savedRecord?.statsPhase === 'baseline_only' && (
                                 <div className="contest-submitted-banner status-pending_review">
@@ -885,11 +998,16 @@ export const ContestHubView: React.FC = () => {
                               <button
                                 type="button"
                                 className="contest-primary-cta"
-                                onClick={() => setOpenFormId(contest.id)}
+                                onClick={() => {
+                                  if (baselineClosed) {
+                                    updateForm(contest.id, { statsPhaseTab: 'phase2', error: null });
+                                  }
+                                  setOpenFormId(contest.id);
+                                }}
                               >
                                 <BarChart3 size={16} />
                                 <span>
-                                  {savedRecord?.statsPhase === 'baseline_only'
+                                  {savedRecord?.statsPhase === 'baseline_only' || baselineClosed
                                     ? 'Zadat finální statistiky'
                                     : 'Zadat statistiky'}
                                 </span>
@@ -962,16 +1080,8 @@ export const ContestHubView: React.FC = () => {
                                 <div className="contest-form-error">
                                   <Clock size={15} />
                                   <span>
-                                    Uzávěrka pro 1. fázi {formatCzDate(contest.statsDeltaConfig?.baselineDeadline)} již proběhla.
-                                  </span>
-                                </div>
-                              )}
-
-                              {form.statsPhaseTab === 'phase2' && finalNotOpenYet && (
-                                <div className="contest-form-error">
-                                  <Clock size={15} />
-                                  <span>
-                                    2. fáze se otevře až {formatCzDate(contest.statsDeltaConfig?.finalOpenAt)}.
+                                    Uzávěrka pro 1. fázi ({formatCzDate(phase1DeadlineStr)}) již
+                                    proběhla. Nyní lze odevzdat pouze 2. fázi.
                                   </span>
                                 </div>
                               )}
@@ -1070,8 +1180,8 @@ export const ContestHubView: React.FC = () => {
                                   className="contest-primary-cta"
                                   disabled={
                                     form.submitting ||
-                                    Boolean(form.statsPhaseTab === 'phase1' && baselineClosed) ||
-                                    Boolean(form.statsPhaseTab === 'phase2' && finalNotOpenYet)
+                                    statsEnded ||
+                                    Boolean(form.statsPhaseTab === 'phase1' && baselineClosed)
                                   }
                                 >
                                   <Send size={15} />
@@ -1224,13 +1334,19 @@ export const ContestHubView: React.FC = () => {
                     {contest.startDate && (
                       <span className="contest-meta-pill">
                         <Calendar size={13} />
-                        <span>Od: {formatCzDate(contest.startDate)}</span>
+                        <span>
+                          {contest.contestType === 'stats_delta' ? '1. fáze do: ' : 'Od: '}
+                          {formatCzDate(contest.startDate)}
+                        </span>
                       </span>
                     )}
                     {contest.endDate && (
                       <span className="contest-meta-pill">
                         <Calendar size={13} />
-                        <span>Do: {formatCzDate(contest.endDate)}</span>
+                        <span>
+                          {contest.contestType === 'stats_delta' ? '2. fáze do: ' : 'Do: '}
+                          {formatCzDate(contest.endDate)}
+                        </span>
                       </span>
                     )}
                     {contest.registrationEnabled && (
@@ -1298,18 +1414,20 @@ export const ContestHubView: React.FC = () => {
                           </div>
                         ))}
                       </div>
-                      <div className="contest-phase-dates">
-                        {contest.statsDeltaConfig.baselineDeadline && (
-                          <span>
-                            1. fáze – start do: {formatCzDate(contest.statsDeltaConfig.baselineDeadline)}
-                          </span>
-                        )}
-                        {contest.statsDeltaConfig.finalOpenAt && (
-                          <span>
-                            2. fáze – cíl od: {formatCzDate(contest.statsDeltaConfig.finalOpenAt)}
-                          </span>
-                        )}
-                      </div>
+                      {(contest.statsDeltaConfig.baselineDeadline || contest.statsDeltaConfig.finalOpenAt) && (
+                        <div className="contest-phase-dates">
+                          {contest.statsDeltaConfig.baselineDeadline && (
+                            <span>
+                              1. fáze – start do: {formatCzDate(contest.statsDeltaConfig.baselineDeadline)}
+                            </span>
+                          )}
+                          {contest.statsDeltaConfig.finalOpenAt && (
+                            <span>
+                              2. fáze – cíl od: {formatCzDate(contest.statsDeltaConfig.finalOpenAt)}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
 

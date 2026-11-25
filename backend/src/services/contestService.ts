@@ -137,13 +137,14 @@ export interface ContestStoreState {
 export const CONTESTS_STORE_KEY = 'contests_store';
 
 // Default fallback credentials (overridable via CONTEST_ADMIN_USERS or CONTEST_ADMIN_USERNAME + CONTEST_ADMIN_PASSWORD)
-const DEFAULT_CONTEST_USERNAME = 'soutez-admin';
+const DEFAULT_CONTEST_USERNAME = 'admin';
 const DEFAULT_CONTEST_PASSWORD_HASH =
-  '59c4ba82a1f0326c51579fe4e7997f4a93feffeefa32be2e47efcecc61a11ff1';
+  '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
 const CONTEST_TOKEN_TTL_MS = 14 * 24 * 60 * 60 * 1000; // 14 days
 const MAX_IMAGE_DATA_URL_LENGTH = 700_000; // ~520KB binary
 
 const activeContestTokens = new Set<string>();
+const inFlightInventorySubmissions = new Set<string>();
 
 export const DEFAULT_STATS_METRICS: StatsMetricConfig[] = [
   {
@@ -846,6 +847,20 @@ export async function submitInventoryComboEntry(
     throw new Error('Tato soutěž momentálně neprobíhá.');
   }
 
+  const now = Date.now();
+  if (contest.startDate) {
+    const startMs = Date.parse(contest.startDate);
+    if (!isNaN(startMs) && now < startMs) {
+      throw new Error('Nahrávání screenshotů ještě nebylo otevřeno.');
+    }
+  }
+  if (contest.endDate) {
+    const endMs = Date.parse(contest.endDate);
+    if (!isNaN(endMs) && now > endMs) {
+      throw new Error('Čas pro odevzdání screenshotů již vypršel.');
+    }
+  }
+
   const trainerName = sanitizeString(payload.trainerName, 40);
   if (trainerName.length < 2) {
     throw new Error('Zadej prosím své trenérské jméno o délce alespoň 2 znaky.');
@@ -866,6 +881,13 @@ export async function submitInventoryComboEntry(
     );
   }
 
+  const lockKey = `${contestId}:${normalizedName}`;
+  if (inFlightInventorySubmissions.has(lockKey)) {
+    throw new Error(
+      `Trenér „${trainerName}“ už do této soutěže screenshot odeslal. Povolen je 1 pokus.`
+    );
+  }
+
   const screenshotUrl = sanitizeSafeDataImage(payload.screenshotDataUrl);
   if (!screenshotUrl) {
     throw new Error('Nahraj prosím platný screenshot inventáře ve formátu PNG, JPG nebo WebP.');
@@ -875,44 +897,51 @@ export async function submitInventoryComboEntry(
   const formattedCode =
     rawCode.length === 12 ? rawCode.replace(/(\d{4})(?=\d)/g, '$1 ').trim() : undefined;
 
-  const evaluation = await runInventoryComboVerification(
-    screenshotUrl,
-    contest.inventoryComboConfig
-  );
+  inFlightInventorySubmissions.add(lockKey);
+  try {
+    const evaluation = await runInventoryComboVerification(
+      screenshotUrl,
+      contest.inventoryComboConfig
+    );
 
-  // Re-read store after async OCR so concurrent submissions aren't overwritten
-  const freshState = await loadContestStore({ forceCloud: true });
-  const raceDuplicate = freshState.entries.find(
-    (e) => e.contestId === contestId && e.trainerName.trim().toLowerCase() === normalizedName
-  );
-  if (raceDuplicate) {
-    throw new Error(`Trenér „${trainerName}“ už do této soutěže screenshot odeslal.`);
+    // Re-read store after async OCR so concurrent submissions aren't overwritten
+    const freshState = await loadContestStore({ forceCloud: true });
+    const raceDuplicate = freshState.entries.find(
+      (e) => e.contestId === contestId && e.trainerName.trim().toLowerCase() === normalizedName
+    );
+    if (raceDuplicate) {
+      throw new Error(
+        `Trenér „${trainerName}“ už do této soutěže screenshot odeslal. Povolen je 1 pokus.`
+      );
+    }
+
+    const entry: ContestEntry = {
+      id: `entry-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`,
+      contestId,
+      trainerName,
+      trainerCode: formattedCode,
+      contact: contact || undefined,
+      createdAt: new Date().toISOString(),
+      status: evaluation.status,
+      statusReason: evaluation.reason,
+      screenshotUrl,
+      ocrResult: {
+        provider: evaluation.provider,
+        detectedPokemon: evaluation.detectedPokemon,
+        matchedSequence: evaluation.matchedSequence,
+        matchedDirection: evaluation.matchedDirection,
+        age0Detected: evaluation.age0Detected,
+        rawTextSnippet: evaluation.rawTextSnippet,
+        checkedAt: evaluation.checkedAt,
+      },
+    };
+
+    freshState.entries.unshift(entry);
+    await saveContestStore(freshState);
+    return entry;
+  } finally {
+    inFlightInventorySubmissions.delete(lockKey);
   }
-
-  const entry: ContestEntry = {
-    id: `entry-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`,
-    contestId,
-    trainerName,
-    trainerCode: formattedCode,
-    contact: contact || undefined,
-    createdAt: new Date().toISOString(),
-    status: evaluation.status,
-    statusReason: evaluation.reason,
-    screenshotUrl,
-    ocrResult: {
-      provider: evaluation.provider,
-      detectedPokemon: evaluation.detectedPokemon,
-      matchedSequence: evaluation.matchedSequence,
-      matchedDirection: evaluation.matchedDirection,
-      age0Detected: evaluation.age0Detected,
-      rawTextSnippet: evaluation.rawTextSnippet,
-      checkedAt: evaluation.checkedAt,
-    },
-  };
-
-  freshState.entries.unshift(entry);
-  await saveContestStore(freshState);
-  return entry;
 }
 
 /**
@@ -940,9 +969,16 @@ export async function submitStatsDeltaBaseline(
   }
 
   const now = Date.now();
-  if (contest.statsDeltaConfig.baselineDeadline) {
-    const deadlineMs = Date.parse(contest.statsDeltaConfig.baselineDeadline);
+  const phase1DeadlineStr = contest.startDate || contest.statsDeltaConfig.baselineDeadline;
+  if (phase1DeadlineStr) {
+    const deadlineMs = Date.parse(phase1DeadlineStr);
     if (!isNaN(deadlineMs) && now > deadlineMs) {
+      throw new Error('Čas pro zadání 1. fáze (počátečních statistik) již vypršel.');
+    }
+  }
+  if (contest.endDate) {
+    const endMs = Date.parse(contest.endDate);
+    if (!isNaN(endMs) && now > endMs) {
       throw new Error('Čas pro zadání počátečních statistik již vypršel.');
     }
   }
@@ -1029,12 +1065,6 @@ export async function submitStatsDeltaFinal(
   }
 
   const now = Date.now();
-  if (contest.statsDeltaConfig.finalOpenAt) {
-    const openMs = Date.parse(contest.statsDeltaConfig.finalOpenAt);
-    if (!isNaN(openMs) && now < openMs) {
-      throw new Error('Zadávání finálních statistik ještě nebylo otevřeno.');
-    }
-  }
   if (contest.endDate) {
     const endMs = Date.parse(contest.endDate);
     if (!isNaN(endMs) && now > endMs) {
@@ -1295,135 +1325,4 @@ export async function drawContestWinners(
     totalEligible: eligible.length,
     contest,
   };
-}
-
-/**
- * Seeds two ready-to-test sample contests (Inventory Combo + Stats Delta).
- */
-export async function seedSampleContests(): Promise<ContestItem[]> {
-  const now = new Date();
-  const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-  const in7d = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-  const created: ContestItem[] = [];
-  const state = await loadContestStore({ forceCloud: true });
-
-  if (!state.contests.some((c) => c.slug === 'test-inventarova-stafeta')) {
-    const { contest } = await upsertContest({
-      slug: 'test-inventarova-stafeta',
-      title: 'Testovací: Inventářová štafeta – Abecední postupka',
-      subtitle: 'Chyť 3 Pokémony v abecedním pořadí a nahraj screenshot inventáře',
-      description:
-        'Tvým úkolem je chytit v divočině 3 Pokémony po sobě v rostoucím abecedním pořadí, například Bulbasaur → Caterpie → Eevee. Otevři svůj inventář Pokémonů, seřaď ho podle Recent, zadej do vyhledávání age0 a nahraj jediný screenshot.',
-      rules: [
-        'V horní vyhledávací liště inventáře musí být viditelný filtr age0.',
-        'Pokémoni nesmí být přejmenovaní – OCR ověřuje reálná jména z Pokédexu.',
-        'Uznává se abecední postupka v řadě zleva doprava i chronologicky pozpátku.',
-        'Každý trenér má 1 pokus; v případě nejasného OCR zkontroluje screenshot admin.',
-      ],
-      prizes: [
-        '1. místo: Testovací cena – 500 PokéCoins',
-        '2. místo: Testovací cena – Prémiový Raid Pass kód',
-      ],
-      status: 'active',
-      contestType: 'inventory_combo',
-      startDate: now.toISOString(),
-      endDate: in7d.toISOString(),
-      registrationEnabled: true,
-      pinned: true,
-      showQualifiedList: true,
-      motif: {
-        mode: 'pokemon',
-        pokemonDexId: 133,
-        pokemonName: 'Eevee',
-        shiny: true,
-      },
-      inventoryComboConfig: {
-        ruleMode: 'alphabetical',
-        comboLength: 3,
-        requireAge0: true,
-      },
-    });
-    created.push(contest);
-  }
-
-  if (!state.contests.some((c) => c.slug === 'test-statistiky-trenera')) {
-    const { contest } = await upsertContest({
-      slug: 'test-statistiky-trenera',
-      title: 'Testovací: Výzva statistik trenéra',
-      subtitle: 'Zapiš svůj startovní stav, zahraj si a splň cílový rozdíl do slosování',
-      description:
-        'Otestuj si 2-fázovou soutěž na statistiky z profilu trenéra. V 1. fázi zadej své aktuální hodnoty pro Distance walked, Pokémon caught a PokéStops visited. Ve 2. fázi zadej pod stejným trenérským jménem aktualizované hodnoty. Pokud splníš alespoň 2 ze 3 cílů, systém tě automaticky zařadí do slosování.',
-      rules: [
-        'V 1. fázi zapiš startovní hodnoty ze svého profilu v Pokémon GO.',
-        'Ve 2. fázi použij úplně stejné trenérské jméno bez ohledu na velikost písmen.',
-        'Pro zařazení do slosování stačí splnit alespoň 2 ze 3 zapnutých statistik.',
-        'Pro snadné vyzkoušení jsou obě fáze u této testovací soutěže rovnou otevřené.',
-      ],
-      prizes: [
-        '1. místo: Testovací výhra – Super Inkubátor balíček',
-        '2. místo: Testovací výhra – Star Piece balíček',
-      ],
-      status: 'active',
-      contestType: 'stats_delta',
-      startDate: now.toISOString(),
-      endDate: in7d.toISOString(),
-      registrationEnabled: true,
-      pinned: false,
-      showQualifiedList: true,
-      motif: {
-        mode: 'pokemon',
-        pokemonDexId: 448,
-        pokemonName: 'Lucario',
-        shiny: false,
-      },
-      statsDeltaConfig: {
-        baselineDeadline: in24h.toISOString(),
-        finalOpenAt: now.toISOString(),
-        matchMode: 'min_count',
-        minMetricsRequired: 2,
-        metrics: [
-          {
-            id: 'distance_walked',
-            label: 'Distance walked',
-            unit: 'km',
-            enabled: true,
-            threshold: 3,
-            allowDecimal: true,
-            isCustom: false,
-          },
-          {
-            id: 'pokemon_caught',
-            label: 'Pokémon caught',
-            unit: 'ks',
-            enabled: true,
-            threshold: 30,
-            allowDecimal: false,
-            isCustom: false,
-          },
-          {
-            id: 'pokestops_visited',
-            label: 'PokéStops visited',
-            unit: 'ks',
-            enabled: true,
-            threshold: 15,
-            allowDecimal: false,
-            isCustom: false,
-          },
-          {
-            id: 'total_xp',
-            label: 'Total XP',
-            unit: 'XP',
-            enabled: false,
-            threshold: 25000,
-            allowDecimal: false,
-            isCustom: false,
-          },
-        ],
-      },
-    });
-    created.push(contest);
-  }
-
-  return created;
 }

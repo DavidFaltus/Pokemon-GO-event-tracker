@@ -12,10 +12,10 @@ import {
   deleteContestEntry,
   drawContestWinners,
   updateContestHubSettings,
+  submitInventoryComboEntry,
   submitStatsDeltaBaseline,
   submitStatsDeltaFinal,
   updateContestEntryStatus,
-  seedSampleContests,
 } from './contestService';
 
 describe('Contest Service', () => {
@@ -42,10 +42,10 @@ describe('Contest Service', () => {
 
   describe('Dedicated username/password authentication', () => {
     it('verifies default fallback credentials and rejects wrong username or password', () => {
-      expect(verifyContestCredentials('soutez-admin', 'PoGoSoutez2026!')).toBe(true);
-      expect(verifyContestCredentials('SOUTEZ-ADMIN', 'PoGoSoutez2026!')).toBe(true);
-      expect(verifyContestCredentials('soutez-admin', 'wrong-pass')).toBe(false);
-      expect(verifyContestCredentials('wrong-user', 'PoGoSoutez2026!')).toBe(false);
+      expect(verifyContestCredentials('admin', 'admin123')).toBe(true);
+      expect(verifyContestCredentials('ADMIN', 'admin123')).toBe(true);
+      expect(verifyContestCredentials('admin', 'wrong-pass')).toBe(false);
+      expect(verifyContestCredentials('wrong-user', 'admin123')).toBe(false);
     });
 
     it('honors CONTEST_ADMIN_USERNAME and CONTEST_ADMIN_PASSWORD env overrides', () => {
@@ -53,7 +53,7 @@ describe('Contest Service', () => {
       process.env.CONTEST_ADMIN_PASSWORD = 'SecretPassword#42';
 
       expect(verifyContestCredentials('brno-leader', 'SecretPassword#42')).toBe(true);
-      expect(verifyContestCredentials('soutez-admin', 'PoGoSoutez2026!')).toBe(false);
+      expect(verifyContestCredentials('admin', 'admin123')).toBe(false);
 
       const token = issueContestAdminToken('brno-leader');
       expect(isValidContestAdminToken(token)).toBe(true);
@@ -67,7 +67,7 @@ describe('Contest Service', () => {
       expect(verifyContestCredentials('david', 'HesloDavid1!')).toBe(true);
       expect(verifyContestCredentials('petr', 'HesloPetr2!')).toBe(true);
       expect(verifyContestCredentials('david', 'HesloPetr2!')).toBe(false);
-      expect(verifyContestCredentials('soutez-admin', 'PoGoSoutez2026!')).toBe(false);
+      expect(verifyContestCredentials('admin', 'admin123')).toBe(false);
 
       const davidToken = issueContestAdminToken('david');
       const petrToken = issueContestAdminToken('petr');
@@ -183,10 +183,9 @@ describe('Contest Service', () => {
         status: 'active',
         contestType: 'stats_delta',
         showQualifiedList: true,
+        startDate: new Date(now + 3600_000).toISOString(),
         endDate: new Date(now + 7200_000).toISOString(),
         statsDeltaConfig: {
-          baselineDeadline: new Date(now + 3600_000).toISOString(),
-          finalOpenAt: new Date(now - 60_000).toISOString(),
           matchMode: 'min_count',
           minMetricsRequired: 2,
           metrics: [
@@ -257,13 +256,109 @@ describe('Contest Service', () => {
       expect(pub.contests[0].qualifiedTrainers).toContain('Misty');
     });
 
-    it('seeds two sample contests idempotently', async () => {
-      const first = await seedSampleContests();
-      expect(first).toHaveLength(2);
-      expect(first.map((c) => c.contestType).sort()).toEqual(['inventory_combo', 'stats_delta']);
+    it('blocks Stats Delta Phase 1 between startDate and endDate while allowing Phase 2, and blocks Inventory Combo outside startDate..endDate', async () => {
+      const now = Date.now();
+      const { contest: statsContest } = await upsertContest({
+        title: 'Časované statistiky',
+        description: 'Test časování fází',
+        status: 'active',
+        contestType: 'stats_delta',
+        startDate: new Date(now + 3600_000).toISOString(),
+        endDate: new Date(now + 7200_000).toISOString(),
+        statsDeltaConfig: {
+          matchMode: 'all',
+          minMetricsRequired: 1,
+          metrics: [
+            { id: 'pokemon_caught', label: 'Pokémon caught', unit: 'ks', enabled: true, threshold: 10 },
+          ],
+        },
+      });
 
-      const second = await seedSampleContests();
-      expect(second).toHaveLength(0);
+      // Phase 1 succeeds before startDate
+      await submitStatsDeltaBaseline(statsContest.id, {
+        trainerName: 'Brock',
+        values: { pokemon_caught: 100 },
+      });
+
+      // Move startDate into the past (now between Phase 1 and Phase 2)
+      await upsertContest(
+        {
+          ...statsContest,
+          startDate: new Date(now - 60_000).toISOString(),
+        },
+        statsContest.id
+      );
+
+      // New Phase 1 submission must be rejected
+      await expect(
+        submitStatsDeltaBaseline(statsContest.id, {
+          trainerName: 'LatePlayer',
+          values: { pokemon_caught: 50 },
+        })
+      ).rejects.toThrow('1. fáze');
+
+      // Phase 2 submission for Brock still succeeds before endDate
+      const brockFinal = await submitStatsDeltaFinal(statsContest.id, {
+        trainerName: 'Brock',
+        values: { pokemon_caught: 120 },
+      });
+      expect(brockFinal.status).toBe('approved');
+
+      // Inventory Combo before startDate must be rejected
+      const { contest: invFuture } = await upsertContest({
+        title: 'Budoucí štafeta',
+        description: 'Ještě nezačala',
+        status: 'active',
+        contestType: 'inventory_combo',
+        startDate: new Date(now + 3600_000).toISOString(),
+        endDate: new Date(now + 7200_000).toISOString(),
+        inventoryComboConfig: { ruleMode: 'alphabetical', comboLength: 3, requireAge0: true },
+      });
+
+      await expect(
+        submitInventoryComboEntry(invFuture.id, {
+          trainerName: 'EarlyBird',
+          screenshotDataUrl: 'data:image/png;base64,AAAA',
+        })
+      ).rejects.toThrow('ještě nebylo otevřeno');
+
+      // Inventory Combo after endDate must be rejected
+      const { contest: invPast } = await upsertContest({
+        title: 'Skončená štafeta',
+        description: 'Už skončila',
+        status: 'active',
+        contestType: 'inventory_combo',
+        startDate: new Date(now - 7200_000).toISOString(),
+        endDate: new Date(now - 60_000).toISOString(),
+        inventoryComboConfig: { ruleMode: 'alphabetical', comboLength: 3, requireAge0: true },
+      });
+
+      await expect(
+        submitInventoryComboEntry(invPast.id, {
+          trainerName: 'LateBird',
+          screenshotDataUrl: 'data:image/png;base64,AAAA',
+        })
+      ).rejects.toThrow('již vypršel');
+
+      // Duplicate nickname (case-insensitive) on active Inventory Combo must be rejected
+      const { contest: invActive } = await upsertContest({
+        title: 'Aktivní štafeta',
+        description: 'Právě běží',
+        status: 'active',
+        contestType: 'inventory_combo',
+        startDate: new Date(now - 60_000).toISOString(),
+        endDate: new Date(now + 3600_000).toISOString(),
+        inventoryComboConfig: { ruleMode: 'alphabetical', comboLength: 3, requireAge0: true },
+      });
+
+      await addContestEntry(invActive.id, { trainerName: 'AshKetchum' }, { addedByAdmin: true });
+
+      await expect(
+        submitInventoryComboEntry(invActive.id, {
+          trainerName: '  ashketchum  ',
+          screenshotDataUrl: 'data:image/png;base64,AAAA',
+        })
+      ).rejects.toThrow('Povolen je 1 pokus');
     });
   });
 });

@@ -12,7 +12,6 @@ import {
   isValidContestAdminToken,
   loadContestStore,
   revokeContestAdminToken,
-  seedSampleContests,
   submitInventoryComboEntry,
   submitStatsDeltaBaseline,
   submitStatsDeltaFinal,
@@ -216,16 +215,6 @@ export function createContestRouter(rateLimit: RateLimiterFactory): express.Rout
       });
     } catch (err: any) {
       res.status(500).json({ error: err?.message || 'Nepodařilo se načíst administraci soutěží.' });
-    }
-  });
-
-  // Admin: seed 2 sample template contests (Inventory Combo + Stats Delta)
-  router.post('/admin/seed-samples', requireContestAuth, async (_req, res) => {
-    try {
-      const created = await seedSampleContests();
-      res.json({ success: true, createdCount: created.length, created });
-    } catch (err: any) {
-      res.status(500).json({ error: err?.message || 'Nepodařilo se vytvořit testovací soutěže.' });
     }
   });
 
