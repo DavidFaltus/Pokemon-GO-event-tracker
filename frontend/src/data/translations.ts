@@ -174,7 +174,7 @@ export const translations = {
     // Download & About App Page
     download_title: "Stáhnout aplikaci Pokémon GO Event Tracker",
     download_subtitle: "Získejte mobilní aplikaci pro Android (APK), nainstalujte si webovou PWA aplikaci nebo prozkoumejte otevřený zdrojový kód na GitHubu.",
-    download_apk_btn: "Stáhnout Android APK (v1.1.1)",
+    download_apk_btn: "Stáhnout Android APK (v1.2.0)",
     download_github_btn: "Zobrazit repozitář na GitHubu",
     download_pwa_btn: "Nainstalovat jako PWA aplikaci",
     download_features_title: "Výhody mobilní aplikace:",
@@ -572,7 +572,7 @@ export const translations = {
     // Download & About App Page
     download_title: "Download Pokémon GO Event Tracker App",
     download_subtitle: "Get the mobile Android APK app, install the Progressive Web App (PWA), or explore the open-source code on GitHub.",
-    download_apk_btn: "Download Android APK (v1.1.1)",
+    download_apk_btn: "Download Android APK (v1.2.0)",
     download_github_btn: "View GitHub Repository",
     download_pwa_btn: "Install as Progressive Web App (PWA)",
     download_features_title: "Mobile App Features:",
@@ -971,7 +971,7 @@ export const translations = {
     // Download & About App Page
     download_title: "Pokémon GO イベントトラッカー アプリをダウンロード",
     download_subtitle: "Android用APKアプリのダウンロード、PWAのインストール、またはGitHubでのオープンソースの確認ができます。",
-    download_apk_btn: "Android APKをダウンロード (v1.1.1)",
+    download_apk_btn: "Android APKをダウンロード (v1.2.0)",
     download_github_btn: "GitHubリポジトリを表示",
     download_pwa_btn: "PWAとしてインストール",
     download_features_title: "モバイルアプリの主な機能:",
@@ -1370,7 +1370,7 @@ export const translations = {
     // Download & About App Page
     download_title: "Скачать приложение Pokémon GO Event Tracker",
     download_subtitle: "Скачайте мобильное приложение для Android (APK), установите веб-приложение PWA или изучите исходный код на GitHub.",
-    download_apk_btn: "Скачать Android APK (v1.1.1)",
+    download_apk_btn: "Скачать Android APK (v1.2.0)",
     download_github_btn: "Открыть репозиторий на GitHub",
     download_pwa_btn: "Установить как PWA приложение",
     download_features_title: "Особенности мобильного приложения:",

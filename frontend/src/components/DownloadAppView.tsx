@@ -63,7 +63,7 @@ export const DownloadAppView: React.FC<DownloadAppViewProps> = ({ lang = 'cs' })
 
         <div className="download-version-badge">
           <ShieldCheck size={13} />
-          <span>v1.1.1 Stable • Android 8.0+ & PWA</span>
+          <span>v1.2.0 Stable • Android 8.0+ & PWA</span>
         </div>
 
         <h1 className="download-hero-title">{t.download_title}</h1>
